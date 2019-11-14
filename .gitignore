@@ -1,0 +1,16 @@
+*.log
+*.aux
+*.swp
+*.bak
+_minted-main/
+main.bbl
+main.bcf
+main.blg
+main.fdb_latexmk
+main.fls
+main.idx
+main.ilg
+main.ind
+main.ptc
+main.run.xml
+main.toc

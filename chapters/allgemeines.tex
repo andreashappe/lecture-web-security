@@ -1,0 +1,32 @@
+\chapter{Allgemeines}
+
+Software ist in den letzten Jahren allgegenwärtig geworden. Der Siegeszug verbundener Systeme, wie dem Internet,  ist unaufhaltsam. Der freie Zugriff auf Informationen und das neue Level an Verbundenheit führt zu sozialen und ökonomischen Entwicklungen deren Auswirkungen teilweise nicht absehbar sind. Es sind interessante Zeiten, in denen wir leben, wir (als Informatiker bzw. die Leser dieses Dokumentes) sind Teil einer privilegierten Schicht und dürfen auch den Anspruch erheben, Teil dieses Wandels zu sein. Im ursprünglichen Sinn des Wortes, waren Hacker Personen, die Spass an der Arbeit mit neuen Technologien hatten, diese auch zweckentfremdeten --- \textit{The Street will find its own uses for things} wie William Gibson richtig bemerkte.
+
+Technologie verbessert das Leben der Menschen, beinhaltet aber auch Risiken. Durch die Allgegenwärtigkeit von Software wurden und werden auch Personen von diesen abhängig. Fehler in Software gefährden Menschen und Ökonomien. Gerade weil Software so vielseitig ist, können auch vielseitige Fehler entstehen. Wenn diese bösartig ausgenutzt werden\footnote{Subjektiv im Auge des Betrachters.} ist der Schritt vom Hacker zum Cracker vollzogen. \textit{With great power comes great responsibility} --- dies gilt auch für Softwareentwickler. Ich selbst hielt mich für einen guten Softwareentwickler, wurde Penetration-Tester und sah meinen ehemaligen Code. Meine Meinung über mich selbst änderte sich rapide. Ein Beweggrund für mich auf der Fachhochschule zu unterrichten ist die Erkenntnis, dass wir alle Fehler machen\ldots zumindest sollten wir in dem Fall interessante Fehler (und nicht einfache Standard-Security-Fehler) machen.
+
+Im Frühjahr 2019 erhielt ich das Angebot, an der FH/Technikum Wien einen Kurs \textit{Web Security} zu halten und hoffe, dass ich damit einen kleinen Teil betrage, die katastrophale Sicherheitssituation zu verbessern. Dieses Dokument ist der Ansatz eines Skriptums, ich hoffe es hilft auch Personen die nicht meinem Vortrag beiwohnten.
+
+Die aktuelle Version dieses Dokumentes ist unter \url{https://special-circumstances.at/websec/} verfügbar. Hinweise zu fachlichen Fehlern bitte jederzeit gerne an \url{mailto:andreashappe@snikt.net}.
+
+\section{Struktur dieses Dokumentes}
+
+Dieses Dokument und die dazugehörige Vorlesung verfolgt einen Top-Down Approach. Beide beginnen mit high-level organisatorischen Themen und verzweigen mit jedem weiteren Kapitel in tiefere Gefilde. Im ersten Teil (\textit{Einführung}) werden Sicherheitsgrundsätze erläutert und der Gegenstand dieses Skripts (\textit{Web Applikationen}) beleuchtet.
+
+Der nächste Part (\textit{Authentication und Authorisierung}) behandelt high-level Fehler bei der Implementierung der Benutzer- und Berechtigungskontrolle. Drei Kapitel (\textit{Authentication}, \textit{Authorization}, \textit{Federation/Single Sign-On}) beschreiben Gebiete, die applikationsweit betrachtet werden müssen --- falls hierbei Fehler auftreten, ist zumeist die gesamte Applikation betroffen und gebrochen.
+
+Im darauf folgenden Part (\textit{Injection Attacks}) wird auf verschiedene Injection-Angriffe eingegangen. Hier wurde zwischen Angriffen, die direkt gegen den Webserver, und Angriffen die einen Client (zumeist Webbrowser) benötigen, unterschieden. Während auch hier Schutzmaßnahmen am besten global für die gesamte Applikation durchgeführt werden sollten, betrifft hier eine Schwachstelle zumeist einzelne Operationen und kann dadurch auch lokal korrigiert werden.
+
+Ein finales \textit{Sensitive Data Exposure}-Kapitel beschreibt, wie gespeicherte und transportierte Daten im Bezug auf Vertraulichkeit und Integrität geschützt werden können.
+
+\section{Weiterführende Informationen}
+
+Dieses Dokument ist (und kann) nur eine grobe Einführung in Sicherheitsthemen bieten. Es ist als kurzweiliges Anfixen gedacht und soll weitere selbstständige Recherchen motivieren. Für weitere Informationen sind die Dokumente des OWASP (Open Web Application Security Project) empfehlenswert. OWASP selbst ist eine Non-Profit Organisation welche ursprünglich das Ziel hatte, die Sicherheit von Web-Anwendungen zu erhöhen. Mittlerweile gibt es auch Projekte im Mobile Application bzw. IoT Umfeld, OWASP stellt auch mehrere Tools unter Open Source Lizenzen bereit.
+
+Das bekannteste Dokument sind wahrscheinlich die OWASP Top 10\footnote{\url{https://www.owasp.org/index.php/Category:OWASP_Top_Ten_Project}}. Diese sind eine Sammlung der 10 häufigsten Sicherheitsschwachstellen im Web und werden ca. alle vier Jahre (z. B. 2013 und 2017) aktualisiert.
+
+Der OWASP Application Security Verification Standard\footnote{\url{https://www.owasp.org/index.php/Category:OWASP_Application_Security_Verification_Standard_Project}}, kurz ASVS, bietet eine Checkliste die von Penetration-Testern bzw. Software-Entwicklern verwendet werden kann, um Software auf die jeweiligen Gegenmaßnahmen für die OWASP Top 10 Angriffsvektoren zu testen.
+
+Der OWASP Testing Guide\footnote{\url{https://www.owasp.org/images/1/19/OTGv4.pdf}} liefert zu jedem Angriffsvektor Hintergrundinformationen, potentielle Testmöglichkeiten als auch Referenzen auf Gegenmaßnahmen. Dieser Guide sollte eher als Referenz und nicht als Einführungsdokument verwendet werden.
+
+OWASP selbst ist in Städte-zentrischen Chapters organisiert, ich bin einer der Leader des OWASP Chapters Vienna (Austria) und würde mich freuen den Leser bei einem der unregelmässigen OWASP Stammtische in Wien begrüßen zu dürfen.
+

