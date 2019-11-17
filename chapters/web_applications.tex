@@ -8,13 +8,51 @@ Aktuell ist HTTP 1.0/1.1 im Desktop-Bereich die häufigst verwendete HTTP Versio
 
 \section{Struktur}
 
-Eine Webapplikation besitzt sowohl eine interne Architektur (Struktur der Applikation bzw. des Source Codes) als auch eine Systemarchitektur (Integration mit externen Systemen).
+Eine Webapplikation besitzt sowohl eine interne Architektur (Struktur der Applikation bzw. des Source Codes) als auch eine Systemarchitektur (Integration mit externen Systemen). Eine Webapplikation wird in einer oder mehreren Programmiersprachen implementiert, zumeist unter Zuhilfenahme von Web-Frameworks bzw. -bibliotheken (diese können auch Bestandteil der Standardbibliothek einer der verwendeten Programmiersprachen sein).
 
-Ein häufiges Architektur-Muster (Pattern) für interne Architekturen ist das MVC-Pattern. Die interne Architektur wird stark durch das verwendete Framework und der verwendeten Programmiersprache geprägt. Es ist sinnvoll, sich an die Annahmen und Konventionen des verwendeten Frameworks zu halten anstatt gegen diese Konventionen anzukämpfen.
-
-Eine Webapplikation wird in einer oder mehreren Programmiersprachen implementiert, zumeist unter Zuhilfenahme von Web-Frameworks bzw. -bibliotheken (diese können auch Bestandteil der Standardbibliothek einer der verwendeten Programmiersprachen sein). Das Werk des Entwicklers ist der Source Code, welcher die benötigten Funktionen der Webapplikation implementiert. In Abhängigkeit von der verwendeten Technologie wird dieser Code auf den Applikationsserver als source code oder in kompilierter Form eingespielt und auf diesem schlußendlich auch exekutiert. Während der Exekution wird zumeist ein Applikationsserver involviert. Dieser kann entweder als eigenständiger Prozess (z. B. \textit{Apache Tomcat} als Applikationsserver für Java Servlets), innerhalb des Webservers (z. B. die Kombination von Apache Webserver mit \textit{mod\_php} für PHP) oder sogar ein Teil des kompilierten Programms sein (z. B. bei Verwendung von statischen binaries mit Go oder Rust).
+Das Werk des Entwicklers ist der Source Code, welcher die benötigten Funktionen der Webapplikation implementiert. In Abhängigkeit von der verwendeten Technologie wird dieser Code auf den Applikationsserver als source code oder in kompilierter Form eingespielt und auf diesem schlußendlich auch exekutiert. Während der Exekution wird zumeist ein Applikationsserver involviert. Dieser kann entweder als eigenständiger Prozess (z. B. \textit{Apache Tomcat} als Applikationsserver für Java Servlets), innerhalb des Webservers (z. B. die Kombination von Apache Webserver mit \textit{mod\_php} für PHP) oder sogar ein Teil des kompilierten Programms sein (z. B. bei Verwendung von statischen binaries mit Go oder Rust).
 
 Ein häufiges Problem ist die Zuordnung der Admin-Verantwortung zu den jeweiligen Komponenten. Es kann passieren, dass Entwickler davon ausgehen, dass eine Komponente von Administratoren verwaltet wird und vice versa. Dadurch kann es zum Unterlassen wichtiger Updates kommen.
+
+\subsection{Wahl der Programmiersprache}
+
+Zur Umsetzung einer Applikation wird eine Programmiersprache bemüht. Je nach Abstraktionslevel und Zielpublikum der Programmiersprache (bzw. des verwendeten Frameworks) ergeben sich positive und negative Auswirkungen auf die Sicherheit der Applikation.
+
+Hierdurch sollte allerdings kein Chauvinismus bedingt werden. Es ist sowohl möglich in einer sicheren Programmiersprache unsicher zu programmieren als auch vice versa. Programmierer sollten sich der jeweiligen Eigenarten der gewählten Programmiersprache bewußt sein und ggf. vorsorglich gewisse Features nur unter Bedacht einsetzen.
+
+Einflussreicher auf die Sicherheit der Applikation ist die Selektion von sicheren Bibliotheken und Komponenten. Hier sollten Komponenten mit einer guten Sicherheitshistorie gewählt werden, es ist essentiell, zeitnahe auch Sicherheitsupdates für verwendete Komponenten einzuspielen.
+
+\subsection{Interne Architektur}
+
+Die interne Struktur beschreibt, wie die Webapplikation selbst gebaut und der Code strukturiert wurde --- wie die Funtkionen auf Source-Code Komponenten aufgeteilt wurden. Die interne Architektur wird stark durch das verwendete Framework und der verwendeten Programmiersprache geprägt. Es ist sinnvoll, sich an die Annahmen und Konventionen des verwendeten Frameworks zu halten anstatt gegen diese Konventionen anzukämpfen.
+
+\subsubsection{Request-Routing}
+
+Ein guter Unterscheidungspunkt ist, wie der Webserver erkennen kann, dass ein eingehender HTTP Request über einen Applikationsserver, und damit als Applikationscode, ausgeführt werden soll. Initial wurde dies primär über die Dateien im Dateisystem erkannt. Gegeben ein Webroot von \url{/var/www/} und eine Datei \url{/var/www/operation.php} wird ein Aufruf der zugeordneten Webseite \url{https://www.example.local/operation.php} an die Datei \textit{operation.php} weitergeleitet und (falls PHP am server konfiguriert wurde) als PHP Applikation ausgeführt. Dieser Aufbau ist fehleranfällig: falls ein Entwickler eine .php-Datei am Server vergisst oder ein Angreifer eine zusätzliche .php-Datei am Server hochladen kann, kann es zu einer ungewollten Code-Execution kommen. Neuere Frameworks bieten zumeist die Möglichkeit, ein explizites Request-Routing zu definieren, so könnte z. B. das PHP-Framework Laraval mit folgender \url{routes/web.php} Konfiguration\footnote{\url{https://laravel.com/docs/5.7/routing}} gestartet werden:
+
+\begin{minted}{php}
+Route::get('/operation.php', 'SomeController@operation');
+\end{minted}
+
+In diesem Fall wird ein eingehender Request auf \url{/operation.php} an die Methode \textit{operation} des Controllers \textit{SomeController} weitergeleitet. Auf diese Weise wird explizit definiert, welche Operationen wie erreichbar sind und wo sich der aufzurufende Source-Code befindet.
+
+\subsubsection{Model-View-Controller (MVC) Pattern}
+
+Ein häufiges Muster für die interne Code-Struktur ist das MVC-Pattern. Hier wird die Funktionalität auf folgende groben Bereiche aufgeteilt:
+
+\begin{description}
+	\item[Model] ist zuständig für die Speicherung von Daten. Zumeist wird die Geschäftslogik innerhalb des Models abgebildet (\textit{thin controller, fat model}).
+	\item[View]: eine View dient zur Darstellung von Daten. Zumeist wird jede einzelne Webseite über ein View-Objekt abgebildet. Mehrere View-Objekte pro Datum sind möglich, so kann z. B. das gleiche Model mittels einer View als Webseite ausgegeben ausgegeben, und mittels eines weiteren View-Objekts als Excel-Sheet heruntergeladen, werden.
+	\item[Controller] akzeptiert Eingaben (z. B. HTTP- oder WebSocket-Requests), überprüft diese und interagiert mit dem Model um Geschäftsprozesse anzustossen. Um eine Antwort gegenüber dem Client zu präsentieren, werden Daten vom Controller an die View-Objekte übergeben.
+\end{description}
+
+Klassische Webapplikationen waren historisch thin-client Applikationen: die gesamte Logik wird server-seitig ausgeführt, der Client (Webbrowser) dient rein zur statischen Darstellung. Mit JavaScript entstand die Möglichkeit, innerhalb des Browsers Code auszuführen. Einige Frameworks wie \textit{Angular.js} implementieren das MVC-Pattern samt Routing innerhalb des Browsers. Der Server dient als Datenquelle und bietet jene zumeist über Webservices an.
+
+Die Wahl der Struktur besitzt Einfluss auf Sicherheitsentscheidungen der Applikation. Bei einem klasssischen server-seitigen MVC-Pattern werden z. B. technische Überprüfungen auf Schadcode in User-Eingaben, Authentication- und Authorization-Checks innerhalb von Controllern implementiert. Wird client-seitig JavaScript verwendet, muss der server-seitige Service eine Überprüfung der JavaScript-Anfragen auf Schadcode, Authentication- und Authorization durchführen.
+
+\subsubsection{Single-Page Applications und Progressive Web Applications}
+
+Die Möglichkeiten von JavaScript und HTML5 wurden immer mächtiger. Dies führte zu Architekturen wie Single-Page Applications (SPA) bei denen alle Inhalte dynamisch per JavaScript geladen bzw. generiert werden. Werden diese SPAs mit HTML5 Offline-Fähigkeiten (HTML5 localStorage) und langlebigen nebenläufigen JavaScript-Prozessen (HTML5 WebWorker) kombiniert, könnnen offline lauffähige Webseiten geschrieben werden, die klassischen Desktop-Applikationen  sehr ähnlich sind. Diese werden häufig Progressive Web Applications (PWA) genannt. Werden Daten offline gespeichert, müssen deren Integrität und Vertraulichkeit mit geeigneten Methoden gewährleistet werden.
 
 \subsection{System-Architektur einer primitiven Web-Applikation}
 
@@ -30,7 +68,7 @@ Die Bearbeitung einer Client-Anfrage durch den Applikationsserver kann längere 
 
 Je nach Webserver- und Applikationsserverimplementierung kann der Applikationsserver Teil des Webservers sein. Intern sind die Funktionalitäten allerdings getrennt. Im Sinne von Separation of Concerns ist es vorteilhaft, Applikationsserver und Webserver zu trennen. Dadurch ist es möglich, die unterschiedlichen Serverprozesse mit eigenständigen Benutzerrollen zu betreiben.
 
-\subsection{Potentielle zusätzliche Komponenten bei Webapplikationen}
+\subsubsection{Potentielle zusätzliche Komponenten bei Webapplikationen}
 
 Während Webserver, Applikationsserver und Datenbank zum Betrieb einer dynamischen Webapplikation prinzipiell ausreichen, kann es zu einer Inflation von externen Komponenten kommen:
 

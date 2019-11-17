@@ -332,6 +332,38 @@ Hier wird nun innerhalb der Abfrage eine Javascript-Funktion definiert und sofor
 
 Wie man an dem Beispiel sehen kann, ist der alleinige Einsatz von NoSQL-Datenbanken nicht ausreichend um eine Datenbank-Injection zu vermeiden.
 
+\section{Type Juggling Angriffe}
+
+Type Juggling Angriffe können in mehreren Programmiersprachen aufteten, besonders ``bekannt'' ist dieser Angriffsvektor in PHP. Diese Angriffe sind möglich, wenn durch eine automatische, implizite Typkonvertierung das erwartete Resultat einer Operation verfälscht wird. In PHP liegt das Grundproblem in den beiden Vergleichsoperatoren \textit{==} (loose) und \textit{===} (strict), ersterer führt automatisch Typkonvertierungen durch und wird leider häufig anstatt des sicheren zweiten Operators verwendet.
+
+Wird z. B. server-seitig in PHP ein String mit einer Zahl verglichen, wird der String automatisch in eine Zahl konvertiert, dies inkludiert Hex- und Octal-Darstellungen von Zahlen:
+
+\begin{tabularx}{\textwidth}{|X|X|X|}
+	\hline
+	Operant A & Operant B & Ergebnis \\
+	\hline
+	"0000" & int(0) & true \\
+	"0e42" & int(0) & true \\
+	"1abc" & int(1) & true \\
+	"abc"  & int(0) & true \\
+	"0xF"  & "15"   & true \\
+	"0e1234" & "0e5678" & true \\
+	\hline
+\end{tabularx}
+
+Dies kann verwendet werden, um Vergleiche ``kurzzuschließen'', wie folgendes Beispiel (aus einer älteren WordPress-Version) zeigen soll. Hier wird die Benutzerauthorisierung über einen berechneten MAC durchgeführt. Der Anwender setzt mehrere Werte über Cookies, die Integrität dieser Werte wird durch einen berechneten MAC verifiziert. Zur Berechnung des MACs wird ein geheimer Schlüssel (\textit{key} in dem Beispiel) verwendet, der nie den Server verlässt. Dies wird vereinfacht durch folgenden server-seitigen Code umgesetzt:
+
+\begin{minted}{PHP}
+$hash = hash_mac('md5', $username . '|' . $expiration, $key);
+if ($hmac != $hash) {
+	// bad cookie, give error
+} else {
+	// accept operation
+}
+\end{minted}
+
+\textit{username}, \textit{expiration} und \textit{hmac} werden aus dem Cookie gelesen und können dadurch durch den Angreifer bestimmt werden. Ein Angreifer kann nun \textit{username} auf \textit{Administrator}, und \textit{hmac} auf den Wert \textit{0} setzen. Nun kann er einen Brute-Force Angriff ausführen, bei dem das Ablaufdatem (\textit{expiration}) au feinen zufälligen Wert gesetzt wird. Der Angreifer hofft, dass bei einem der Zugriffe zufällig als Hash ein Wert generiert wird, der mit "0e\ldots" beginnt, da hier automatisch eine Konvertierung des Wertes auf \textit{0} passieren würde. Dies entspricht dem übergebenen \textit{hmac} (der ebenso \textit{0}) ist und eine server-seitige Administratoren-Identität ist übernommen.
+
 \section{XML External Entities and DoS}
 
 Werden von einem Webserver XML-Daten entgegengenommen und serverseitig bearbeitet, entstehen mehrere potentielle Angriffsvektoren. Zwei davon, XML External Entities und XML-basierte DoS-Angriffe, werden in diesem Kapitel betrachtet. Beide basieren darauf, dass XML ein komplexes Datenformat besitzt welches durch einen ebenso komplexen Parser serverseitig analysiert werden muss.
@@ -425,7 +457,7 @@ Das grundsätzliche Problem ist, dass ein Angreifer das serialisierte Dokument a
 
 Hier ein einfaches Beispiel eines serialisierten Objekts in PHP (als auch eines modifizierten serialisierten Objekts). Die Annahme ist, dass ein Webserver die Daten des aktuellen Benutzers serialisiert, diese in einer Browser-Session client-seitig speichert und bei jedem Client-Zugriff das de-serialisierte Objekt verwendet um wieder das User-Objekt zu bauen:
 
-\begin{minted}{php}
+\begin{minted}{PHP}
 # Serialisiertes Objekt
 a:4:{i:0;i:132;i:1;s:7:"Mallory";i:2;s:4:"user"; i:3;s:32:"b6a8b3bea87fe0e05022f8f3c88bc960";}
 
