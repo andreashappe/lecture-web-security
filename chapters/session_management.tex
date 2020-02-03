@@ -38,12 +38,15 @@ Problematisch ist in diesem Zusammenhang die HTTP TRACE Methode. Diese dient zu 
 Aus diesem Grund wird empfohlen, auf Webservern immer HTTP TRACE zu deaktivieren.
 
 \subsection{sameSite-Flag}
+\label{session_cookies_samesite}
 
 Das \textit{sameSite}-Flag dient zur Vermeidung von CSRF-Angriffen. Das Flag unterrichtet den Browser, wann ein Session-Cookie an eine Webseite übertragen werden soll und wann nicht.
 
 Bei Verwendung von \textit{strict} wird niemals ein Session-Cookie im cross-domain Kontext übertragen. Dies bedeutet, dass das Cookie nur übertragen wird, wenn der Benutzer von der Webseite auf einen Link/eine Operation auf der identen Webseite navigiert. Wird z. B. ein Link auf die Webseite von einer externen Quelle angeklickt (z. B. innerhalb eines Forums oder ein Link innerhalb einer Email), wird bei dem URL-Aufruf kein Cookie übergeben. Hier muss beachtet werden, dass falls die Webseite eine \textit{Unvalidated Forward or Redirect}-Lücke besitzt, der Angreifer diese ansteuern kann und bei dem durchgeführten zweiten Aufruf der Browser das Cookie inkludiert und dadurch potentiell bösartige Aktionen ausgeführt werden können.
 
 Bei Verwendung von \textit{lax} darf der Browser bei dem cross-site Zugriff auf die Webseite das Cookie übertragen, dies aber nur wenn eine sichere HTTP Methode (nicht daten-verändernd) verwendet wird und das Ziel eine \textit{top-level navigation} ist (sprich die Webseite aufgerufen wird und nicht eine Operation innerhalb der Webseite).
+
+Google wird mit Chrome 80\footnote{voraussichtliches Veröffentlichungsdatum: Februar 2020.} seinen Umgang mit dem \textit{SameSite}-Flag verschärfen. Auf der einen Seite wird \textit{SameSite=Lax} als Default verwendet falls keine Policy gesetzt ist, auf der anderen Seite wird \textit{SameSite=None} vom Webbrowser ignoriert werden.
 
 \subsection{Beispiel für Cookies}
 

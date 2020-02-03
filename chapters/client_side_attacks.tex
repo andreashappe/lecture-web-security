@@ -132,61 +132,6 @@ Einige Grundregeln zur Verwendung von user-supplied Daten innerhalb von Javascri
 \item Ebenso sollte niemals user-supplied Data als Event-Handler verwendet werden.
 \end{itemize}
 
-\subsection{Same-Origin-Policy (SOP)}
-
-Die Same-Origin-Policy ist fixer Bestandteil moderner Browser. \textit{Origin} ist definiert als die Kombination von Schema, Domainname und Port\footnote{Achtung: der Internet Explorer Browser ignoriert den Port bei der Bestimmung des Origins!} (z. B. \url{https://snikt.net:443}). Die Same-Origin-Policy moderner Browser sagt aus, dass ein Skript das von Seite 1 geladen wurde, nur auf Ressourcen auf Seite 2 zugreifen darf, wenn beide Seiten den identen Origin besitzen.
-
-Die Same-Origin-Policy ist essentiell für die Sicherheit. Würde es diese nicht geben, könnte Javascript ausgehend von einer Seite auf die Daten (DOM) einer externen Seite zugreifen. Da dieser Zugriff durch den Webbrowser geschieht, würde bei diesem Zugriff das Session-Cookie mitübertragen werden und die Operation würde mit der Identität des Webbrowser-Benutzers durchgeführt werden.
-
-\subsubsection{Cross-Origin Resource Sharing (CORS)}
-
-Während die Same-Origin-Policy aus Sicherheitssicht begrüßenswert ist, muss sie teilweise aufgeweicht werden. Zum Beispiel könnte eine Webseite aus Sicherheitsgründen auf mehrere Teilserver aufgeteilt worden sein: \textit{www.evil.com} beinhaltet die klassische Webseite, während \textit{api.evil.com} Operationen anbietet, die von \textit{www} aus aufgerufen werden sollten.
-
-Um diese Zugriffe sauber zu erlauben, wird Cross-Domain Resource Sharing verwendet. Hierbei werden zusätzliche Browser-Header verwendet, über diese wird dem Webbrowser signalisiert, auf welche Operationen zugegriffen werden darf.
-
-Da diese Information über HTTP Header mitgeteilt wird, muss vor der eigentlichen Operation eine Kommunikation zwischen dem Webbrowser und dem API Server geschehen (wenn der Header erst als Antwort auf die ausgeführte Operation übertragen worden wäre, wäre es etwas spät\ldots). Dafür wird die so genannten \textit{preflight authorization} verwendet.
-
-Operationen, bei denen Webbrowser CORS durchführen sollten:
-
-\begin{itemize}
-	\item alle HTTP Methoden ausser HTTP GET und HTTP POST
-	\item HTTP POST, abhängig vom verwendeten Content-Type
-	\item AJAX-Requests
-	\item Web Fonts
-\end{itemize}
-
-Ist eine CORS-Authorization notwendig, werden folgende Schritte durchgeführt:
-
-\begin{enumerate}
-	\item Der Webbrowser eines Benutzers erkennt, dass er ausgehend von \textit{www} auf \textit{api} zugreifen will und hierfür ein CORS Authorization notwendig ist.
-	\item Um diese durchzuführen, versendet er einen HTTP OPTIONS request auf die gewünschte Operation auf \textit{api} und setzt dabei den Origin Header: \textit{Origin: http://www} auf die aufrufende Webseite.
-	\item Der \textit{api} Webserver antwortet nun mit dem HTTP Header \textit{Access-Control-Allow-Origin: http://www} und signalisiert dem Webbrowser dass der Zugriff auf \textit{api} ausgehend von \textit{www} erlaubt ist.
-	\item Der Webserver führt nun die Operation auf \textit{api} durch.
-\end{enumerate}
-
-\subsubsection{JSONP}
-
-Vor der Verfügbarkeit von \textit{CORS} wurde häufig \textit{JSONP} zum Datenaustausch mittels Javascript bzw. zum Umgehen der SOP verwendet. Bei diesem Verfahren werden die gewünschten Daten über einen GET-Request als Javascript-Datei geladen. Damit die geladenen Daten an Javascript übergeben werden, wird beim Inkludieren der Daten eine Callback Funktion mit übergeben.
-
-Ein Beispiel, mittels der URL \url{/php/jsonp.php?callback=callback} wird eine Operation aufgerufen, der Parameter \textit{callback} gibt an, wie die lokale Javascript-Callback Funktion heißt. Das Antwortdokument ist z. b:
-
-\begin{minted}{javascript}
-callback('{ "name":"John", "age":30, "city":"New York" }');
-\end{minted}
-
-In der aufrufenden Webseite würde der Call nun folgendermaßen aussehen:
-
-\begin{minted}{html}
-<script>
-function callback(data) {
-	console.log(data);
-}
-</script>
-<script src="/jsonp.php?callback=callback></script>
-\end{minted}
-
-Es wird also vom Server ein Funktionsaufruf (auf die Callback-Funktion) mit den serverseitigen-Daten erzeugt und dadurch im Webbrowser die jeweilige Javascript-Funktion aufgerufen. In diesem Fall greift die SOP nicht (da der src-Aufruf ein GET-Request ist), allerdings muss bei der Eingabeprüfung innerhalb der callback-Funktion darauf geachtet werden, ob Schadcode enthalten ist. Aus diesem Grund wird empfohlen, immer CORS anstatt von JSONP einzusetzen (abgesehen davon, dass eine JSONP-Operation meistens für alle Teilnehmer des Internets verfügbar ist).
-
 \subsection{Hardening mittels X-XSS-Protection}
 \label{x_xss_protection}
 
@@ -196,11 +141,20 @@ Leider kann nicht davon ausgegangen werden, dass bei Browsern diese Heuristik pe
 
 Folgende Werte sind für den Header erlaubt:
 
-\begin{description}
-	\item [0]: die XSS-Heuristik soll deaktiviert werden.
-	\item [1]: die XSS-Heuristik soll aktiviert werden, erkannte potentielle XSS-Schadmuster werden aus der Ausgabe entfernt.
-	\item [1;mode=block]: die XSS-Heuristik soll aktiviert werden, falls XSS-Schadmuster erkannt werden wird keine Webseite gerendert.
-\end{description}
+\begin{itemize}
+	\item \textbf{0}: die XSS-Heuristik soll deaktiviert werden.
+	\item \textbf{1}: die XSS-Heuristik soll aktiviert werden, erkannte potentielle XSS-Schadmuster werden aus der Ausgabe entfernt.
+	\item \textbf{1;mode=block}: die XSS-Heuristik soll aktiviert werden, falls XSS-Schadmuster erkannt werden wird keine Webseite gerendert.
+\end{itemize}
+
+Während das automatische Filtern von XSS-Schadcode theoretisch positiv aus Sicherheitssicht sein sollte, war dies in der Praxis fehlerbehaftet und führte zu folgenden Problemen:
+
+\begin{itemize}
+	\item False-Positives: nicht bösartiger Schadcode wurde als Schadcode erkannt und gefiltert. Dadurch wurde die Funktionsfähigkeit korrekt programmierter Webseiten eingeschränkt.
+	\item Wird X-XSS-Protection im Default-Modus verwendet, versucht der Browser nur den Schadcode aus dem Antwortdokument zu filtern. Dies kann gezielt durch Angreifer ausgenutzt werden, um auf diese Weise XSS-Code zu generieren\footnote{Dies wird als UXSS bezeichnet, siehe auch \url{https://blog.innerht.ml/the-misunderstood-x-xss-protection/}.}.
+\end{itemize}
+
+Aus diesem Grund ignorieren moderne Browser diesen Sicherheitsheader mittlerweile (Google Chrome, Mozilla Firefox und Microsoft Edge, Stand 31.12.2019). Als Gegenmassnahme gegenüber XSS kann daher nur der Einsatz von CSP empfohlen werden (abgesehen davon, XSS-Lücken generell nicht zu implementieren).
 
 \subsection{Hardening mittels CSP}
 
@@ -241,7 +195,7 @@ Damit dieser Schutz verlässlich funktioniert, muss der Zahlenwert regelmäßig 
 
 Wichtig ist, dass eine Operation die einen CSRF-Check implementiert nicht nur überprüft, ob ein potentiell übergebener CSRF-Wert mit dem server-gespeicherten CSRF-Wert übereinstimmt, sondern auch überprüft ob überhaupt ein CSRF-Wert übergeben wurde. Während Tests wurde häufig das fehlerhafte Verhalten vorgefunden, dass wenn der CSRF-Parameter einfach gelöscht wird, die Operation ausgeführt wird (also CSRF-Tokens nur verglichen werden, wenn beim Aufruf zumindest ein CSRF-Wert übergeben wird).
 
-Eine weitere Schutzmaßnahme (im Sinne des Hardening) ist der Einsatz des \textit{SameSite} Cookie-Flags. Bei korrektem Setzen dieses Flags erlaubt der Web-Browser des Opfers das Übertragen der Session-Id nur, wenn sowohl das Formular als auch das Ziel des Formulars sich auf dem identen Webserver befinden.
+Eine weitere Schutzmaßnahme (im Sinne des Hardening) ist der Einsatz des \textit{SameSite} Cookie-Flags (siehe auch Kapitel \ref{session_cookies_samesite}, Seite \pageref{session_cookies_samesite}). Bei korrektem Setzen dieses Flags erlaubt der Web-Browser des Opfers das Übertragen der Session-Id nur, wenn sowohl das Formular als auch das Ziel des Formulars sich auf dem identen Webserver befinden.
 
 \section{Unverified Forwards and Redirects}
 
@@ -339,5 +293,4 @@ Da WebWorker selbst AJAX-Requests (XMLHttpRequest) ausführen, und potentiell di
 \item Welche Sicherheitsprobleme können bei HTML5 Local Storage auftreten?
 \item Wie funktionieren Clickjacking-Angriffe und wie können diese verhindert werden?
 \item Wie funktioniert ein CSRF-Angriff? Erläutere zwei potentielle Gegenmaßnahmen?
-\item Was versteht man unter SOP? Warum und wie kann dieses Prinzip mit CORS aufweichen?
 \end{enumerate}
