@@ -2,7 +2,7 @@
 
 Ein Grundsatz der Programmierung ist \textit{Garbage-In, Garbage-Out}. In Anlehnung an FIFO (\textit{First-In, First-Out}) wird damit ausgedrückt, dass durch ``schlechte'' Benutzereingaben undefiniertes Verhalten produziert wird. Während dies ursprünglich funktional gedacht war, ist diese Aussage auch für die Sicherheit einer Applikation relevant.
 
-Benutzern kann nicht getraut werden. Während gutartige Benutzer bestenfalls wirre Eingaben erstellen, werden durch bösartige Benutzer Eingaben durchgeführt, die gezielt die Sicherheit eines Systems kompromittieren sollten. Das Grundmuster ist, dass eine Eingabe im Daten-Kontext durchgeführt wird, also ein Programm Benutzerdaten erwartet. Durch Fehler werden allerdings diese Daten in einem Kommando-Kontext ausgeführt, aus den gedachten Daten werden also auf Programmebene Befehlsanforderungen. Dies wird durch Angreifer ausgenutzt um, von der Applikation ungewollte, Kommandos abzusetzen. Diese Kommandos werden dann mit den Rechten der Webapplikation (oder eines weiteren Hintergrundsystems) ausgeführt.
+Benutzern kann nicht getraut werden. Während gutartige Benutzer bestenfalls wirre Eingaben erstellen, werden durch bösartige Benutzer Eingaben durchgeführt, die gezielt die Sicherheit eines Systems kompromittieren sollten. Das Grundmuster ist, dass eine Benutzereingabe als Kommando interpretiert wird. Dies wird durch Angreifer ausgenutzt um, von der Applikation ungewollte, Kommandos abzusetzen. Diese Kommandos werden dann mit den Rechten der Webapplikation (oder eines weiteren Hintergrundsystems) ausgeführt.
 
 Ein Problem ist die große Angriffsfläche da nicht nur die direkt Eingabe-verarbeitenden Stellen überprüft werden müssen, sondern alle Programmteile die potentiell Benutzereingaben indirekt erhalten können (z. B. Daten aus deiner Datenbank auslesen, die ursprünglich von einem Benutzer bereitgestellt wurden). Ebenso muss ein Ausbruch nicht direkt am angegriffenen System erfolgen, sondern kann auch auf Hintergrundsystemen passieren. Beispielsweise kann ein Angreifer eine Webapplikation angreifen, bricht aber erst auf Datenbankebene aus dem System aus (auf einem getrennten Datenkbankserver).
 
@@ -42,6 +42,16 @@ Falls eine Webapplikation nicht-vertrauenswürde Dateien verarbeiten muss, muss 
 
 Techniken in diesem Umfeld beinhalten chroots, Jails, Container und Microservice-Architekturen.
 
+\section{Path Traversals}
+
+Bei einem Path Traversal wird versucht, über modifizierte Parameter auf Ressourcen außerhalb des Webroots einer Webapplikation zuzugreifen. Auf diese Weise kann versucht werden, auf applikations-externe Ressourcen lesend oder schreibend zuzugreifen bzw. kann versucht werden, ausführbare Dateien am Server zu starten.
+
+Ein Beispiel für eine potentiell angreifbare Operation wäre \url{https://opfer.local/GetImage.jsp?file=diagram.jpg}. Ein Angreifer könnte versuchen, über den Wert \textit{./../../../../etc/passwd} für den Parameter \textit{file} auf eine Datei außerhalb des Webroots zuzugreifen.
+
+Als Gegenmaßnahme sollte primär versucht werden, nicht Dateinamen als benutzer-gesteuerten Parameter zu verwenden. Falls dies wirklich notwendig ist, sollten die Dateinamen gegen eine rigorose Whitelist und auf invalide Steuersignale hin (z. B. NULL-Characters und Zeilenumbrüche) überprüft werden und vor dem Zugriff auf Ressourcen der kanonische Pfad gebildet und verifiziert werden.
+
+Eine weitere Sicherheitsmaßnahme wäre der Einsatz von Sandboxing-Techniken wie eines \textit{chroot}. Durch Anwendung des Separation of Privileges Prinzips wird das Schadmass verkleinert: der Webserver sollte nur auf Dateien zugreifen können die für den Webserver relevant sind. Weitere Dateien (wie z. B. Systemdateien) sollten weder lesend noch schreibend zugreifbar sein.
+
 \section{Command Injection}
 
 Eine Command Injection zielt darauf ab, Binaries (Kommandozeilentools) auf dem Zielserver auszuführen, zumeist wird dies über modifizierte HTTP Operationsparameter erzielt. Beliebtes Ziel ist das Erstellen einer shell oder reverse-shell: dies erlaubt es Angreifern, ähnlich wie mittels SSH, mit den Rechten der Webapplikation Befehle am Server auszuführen.
@@ -77,27 +87,18 @@ Beispiele hierfür:
 
 Um Command Injection Probleme zu umgehen wird empfohlen, Programmierbibliotheken anstatt von Kommandozeilenaufrufen zu verwenden. Da hierbei nun keine getrennte Shell geöffnet wird, kann an dieser Stelle auch kein Kommando eingefügt werden.
 
-\section{Path Traversals}
-
-Bei einem Path Traversal wird versucht, über modifizierte Parameter auf Ressourcen außerhalb des Webroots einer Webapplikation zuzugreifen. Auf diese Weise kann versucht werden, auf applikations-externe Ressourcen lesend oder schreibend zuzugreifen bzw. kann versucht werden, ausführbare Dateien am Server zu starten.
-
-Ein Beispiel für eine potentiell angreifbare Operation wäre \url{https://opfer.local/GetImage.jsp?file=diagram.jpg}. Ein Angreifer könnte versuchen, über den Wert \textit{./../../../../etc/passwd} für den Parameter \textit{file} auf eine Datei außerhalb des Webroots zuzugreifen.
-
-Als Gegenmaßnahme sollte primär versucht werden, nicht Dateinamen als benutzer-gesteuerten Parameter zu verwenden. Falls dies wirklich notwendig ist, sollten die Dateinamen gegen eine rigorose Whitelist und auf invalide Steuersignale hin (z. B. NULL-Characters und Zeilenumbrüche) überprüft werden und vor dem Zugriff auf Ressourcen der kanonische Pfad gebildet und verifiziert werden.
-
-Eine weitere Sicherheitsmaßnahme wäre der Einsatz von Sandboxing-Techniken wie eines \textit{chroot}. Durch Anwendung des Separation of Privileges Prinzips wird das Schadmass verkleinert: der Webserver sollte nur auf Dateien zugreifen können die für den Webserver relevant sind. Weitere Dateien (wie z. B. Systemdateien) sollten weder lesend noch schreibend zugreifbar sein.
-
 \section{Datenbank-Injections}
 
 Datenbank-Injections gehören zu den selteneren, dafür aber schwerwiegenderen, vorkommenden Sicherheitsfehlern. Das Grundproblem ist, dass Datenbankabfragen unter Zuhilfename von Benutzereingaben gebaut werden. Durch bösartige Benutzereingaben versuchen Angreifer nun, das Datenbanksystem zur Freigabe zusätzlicher Daten zu bringen, unbeabsichtigt Daten zu verändern oder sogar aus dem Datenbanksystem auf das Betriebssystem auszubrechen.
 
 \subsection{SQL}
+\index{sql}
 
-SQL (Structured Query Language) ist die bekannteste Abfragesprache für relationale Datenbanken. Im Zuge dieser Vorlesung werden nur einfache SQL-Features benötigt. Ein Beispiel für ein einfaches SQL Statement:
+SQL\footnote{Structured Query Language} ist die bekannteste Abfragesprache für relationale Datenbanken. Im Zuge dieser Vorlesung werden nur einfache SQL-Features benötigt. Ein Beispiel für ein einfaches SQL Statement:
 
 \begin{minted}{sql}
 select column1, column2 from table1, table2
-where column1 = ‘xyz’
+where column1 = 'xyz'
 order by column1 asc/desc
 limit 1;
 \end{minted}
@@ -109,14 +110,14 @@ SQL bietet die Möglichkeit die Ausgaben zweier Queries zu einer Gesamtausgabe z
 \begin{minted}{sql}
 select column1, column2 from table1, table2
 union all
-select column3, column4 from table4, table5;
+select column3, column4 from table3, table4;
 \end{minted}
 
 Dies ist nur möglich, wenn beide verwendeten SQL-Queries die idente Anzahl von Spalten zurück liefern.
 
 \subsection{Arten von SQL-Injections}
 
-Die einfachste Form der SQL-Injection basiert darauf, dass die Applikation eine einfache String-Concatenation zur Erstellung des SQL-Ausdrucks verwendet. Der Angreifer versucht nun einen Wert zu übergeben der, wenn er in den SQL-String eingesetzt wird, zuerst den bestehenden SQL-Ausdruck beendet/schließt und danach zusätzlich Code ausführt.
+Die einfachste Form der SQL-Injection basiert darauf, dass die Applikation eine String-Concatenation zur Erstellung des SQL-Ausdrucks verwendet. Der Angreifer versucht einen Wert zu übergeben der, wenn er in den SQL-String eingesetzt wird, zuerst den bestehenden SQL-Ausdruck beendet/schließt und danach zusätzlich Code ausführt.
 
 Als Beispiel wird hier ein Login verwendet, der über folgende HTTP Operation durchgeführt wird: \url{https://kino.local/login.php?email=ah@coretec&password=pw}. Der Angreifer vermutet, dass die Überprüfung des Logins über eine Datenbank-Abfrage ausgeführt wird, die z. B. in Java als String erstellt wird:
 
@@ -141,6 +142,7 @@ String query = "select * from users where email = 'ah@coretec.at' and password =
 Anstatt dass die Email-Adresse und das Passwort überprüft werden, wird nun initial die Email und das Passwort überprüft. Dabei wird wahrscheinlich als Ergebnis \textit{false} erzeugt, damit würde prinzipiell kein Datensatz zurückgegeben werden. Der Angreifer schafft es allerdings, auch den Ausdruck \textit{1=1} hinzuzufügen. Dieser ergibt immer \textit{true}, durch die Oder-Verknüpfung wird der Gesamtausdruck \textit{true} und liefert daher alle Zeilen der Tabelle als Resultat. Der Applikationscode würde nun die erste Zeile extrahieren und mit diesem Datensatz die Session befüllen. Der Angreifer hat auf diese Weise das Login-System überlistet und die Identität eines anderen Benutzers angenommen.
 
 \subsubsection{Stacked Queries}
+\index{sql!stacked queries}
 
 Die grundsätzliche Methode an eine bestehende SQL-Abfrage zusätzliche (ungewollte) Queries anzuhängen und dadurch Code auszuführen wird Stacked Query genannt. Das klassische Beispiel für eine solche ist:
 
@@ -151,10 +153,11 @@ Die grundsätzliche Methode an eine bestehende SQL-Abfrage zusätzliche (ungewol
 Mittels des ersten Zeichens \textit{'} wird versucht aus dem vorgesehenen SQL-Ausdruck auszubrechen. Das Semikolon dient zum Beenden des eigentlichen Kommandos und der Angreifer kann ein beliebiges SQL-Kommando anhängen --- in diesem Fall ein \textit{drop table} Kommando, welches eine Datenbank löschen würde. Zum Schluss wird mit einem weiteren Semikolon der eingeschleuste Befehlt beendet und durch die beiden Bindestriche ein Kommentar eingeleitet. Auf diese Weise wird potentiell nachfolgender SQL-Code auskommentiert.
 
 \subsubsection{UNION-based SQL-Injection}
+\index{sqli!union-based sqli}
 
 Bei UNION-basierten SQL-Angriffen wird versucht mittels des \textit{UNION} Kommandos ein zusätzliches \textit{SELECT} Statement an ein bestehendes Select-Statement anzuhängen. Häufig wird dies verwendet, wenn eine Web-Applikation eine Tabellen-ähnliche Datenauflistung bietet.
 
-Beispiel: eine Webapplikation stellt in Tabellenform in der Oberfläche eine Liste von Personen dar. Ein Benutzer kann diese Liste durch Eingabe einer ID einschränken. Es wird daher angenommen, dass die Daten der dargestellten HTML-Tabelle durch eine SQL-Abfrage der Form:
+Beispiel: eine Webapplikation stellt eine Liste von Personen als HTML-Tabelle dar. Ein Benutzer kann diese Liste durch Eingabe einer ID einschränken. Es wird daher angenommen, dass die Daten der dargestellten HTML-Tabelle durch eine SQL-Abfrage der Form:
 
 \begin{minted}{sql}
 SELECT Name, Phone, Address FROM Users WHERE Id=$id
@@ -179,6 +182,7 @@ Die Tabelle wird nun initial mit den Daten des Users mit der Id 1 befüllt, zus�
 Da bei einem UNION-Select die Spaltenanzahl der jeweiligen Queries ident sein muss, muss der Angreifer initial die richtige Spaltenanzahl erraten. Dies wird zumeist über Brute-Force Angriffe durchgeführt.
 
 \subsubsection{Boolean-based Blind SQL Injection}
+\index{sqli!boolean blind sqli}
 
 Eine SQL-Injection ist auch ohne direkten Antwortkanal möglich. Ein Beispiel hierfür sind Boolean-based blind SQL-Injections.
 
@@ -188,9 +192,10 @@ Ein Beispiel: gegeben eine Produktseite \url{opfer.local/product/1} die ein Prod
 SELECT field1, field2, field3 FROM Users WHERE Id='1' AND ASCII(SUBSTRING(username,1,1))=97
 \end{minted}
 
-An die eigentlichen Suchausdruck wird also eine Substring-Abfrage hinzugefügt. Diese extrahiert die erste Stelle des Benutzernamens, verwandelt diese über die \textit{ASCII}-Funktion in einen ASCII-Wert und überprüft, ob die erste Stelle des Benutzernamens ein A ist. Wird nun die Produktseite des Produkts 1 zurückgeliefert, weiß der Angreifer, dass das erste Zeichen des Benutzernamens ein A ist. Wird keine Produktseite geliefert, würde der Angreifer versuchen ob der ASCII Wert dem Zeichen B entspricht. Durch mehrere (tausende) Anfragen kann der Angreifer auf diese Weise die gesamte Datenbank rekonstruieren.
+An den Suchausdruck wird also eine Substring-Abfrage hinzugefügt. Diese extrahiert die erste Stelle des Benutzernamens, verwandelt diese über die \textit{ASCII}-Funktion in einen ASCII-Wert und überprüft, ob die erste Stelle des Benutzernamens ein A ist. Wird nun die Produktseite des Produkts 1 zurückgeliefert, weiß der Angreifer, dass das erste Zeichen des Benutzernamens ein A ist. Wird keine Produktseite geliefert, würde der Angreifer versuchen ob der ASCII Wert dem Zeichen B entspricht. Durch mehrere (tausende) Anfragen kann der Angreifer auf diese Weise die gesamte Datenbank rekonstruieren.
 
 \subsubsection{Time-based Blind SQL Injection}
+\index{sqli!time blind sqli}
 
 Ähnlich wie bei einer boolean based blind SQL-Injection gibt es bei dieser Angriffsart keinen direkten Antwortkanal für die extrahierten Informationen. Anstatt wird ein side-channel Angriff auf das Zeitverhalten der Antwort angewandt.
 
@@ -333,6 +338,7 @@ Hier wird nun innerhalb der Abfrage eine Javascript-Funktion definiert und sofor
 Wie man an dem Beispiel sehen kann, ist der alleinige Einsatz von NoSQL-Datenbanken nicht ausreichend um eine Datenbank-Injection zu vermeiden.
 
 \section{Type Juggling Angriffe}
+\index{type juggling attacks}
 
 Type Juggling Angriffe können in mehreren Programmiersprachen aufteten, besonders ``bekannt'' ist dieser Angriffsvektor in PHP. Diese Angriffe sind möglich, wenn durch eine automatische, implizite Typkonvertierung das erwartete Resultat einer Operation verfälscht wird. In PHP liegt das Grundproblem in den beiden Vergleichsoperatoren \textit{==} (loose) und \textit{===} (strict), ersterer führt automatisch Typkonvertierungen durch und wird leider häufig anstatt des sicheren zweiten Operators verwendet.
 
@@ -369,6 +375,7 @@ if ($hmac != $hash) {
 Werden von einem Webserver XML-Daten entgegengenommen und serverseitig bearbeitet, entstehen mehrere potentielle Angriffsvektoren. Zwei davon, XML External Entities und XML-basierte DoS-Angriffe, werden in diesem Kapitel betrachtet. Beide basieren darauf, dass XML ein komplexes Datenformat besitzt welches durch einen ebenso komplexen Parser serverseitig analysiert werden muss.
 
 \subsection{XML External Entities}
+\index{xee}
 
 XML besitzt die Möglichkeit direkt innerhalb des XML-Dokuments Typdefinitionen zu inkludieren. Diese DTD (Document Type Definition) beginnt mit dem DOCTYPE Tag und kann auch External Entities definieren. Diese External Entities sind Verweise auf externe Datenquellen, diese werden durch den Parser automatisch in das XML-Dokument eingefügt.
 
@@ -385,7 +392,7 @@ Ein Beispiel für einen XML External Entities Angriff der auf die Extraktion lok
 
 Bei diesem Beispiel wird ein neues Element (\textit{foo}), und als möglicher Wert für dieses Element die externe Datenquelle /etc/passwd als Referenz \textit{\&xxe} definiert. Anschließend wird dieser Elementtyp auch sofort samt der Referenz verwendet. Erlaubt ein Server das Parsen dieses XML-Dokumentes würde er nun diese Datei auslesen, deren Inhalt in das XML Dokument einfügen und ggf. das ausgefüllte Dokument an den Client zurückgeben. Somit kann der Angreifer auf eine Datei, auf die er eigentlich keinen Zugriff besitzen sollte mit den Rechten des Applikationsservers zugreifen.
 
-Ebenso kann ein XML External Entity auf eine Netzwerkadresse verweisen:
+Ebenso kann auf eine Netzwerkadresse verwiesen werden:
 
 \begin{minted}{xml}
 <?xml version="1.0" encoding="ISO-8859-1"?>
@@ -449,7 +456,8 @@ Ein bekanntes Beispiel sind Million-Laugh Angriffe:
 
 Bei dieser Angriffsart wird LOL9 durch 10 Elemente des Types LOL8 ersetzt. Jedes dieser 10 LOL8 Elemente wird mit mit 10 LOL7 Elementen gebaut, etc. In Summe erzeugt dieses DTD rund drei Milliarden LOL Elemente. Falls ein Parser versucht diese im Arbeitsspeicher zu erstellen, wird dieser mit hoher Wahrscheinlichkeit nicht ausreichend sein.
 
-\section{Serialisierungsfehler}
+\section{Serialisierungsangriffe}
+\index{serilization attacks}
 
 Die Serialisierung dient dazu, aus einem Objekt einer Programmiersprache zur Laufzeit eine Textrepresentation zu erstellen. Diese kann dann gespeichert oder übertragen werden. Zu einem späteren Zeitpunkt kann aus dieser Textrepresentation wieder ein Programmiersprachen-Objekt erstellt und diese innerhalb einer Webapplikation verwendet werden.
 

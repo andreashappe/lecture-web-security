@@ -1,0 +1,243 @@
+\chapter{Web Technologien}
+
+Der Titel dieses Dokumentes ist Web Security, dementsprechend sind unsere Zeile/Patienten auch Webapplikationen. Eine Definition fällt nicht einfach --- allgemein betrachtet ist eine Webapplikation eine auf der Client-Server-Architektur basierte Applikation die als Kommunikationsprotokoll HTTP verwendet.
+
+Bei einer Client-Server Applikation versendet der Client einen Auftrag an einen Server; letzterer führt diesen im Namen des Clients aus und sendet die Antwort zurück. Im Zusammenhang mit Webapplikationen gehen wir von einem Webbrowser als Client aus. Die meisten vorgestellten Probleme betreffen auch Web-API Clients, auf diese wird allerdings nicht explizit eingegangen.
+
+\section{HTTP Protokoll}
+
+Das Hypertext Transfer Protocol (HTTP) ist ein textbasiertes Protokoll welches primär zur Kommunikation zwischen Webservern und Web-Clients (wie z. B. Webbrowsern) verwendet wird. HTTP 1.0 wurde 1996 als RFC 1945 als expliziter Non-Standard veröffentlicht. 1999 wurde das Protokoll mit dem Update auf HTTP 1.1 (RFC 2616) modernisiert, es wurde z. B. HTTP Pipelining (die Übertragung mehrerer Dateien innerhalb einer HTTP Verbindung) in den Standard aufgenommen.
+
+2015 wurde HTTP/2 im RFC 7540/7541 definiert: Verbesserungen betreffen das Multiplexing von Anfragen, serverseitige Push-Nachrichten und die Kompression der übertragenen Daten. Per Stand 2020 kann davon ausgegangen werden, dass Zwei-Drittel bis Drei-Viertel der Webkommunikation bereits über HTTP/2 abgewickelt wird.
+
+HTTP verwendet zumeist TCP auf Port 80, die verschlüsselte Variante HTTPS verwendet Port 443. Häufig verwendete Ports für weitere HTTP-basierte Services sind 3000, 8000, 8080 und 8081.
+
+Das Protokoll basiert auf Nachrichten, die zwischen Client (Browser) und Server übertragen werden. Dabei folgt auf den initialen Request des Clients immer eine Response des Servers.
+
+Aktuell wird HTTP/3 basierend auf QUIC entwickelt. Diese Protokollversion wird vieles verändern, so wird z. B. ein Umstieg von TCP auf UDP diskutiert, auch die Verwendung von Port 443 bleibt eventuell nicht mehr bestehen.
+
+\subsection{HTTP Request}
+
+Bei HTTP 1.0/1.1 werden Anfragen von Webbrowsern an Webserver als mehrzeilige Textdokumente verschickt. Die erste Zeile dieses Dokuments beinhaltet als erstes Wort das zu verwendete HTTP Verb gefolgt von dem aufgerufenen Pfad und der verwendeten HTTP-Version. Jede weitere Zeile beinhaltet einen HTTP Header, diese sind immer als \textit{Key: Value} strukturiert.
+
+Bei folgendem Beispiel versucht ein Webbrowser auf die Datei \textit{/index.html} eines Webservers lesens (Verb: GET) zuzugreifen:
+
+\begin{minted}{http}
+GET /index.html HTTP/1.1
+Host: snikt.net
+User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:65.0) Gecko/20100101 Firefox/65.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Connection: close
+Upgrade-Insecure-Requests: 1
+\end{minted}
+
+\subsubsection{HTTP Request Verbs/Methoden}
+
+Ein Request beginnt immer mit einem HTTP Verb (auf Englisch auch HTTP Request Method genannt), dieses beschreibt die Aktion die der Client gerne hätte. Häufig verwendete Verben werden in Tabelle \ref{tbl:http_verbs} gelistet.
+
+\begin{table}
+	\begin{center}
+\begin{tabular}{lllp{6cm}}
+	\toprule
+	Verb & safe & idempotent & Name\\
+	\midrule
+	GET  & ja & ja & Beschreibt einen Lesezugriff bei dem es zu keiner Veränderung des serverseitigen States kommen sollte. \\
+	HEAD & ja & ja &  Entspricht einem HTTP GET, allerdings wird kein HTTP Body übertragen. Diese Operation wird häufig verwendet um Meta-Daten zu erfragen.\\
+	POST &    &    & Ist eine datenverändernde Operation und wird verwendet um ein neues Objekt zum Server zu übertragen (also um quasi ein neues Objekt anzulegen).\\
+	PUT  &    & ja & Ist eine datenverändernde Operation welche ein Objekt am Server ersetzt, also quasi aktualisiert. \\
+	DELETE &  & ja & Löscht ein Objekt/Datei vom Server. \\
+	PATCH &   &    & Ist eine datenverändernde Operation welche einen Teil eines bestehenden Objektes modifiziert. \\
+	CONNECT & &    & Wird verwendet um einen Tunnel aufzubauen. \\
+	OPTIONS & ja & ja & Listet alle erlaubten Kommunikationsoptionen für eine Resource auf. \\
+	TRACE &   &    & Führt zu Debug-Zwecken einen loop-back Test aus. \\
+	\bottomrule
+\end{tabular}
+	\caption{Häufig verwendete HTTP Methoden bzw. Verben}
+	\label{tbl:http_verbs}
+\end{center}
+\end{table}
+
+Ein verwendetes HTTP Verb kann sowohl \textit{safe} als auch \textit{idempotent} sein. Safe Verben sollten niemals Resourcen verändern (also Daten am Server modifizieren).
+
+Idempotente Verben sollten auch bei wiederholtem Aufruf auf eine Resource das idente Ergebnis liefern. Sie können also beliebig häufig aufgerufen und wiederholt werden. Wenn z. B. während eines DELETE Aufrufs ein Timeout geschieht, kann der Client die Operation wiederholen ohne einen undefinierten server-seitigen State zu erzeugen. Aus diesem Grund wird z. B. ein Update eines bestehenden Datensatzes gerne über das PUT Verb implementiert: wird ein Update mit den gleichen übergebenen Daten ausgeführt, kann es beliebig häufig wiederholt werden und der server-seitige State sollte ident sein.
+
+Die Verwendung des richtigen Verbes besitzt rein semantische Natur und muss von der Web-Applikation umgesetzt werden. Nichts hindert einen Programmierer, eine Operation mit einem unpassenden HTTP Verb anzubieten. Allerdings gehen mehrere Komponenten (wie z. B. Web Proxies, Caches oder Web Application Firewalls) von der richtigen Verwendung der jeweiligen Verben aus, wird ein falsches Verb verwendet kann dadurch inkorrektes Verhalten provoziert werden.
+
+\subsubsection{Request Host Header}
+
+Der übergebene \textit{Host}-Header kann sicherheitsrelevant sein: dieser Header wird nicht verwendet um auf der Netzwerkebene das Ziel zu identifizieren, sondern wird erst vom Zielwebserver verwendet. Einige Webserver verwenden diesen Header um Adressen innerhalb der Antwortseite zu generieren.
+
+\subsection{HTTP Response}
+
+Der Server liefert nun ein Antwortdokument:
+
+\begin{minted}{http}
+HTTP/1.1 302 Found
+Date: Sun, 03 Mar 2019 22:03:21 GMT
+Server: Apache/2.4.25 (Debian)
+Location: https://snikt.net/
+Content-Length: 277
+Connection: close
+Content-Type: text/html; charset=iso-8859-1
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+<html><head>
+<title>302 Found</title>
+</head><body>
+<h1>Found</h1>
+<p>The document has moved <a href="https://snikt.net/">here</a>.</p>
+<hr>
+<address>Apache/2.4.25 (Debian) Server at snikt.net Port 80</address>
+</body></html>
+\end{minted}
+
+Hier fällt zuerst der Statuscode (302) auf. Prinzipiell beschreiben Codes aus dem 100er Bereich \textit{Continue}, Codes im 200er Bereich Erfolg (\textit{success}), Code im 300er Bereich sind Redirects, Codes im 400er Bereich sind clientseitige Fehler und Codes im 500er Bereich beschreiben serverseitige Fehler.
+
+Webserver können mehrere optionale HTTP Header inkludieren und auf diese Weise dem Webbrowser Informationen mitteilen. Diese Möglichkeit wird häufig im Zuge des Browser-Hardenings verwendet: hierbei teilt der Webserver Securityannahmen dem Client mit. Dieser kann dadurch effizient gegen client-seitige Angriffe innerhalb des erhaltenen Conents vorgehen.
+
+\subsubsection{Information Disclosure durch HTTP Header}
+
+Die optionalen Header können einen negativen Sicherheitsimpact besitzen, häufig kommt es z. B. zu einer Information Disclosure. Bei dieser erhält der Angreifer durch gesprächige Server Informationen, die ein normaler Benutzer eigentlich nicht benötigen sollte aber einem Angreifer behilflich sind. Im gezeigten Antwortdokument teil der Server den verwendeten Webserver (\textit{Apache}), das verwendete Betriebssystem (\textit{Debian}) und die Versionsnummer des Webservers (\textit{2.4.25}) über den \textit{Server} Header mit. Dies erlaubt es einem Angreifer, gezielt nach Schwachstellen für diese Softwarekomponente zu suchen. Im Zuge des Hardenings werden solche Versionsinformationen zumeist maskiert.
+
+\section{Transportlevel-Sicherheit}
+
+Eine Webapplikation sollte immer und ausschließlich über das gesicherte HTTPS-Protokoll kommunizieren. Um die Sicherheit des Transports zu gewährleisten sollte TLS (ältere und unsichere Versionen hießen SSL) eingesetzt werden.
+
+Beim Einsatz von TLS sollte eine aktuelle Version (aktuell TLSv1.2) verwendet werden, innerhalb von TLS sollten sichere Algorithmen (AES-256-GCM oder ChaCha20-Poly1305) bereitgestellt werden. Aktuell wird TLSv1.2 von ca. 95-96\% der Webserver angeboten. Jeder HTTP/2 kompatible Client muss ebenso TLSv1.2 unterstützen.
+
+Wenn möglich sollten ältere TLS-Versionen vermieden werden, da dadurch schlechtere Kryptographie in kauf genommen werden muss. So schreibt der TLS-Standard vor Version 1.2 vor, dass der Cipher \textit{3DES-CBC} zwingend in einer Standard-konformen Implementierung angeboten werden muss. Dieser Cipher ist zwar noch sicher, wird aber teilweise schon als \textit{legacy} klassifiziert --- sollte also bei neuen Implementierungen nicht mehr verwendet werden. Mit TLSv1.2 wird nicht mehr \textit{3DES-CBC} sondern \textit{AES-128-CBC} als notwendiger Cipher vorgeschrieben. Mit TLSv1.3 wurde der CBC-Modus entfernt: dies ist aus Sicherheitssicht stark begrüßenswert, allerdings ist diese Version des Standards noch nicht veröffentlicht.
+
+Die Entwickler und Administratoren müssen darauf achten, dass alle Kommunikationswege auf die gleiche Art und Weise geschützt werden. Eine Situation, die vermieden werden muss, ist z. B. dass ein Webserver mit einer sicheren TLS-Konfiguration konfiguriert wurde, aber die identen Operationen mittels eines Webservices ungesichert über HTTP bereitgestellt werden.
+
+Ein häufiger Diskussionspunkt ist, welche Verbindungen durch TLS abgesichert und verschlüsselt werden müssen. Prinzipiell sollte jegliche Übertragung über öffentliche Kanäle gesichert erfolgen. Der Einsatz von Verschlüsselung innerhalb des Rechenzentrums, z. B. zwischen Applikationsserver und Datenbanken, wird allerdings teilweise stark diskutiert. Die Verwendung der Verschlüsselung bewirkt geringere Performance, höhere Kosten und verhindert teilweise die Verwendung anderer Sicherheitstechniken (z. B. von Network-based IDSen) --- daher wird teilweise ein Rechenzentrum als a-priori sicher angenommen und innerhalb dessen nicht verschlüsselt. Die jeweilige Entscheidung muss dokumentiert und durch das Management unterzeichnet werden.
+
+\subsection{Perfect Forward Secrecy}
+
+Perfect Forward Secrecy (PFS) ist eine optionale Eigenschaft von Key-Exchange Protokollen und kann z. B. bei TLS zum Einsatz kommen. TLS verwendet einen Langzeitschlüssel --- während des Verbindungsaufbau wird basierend auf diesem ein Sitzungsschlüssel ausgemacht. Zeichnet ein Angreifer die verschlüsselte Kommunikation auf und erhält auf irgendeine Weise den Langzeitschlüssel, kann er die Verschlüsselung aufbrechen. Dies ist problematisch, da der Langzeitschlüssel auch Jahre nach der eigentlich erfolgten Kommunikation verloren gehen könnte.
+
+Bei Verwendung von PFS kann mit dem Langzeitschlüssel der Sitzungsschlüssel nicht mehr rekonstruiert werden. Dadurch wird die Gefahr einer späteren Offenlegung der Kommunikation durch Verlust des Langzeitschlüssels gebannt.
+
+\subsection{HSTS}
+\label{hsts}
+
+Der \textit{HTTP Strict Transport Security} (HSTS, RFC 6797) Header teilt dem Webbrowser mit, dass Folgezugriffe auf die Webseite immer über ein sicheres Protokoll zu erfolgen haben. Bei Angabe des Headers wird eine Laufzeit in Sekunden (z. B. 31536000 entspricht einem Jahr) für diese Regel angegeben:
+
+\begin{minted}{text}
+Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+\end{minted}
+
+Sobald dieser Header vom Browser interpretiert wird, werden potentielle zukünftige HTTP-Aufrufe automatisch vom Browser auf HTTPS hochgestuft. Zusätzlich schützen Webbrowser (bei Verwendung von HSTS) Benutzer vor dämlichen Entscheidungen und erlauben nicht mehr das Akzeptieren von defekten oder invaliden Zertifikaten.
+
+HSTS kann durch zwei Optionen erweitert werden. Durch \textit{includeSubDomains} inkludiert Subdomains in den HSTS Schutz. Dies ist wichtig, da ein Angreifer von einer Subdomain auf die Cookies der Hauptdomain zugreifen kann und dadurch auf HSTS-geschützte Cookies zugreifen könnte.
+
+Durch das Setzen von \textit{preload} wird der Wunsch der Webseite mitgeteilt in Google Chrome's HTTPS preload Liste aufgenommen zu werden\footnote{Genauere Informationen können unter \url{https://hstspreload.org/} gefunden werden.}. Dies ist eine Liste von Webseiten, die nur über HTTPS verfügbar sind. Wird dieser Header gesetzt, ist die Seite effektiv über Chrome nie wieder über HTTP erreichbar.
+
+\subsection{WebSockets}
+
+Eine WebSocket-URL beinhaltet das zu verwendende Protokoll, dieses kann entweder \textit{ws} (WebSocket) oder \textit{wss} (WebSocket Secure) sein. Aus Sicherheitssicht ist natürlich nur \textit{wss} eine valide Antwort.
+
+
+\section{Sessions and Cookies}
+
+Eine Session ist eine stehende Verbindung zwischen einem Client und einem Server. Innerhalb der Session kann der Server Zugriffe einem Client zuordnen. Nach erfolgtem Login kennt der Server die Benutzeridentität des Clients (bis zum erfolgten Logout).
+
+HTTP ist ein zustandsloses Protokoll, jeder Zugriff ist alleinstehend. Die Session muss daher auf einer höheren Ebene (ISO/OSI: Applikationslayer) gebaut werden. Im Web-Umfeld werden zumeist Cookie-basierte Sessions verwendet, andere Möglichkeiten wären z. B. Token basierte Systeme.
+
+Ein Cookie ist ein kleines Datenpaket welches im Zuge des Session-Managements vom Server dem Client mitgeteilt wird. Der Client speichert nun dieses Cookie und inkludiert es in jedem Folgeaufruf von Operationen auf dem setzenden Webserver. Beim Setzen des Cookies wird der Name und dessen Wert gesetzt. Zusätzlich gibt es die Möglichkeit mehrere sicherheitsrelevante Flags, den Geltungsbereich (Pfad, Domain) als aus Lebenszeit (Expiry-Date) zu setzen.
+
+\section{Same-Origin-Policy (SOP)}
+
+Die Same-Origin-Policy ist fixer Bestandteil moderner Browser. \textit{Origin} ist definiert als die Kombination von Schema, Domainname und Port\footnote{Achtung: der Internet Explorer Browser ignoriert den Port bei der Bestimmung des Origins!} (z. B. \url{https://snikt.net:443}). Die Same-Origin-Policy moderner Browser sagt aus, dass ein Skript das von Seite 1 geladen wurde, nur auf Ressourcen auf Seite 2 zugreifen darf, wenn beide Seiten den identen Origin besitzen.
+
+Die Same-Origin-Policy ist essentiell für die Sicherheit. Würde es diese nicht geben, könnte Javascript ausgehend von einer Seite auf die Daten (DOM) einer externen Seite zugreifen. Da dieser Zugriff durch den Webbrowser geschieht, würde bei diesem Zugriff das Session-Cookie mitübertragen werden und die Operation würde mit der Identität des Webbrowser-Benutzers durchgeführt werden.
+
+\subsection{Cross-Origin Resource Sharing (CORS)}
+
+Während die Same-Origin-Policy aus Sicherheitssicht begrüßenswert ist, muss sie teilweise aufgeweicht werden. Zum Beispiel könnte eine Webseite aus Sicherheitsgründen auf mehrere Teilserver aufgeteilt worden sein: \textit{www.evil.com} beinhaltet die klassische Webseite, während \textit{api.evil.com} Operationen anbietet, die von \textit{www} aus aufgerufen werden sollten.
+
+Um diese Zugriffe sauber zu erlauben, wird Cross-Domain Resource Sharing verwendet. Hierbei werden zusätzliche Browser-Header verwendet, über diese wird dem Webbrowser signalisiert, auf welche Operationen zugegriffen werden darf.
+
+Da diese Information über HTTP Header mitgeteilt wird, muss vor der eigentlichen Operation eine Kommunikation zwischen dem Webbrowser und dem API Server geschehen (wenn der Header erst als Antwort auf die ausgeführte Operation übertragen worden wäre, wäre es etwas spät\ldots). Dafür wird die so genannten \textit{preflight authorization} verwendet.
+
+Operationen, bei denen Webbrowser CORS durchführen sollten:
+
+\begin{itemize}
+	\item alle HTTP Methoden ausser HTTP GET und HTTP POST
+	\item HTTP POST, abhängig vom verwendeten Content-Type
+	\item AJAX-Requests
+	\item Web Fonts
+\end{itemize}
+
+Ist eine CORS-Authorization notwendig, werden folgende Schritte durchgeführt:
+
+\begin{enumerate}
+	\item Der Webbrowser eines Benutzers erkennt, dass er ausgehend von \textit{www} auf \textit{api} zugreifen will und hierfür ein CORS Authorization notwendig ist.
+	\item Um diese durchzuführen, versendet er einen HTTP OPTIONS request auf die gewünschte Operation auf \textit{api} und setzt dabei den Origin Header: \textit{Origin: http://www} auf die aufrufende Webseite.
+	\item Der \textit{api} Webserver antwortet nun mit dem HTTP Header \textit{Access-Control-Allow-Origin: http://www} und signalisiert dem Webbrowser dass der Zugriff auf \textit{api} ausgehend von \textit{www} erlaubt ist.
+	\item Der Webserver führt nun die Operation auf \textit{api} durch.
+\end{enumerate}
+
+\subsection{JSONP}
+
+Vor der Verfügbarkeit von \textit{CORS} wurde häufig \textit{JSONP} zum Datenaustausch mittels Javascript bzw. zum Umgehen der SOP verwendet. Bei diesem Verfahren werden die gewünschten Daten über einen GET-Request als Javascript-Datei geladen. Damit die geladenen Daten an Javascript übergeben werden, wird beim Inkludieren der Daten eine Callback Funktion mit übergeben.
+
+Ein Beispiel, mittels der URL \url{/php/jsonp.php?callback=callback} wird eine Operation aufgerufen, der Parameter \textit{callback} gibt an, wie die lokale Javascript-Callback Funktion heißt. Das Antwortdokument ist z. b:
+
+\begin{minted}{javascript}
+callback('{ "name":"John", "age":30, "city":"New York" }');
+\end{minted}
+
+In der aufrufenden Webseite würde der Call nun folgendermaßen aussehen:
+
+\begin{minted}{html}
+<script>
+function callback(data) {
+	console.log(data);
+}
+</script>
+<script src="/jsonp.php?callback=callback></script>
+\end{minted}
+
+Es wird also vom Server ein Funktionsaufruf (auf die Callback-Funktion) mit den serverseitigen-Daten erzeugt und dadurch im Webbrowser die jeweilige Javascript-Funktion aufgerufen. In diesem Fall greift die SOP nicht (da der src-Aufruf ein GET-Request ist), allerdings muss bei der Eingabeprüfung innerhalb der callback-Funktion darauf geachtet werden, ob Schadcode enthalten ist. Aus diesem Grund wird empfohlen, immer CORS anstatt von JSONP einzusetzen (abgesehen davon, dass eine JSONP-Operation meistens für alle Teilnehmer des Internets verfügbar ist).
+
+\section{WebSockets} 
+
+WebSockets bieten eine bidirektionale Verbindung zwischen Webbrowser und Webserver. Im Gegensatz zu klassischen HTTP (1.0/1.1) kann der Server auch Nachrichten zum Client pushen, ebenso ist der Overhead geringer, da keine dezidierten HTTP-Header pro übertragener Nachricht anfallen.
+
+Der Websocket wird durch einen Client-Request aufgebaut. Bei diesem teilt der Client mit, dass er gerne die Verbindung auf einen WebSocket upgraden will, im Erfolgsfall entgegnet der Server mit einem HTTP 101 Code. Bei der initialen Client-Anfrage werden alle HTTP Header mitübertragen, der Server erlangt so Zugriff auf etwaige Authorization-Header und/oder Session-Cookies und kann so Clients identifizieren.
+
+\section{HTML5 WebStorage/LocalStorage}
+
+HTML5 LocalStorage oder WebStorage bietet Webapplikationen die Möglichkeit lokal größere Datenmengen (um die fünf Megabyte) zu speichern. Im Gegensatz dazu sollte bei Cookies davon ausgegangen werden, dass maximal 4096 Byte gespeichert werden können.
+
+Ähnlich wie bei Cookies kann ein Angreifer mit einer Javascript-Lücke die lokalen Daten modifizieren. Eine Webapplikation muss daher auf jeden Fall die Integrität der gespeicherten Daten vor jedem Zugriff überprüfen. Da LocalStorage im Klartext abgelegt wird, muss bei sensiblen Daten die Webapplikation selbst für die Vertraulichkeit der Daten durch Verschlüsselung sorgen.
+
+Der Entwickler kann zwischen SessionStorage und LocalStorage unterscheiden. Ersteres wird beim Schließen des Browser-Fensters verworfen, letzteres wird wirklich langfristig persistiert. Wenn möglich sollte SessionStorage verwendet werden.
+
+Verglichen zu Cookie ist WebStorage und SessionStorage stärker gegenüber XSS-Angriffen verwundbar. Dies ist durch zwei Probleme bedingt:
+
+\begin{enumerate}
+\item Cookies können durch Verwendung des \textit{httpOnly}-Flags den Zugriff durch JavaScript unterbinden. Bei WebStorage wurde dieser Sicherheitsmechanismus nicht vorgesehen.
+\item Cookies können auf einen Unterpfad gescoped werden. Werden z.B. zwei Webapplikationen auf einem gemeinsamen Server Betrieben, kann ein Cookie z. B. für \url{https://example.local/app1} und ein Cookie für \url{https.//example.local/app2} ausgestellt werden. Eine Applikation besitzt keinen Zugriff auf das Cookie der anderen Applikation. Bei WebStorage kann dies nicht durchgeführt werden, WebStorage ist immer für die Domain gültig. Das heißt, dass ein Angreifer mit einem XSS-Fehler in app1 auf den WebStorage der app2 zugreifen kann.
+\end{enumerate}
+
+Aus diesen Gründen verbieten einige Sicherheitsrichtlinien den Einsatz von HTML5 Web- und SessionStorage.
+
+\section{HTML5 WebWorkers}
+
+Die Javascript-Umgebung eines Webbrowers ist eine Single-Thread Umgebung. Wenn ein Javascript länger läuft, blockiert es die Ausführung aller anderen JavaScripts auf der Seite.
+
+Um long-running JavaScripts zu erlauben, wurden WebWorker eingeführt. Dies sind JavaScript Programme die analog zu einem Background-Thread gestartet werden und an welche Nachrichten von der Webseite aus verschickt werden können.
+
+Da WebWorker selbst AJAX-Requests (XMLHttpRequest) ausführen, und potentiell die CPU des Hosts auslasten können, muss bei deren Entwicklung darauf geachtet werden, dass ein Angreifer nicht Zugriff auf diese erhält. Insbesondere sollten keine benutzer-bereitgestellten Daten direkt an Webworker übergeben werden.
+
+\section{Reflektionsfragen}
+
+\begin{enumerate}
+	\item Wie können HTTP Header im Zuge einer Information Disclosure verwendet werden?
+	\item Was versteht man unter SOP? Warum und wie kann dieses Prinzip mit CORS aufweichen?
+	\item Was sind HTTP Methoden? Erkläre \textit{safe} und \textit{idempotente} HTTP Methoden.
+\end{enumerate}
+

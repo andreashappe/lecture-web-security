@@ -3,6 +3,7 @@
 Client-seitige Angriffe zielen auf die Web-Browser der Benutzer ab und sind häufig Teil von Social Engineering Angriffen (da eine End-User Interaktion benötigt wird). Webserver besitzen die Möglichkeit, mittels optionaler HTTP Header den Clients Sicherheitspolicies und Verwendungshinweise mitzuteilen; Clients können auf diese Weise Schadcode erkennen und filtern.
 
 \section{JavaScript-Injections (XSS)}
+\index{xss}
 
 Javascript-Injections (Cross-Site Scripting XSS) sind ein sehr häufig genutzter Angriffsvektor. Aufgrund der Häufigkeit dieses Angriffsvektor sind für diesen auch mehrere Hardening-Maßnahmen verfügbar.
 
@@ -33,11 +34,11 @@ Ein Problem bei der defensiven Identifikation von potentiellen XSS-Lücken ist, 
 XSS-Angriffe werden in drei grobe Familien eingeteilt:
 
 \begin{description}
-\item[Reflected XSS]: hier wird kein XSS-Code am Server persistiert sondern vom Server an den Client zurück reflektiert. Dies wird meistens durch das Einschleusen von JavaScript-Code über einen HTTP Parameter erfüllt --- dies impliziert allerdings auch, dass der Angreifer einen Weg findet, das Opfer zum Aufruf der modifizierten URL zu bewegen. Beispiel einer modifizierten URL: \url{http://opfer.xyz/operation?parameter=<script>alert(1)</script>}.
-\item[Stored/Persistent XSS]: hier besitzt der Angreifer die Möglichkeit den Javascript-Code am Server zu persistieren, ihn z. B. als Datenbank-Inhalt oder über eine hochgeladene Datei zuzustellen. Das Opfer betrachtet nun eine Webseite und bekommt durch den Server das XSS-Fragment übertragen. Ein Beispiel wäre das Übertragen von \mintinline{html}{<script>alert(1)</script>} als Chatnachricht innerhalb einer Webseite.
-\item[DOM-based XSS]: dieser Angriffsvektor betrifft vor allem client-seitige Javascript-Frameworks die Eingaben aus dem DOM\footnote{Das Document-Object-Model beschreibt eine Programmierschnittstelle welche HTML/XML-Daten als Baumstruktur darstellt. Mittels Javascript kann das DOM modifiziert werden um beispielsweise Elemente bzw. deren Attribute hinzuzufügen, entfernen oder zu modifizieren; Eventhandler zu setzen bzw. Events zu feuern; bzw. um CSS zu verändern.} des Browsers übernehmen. Der Angreifer versucht, Schadcode innerhalb des DOMs zu platzieren (z. B. über die verwendete URL) und hofft, dass die Webapplikation dieses Element zum Bau einer Webseite verwendet. Bei dieser Form des XSS wird der bösartige Javascript Code erst im Client gebaut.
-\item[mXSS]: Webbrowser erlauben es, über eine Stringzuweisung in das \textit{innerHTML}-Attribute HTML-Code zu erstellen. Bevor der übergebene String in HTML-Code verwandelt wird, wenden die unterschiedlichen Browser-Familien Optimierungen (Mutationen) auf den String an. Dies kann ein Angreifer ausnutzen, indem er Schadcode so formatiert, dass er innerhalb des Strings noch harmlos wirkt, aber nach der String-Mutation bösartig wird.
-\item[uXSS]: Universal XSS zielen auf Fehler innerhalb von Webbrowsern bzw. innerhalb von Webbrowserplugin ab. Da diese auf ein Client-Programm abzielen, sind sie für diese Vorlesung out-of-scope.
+	\item[Reflected XSS]\index{xss!reflected xss}: hier wird kein XSS-Code am Server persistiert sondern vom Server an den Client zurück reflektiert. Dies wird meistens durch das Einschleusen von JavaScript-Code über einen HTTP Parameter erfüllt --- dies impliziert allerdings auch, dass der Angreifer einen Weg findet, das Opfer zum Aufruf der modifizierten URL zu bewegen. Beispiel einer modifizierten URL: \url{http://opfer.xyz/operation?parameter=<script>alert(1)</script>}.
+	\item[Stored/Persistent XSS]\index{xss!persistent xss}: hier besitzt der Angreifer die Möglichkeit den Javascript-Code am Server zu persistieren, ihn z. B. als Datenbank-Inhalt oder über eine hochgeladene Datei zuzustellen. Das Opfer betrachtet nun eine Webseite und bekommt durch den Server das XSS-Fragment übertragen. Ein Beispiel wäre das Übertragen von \mintinline{html}{<script>alert(1)</script>} als Chatnachricht innerhalb einer Webseite.
+	\item[DOM-based XSS]\index{xss!dom-based xss}: dieser Angriffsvektor betrifft vor allem client-seitige Javascript-Frameworks die Eingaben aus dem DOM\footnote{Das Document-Object-Model beschreibt eine Programmierschnittstelle welche HTML/XML-Daten als Baumstruktur darstellt. Mittels Javascript kann das DOM modifiziert werden um beispielsweise Elemente bzw. deren Attribute hinzuzufügen, entfernen oder zu modifizieren; Eventhandler zu setzen bzw. Events zu feuern; bzw. um CSS zu verändern.} des Browsers übernehmen. Der Angreifer versucht, Schadcode innerhalb des DOMs zu platzieren (z. B. über die verwendete URL) und hofft, dass die Webapplikation dieses Element zum Bau einer Webseite verwendet. Bei dieser Form des XSS wird der bösartige Javascript Code erst im Client gebaut.
+	\item[mXSS]\index{xss!mxss}: Webbrowser erlauben es, über eine Stringzuweisung in das \textit{innerHTML}-Attribute HTML-Code zu erstellen. Bevor der übergebene String in HTML-Code verwandelt wird, wenden die unterschiedlichen Browser-Familien Optimierungen (Mutationen) auf den String an. Dies kann ein Angreifer ausnutzen, indem er Schadcode so formatiert, dass er innerhalb des Strings noch harmlos wirkt, aber nach der String-Mutation bösartig wird.
+	\item[uXSS]\index{xss!uxss}: Universal XSS zielen auf Fehler innerhalb von Webbrowsern bzw. innerhalb von Webbrowserplugin ab. Da diese auf ein Client-Programm abzielen, sind sie für diese Vorlesung out-of-scope.
 \end{description}
 
 Ein Problem an XSS-Angriffsmustern ist, dass diese sehr stark variieren können und daher schwer zu filtern sind; anbei mehrere XSS-Muster:
@@ -258,31 +259,6 @@ Die Opferwebseite öffnet eine externe Seite über einen Link (mittels \textit{t
 Der Angreifer setzt über \textit{window.opener} die Adresse der aufgerufenen Seite und ändert dadurch (im Hintergrund) die im Webbrowser dargestellte Seite. Wenn der Benutzer die geöffnete Seite schließt, gelangt er dadurch auf eine vom Angreifer modifizierte Webseite.
 
 Als Gegenmaßnahme sollte bei ausgehenden Links immer das \textit{rel} Attribute auf \textit{noopener noreferrer} gesetzt werden. Dadurch kann die geöffnete Seite nicht mehr über \textit{windows.opener} auf die Location der öffnenden Seite zugreifen. Zusätzlich kann über die \textit{Referrer-Policy} das Übermitteln des Referrer-Headers an die aufgerufene Webseite unterbunden werden.
-
-\section{HTML5 WebStorage/LocalStorage}
-
-HTML5 LocalStorage oder WebStorage bietet Webapplikationen die Möglichkeit lokal größere Datenmengen (um die fünf Megabyte) zu speichern. Im Gegensatz dazu sollte bei Cookies davon ausgegangen werden, dass maximal 4096 Byte gespeichert werden können.
-
-Ähnlich wie bei Cookies kann ein Angreifer mit einer Javascript-Lücke die lokalen Daten modifizieren. Eine Webapplikation muss daher auf jeden Fall die Integrität der gespeicherten Daten vor jedem Zugriff überprüfen. Da LocalStorage im Klartext abgelegt wird, muss bei sensiblen Daten die Webapplikation selbst für die Vertraulichkeit der Daten durch Verschlüsselung sorgen.
-
-Der Entwickler kann zwischen SessionStorage und LocalStorage unterscheiden. Ersteres wird beim Schließen des Browser-Fensters verworfen, letzteres wird wirklich langfristig persistiert. Wenn möglich sollte SessionStorage verwendet werden.
-
-Verglichen zu Cookie ist WebStorage und SessionStorage stärker gegenüber XSS-Angriffen verwundbar. Dies ist durch zwei Probleme bedingt:
-
-\begin{enumerate}
-\item Cookies können durch Verwendung des \textit{httpOnly}-Flags den Zugriff durch JavaScript unterbinden. Bei WebStorage wurde dieser Sicherheitsmechanismus nicht vorgesehen.
-\item Cookies können auf einen Unterpfad gescoped werden. Werden z.B. zwei Webapplikationen auf einem gemeinsamen Server Betrieben, kann ein Cookie z. B. für \url{https://example.local/app1} und ein Cookie für \url{https.//example.local/app2} ausgestellt werden. Eine Applikation besitzt keinen Zugriff auf das Cookie der anderen Applikation. Bei WebStorage kann dies nicht durchgeführt werden, WebStorage ist immer für die Domain gültig. Das heißt, dass ein Angreifer mit einem XSS-Fehler in app1 auf den WebStorage der app2 zugreifen kann.
-\end{enumerate}
-
-Aus diesen Gründen verbieten einige Sicherheitsrichtlinien den Einsatz von HTML5 Web- und SessionStorage.
-
-\section{HTML5 WebWorkers}
-
-Die Javascript-Umgebung eines Webbrowers ist eine Single-Thread Umgebung. Wenn ein Javascript länger läuft, blockiert es die Ausführung aller anderen JavaScripts auf der Seite.
-
-Um long-running JavaScripts zu erlauben, wurden WebWorker eingeführt. Dies sind JavaScript Programme die analog zu einem Background-Thread gestartet werden und an welche Nachrichten von der Webseite aus verschickt werden können.
-
-Da WebWorker selbst AJAX-Requests (XMLHttpRequest) ausführen, und potentiell die CPU des Hosts auslasten können, muss bei deren Entwicklung darauf geachtet werden, dass ein Angreifer nicht Zugriff auf diese erhält. Insbesondere sollten keine benutzer-bereitgestellten Daten direkt an Webworker übergeben werden.
 
 \section{Reflektionsfragen}
 

@@ -1,6 +1,6 @@
 \chapter{Authentifikation}
 
-Sobald eine Webapplikation sensitive bzw. privilegierte Operationen und Daten bereitstellt, besteht die Notwendigkeit die Identität des zugreifenden Benutzers zu erheben und verifizieren. Dieses Kapitel beschäftigt sich mit diesen Vorgängen.
+Sobald eine Webapplikation sensitive bzw. privilegierte Operationen und Daten bereitstellt, besteht die Notwendigkeit die Identität des zugreifenden Benutzers zu erheben und verifizieren.
 
 Authentifikation kann als die Verifikation einer behaupteten Benutzeridentität über zuvor ausgetauschte Details (wie z. B. das während der Registrierung angegebenen Passwort) definiert werden. Nach erfolgtem Login wird zumeist eine langfristige Verbindung (Session) zu dem Benutzer aufgebaut. Bei Folgezugriffen wird dieses Vertrauensverhältnis verwendet, um den Benutzer sowohl zu identifizieren als auch authentifizieren.
 
@@ -8,17 +8,28 @@ Authentifikation kann als die Verifikation einer behaupteten Benutzeridentität 
 
 Bei der Identifikation claimed der Benutzer seine Identität, z. B. durch Angabe eines zuvor registrierten Benutzernamens. Weitere Möglichkeiten wären z. B. SmartCards oder biometrische Methoden. Die Identifikation wird zumeist mit einer Authentifikation kombiniert.
 
-Die Authentifikation dient zur Validierung der behaupteten Identität des Benutzers. Es gibt mehrere Möglichkeiten (Faktoren) über welche ein Benutzer seine Identität authentifizieren kann:
+Die Authentifikation dient zur Validierung der behaupteten Identität des Benutzers. Es gibt mehrere Möglichkeiten (Faktoren) über welche ein Benutzer seine Identität authentifizieren kann, Tabelle \ref{tbl:factors} gibt eine kurze Übersicht häufig genutzer Faktoren.
 
-\begin{itemize}
-	\item Passwort (Something you know)
-	\item Hardware-Tokens (something you have)
-	\item Biometrische Verfahren (something you are)
-	\item Soziale Beziehungen (someone you know)
-	\item Zugriff auf ein Email-Konto (z. B. Slackanmeldung mittels Link in Email)
-	\item PostIdent: Verifikation am Postamt mittels Ausweis
-	\item VideoIdent: Verifikation mit Ausweis mittels Videokonferenz
-\end{itemize}
+\begin{table}[h!]
+	\begin{center}
+\begin{tabular}{lp{7cm}}
+	\toprule
+	Faktor & Art\\
+	\midrule
+	Passwort & Something you know \\
+	Hardware-Tokens & something you have \\
+	Biometrie & something you are \\
+	Soziale Beziehungen & someone you know \\
+	Email-Konto & z. B. Slackanmeldung mittels Link in Email \\
+	PostIdent & Verifikation am Postamt mittels Ausweis \\
+	VideoIdent & Verifikation mit Ausweis mittels Videokonferenz \\
+	PhotoIdent & Verifikation über zugeschicktes Ausweisbild \\
+	\bottomrule
+\end{tabular}
+	\caption{Verschiedene Faktoren zur Authentication}
+	\label{tbl:factors}
+\end{center}
+\end{table}
 
 Bei der initialen Registrierung und bei nachfolgenden Anmeldungen können unterschiedliche Faktoren verwendet werden. Z. B. VideoIdent bei der Registrierung, bei Folgeanmeldungen Passwörter.
 
@@ -60,7 +71,7 @@ Generell ist dieser Bereich einer derjenigen, bei denen Usability und Security p
 
 Brute-Force Angriffe versuchen mittels automatisierter Anfragen eine valide Benutzernamen/Passwort-Kombination zu erraten. Durch die Kenntnis bekannter Benutzernamen können Brute-Force Angriffe beschleunigt werden (z. B. durch eine zu vorige User Enumeration).
 
-Tools in diesem Umfeld sind z. B. Hydra, Brute-Force Angriffe sind allerdings in den meisten interaktiven Testtools integriert. Die erreichte Geschwindigkeit befindet sich meistens bei mehreren Zehntausend Versuchen in der Stunde.
+Technisch sind Brute-Force Angriffe einfach umzusetzen, Tool-Support ist massiv vorhanden. Die erreichte Geschwindigkeit befindet sich meistens bei mehreren Zehntausend Versuchen in der Stunde.
 
 Brute-Force Angriffe versuchen entweder eine Kombination des gesamten Testbereichs (Buchstaben, Zahlen, Sonderzeichen) oder verwenden vorbereitete Passwortlisten. Diese können auf verschiedene Arten bereitgestellt werden:
 
@@ -216,8 +227,6 @@ Da für jede Überprüfung der Authorization eine Feststellung der Benutzerident
 
 Das schwerwiegendste Problem wäre es, wenn keine Kontrolle der Authentication durchgeführt wird. Nach einem Login kann jeder anonyme Benutzer auf alle Operationen und Daten zugreifen, eine Zuordnung der Operationsausführung zu einem eingeloggten Benutzer findet nicht statt. Prinzipiell handelt es sich hierbei um Security-by-Obscurity da die Sicherheit der Operationen und Daten nur davon abhängt, dass der Angreifer die URL der Operationen nicht kennt. Dies ist allerdings selten der Fall, da MitM-Proxies und Crawler zur Identifikation der Operationen verwendet werden können. Ebenso stellen die meisten API-Server automatisch generierte Dokumentation der bereitgestellten Operationen zur Verfügung.
 
-Dieses Verhalten kann vermehrt bei ehemaligen Desktop-Applikationen die in browser-seitige Applikationen (z. B. Java-/Flash-/Silverlight-Applets) konvertiert wurden, festgestellt werden.
-
 In abgeschwächter Form kann eine ähnliche Schwachstelle teilweise bei historisch gewachsenen Applikationen gefunden werden. Hier haben sich im Laufe der Zeit Technologietrends, Firmen-Guidelines oder Programmierteams verändert und die Gesamtapplikation besteht aus Komponenten, die in verschiedenen Programmiersprachen/Frameworks implementiert wurden. Da Authentication-Daten zumeist über das Framework abgehandelt werden, passiert es hier nun häufig, dass bei einem Teil der Applikationen die Authentication vergessen wird.
 
 Ein weiteres häufiges Problem sind selbst geschriebene Komponenten. Ähnlich wie bei dem letzten Fehlerfall wird hier eine bestehende Applikation um eine weitere Funktion erweitert, auch hier kann dies zeitverzögert durch neue Programmierer geschehen. Bei den neu geschriebenen Komponenten wird gerne auf die Authentication vergessen --- eine mögliche Ausrede wäre es, dass externe Programmierer eventuell das bestehende System nicht gut kennen.
@@ -232,7 +241,6 @@ Gegenbeispiel: die Webseite eines Personentransportunternehmens verschickt eine 
 	\item Was versteht man unter Multi-Faktor-Authentication?
 	\item Wie funktionieren TOTP und FIDO U2F? Worin liegen konzeptionelle Unterschiede?
 	\item Welche Regeln sollten bei der Speicherung von Passwörtern und zu der Sicherung der Qualität der Passwörter beachtet werden?
-	\item In einer Datenbank werden Benutzerpasswörter als MD5-Hash gespeichert. Welche Probleme können dabei auftreten und wie kann dies gelöst werden?
 	\item Was ist der Unterschied zwischen Identification und Authentication? Nenne zumindest vier Beispiele wie ein Benutzer identifiziert werden kann.
 	\item Wie sollte ein Login-Formular gestaltet sein? Von welchen Techniken sollte man Abstand nehmen?
 	\item Was ist eine User Enumeration und wie kann man sich dagegen schützen? Was sind komplexere Applikationsfunktionen die schwer gegenüber User Enumeration absicherbar sind?

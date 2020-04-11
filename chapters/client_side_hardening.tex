@@ -113,46 +113,59 @@ Bei diesem Beispiel wird nun durch die Methode \textit{addEventListener} die Jav
 
 \subsection{Verfügbare CSP-Elemente}
 
-CSP besteht aus mehreren Direktiven, hier ein kurzer Auszug der möglichen Werte:
+CSP besteht aus mehreren Direktiven, die Tabelle \ref{tbl:csp_elements} gibt eine kurze Übersicht der Möglichkeiten. Alle Direktiven die mit \textit{-src} enden erlauben die Verwendung ähnlicher Source-Werte, Tabelle \ref{tbl:csp_values} gibt ein paar Beispiele. Durch die Verwendung von ``unsafe-inline'' wird die Trennung zwischen HTML und JavaScript nicht mehr erzwungen und daher der Großteils des XSS-Schutzes neutralisiert. Diese Direktive sollte daher soweit wie möglich vermieden werden.
 
-\begin{itemize}
-	\item default-src: definiert die default Policy zum Laden von remote Elementen für die meisten Elemente.
-	\item script-src: definiert vertrauenswürde Quellen für geladene JavaScript Dateien.
-	\item style-src: definiert vertrauenswürde Quellen für geladene CSS-Dateien.
-	\item plugin-types, object-src: definiert erlaubte Plugin Typen und deren vertrauenswürde Sourcen.
-	\item img-src, media-src, font-src: definiert vertrauenswürdige Quellen für die jeweiligen Dateitypen
-	\item child-src (ehem. frame-src): definiert erlaubte Quellen für den Inhalt verwendeter Iframes.
-	\item sandbox: aktiviert eine Sandbox für die aktuelle Resource ähnlich wie die Sandbox eines eingebetteten Iframas. Durch Optionen kann die Sandbox aufgeweicht werden.
-	\item connect-src: Wird von JSONP, WebSockets und EventSource verwendet.
-	\item form-action: welche URIs dürfen als Ziel eines Formulars dienen
-	\item reflected-xss: entspricht X-XSS-Protection
-	\item frame-ancestors: definiert, welche externen Seiten die Resource im Zuge eines Iframes verwenden dürfen, entspricht ca. einem \textit{X-Frame-Option}s.
-	\item referrer: ähnlich wie Referrer-Header
-	\item report-uri: CSP erlaubt die Angabe einer Reporting-URL. Im Fehlerfall wird an diese URL eine detaillierte Fehlermeldung reported.
-	\item block-all-mixed-content
-	\item upgrade-insecure-requests
-\end{itemize}
 
-\subsection{Definition erlaubter Quellen}
+\begin{table}
+	\begin{center}
+\begin{tabular}{lp{7cm}}
+	\toprule
+	Name & Beschreibung\\ \midrule
+	default-src & definiert die default Policy zum Laden von remote Elementen für die meisten Elemente. \\
+	script-src & definiert vertrauenswürde Quellen für geladene JavaScript Dateien. \\
+	style-src & definiert vertrauenswürde Quellen für geladene CSS-Dateien. \\
+	plugin-types & object-src: definiert erlaubte Plugin Typen und deren vertrauenswürde Sourcen \\
+	img-src, media-src, font-src & definiert vertrauenswürdige Quellen für die jeweiligen Dateitypen \\
+	child-src (ehem. frame-src) &  definiert erlaubte Quellen für den Inhalt verwendeter Iframes. \\
+	sandbox & aktiviert eine Sandbox für die aktuelle Resource ähnlich wie die Sandbox eines eingebetteten Iframas. Durch Optionen kann die Sandbox aufgeweicht werden. \\
+	connect-src & Wird von JSONP, WebSockets und EventSource verwendet. \\
+	form-action & welche URIs dürfen als Ziel eines Formulars dienen \\
+	reflected-xss & entspricht X-XSS-Protection \\
+	frame-ancestors & definiert, welche externen Seiten die Resource im Zuge eines Iframes verwenden dürfen, entspricht ca. einem \textit{X-Frame-Option}s. \\
+	referrer & ähnlich wie Referrer-Header \\
+	report-uri & CSP erlaubt die Angabe einer Reporting-URL. Im Fehlerfall wird an diese URL eine detaillierte Fehlermeldung reported. \\
+	block-all-mixed-content & \\
+	upgrade-insecure-requests & \\
+	\bottomrule
+\end{tabular}
+	\caption{Häufig verwendete CSP-Direktiven}
+	\label{tbl:csp_elements}
+\end{center}
+\end{table}
 
-Alle Direktiven die mit \textit{-src} enden erlauben die Verwendung ähnlicher Source-Werte:
+\begin{table}
+	\begin{center}
+\begin{tabular}{lp{7cm}}
+	\toprule
+	Name & Beschreibung\\ \midrule
+	* & erlaubt alle URIs ausgenommen \textit{data:}, \textit{blob:} und \textit{filesystem:} \\
+	'none' & verbietet das Laden von Ressourcen. \\
+	'self' & erlaubt das Laden von Ressourcen vom eigenen Origin \\
+	data: & erlaubt das Bereitstellen von Ressourcen über data (base64-codierte Daten). \\
+	domain & erlaubt das Laden von Daten von der entsprechenden Domain. Wildcards für Subdomains dürfen verwendet werden. Wird der Domainname mit \textit{https://} begonnen, muss HTTPS beim Zugriff verwendet werden \\
+	https & erzwingt das Laden von Ressourcen über HTTPS, alle Domains sind erlaubt. \\
+	'unsafe-inline' & erlaubt inline Javascript als auch \textit{javascript:} URIs \\
+	'unsafe-eval' & erlaubt unsichere dynamische Code-Exekution mittels eval. \\
+	'nonce-(nonce) & \textit{script}- oder \textit{style}-Tags werden exekutiert sofern diese ein nonce-Attribut besitzen welches ident zu dem Wert innerhalb des CSP ist. \\
+	sha256-(hash) & Erlaubt die Exekution von Skripts sofern ihr Hash dem in der CSP angegeben Hash entsprechen. \\
+	\bottomrule
+\end{tabular}
+	\caption{Häufig verwendete CSP Source-Werte}
+	\label{tbl:csp_}
+\end{center}
+\end{table}
 
-\begin{description}
-	\item[*]: erlaubt alle URIs ausgenommen \textit{data:}, \textit{blob:} und \textit{filesystem:}
-	\item['none']: verbietet das Laden von Ressourcen.
-	\item['self']: erlaubt das Laden von Ressourcen vom eigenen Origin
-	\item[data:]: erlaubt das Bereitstellen von Ressourcen über data (base64-codierte Daten).
-	\item[domain.local]: erlaubt das Laden von Daten von der entsprechenden Domain. Wildcards für Subdomains dürfen verwendet werden. Wird der Domainname mit \textit{https://} begonnen, muss HTTPS beim Zugriff verwendet werden
-	\item[https:]: erzwingt das Laden von Ressourcen über HTTPS, alle Domains sind erlaubt.
-	\item['unsafe-inline']: erlaubt inline Javascript als auch \textit{javascript:} URIs
-	\item['unsafe-eval']: erlaubt unsichere dynamische Code-Exekution mittels eval.
-	\item['nonce-(nonce)]: \textit{script}- oder \textit{style}-Tags werden exekutiert sofern diese ein nonce-Attribut besitzen welches ident zu dem Wert innerhalb des CSP ist.
-	\item[sha256-(hash)]: Erlaubt die Exekution von Skripts sofern ihr Hash dem in der CSP angegeben Hash entsprechen.
-\end{description}
-
-Durch die Verwendung von ``unsafe-inline'' wird die Trennung zwischen HTML und JavaScript nicht mehr erzwungen und daher der Großteils des XSS-Schutzes neutralisiert. Diese Direktive sollte daher soweit wie möglich vermieden werden.
-
-\subsection{Verwendung von CSP-Nonces}
+\subsection{CSP-Nonces}
 
 CSP-Nonces erlauben die Integration von CSP ohne die gesamte Web-Applikation nach dem Grundsatz der strikten Trennung von JavaScript und HTML entwickelt zu haben. Dieses System basiert darauf, dass innerhalb des CSP-Headers eine Nonce (zufällige einmalige Zahl) definiert wird und innerhalb der HTML Datei nur \textit{Script}- und \textit{Style}-Elemente nur exekutiert werden, wenn diese einen identen Wert als \textit{nonce}-Attribut gesetzt haben.
 

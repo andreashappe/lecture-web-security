@@ -1,0 +1,95 @@
+\documentclass[letterpaper]{kdp}
+
+\title{Einführung in die Web-Security}
+\author{Andreas Happe}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[ngerman]{babel}
+\usepackage{makeidx}
+\usepackage{todonotes}
+\usepackage{booktabs}
+\makeindex
+
+\usepackage{xurl}
+\usepackage{tabularx}
+\usepackage[hidelinks]{hyperref}
+\usepackage{graphicx}
+\usepackage{minted}
+
+\inputencoding{utf8} % Kodierung auf utf8 geaendert 
+
+\hypersetup{pdftitle={Web Security},pdfauthor={Andreas Happe}} % Uncomment and fill out to include PDF metadata for the author and title of the book
+
+\ifdefined\HCode
+	\setminted{
+		autogobble,
+		fontsize=\footnotesize,
+		frame=single
+	}%,bgcolor=bg}
+\else
+	\setminted{
+		autogobble,
+		breaklines,
+		breakanywhere,
+		fontsize=\footnotesize,
+		frame=single
+	}%,bgcolor=bg}
+\fi
+
+\usemintedstyle{tango}
+
+\begin{document}
+
+%\maketitle
+
+\tableofcontents % Print the table of contents itself
+
+\cleardoublepage % Forces the first chapter to start on an odd page so it's on the right side of the book
+
+\include{chapters/allgemeines}
+
+\mainmatter
+
+\part{Einführung}
+
+\include{chapters/security_principles}
+
+\include{chapters/security_as_process}
+
+\include{chapters/integration}
+
+\include{chapters/web_technologies}
+
+\include{chapters/web_applications}
+
+\part{Authentication und Authorisierung}
+
+\include{chapters/authentication}
+
+\include{chapters/authorization}
+
+\include{chapters/session_management}
+
+\include{chapters/sso}
+
+\part{Injection Attacks}
+
+\include{chapters/injection_attacks}
+
+\include{chapters/client_side_attacks}
+
+\include{chapters/client_side_hardening}
+
+\appendix
+
+\part{Appendix}
+
+\include{chapters/crypto_basics}
+
+\include{chapters/mod_security}
+
+\printindex
+
+\end{document}
