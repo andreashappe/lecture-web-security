@@ -40,6 +40,8 @@ Ein Spezialfall des Uploads von malicious Dateien ist der Upload von Dateien, di
 
 Falls eine Webapplikation nicht-vertrauenswürde Dateien verarbeiten muss, muss diese Dateien aus nicht-vertrauenswürdigen Quellen (Benutzer) analysieren. Dies ist eine notorisch gefährliche Operation und wird selten vollkommen sicher implementiert werden können. Um das potentielle Schadmass zu reduzieren kann Sandboxing verwendet werden. Dabei wird der Parse-Code in einem abgeschotteten Bereich des Systems ausgeführt, im Falle eines erfolgreichen Angriffs wird zumindest nicht das Gesamtsystem kompromittiert.
 
+Wird server-seitig ein Virenscanner verwendet um hochgeladene Dateien auf Schadcode hin zu überprüfen, sollte dieser ebenso vom Rest des Systems abgeschottet werden. In den letzten Jahren wurden vermehrt Angriffe gegen Virenscanner festgestellt. Diese sind für Angreifer sehr lohnende Ziele, da sie alle incoming Dateien vorgereicht bekommen und zumeist mit administrativen Rechten ausgestattet sind.
+
 Techniken in diesem Umfeld beinhalten chroots, Jails, Container und Microservice-Architekturen.
 
 \section{Path Traversals}

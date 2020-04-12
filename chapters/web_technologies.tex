@@ -65,6 +65,31 @@ Idempotente Verben sollten auch bei wiederholtem Aufruf auf eine Resource das id
 
 Die Verwendung des richtigen Verbes besitzt rein semantische Natur und muss von der Web-Applikation umgesetzt werden. Nichts hindert einen Programmierer, eine Operation mit einem unpassenden HTTP Verb anzubieten. Allerdings gehen mehrere Komponenten (wie z. B. Web Proxies, Caches oder Web Application Firewalls) von der richtigen Verwendung der jeweiligen Verben aus, wird ein falsches Verb verwendet kann dadurch inkorrektes Verhalten provoziert werden.
 
+\subsubsection{Representational State Transfer (REST)}
+
+Das REST-Paradigma wurde von Roy Fielding 2000 im Zuge seiner Dissertation veröffentlicht. Das Paradigma versucht es, zustandlose APIs über eine einheitliche Schnittstelle anzubieten. Jede gespeicherte Ressource sollte eine eindeutige URL besitzen, als Kommunikationssprache wird häufig HTTP eingesetzt.
+
+Tabelle \ref{tbl:rest} zeigit wie häufig benötige CRUD-Funktionalität\footnote{Create, Update, Read and Delete of Resources.} auf HTTP Verben umgelegt wird.
+
+\begin{table}
+	\begin{center}
+\begin{tabular}{lllp{6cm}}
+	\toprule
+	Verb & Operation & Beispiel & Beschreibung \\
+	\midrule
+	GET  & READ & \url{/notes/1} & Fordert die Ressource vom Server an. Diese Operation sollte safe und idempotent sein. \\
+	POST & CREATE & \url{/notes} &  Erstellt eine neue Ressource am Server, deren URI wird zurück gegeben.\\
+	PUT  & CREATE/UPDATE & \url{/notes/2} & Erstellt oder ersetzt eine Ressource an der angegeben URI.\\
+	PATCH & UPDATE & \url{/notes/2} & Die angegebene Ressource wird verändert, Nebeneffekte sind erlaubt. \\
+	DELETE & DELETE & \url{/notes/2} & Die angegebene Ressource wird gelöscht. \\
+	HEAD & READ & \url{/notes/2} & Liefert Meta-Daten für die angegebene Ressource. \\
+	\bottomrule
+\end{tabular}
+	\caption{Verwendung von HTTP Verben bei RESTful-Architekturen}
+	\label{tbl:rest}
+\end{center}
+\end{table}
+
 \subsubsection{Request Host Header}
 
 Der übergebene \textit{Host}-Header kann sicherheitsrelevant sein: dieser Header wird nicht verwendet um auf der Netzwerkebene das Ziel zu identifizieren, sondern wird erst vom Zielwebserver verwendet. Einige Webserver verwenden diesen Header um Adressen innerhalb der Antwortseite zu generieren.
@@ -103,11 +128,15 @@ Die optionalen Header können einen negativen Sicherheitsimpact besitzen, häufi
 
 \section{Transportlevel-Sicherheit}
 
-Eine Webapplikation sollte immer und ausschließlich über das gesicherte HTTPS-Protokoll kommunizieren. Um die Sicherheit des Transports zu gewährleisten sollte TLS (ältere und unsichere Versionen hießen SSL) eingesetzt werden.
+Eine Webapplikation sollte immer und ausschließlich über das gesicherte HTTPS-Protokoll kommunizieren. Um die Sicherheit des Transports zu gewährleisten sollte TLS\footnote{ältere und unsichere Versionen hießen SSL.} eingesetzt werden.
+
+\subsection{TLS}
 
 Beim Einsatz von TLS sollte eine aktuelle Version (aktuell TLSv1.2) verwendet werden, innerhalb von TLS sollten sichere Algorithmen (AES-256-GCM oder ChaCha20-Poly1305) bereitgestellt werden. Aktuell wird TLSv1.2 von ca. 95-96\% der Webserver angeboten. Jeder HTTP/2 kompatible Client muss ebenso TLSv1.2 unterstützen.
 
 Wenn möglich sollten ältere TLS-Versionen vermieden werden, da dadurch schlechtere Kryptographie in kauf genommen werden muss. So schreibt der TLS-Standard vor Version 1.2 vor, dass der Cipher \textit{3DES-CBC} zwingend in einer Standard-konformen Implementierung angeboten werden muss. Dieser Cipher ist zwar noch sicher, wird aber teilweise schon als \textit{legacy} klassifiziert --- sollte also bei neuen Implementierungen nicht mehr verwendet werden. Mit TLSv1.2 wird nicht mehr \textit{3DES-CBC} sondern \textit{AES-128-CBC} als notwendiger Cipher vorgeschrieben. Mit TLSv1.3 wurde der CBC-Modus entfernt: dies ist aus Sicherheitssicht stark begrüßenswert, allerdings ist diese Version des Standards noch nicht veröffentlicht.
+
+\subsection{Welche Kanäle müssen beachtet werden?}
 
 Die Entwickler und Administratoren müssen darauf achten, dass alle Kommunikationswege auf die gleiche Art und Weise geschützt werden. Eine Situation, die vermieden werden muss, ist z. B. dass ein Webserver mit einer sicheren TLS-Konfiguration konfiguriert wurde, aber die identen Operationen mittels eines Webservices ungesichert über HTTP bereitgestellt werden.
 
@@ -138,14 +167,83 @@ Durch das Setzen von \textit{preload} wird der Wunsch der Webseite mitgeteilt in
 
 Eine WebSocket-URL beinhaltet das zu verwendende Protokoll, dieses kann entweder \textit{ws} (WebSocket) oder \textit{wss} (WebSocket Secure) sein. Aus Sicherheitssicht ist natürlich nur \textit{wss} eine valide Antwort.
 
-
 \section{Sessions and Cookies}
 
 Eine Session ist eine stehende Verbindung zwischen einem Client und einem Server. Innerhalb der Session kann der Server Zugriffe einem Client zuordnen. Nach erfolgtem Login kennt der Server die Benutzeridentität des Clients (bis zum erfolgten Logout).
 
 HTTP ist ein zustandsloses Protokoll, jeder Zugriff ist alleinstehend. Die Session muss daher auf einer höheren Ebene (ISO/OSI: Applikationslayer) gebaut werden. Im Web-Umfeld werden zumeist Cookie-basierte Sessions verwendet, andere Möglichkeiten wären z. B. Token basierte Systeme.
 
-Ein Cookie ist ein kleines Datenpaket welches im Zuge des Session-Managements vom Server dem Client mitgeteilt wird. Der Client speichert nun dieses Cookie und inkludiert es in jedem Folgeaufruf von Operationen auf dem setzenden Webserver. Beim Setzen des Cookies wird der Name und dessen Wert gesetzt. Zusätzlich gibt es die Möglichkeit mehrere sicherheitsrelevante Flags, den Geltungsbereich (Pfad, Domain) als aus Lebenszeit (Expiry-Date) zu setzen.
+Ein Cookie ist ein kleines Datenpaket welches im Zuge des Session-Managements vom Server dem Client mitgeteilt wird. Der Client speichert nun dieses Cookie und inkludiert es in jedem Folgeaufruf von Operationen auf dem setzenden Webserver. Ein Cookie besteht aus einem Namen, Wert, Ablaufdatum und einem Gültigkeitsbereich (Domain und/oder Pfad).
+
+Wird eine Domain für ein Cookie gesetzt, wird das Cookie für diese Domain und alle Subdomains übertragen. Dies ist überraschend unsicherer als keine Domain zu setzen: in diesem Fall würde das Cookie nur an die idente Domain (nicht an die Subdomains) übertagen werden.
+
+Eine wichtige Cookie-Option ist das Setzen eines Gültigkeitspfades. Wird dieser gesetzt, dann wird das Cookie nur für Ressourcen übertragen, deren Pfad ``unter'' diesem Pfad liegen. Auf diese Wiese können mehrere Applikationen auf unterschiedlichen Pfaden auf einem Webserver betrieben werden während keine Applikation auf die Cookies einer anderen Applikation zugreifen kann.
+
+Zusätzlich zu den Cookie-Einstellungen gibt es spezielle sicherheitsrelevante Cookie-Flags:
+
+\subsection{secure-Flag}
+
+Durch das \textit{secure}-Flag wird die Übertragung des Cookies mittels HTTPS erzwungen. Bei potentiell auftretenden HTTP-Zugriffen wird kein Cookie übermittelt, der Request allerdings abgesendet. Dies erlaubt es dem Webserver auf sichere Weise ein HTTP 300 Redirect von HTTP auf HTTPS durchführen.
+
+\subsection{httpOnly-Flag}
+
+Das \textit{httpOnly}-Flag verbietet es Webbrowsern den Zugriff mittels Javascript auf das Cookie. Falls das Cookie nur zur Bildung der Benutzersession verwendet wird, kann dieses Flag durch den Webserver gesetzt, und damit Javascript-basierte Identity Theft Angriffe stark erschwert werden. Achtung: dieses Flag besitzt keinen Einfluss auf die Verwendung des HTTP- oder HTTPS-Protokolls.
+
+Problematisch ist in diesem Zusammenhang die HTTP TRACE Methode. Diese dient zu Analysezwecken und kopiert den eingehenden Request als Content in das Antwortdokument. Falls der Angreifer nicht mittels Javascript auf das Session-Cookie zugreifen kann, aber die Möglichkeit besitzt per Javascript einen HTTP TRACE Aufruf auf den Opfer-Webserver abzusetzen, kann er auf diese Weise das Session-Cookie extrahieren:
+
+\begin{minted}{html}
+<script>
+  var xmlhttp = new XMLHttpRequest();
+  var url = 'http://127.0.0.1/';
+
+  xmlhttp.withCredentials = true; // send cookie header
+  xmlhttp.open('TRACE', url, false);
+  xmlhttp.send();
+</script>
+\end{minted}
+
+Aus diesem Grund wird empfohlen, auf Webservern immer HTTP TRACE zu deaktivieren.
+
+\subsection{sameSite-Flag}
+\label{session_cookies_samesite}
+
+Das \textit{sameSite}-Flag dient zur Vermeidung von CSRF-Angriffen. Das Flag unterrichtet den Browser, wann ein Session-Cookie an eine Webseite übertragen werden soll und wann nicht.
+
+Bei Verwendung von \textit{strict} wird niemals ein Session-Cookie im cross-domain Kontext übertragen. Dies bedeutet, dass das Cookie nur übertragen wird, wenn der Benutzer von der Webseite auf einen Link/eine Operation auf der identen Webseite navigiert. Wird z. B. ein Link auf die Webseite von einer externen Quelle angeklickt (z. B. innerhalb eines Forums oder ein Link innerhalb einer Email), wird bei dem URL-Aufruf kein Cookie übergeben. Hier muss beachtet werden, dass falls die Webseite eine \textit{Unvalidated Forward or Redirect}-Lücke besitzt, der Angreifer diese ansteuern kann und bei dem durchgeführten zweiten Aufruf der Browser das Cookie inkludiert und dadurch potentiell bösartige Aktionen ausgeführt werden können.
+
+Bei Verwendung von \textit{lax} darf der Browser bei dem cross-site Zugriff auf die Webseite das Cookie übertragen, dies aber nur wenn eine sichere HTTP Methode (nicht daten-verändernd) verwendet wird und das Ziel eine \textit{top-level navigation} ist (sprich die Webseite aufgerufen wird und nicht eine Operation innerhalb der Webseite).
+
+Google wird mit Chrome 80\footnote{voraussichtliches Veröffentlichungsdatum: Februar 2020.} seinen Umgang mit dem \textit{SameSite}-Flag verschärfen. Auf der einen Seite wird \textit{SameSite=Lax} als Default verwendet falls keine Policy gesetzt ist, auf der anderen Seite wird \textit{SameSite=None} vom Webbrowser ignoriert werden.
+
+\subsection{Beispiel für Cookies}
+
+Ein einfaches Cookie-Beispiel bei dem das Cookie \textit{sessionid} gesetzt wird. Der Zugriff mittels JavaScript wurde durch \textit{httpOnly} verboten, das Cookie ist für alle Pfade gültig. Da kein Ablaufdatum (\textit{Expires}) bzw. Lebenszeit (\textit{Max-Age}) angegeben wurde, wird das Cookie beim Schließen des Browsers gelöscht:
+
+\begin{minted}{text}
+Set-Cookie: sessionid=38afes7a8; HttpOnly; Path=/
+\end{minted}
+
+Das folgende Cookies mit Namen \textit{id} wird vor der unsicheren Übertragung mittels HTTP (\textit{Secure}) als auch vor Zugriffen mittels JavaScript (\textit{httpOnly}) geschützt. Die Lebensdauer wurde mit einem absoluten Datum angegeben:
+
+\begin{minted}{text}
+Set-Cookie: id=a3fWa; Expires=Wed, 21 Oct 2015 07:28:00 GMT; Secure; HttpOnly
+\end{minted}
+
+Ein Beispiel für das Setzen der sicherheitsrelevanten Header:
+
+\begin{minted}{text}
+Set-Cookie: CookieName=CookieValue; SameSite=Strict; httpOnly; Secure;
+\end{minted}
+
+\section{JavaScript}
+
+1996 wurde im Zuge der Netscape Navigator 2.0 Einführung auch \textit{LiveScript} vorgestellt. Dieser Vorläufer von JavaScript erlaubt es, im Webbrowser Code auszuführen, initiale Use-Cases waren z. B. das client-seitige Überprüfen von Formulardaten vor dem Absenden des Formulars zum Server. Damit begann der Siegeszug von JavaScript. Im Laufe der Zeit wurde der Sprachumfang bzw. die Möglichkeiten, mit dem Webbrowser zu interagieren, immer umfangreiche, die aktuelle Krönung dieser Bewegung sind Progressive Web Applications (PWA).
+
+1997 wurde aus JavaScript ECMAScript, dies ist teilweise auch dadurch begründet, dass JavaScript zwischenzeitlich eine Marke des Unternehmens Oracle wurde.
+
+ECMAScript kann auf verschiedeneste Arten verwendet werden. So kann es auf der einen Seite für User-Tracking angewendet, auf der anderen Seite zur sicheren Verschlüsslung von Benutzerdaten am Client (wie es z. B. EDRi in ihren Ethical Web Development Guidelines vorsieht) verwendet werden.
+
+Zusätzlich kann auch ein ``positiv'' gemeinter ECMAScript-Einsatz missbraucht werden, ein Beispiel hierfür wären XSS-Angriffe.
 
 \section{Same-Origin-Policy (SOP)}
 

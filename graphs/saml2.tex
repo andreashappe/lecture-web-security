@@ -1,0 +1,35 @@
+\documentclass[crop,tikz]{standalone}% 'crop' is the default for v1.0, before it was 'preview'
+%\usetikzlibrary{...}% tikz package already loaded by 'tikz' option
+
+\usepackage[ngerman]{babel}
+\usepackage{tikz-uml}
+
+\begin{document}
+\begin{tikzpicture}[scale=\textwidth/15.2cm,samples=200]
+	\tikzumlset{fill object = white, fill call = gray!20} 
+	\tikzstyle{every node}=[font=\small]
+
+	\begin{umlseqdiag}
+		\umlactor[no ddots]{User}
+		\umlobject[no ddots]{User Agent}
+		\umlobject[no ddots]{Service Provider}
+		\umlobject[no ddots]{Identity Provider}
+
+		\begin{umlcall}[dt=8, op={Access Service}, return={Success}]{User}{User Agent}
+
+		\begin{umlcall}[dt=8, op={Browser Requests Resource}, return={302 Redirect to IdP}]{User Agent}{Service Provider}
+		\end{umlcall}
+
+		\begin{umlcall}[dt=8, op={Browser Requests SAML Token}, return={401 Authenticate}]{User Agent}{Identity Provider}
+		\end{umlcall}
+
+		\begin{umlcall}[dt=8, op={Authentication via Kerberos/NTLM/Login-Form}, return={SAML Token}]{User Agent}{Identity Provider}
+		\end{umlcall}
+
+		\begin{umlcall}[dt=8, op={Browser Requests Resource with SAML2 Token}, return={200 OK}]{User Agent}{Service Provider}
+		\end{umlcall}
+
+		\end{umlcall}
+	\end{umlseqdiag}
+\end{tikzpicture}
+\end{document}

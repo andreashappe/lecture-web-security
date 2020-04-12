@@ -65,6 +65,15 @@ Ein besserer Weg ist es, per default sichere Prozesse zu implementieren und im B
 
 Im Zuge der DSGVO/GDPR wurde bestimmt, dass Software \textit{secure by design and default} sein muss. Dies bedeutet, dass Software die Möglichkeit einer sicheren Konfiguration bieten muss und diese im Auslieferungszustand auch sicher konfiguriert sein muss. Ein Beispiel das dagegen verstößt wäre der Einsatz von Default-Passwörtern.
 
-\subsection{Ethical Hacking}
+\subsection{Ethical Web Development}
 
-\todo{write}
+Technik an sich ist wertneutral. Sobald diese allerdings in Berührung mit der Realität kommt, entsteht ein ethischer Impact. Web Applikationen sind hier keine Ausnahme. Im Zuge des Skripts wird auf ethischen Impact nicht explizit eingegangen, da der Inhalt der Vorlesung das Werkzeug und nicht das Ziel des erstellten Werks ist.
+
+Um trotzdem die ethische Dimension nicht zu vergessen, ein paar Richtlinien der EDRi\footnote{\url{https://edri.org/ethical-web-dev/}}:
+
+\begin{description}
+	\item[Allow as much data processing on an individual’s device as possible.] Dies würde im Web-Umfeld den Einsatz von JavaScript bedingen da nur auf diese Weise Daten direkt im Browser des Benutzers verarbeitet werden können.
+	\item[Where you must deal with user data, use encryption.] Dies inkludiert sowohl Transport-Level Encryption (wie TLS) als auch Verschlüsselung der bearbeiteten Daten.
+	\item[Where possible also use data minimisation methods.] Das Minimalprinzip sollte auch auf die gespeicherten Daten angewendet werden. Daten die eine Applikation nicht besitzt sind Daten, die auch nicht entwendet oder zweckentfremdet werden können.
+	\item[Use first-party resources and avoid using third-party resources.] Es besteht die Sorge, dass externe Ressourcen modifiziert werden könnten. Dies soll durch die Verwendung eigener Ressourcen vermieden werden. Falls notwendig können CSP-Direktiven bzw. Subresource Integrity verwendet werden um die Integrität externer Ressourcen sicherzustellen.
+\end{description}

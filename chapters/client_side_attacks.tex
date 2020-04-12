@@ -190,11 +190,15 @@ Ein Beispiel für ein HTML Formular welches der Angreifer auf seinem Webserver h
 
 In diesem Fall wird die Operation \url{http://bank.com/transfer.do} mit den Parametern \textit{acct} und \textit{amount} aufgerufen. Bei diesem Beispiel wurden die Felder versteckt und der Button mit einem \textit{ablenkenden} Text beschriftet. Alternativ könnte der Angreifer das Formular auch in einem 1x1 Pixel großem IFrame verstecken und automatisiert mittels Javascript abschicken.
 
-Es gibt mehrere Gegenmaßnahmen gegen CSRF-basierte Angriffe, sicherheitstechnisch ist das sogenannte \textit{Synchronizer-Pattern} vorzuziehen. Bei diesem fügt der Webserver bei jedem Formular ein verstecktes HTML-Feld hinzu, in dieses schreibt der Server einen zufälligen Zahlenwert. Wird eine Operation am Server aufgerufen wird dieses Feld an den Server übertragen und dieser vergleicht den übertragenen Zahlenwert mit dem vom Server erwarteten Zahlenwert. Falls diese übereinstimmen, wird die Operation ausgeführt, ansonsten wird die Operation verworfen. Dieser Schutz funktioniert, da der Angreifer auf seinem remote Server den Zahlenwert erraten und in das Angriffs-Formular einfügen müsste.
+\subsection{Synchronizer Token Pattern}
+
+Es gibt mehrere Gegenmaßnahmen gegen CSRF-basierte Angriffe, sicherheitstechnisch ist das sogenannte \textit{Synchronizer Token}-Pattern vorzuziehen. Bei diesem fügt der Webserver bei jedem Formular ein verstecktes HTML-Feld hinzu, in dieses schreibt der Server einen zufälligen Zahlenwert. Wird eine Operation am Server aufgerufen wird dieses Feld an den Server übertragen und dieser vergleicht den übertragenen Zahlenwert mit dem vom Server erwarteten Zahlenwert. Falls diese übereinstimmen, wird die Operation ausgeführt, ansonsten wird die Operation verworfen. Dieser Schutz funktioniert, da der Angreifer auf seinem remote Server den Zahlenwert erraten und in das Angriffs-Formular einfügen müsste.
 
 Damit dieser Schutz verlässlich funktioniert, muss der Zahlenwert regelmäßig erneuert werden, bevorzugterweise sollte für jede potentielle Operation ein neuer Zufallswert generiert werden. In der Praxis wird diese Anti-CSRF Maßnahme häufig vollkommen transparent und automatisch durch das verwendete Web-Framework implementiert.
 
 Wichtig ist, dass eine Operation die einen CSRF-Check implementiert nicht nur überprüft, ob ein potentiell übergebener CSRF-Wert mit dem server-gespeicherten CSRF-Wert übereinstimmt, sondern auch überprüft ob überhaupt ein CSRF-Wert übergeben wurde. Während Tests wurde häufig das fehlerhafte Verhalten vorgefunden, dass wenn der CSRF-Parameter einfach gelöscht wird, die Operation ausgeführt wird (also CSRF-Tokens nur verglichen werden, wenn beim Aufruf zumindest ein CSRF-Wert übergeben wird).
+
+\subsection{SameSite-Flag bei Session Cookies}
 
 Eine weitere Schutzmaßnahme (im Sinne des Hardening) ist der Einsatz des \textit{SameSite} Cookie-Flags (siehe auch Kapitel \ref{session_cookies_samesite}, Seite \pageref{session_cookies_samesite}). Bei korrektem Setzen dieses Flags erlaubt der Web-Browser des Opfers das Übertragen der Session-Id nur, wenn sowohl das Formular als auch das Ziel des Formulars sich auf dem identen Webserver befinden.
 

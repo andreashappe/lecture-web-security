@@ -53,93 +53,13 @@ Das Herzstück von SAML2 sind die Security Assertions die vom IdP ausgestellt we
 Typische Elemente einer Assertion wären:
 
 \begin{itemize}
-	\item Issuer: der Aussteller der Assertion.
-	\item Subject: für wenn wurde die Assertion ausgestellt (User).
+	\item \textit{Issuer} identifiziert den IdP der diese Assertion ausgestellt hat.
+	\item \textit{Signature} beinhaltet die Signatur welche die Integrität der Security Assertion sichert.
+	\item \textit{Subject} beschreibt das identifizierte Objekt, in diesem Fall den identifizierten User. Der verwendete Identifier (\textit{NameId}) kann verschiedene Typen besitzen, häufig wird \textit{transient} verwendet. \textit{transient} beschreibt einen kurzfristigen Identifier, ähnlich einer Session-Id, und besitzt den Vorteil, dass auf diese Weise der SP nicht die genaue Identität des Subjects erfährt.
 	\item Conditions: beliebig viele Conditions welche den Anwendungsbereich der Assertion beschränken. Beispiel sind z. b. temporale Beschränkungen (\textit{NotBefore}, \textit{NotOnOrAfter}) oder eine Einschränkung der Service für welche die Assertion gültig sein soll.
 	\item AttributeStatement: beliebig viele Attribute-Statements welche optionale Daten an die Assertion anhängen.
-	\item Signature: die Signatur mit welcher der IdP die Integrität der Assertion bestätigt.
-\end{itemize}
-
-Ein Beispiel für eine SAML-Assertion (Quelle: wikipedia):
-
-\begin{minted}{xml}
-<saml:Assertion
-   xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
-   xmlns:xs="http://www.w3.org/2001/XMLSchema"
-   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-   ID="b07b804c-7c29-ea16-7300-4f3d6f7928ac"
-   Version="2.0"
-   IssueInstant="2004-12-05T09:22:05Z">
-   <saml:Issuer>https://idp.example.org/SAML2</saml:Issuer>
-   <ds:Signature
-     xmlns:ds="http://www.w3.org/2000/09/xmldsig#">...</ds:Signature>
-   <saml:Subject>
-     <saml:NameID
-       Format="urn:oasis:names:tc:SAML:2.0:nameid-format:transient">
-       3f7b3dcf-1674-4ecd-92c8-1544f346baf8
-     </saml:NameID>
-     <saml:SubjectConfirmation
-       Method="urn:oasis:names:tc:SAML:2.0:cm:bearer">
-       <saml:SubjectConfirmationData
-         InResponseTo="aaf23196-1773-2113-474a-fe114412ab72"
-         Recipient="https://sp.example.com/SAML2/SSO/POST"
-         NotOnOrAfter="2004-12-05T09:27:05Z"/>
-     </saml:SubjectConfirmation>
-   </saml:Subject>
-   <saml:Conditions
-     NotBefore="2004-12-05T09:17:05Z"
-     NotOnOrAfter="2004-12-05T09:27:05Z">
-     <saml:AudienceRestriction>
-       <saml:Audience>https://sp.example.com/SAML2</saml:Audience>
-     </saml:AudienceRestriction>
-   </saml:Conditions>
-   <saml:AuthnStatement
-     AuthnInstant="2004-12-05T09:22:00Z"
-     SessionIndex="b07b804c-7c29-ea16-7300-4f3d6f7928ac">
-     <saml:AuthnContext>
-       <saml:AuthnContextClassRef>
-         urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport
-       </saml:AuthnContextClassRef>
-     </saml:AuthnContext>
-   </saml:AuthnStatement>
-   <saml:AttributeStatement>
-     <saml:Attribute
-       xmlns:x500="urn:oasis:names:tc:SAML:2.0:profiles:attribute:X500"
-       x500:Encoding="LDAP"
-       NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri"
-       Name="urn:oid:1.3.6.1.4.1.5923.1.1.1.1"
-       FriendlyName="eduPersonAffiliation">
-       <saml:AttributeValue
-         xsi:type="xs:string">member</saml:AttributeValue>
-       <saml:AttributeValue
-         xsi:type="xs:string">staff</saml:AttributeValue>
-     </saml:Attribute>
-   </saml:AttributeStatement>
- </saml:Assertion>
-\end{minted}
-
-Folgende Elemente beinhalten wichtige Informationen:
-
-\begin{itemize}
-	\item \textit{Issuer} identifiziert den IdP der diese Assertion ausgestellt hat.
-	\item \textit{Signature} (nicht ausgefüllt) beinhaltet die Signatur welche die Integrität der Security Assertion sichert.
-	\item \textit{Subject} beschreibt das identifizierte Objekt, in diesem Fall den identifizierten User. Der verwendete Identifier (\textit{NameId}) kann verschiedene Typen besitzen, in diesem Fall wurde \textit{transient} verwendet. \textit{transient} beschreibt einen kurzfristigen Identifier, ähnlich einer Session-Id, und besitzt den Vorteil, dass auf diese Weise der SP nicht die genaue Identität des Subjects erfährt.
-	\item \textit{Conditions} schränken den Anwendungsbereich der Assertion ein. In diesem Beispiel wird dies sowohl temporal (\textit{NotBefore} und \textit{NotOnOrAfter}) als auch über das vorgesehene Zielpublikum (\textit{AudienceRestriction}) durchgeführt.
-	\item \textit{AttributeStatement} enthält weitere optionale Attribute. In diesem Fall wird die Rollenzugehörigkeit zu den Gruppen \textit{members} und \textit{staff} ausgedrückt.
 	\item \textit{AuthnStatement} beschreibt die Assertion selbst und beinhaltet einen eindeutigen Identifier für die Assertion (\textit{SessionIndex}). Dieser Identifier wird häufig im Zuge des Sign-Out zur Identifikation der betroffenen Session verwendet.
 \end{itemize}
-
-	Als Gesamtpaket wird folgendes durch diese Security Assertion vom IdP dem SP mitgeteilt (Quelle Wikipedia):
-
-\begin{quote}
-	The assertion ("b07b804c-7c29-ea16-7300-4f3d6f7928ac") was issued at time "2004-12-05T09:22:05Z" by identity provider (https://idp.example.org/SAML2) regarding subject (3f7b3dcf-1674-4ecd-92c8-1544f346baf8) exclusively for service provider (https://sp.example.com/SAML2).
-
-	The principal identified in the Subject element was authenticated at time "2004-12-05T09:22:00Z" by means of a password sent over a protected channel.
-
-	The principal identified in the Subject element is a staff member at this institution.
-\end{quote}
-
-\subsection{IdP Discovery}
 
 Bei einem realen Deployment kann die Situation auftreten, dass mehrere Identity Provider verfügbar sind und der Service Provider den korrekten IdP selektieren muss. Ein Beispiel wäre ein Unternehmen welches interne User gegen einem Active Directory und externe User gegen einen öffentlichen IdP authentifiziert.
 
@@ -170,11 +90,12 @@ Bei Webbrowser-basierten Flows wird meistens das HTTP Redirect oder das HTTP POS
 Hier ein Beispiel für ein SP-initiated Single-Sign on welches das HTTP POST Binding verwendet:
 
 \begin{figure}[h!]
-\includegraphics{images/Saml2-browser-sso-redirect-post.png}
-\centering
+	\includegraphics[width=\textwidth]{graphs/saml2.pdf}
+	\centering
 \end{figure}
 
 In diesem Beispiel will ein Client (\textit{User Agent}) auf einen Service Provider zugreifen und benötigt hierfür eine Autorisierung. Nach dem initialen Client-Zugriff (Schritt 1) verwendet der SP zusammen mit dem Client das \textit{IdP Discovery} Protokoll um den zugehörigen IdP zu identifizieren. Sobald dieser bekannt ist, erstellt der SP einen Authorization Request und teilt diesen (samt der Adresse des IdPs) dem Client mit. Der Client kontaktiert nun den IdP und übermittelt den Request.
+
 Der IdP authentiziert und authorized nun den Client. Falls dies erfolgreich durchgeführt wurde, wird eine SAML2 Security Assertion ausgestellt, vom IdP signiert und dem Client mitgeteilt. Da dies ein HTTP POST basierter Flow ist, erstellt der IdP ein HTML Formular, inkludiert in diesem HTML Formular das generierte SAML-Dokument (hidden field) und submitted das Formular automatisch mittels Javascript (Schritt 4). Der Client greift nun auf den SP zu und übermittelt die SAML assertion. Der SP verifiziert die Signatur und erstellt eine Session basierend auf den Daten innerhalb der Assertion. Bei Schritt 6 wird (wahrscheinlich, ist implementierungsabhängig) ein Session Cookie gesetzt, dass der Client bei allen weiteren Anfragen an den SP verwendet. Auf diese Weise sind nun alle folgenden Requests authentifiziert und authorisiert.
 
 \section{Reflektionsfragen}

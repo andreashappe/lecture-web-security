@@ -4,70 +4,6 @@ Eine Session ist eine stehende Verbindung zwischen einem Client und einem Server
 
 Token-basierte Systeme werden gerne zur Übertragung von Zugangsberechtigungen für REST/SOAP-Webservices verwendet. Sofern die Services state-less sind, ist dies eine sehr gute Kombination. In diesem Fall werden alle notwendigen Session-/Benutzerinformationen im Token transportiert, der Service selbst persistiert keine State-Informationen. Durch diese funktionale Herangehensweise kann der Service perfekt horizontal skalieren: wird mehr Performance benötigt, werden weitere Service-Worker gestartet. Dies ist häufig bei Webservices die durch Mobilapplikationen konsumiert werden der Fall, allerdings seltener bei interaktiven Webapplikationen. Bei letzteren wird der Token häufig als Session-Identifikatior missbraucht und dient zur Identifikation einer serverseitigen Session --- der Service ist also state-ful. Um ein vollwertiges Session-System zu erlangen müssen Programmierer nun dieses, basiertend auf dem Token als Identifier, selbst programmieren und erfinden daher quasi das Rad neu. Die Verwendung von Token erbringt keine Vorteile mehr und sollte in diesem Fall diskutiert werden. Ein häufiger Grund diesen Nachteil in Kauf zu nehmen ist, dass zumindest Web- und Mobilapplikationen die idente serverseitige API konsumieren können.
 
-\section{Cookies}
-
-Ein Cookie ist ein kleines Datenpaket welches im Zuge des Session-Managements vom Server dem Client mitgeteilt wird. Der Client speichert nun dieses Cookie und inkludiert es in jedem Folgeaufruf von Operationen auf dem setzenden Webserver. Ein Cookie besteht aus einem Namen, Wert, Ablaufdatum und einem Gültigkeitsbereich (Domain und/oder Pfad).
-
-Wird eine Domain für ein Cookie gesetzt, wird das Cookie für diese Domain und alle Subdomains übertragen. Dies ist überraschend unsicherer als keine Domain zu setzen: in diesem Fall würde das Cookie nur an die idente Domain (nicht an die Subdomains) übertagen werden.
-
-Eine wichtige Cookie-Option ist das Setzen eines Gültigkeitspfades. Wird dieser gesetzt, dann wird das Cookie nur für Ressourcen übertragen, deren Pfad ``unter'' diesem Pfad liegen. Auf diese Wiese können mehrere Applikationen auf unterschiedlichen Pfaden auf einem Webserver betrieben werden während keine Applikation auf die Cookies einer anderen Applikation zugreifen kann.
-
-Zusätzlich zu den Cookie-Einstellungen gibt es spezielle sicherheitsrelevante Cookie-Flags:
-
-\subsection{secure-Flag}
-
-Durch das \textit{secure}-Flag wird die Übertragung des Cookies mittels HTTPS erzwungen. Bei potentiell auftretenden HTTP-Zugriffen wird kein Cookie übermittelt, der Request allerdings abgesendet. Dies erlaubt es dem Webserver auf sichere Weise ein HTTP 300 Redirect von HTTP auf HTTPS durchführen.
-
-\subsection{httpOnly-Flag}
-
-Das \textit{httpOnly}-Flag verbietet es Webbrowsern den Zugriff mittels Javascript auf das Cookie. Falls das Cookie nur zur Bildung der Benutzersession verwendet wird, kann dieses Flag durch den Webserver gesetzt, und damit Javascript-basierte Identity Theft Angriffe stark erschwert werden. Achtung: dieses Flag besitzt keinen Einfluss auf die Verwendung des HTTP- oder HTTPS-Protokolls.
-
-Problematisch ist in diesem Zusammenhang die HTTP TRACE Methode. Diese dient zu Analysezwecken und kopiert den eingehenden Request als Content in das Antwortdokument. Falls der Angreifer nicht mittels Javascript auf das Session-Cookie zugreifen kann, aber die Möglichkeit besitzt per Javascript einen HTTP TRACE Aufruf auf den Opfer-Webserver abzusetzen, kann er auf diese Weise das Session-Cookie extrahieren:
-
-\begin{minted}{html}
-<script>
-  var xmlhttp = new XMLHttpRequest();
-  var url = 'http://127.0.0.1/';
-
-  xmlhttp.withCredentials = true; // send cookie header
-  xmlhttp.open('TRACE', url, false);
-  xmlhttp.send();
-</script>
-\end{minted}
-
-Aus diesem Grund wird empfohlen, auf Webservern immer HTTP TRACE zu deaktivieren.
-
-\subsection{sameSite-Flag}
-\label{session_cookies_samesite}
-
-Das \textit{sameSite}-Flag dient zur Vermeidung von CSRF-Angriffen. Das Flag unterrichtet den Browser, wann ein Session-Cookie an eine Webseite übertragen werden soll und wann nicht.
-
-Bei Verwendung von \textit{strict} wird niemals ein Session-Cookie im cross-domain Kontext übertragen. Dies bedeutet, dass das Cookie nur übertragen wird, wenn der Benutzer von der Webseite auf einen Link/eine Operation auf der identen Webseite navigiert. Wird z. B. ein Link auf die Webseite von einer externen Quelle angeklickt (z. B. innerhalb eines Forums oder ein Link innerhalb einer Email), wird bei dem URL-Aufruf kein Cookie übergeben. Hier muss beachtet werden, dass falls die Webseite eine \textit{Unvalidated Forward or Redirect}-Lücke besitzt, der Angreifer diese ansteuern kann und bei dem durchgeführten zweiten Aufruf der Browser das Cookie inkludiert und dadurch potentiell bösartige Aktionen ausgeführt werden können.
-
-Bei Verwendung von \textit{lax} darf der Browser bei dem cross-site Zugriff auf die Webseite das Cookie übertragen, dies aber nur wenn eine sichere HTTP Methode (nicht daten-verändernd) verwendet wird und das Ziel eine \textit{top-level navigation} ist (sprich die Webseite aufgerufen wird und nicht eine Operation innerhalb der Webseite).
-
-Google wird mit Chrome 80\footnote{voraussichtliches Veröffentlichungsdatum: Februar 2020.} seinen Umgang mit dem \textit{SameSite}-Flag verschärfen. Auf der einen Seite wird \textit{SameSite=Lax} als Default verwendet falls keine Policy gesetzt ist, auf der anderen Seite wird \textit{SameSite=None} vom Webbrowser ignoriert werden.
-
-\subsection{Beispiel für Cookies}
-
-Ein einfaches Cookie-Beispiel bei dem das Cookie \textit{sessionid} gesetzt wird. Der Zugriff mittels JavaScript wurde durch \textit{httpOnly} verboten, das Cookie ist für alle Pfade gültig. Da kein Ablaufdatum (\textit{Expires}) bzw. Lebenszeit (\textit{Max-Age}) angegeben wurde, wird das Cookie beim Schließen des Browsers gelöscht:
-
-\begin{minted}{text}
-Set-Cookie: sessionid=38afes7a8; HttpOnly; Path=/
-\end{minted}
-
-Das folgende Cookies mit Namen \textit{id} wird vor der unsicheren Übertragung mittels HTTP (\textit{Secure}) als auch vor Zugriffen mittels JavaScript (\textit{httpOnly}) geschützt. Die Lebensdauer wurde mit einem absoluten Datum angegeben:
-
-\begin{minted}{text}
-Set-Cookie: id=a3fWa; Expires=Wed, 21 Oct 2015 07:28:00 GMT; Secure; HttpOnly
-\end{minted}
-
-Ein Beispiel für das Setzen der sicherheitsrelevanten Header:
-
-\begin{minted}{text}
-Set-Cookie: CookieName=CookieValue; SameSite=Strict; httpOnly; Secure;
-\end{minted}
-
 \section{Client- vs Server-Side Session}
 
 Mit Hilfe des Cookies kann der Server nun ein Session-Management Schema implementieren. Prinzipiell gibt es nun die Unterscheidung in client- und server-seitigem Session-Schemas.
@@ -86,7 +22,8 @@ Aus Sicherheitssicht sind server-seitige Sessions zu bevorzugen; einige neuere S
 
 Teilweise wurden früher Session auch an Metadaten (IP-Adresse des Clients) gebunden. Aufgrund des Einsatzes von VPNs, WLANs, Mobiltelefonen und -internet wird dies mittlerweile seltener verwendet.
 
-\section{Token-basierte Systeme für interaktive Sessions}
+
+\subsection{Token-basierte Systeme für interaktive Sessions}
 
 Häufig werden client-seitige Token Systeme als direkte Alternative zu klassichen Cookie-Session-basierten Systemen angepriesen. Als Vorteil wird zumeist ihre bessere Skalierbarkeit (wenn nur Token-gespeicherte Daten für eine Operation benötigt werden, wird kein Datenbank-Zugriff benötigt) und Sicherheit (durch die Verwendung von Kryptographie) angepriesen. Diese Begründung macht leider zumeist nur begrenzt viel Sinn.
 
@@ -98,7 +35,7 @@ Wird eine Kombination von kurzlebigen Access-, und langlebigen Refresh-Tokens ve
 
 Token-basierte Systeme sind IMHO gut dafür geeignet, Clients im Auftrag des Users Zugriff auf Operationen und Daten zu erlauben. Dies kann z. B. eine third-party Webseite oder eine Mobilapplikation sein. Für interaktive Webseiten sind sie potentiell suboptimal da sich die Entwickler Gedanken um die Revocation ausgestellter Tokens machen müssen. Synergie-Gründe (die gleiche API kann von einer Webapplikation als auch von mobilen Applikation verwendet werden) können eine Token-basierte Lösung interessant machen, in diesem Fall müssen allerdings die Vor- und Nachteile der selbst-implementierten Revocation abgewogen werden.
 
-\section{ViewState}
+\subsection{ViewState}
 
 Das ViewState-pattern speichert den aktuellen Status der View (z. B. eingegebene Daten, Verlaufshistorie, aktuell verfügbare Operationen) innerhalb des ViewStates, z. B. als hidden Parameter innerhalb jedes Formulars. Da der ViewState am Client gespeichert wird, muss der Server sich um den Integritäts- und Confidentiality-Schutz kümmern.
 
