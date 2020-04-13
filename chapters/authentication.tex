@@ -191,7 +191,7 @@ Time-based One-Time Passwords (TOTP, RFC 6238) ist ein häufig verwendetes Verfa
 
 Initial wird ein shared secret key zwischen Authenticator und Webapplikation ausgetauscht. Wird nun eine Authentifikation benötigt wird nun auf beiden Seiten die aktuelle Systemzeit (in Sekunden seit Beginn der UNIX Epoche) auf 30 Sekunden gerundet und ein MAC (unter Zuhilfenahme des shared secret keys) gebildet. Dieser MAC wird nun auf 31 bit gekürzt und in einen 6 oder 8 stelligen Zahlencode verwandelt. Dieser wird am Authenticator angezeigt und muss vom User in der Webapplikation als weiterer Faktor eingegeben werden. Sofern beide berechnete Werte ident sind, wird die Authentifikation erfolgreich durchgeführt.
 
-Ein Vorteil dieses Verfahrens ist, dass nach dem initialen Schlüsselaustausch keine Netzwerkverbindung zwischen Authenticator und Applikation benötigt wird. Ein Nachteil ist, dass die Systemuhren der betroffenen Systeme synchronisiert werden müssen.
+Ein Vorteil dieses Verfahrens ist, dass nach dem initialen Schlüsselaustausch keine Netzwerkverbindung zwischen Authenticator und Applikation benötigt wird. Ein Nachteil ist, dass die Systemuhren der betroffenen Systeme synchronisiert werden müssen. Ebenso kann bei TOTP kein \textit{device-binding} durchgeführt werden: die Webapplikation kann nicht feststellen, auf wievielen devices ein TOTP-Secret eingespielt wurde. Ebenso ist der Vorgang der initialen Secret-Verteilung gefährlich: wird hier z. B. von einem Benutzer ein Selfie inklusive dem QR-Code/Secret-Code erstellt und veröffentlicht, wurde auf diese Weise die gesamte Sicherheit des Verfahrens kompromittiert.
 
 \subsection{Protokolle der FIDO-Alliance}
 
@@ -207,6 +207,8 @@ Ende 2014 wurde FIDO 1.0 veröffentlicht, dieser Standard umfasste:
 Das Grundprinzip basiert auf public key Kryptographie. Wenn ein Authenticator (z. B. Android Gerät) als Gerät eines Benutzers registriert wird, wird im Gerät ein public/private key pair generiert und der public key dem FIDO Server mitgeteilt. Im Falle einer Benutzerauthentication wird die Anfrage des Servers vom Client mit dem private key signiert, mit dem serverseitig hinterlegten public key verglichen und damit die Identität des Benutzers verifiziert. Lokal werden meistens biometrische Methoden zum Schutz der Tokens verwendet.
 
 FIDO2 kombiniert mehrere Projekte um eine passwortlose Authentication zu erlauben. Das vom W3C standardisierte WebAuthn wird von Webbrowsern implementiert und erlaubt es Webapplikationen (mittels JavaScript) eine FIDO Benutzerauthentication durchzuführen. Das Client-to-Authenticator-Protocol (CTAP) standardisiert das Kommunikationprotokoll zwischen Authenticator (Hardware-Tokens) und dem Webbrowser (Client). Es gibt zwei Varianten CTAP1 und CTAP2 wobei CTAP1 dem FIDO U2F Standard entspricht.
+
+\subsection{Gegenüberstellung FIDO/TOTP}
 
 Wird FIDO mit TOTP verglichen, können konzeptionelle Unterschiede erkannt werden:
 

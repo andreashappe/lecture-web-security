@@ -540,6 +540,16 @@ Zusätzlich müssen serialisierte Daten einer Integritätssicherung unterzogen w
 
 Da diese Sicherungsmassnahmen teilweise schwer umsetzbar sind, empfiehlt OWASP, dass Daten nur deserialisert werden dürfen, wenn diese aus einer authentischen und integritäts-geschützen Quelle kommen. Dadurch wird allerdings das Grundproblem nicht gelöst, sondern wird die Verantwortung und das Problem nur zu dem Anwender, der die Deserialisierung anstößt, verschoben. Falls ein Angreifer das Konto dieses Anwenders übernehmen kann, erlangt er wiederum die Möglichkeit eine Deserialisierungattacke durchzuführen.
 
+\subsection{HTTP Request Smuggling}
+
+Bei HTTP Request Smuggling versucht der Angreifer, einzelne HTTP Requests in ein System einzuschleusen.
+
+Zumeist wird dies durch Unterschiede bei der Request-Behandlung zwischen Front-End und Backend-Systemen ermöglicht. Bei einem häufigen Setup empfängt ein Frontend-System die Benutzerrequests aller Browser. Diese werden eventuell gefilteret und dann über eine Verbindung an ein Backend-System weitergeleitet. Hier wird zumeist aus Performance-Gründen nur eine Verbindung verwendet, dass heißt auch, dass Requests unterschiedlicher Browser nacheinander über diese Verbindung übertragen werden. Das Backend-System empfängt nun über diese Verbindung die Anfragen, muss diese nun wieder in einzelne Anfragen zerlegen und schlußendlich abarbeiten. Werden hier die Anfrage-Grenzen (also die Länge der HTTP Requests) unterschiedlich interpretiert, kann dies dazu führen, dass der Angreifer im Backend-System dies dazu ausnutzen kann, Daten ``vor'' einem Folgerequest anzuhängen.
+
+Häufig kann dies durch modifizierte Längen-Header inititiert werden. Beispielsweise könnte das Front-End System den \textit{Content-Length} Header verwenden, während das Backend-System den \textit{Transfer-Encoding} Header zur Längenbestimmung verwendet.
+
+Die Gegenmaßnahmen liegen eher im Administrator-Umfeld, daher wird in diesem Skript auf diese Angriffe nicht weiter eingegangen. Eine gute Einleitung in diese kann auf der PortSwigger Homepage\footnote{\url{https://portswigger.net/web-security/request-smuggling}} gefunden werden.
+
 \section{Reflektionsfragen}
 
 \begin{enumerate}

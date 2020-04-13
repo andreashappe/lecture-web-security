@@ -306,7 +306,24 @@ WebSockets bieten eine bidirektionale Verbindung zwischen Webbrowser und Webserv
 
 Der Websocket wird durch einen Client-Request aufgebaut. Bei diesem teilt der Client mit, dass er gerne die Verbindung auf einen WebSocket upgraden will, im Erfolgsfall entgegnet der Server mit einem HTTP 101 Code. Bei der initialen Client-Anfrage werden alle HTTP Header mitübertragen, der Server erlangt so Zugriff auf etwaige Authorization-Header und/oder Session-Cookies und kann so Clients identifizieren.
 
-\section{HTML5 WebStorage/LocalStorage}
+\section{WebAssembly}
+
+WebAssembly erlaubt es, hoch-performante Programme zu schreiben, welche innerhalb eines Webbrowsers ausgeführt werden. Einzelne Funktionen, die in WebAssembly geschrieben werden, können über JavaScript aufgerufen werden.
+
+Hier wären zwei Angriffsmöglichkeiten offensichtlich:
+
+\begin{itemize}
+	\item Verwendung von WebAssembly um einen hoch-performanten Crypto-Miner im Browser auszuführen.
+	\item Verwendung von WebAssembly zum Auslagern von Teilen von JavaScript-Schadcode um auf diese Weise die Detektion durch Anti-Malware Tools zu umgehen.
+\end{itemize}
+
+Aktuell (Stand Anfang 2020) waren keine grossflächigen Angriffe mittels WebAssembly bekannt.
+
+\section{HTML5 / Progressive Web Appplications}
+
+Im Laufe der Zeit wurden die Möglichkeiten der Webbrowser zur Interaktion mit Benutzern bzw. ihrer Umgebung immer stärker erweitert. Diese neuen Möglichkeiten können zumeist über JavaScript innerhalb des Browsers angesprochen werden. Indirekt werden sie allerdings weiterhin über die Webserver kontrolliert, da diese den JavaScript Code ja zuerst auf den jeweiligen Webseiten platzieren müssen.
+
+\subsection{HTML5 WebStorage/LocalStorage}
 
 HTML5 LocalStorage oder WebStorage bietet Webapplikationen die Möglichkeit lokal größere Datenmengen (um die fünf Megabyte) zu speichern. Im Gegensatz dazu sollte bei Cookies davon ausgegangen werden, dass maximal 4096 Byte gespeichert werden können.
 
@@ -323,13 +340,25 @@ Verglichen zu Cookie ist WebStorage und SessionStorage stärker gegenüber XSS-A
 
 Aus diesen Gründen verbieten einige Sicherheitsrichtlinien den Einsatz von HTML5 Web- und SessionStorage.
 
-\section{HTML5 WebWorkers}
+\subsection{HTML5 WebWorkers}
 
 Die Javascript-Umgebung eines Webbrowers ist eine Single-Thread Umgebung. Wenn ein Javascript länger läuft, blockiert es die Ausführung aller anderen JavaScripts auf der Seite.
 
 Um long-running JavaScripts zu erlauben, wurden WebWorker eingeführt. Dies sind JavaScript Programme die analog zu einem Background-Thread gestartet werden und an welche Nachrichten von der Webseite aus verschickt werden können.
 
 Da WebWorker selbst AJAX-Requests (XMLHttpRequest) ausführen, und potentiell die CPU des Hosts auslasten können, muss bei deren Entwicklung darauf geachtet werden, dass ein Angreifer nicht Zugriff auf diese erhält. Insbesondere sollten keine benutzer-bereitgestellten Daten direkt an Webworker übergeben werden.
+
+\subsection{Interaktionsmöglichkeiten}
+
+Webbrowser ersetzen aktuell Desktop-Applikationen, benötigen hierfür allerdings erweiterte Interaktionsmöglichkeiten. Deise werden durch neue Standards geschaffen, zum Beispiel:
+
+\begin{itemize}
+	\item WebRTC erlaubt die peer-to-peer Kommunikation zwischen Browsern und wird z. B. für Audio- oder Videokonferenzen verwendet.
+	\item WebNFC erlaubt die Verwendung von NFC über Webbrowser.
+	\item WebBluetooth erlaubt es, JavaScript auf konfigurierte BlueTooth LE devices zuzugreifen und wird für SmartHealth bzw. SmartHome Anwendungen benötigt.
+\end{itemize}
+
+Bei diesen Schnittstellen sind aktuell weniger Sicherheits-, sondern eher Privatsphäre-Gefährdungen bekannt. Generell kann hier das Gefährdungspotential mit jenem von Mobilapplikationen auf Smartphones verglichen werden.
 
 \section{Reflektionsfragen}
 

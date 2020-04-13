@@ -188,6 +188,12 @@ Ein Beispiel für ein HTML Formular welches der Angreifer auf seinem Webserver h
 </form>
 \end{minted}
 
+\begin{figure}
+	\includegraphics[width=\textwidth]{graphs/csrf.pdf}
+	\centering
+	\caption{Beispiel für einen CSRF-Angriff}
+\end{figure}
+
 In diesem Fall wird die Operation \url{http://bank.com/transfer.do} mit den Parametern \textit{acct} und \textit{amount} aufgerufen. Bei diesem Beispiel wurden die Felder versteckt und der Button mit einem \textit{ablenkenden} Text beschriftet. Alternativ könnte der Angreifer das Formular auch in einem 1x1 Pixel großem IFrame verstecken und automatisiert mittels Javascript abschicken.
 
 \subsection{Synchronizer Token Pattern}

@@ -1,0 +1,37 @@
+\documentclass[crop,tikz]{standalone}% 'crop' is the default for v1.0, before it was 'preview'
+%\usetikzlibrary{...}% tikz package already loaded by 'tikz' option
+
+\usepackage[ngerman]{babel}
+\usepackage{tikz-uml}
+
+\begin{document}
+\begin{tikzpicture}[scale=\textwidth/15.2cm,samples=200]
+	\tikzumlset{fill object = white, fill call = gray!20} 
+	\tikzstyle{every node}=[font=\small]
+
+	\begin{umlseqdiag}
+		\umlactor[no ddots]{User}
+		\umlobject[no ddots]{Browser}
+		\umlobject[no ddots]{Target Website}
+		\umlobject[no ddots]{Malicious Website}
+
+		\begin{umlcall}[dt=8, op={Normale Verwendung}, return={Session bleibt geöffnet}]{User}{Browser}
+			\begin{umlcall}[dt=8, op={Login}, return={Session Daten}]{Browser}{Target Website}
+			\end{umlcall}
+		\end{umlcall}
+
+		\begin{umlcall}[dt=8, op={Surfen im Internet}, return={}]{User}{Browser}
+			\begin{umlcall}[dt=8, op={Waterhole Attack/Social Engineering}, return={Website mit Formular}]{Browser}{Malicious Website}
+			\end{umlcall}
+
+			\begin{umlcallself}[dt=8, op={Formular wird automatisch aufgerufen}]{Browser}
+			\end{umlcallself}
+
+			\begin{umlcall}[dt=8, op={Form-Operaton wird mit Session aufgerufen}, return={}]{Browser}{Target Website}
+				\begin{umlcallself}[dt=8, op={Operation wird als User ausgeführt}]{Target Website}
+				\end{umlcallself}
+			\end{umlcall}
+		\end{umlcall}
+	\end{umlseqdiag}
+\end{tikzpicture}
+\end{document}
