@@ -2,7 +2,7 @@
 
 Dieses Skript betrachtet die Sicherheit von Web-Applikationen. Sicherheit kann nicht alleine stehen, man kann nicht ``Sicherheit programmieren'' sondern nur ``eine Applikation sicher programmieren''. Dementsprechend soll der erste Teil des Skripts das organisatorische Umfeld als auch technische Grundlagen klären.
 
-Sicherheit ist keine One-Shot Operation, die einmalig vor Projektende durchgeführt wird, sondern muss während der gesamten Laufzeit der Softwareentwicklung beachtet werden. Ein typisches (fiktives) Beispiel: ein Softwareprojekt wurde als klassisches Wasserfall-Model geplant. Nach drei Jahren Laufzeit sollte das Projekt abgeschlsosen sein, ca. sechs Monate vor Ende ist ein Penetration-Test der Software vorgesehen --- die sechs Monate sollten ausreichend sein um potentiell gefundene Schwachstellen auch zu beheben. Es entwickelt sich leider eine typische ``Softwareprojekt''-Geschichte: die Fertigstellung verzögert sich, schlußendlich kann der Penetration-Test erst eine Woche vor Go-Live durchgeführt werden. Natürlich werden kritische Fehler gefunden --- aufgrund der Verzögerungen und der Mehrbelastung der Entwickler war auch nicht mehr ausreichend Zeit für Sicherheits- bzw. Qualitätssicherheitsmaßnahmen. Der Launch-Zeitpunkt kann aufgrund zugekaufter Werbung nicht mehr verschoben werden, was nun? Wie kann man diese Situation vollständig vermeiden?
+Sicherheit ist keine One-Shot Operation, die einmalig vor Projektende durchgeführt wird, sondern muss während der gesamten Laufzeit der Softwareentwicklung beachtet werden. Ein typisches (fiktives) Beispiel: ein Softwareprojekt wurde als klassisches Wasserfall-Model geplant. Nach drei Jahren Laufzeit sollte das Projekt abgeschlossen sein, ca. sechs Monate vor Ende ist ein Penetration-Test der Software vorgesehen --- die sechs Monate sollten ausreichend sein um potentiell gefundene Schwachstellen auch zu beheben. Es entwickelt sich leider eine typische ``Softwareprojekt''-Geschichte: die Fertigstellung verzögert sich, schlussendlich kann der Penetration-Test erst eine Woche vor Go-Live durchgeführt werden. Natürlich werden kritische Fehler gefunden --- aufgrund der Verzögerungen und der Mehrbelastung der Entwickler war auch nicht mehr ausreichend Zeit für Sicherheits- bzw. Qualitätssicherheitsmaßnahmen. Der Launch-Zeitpunkt kann aufgrund zugekaufter Werbung nicht mehr verschoben werden, was nun? Wie kann man diese Situation vollständig vermeiden?
 
 Professionelle Softwareentwicklung verwendet meistens einen (semi-)standardisierten Software Development Lifecycle (SDLC), es gibt verschiedene Ausprägungen bei diesem Security einzubringen. Zumeist werden in den jeweiligen Phasen sicherheitsrelevante Inhalte hinzugefügt:
 
@@ -63,7 +63,7 @@ Audit Logs dienen u.a. dazu, um im Fehlerfall die Schwachstelle zu erkennen als 
 
 \section{Secure Design Review / Threat Modeling}
 
-Threat Models dienen zur systematischen Analyse von Softwareprodukten auf Risiken, Schwachstellen und Gegenmaßnahmen. Durch die Verwendung eines formalisierten Ablaufs wird die gleichbleibende Qualität der Analyse gewährleistet.
+Threat Models dienen zur systematischen Analyse von Softwareprodukten auf Risiken, Schwachstellen und Gegenmaßnahmen. Durch die Verwendung eines formalisierten Ablaufs wird die gleich bleibende Qualität der Analyse gewährleistet.
 
 Bei der Analyse sollten vier Hauptfragen gestellt und beantwortet werden\footnote{Quelle: Adam Shostack --- Threat Modeling}:
 
@@ -168,7 +168,7 @@ Der Großteil dieser Maßnahmen zielt darauf ab, nicht das Rad neu zu erfinden. 
 
 Bei der Wahl von Bibliotheken und Frameworks sollte man auf deren Security-Historie Rücksicht nehmen. Regelmäßige Bugfix-Releases mit dezidierten Security-Releases sind ein gutes Zeichen. Ebenso sind dies regelmäßige Security-Audits. Falls keine Sicherheitsinformationen verfügbar sind oder die Bibliothek/das Framework keinen langfristigen Support gewährleistet, ist dies ein Grund ggf. dieses Framework nicht zu verwenden.
 
-Das Sicherheitslevel kann durch Verwendung von Secrurity-Checklists überprüft werden. Ein Beispiel hierfür ist der OWASP Application Security Verfication Standard (ASVS) welcher aus einem Fragenkatalog zur Selbstbeantwortung durch Softwareentwickler besteht.
+Das Sicherheitslevel kann durch Verwendung von Security-Checklists überprüft werden. Ein Beispiel hierfür ist der OWASP Application Security Verfication Standard (ASVS) welcher aus einem Fragenkatalog zur Selbstbeantwortung durch Softwareentwickler besteht.
 
 \section{Secure Testing}
 

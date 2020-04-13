@@ -15,13 +15,13 @@ Eine unterschätzte Möglichkeit von \textit{mod\_security} ist der Einsatz als 
 Grundsätzlich kann die implementierte Funktionalität in vier Bereiche aufgeteilt werden:
 
 \begin{itemize}
-	\item parsing: eingehende und ausgehene HTTP Nachrichten müssen analysiert werden.
+	\item parsing: eingehende und ausgehende HTTP Nachrichten müssen analysiert werden.
 	\item buffering: teilweise werden Nachrichten auf mehrere Teilnachrichten aufgeteilt. \textit{mod\_security} sammelt diese, fügt diese zu einer gemeinsamen Nachricht zusammen und ruft erst danach die Filterregeln auf.
 	\item rule-engine: ist die aktive Komponente welche die bereitgestellten Regeln auf die gesammelten HTTP-Nachrichten anwendet.
 	\item logging: führt das Logging durch.
 \end{itemize}
 
-Hier kann man auch schon den Overhead von \textit{mod\_security} erkennen: auf der einen Seite gibt es einen CPU-Overhead da alle Nachrichten analysiert werden müssen, auf der anderen Seite müssen für das Buffering alle ein- und aus-gehenden Nachrichten im Speicher gesammelt werden und führen so zu Speicher-Overhead. Falls zuviel Speicher verbraucht wird, müssen Nachrichten auf der Festplatte/SSD zwischengespeichert werden. Beides erhöht die Latenz-Zeit die ein Benutzer wahrnimmt.
+Hier kann man auch schon den Overhead von \textit{mod\_security} erkennen: auf der einen Seite gibt es einen CPU-Overhead da alle Nachrichten analysiert werden müssen, auf der anderen Seite müssen für das Buffering alle ein- und aus-gehenden Nachrichten im Speicher gesammelt werden und führen so zu Speicher-Overhead. Falls zu viel Speicher verbraucht wird, müssen Nachrichten auf der Festplatte/SSD zwischengespeichert werden. Beides erhöht die Latenz-Zeit die ein Benutzer wahrnimmt.
 
 Ein eingehender HTTP Request und die dazugehörende Response durchläuft innerhalb von \textit{mod\_security} folgende fünf Phasen:
 
@@ -71,7 +71,7 @@ Folgende Phasen können nun in den Log-Dateien erkannt werden:
 [4] Starting phase REQUEST_HEADERS.
 \end{minted}
 
-Für jeden eingehenden HTTP-Request wird zunächt eine eindeutige Transaktions-ID vergeben. Anschließend wird der HTTP Header analysiert und der Parameter \textit{a} extrahiert. Abschließend werden die Regeln der Phase 1 (Request-Header) angewandt.
+Für jeden eingehenden HTTP-Request wird zunächst eine eindeutige Transaktions-ID vergeben. Anschließend wird der HTTP Header analysiert und der Parameter \textit{a} extrahiert. Abschließend werden die Regeln der Phase 1 (Request-Header) angewandt.
 
 \begin{minted}{text}
 [4] Second phase starting (dcfg 8121800).
@@ -209,7 +209,7 @@ SecRule REMOTE\_ADDR “!streq 192.168.1.111”
 
 Das letzte Beispiel zeigt, wie zwei Regeln mittels \textit{chain} verknüpft werden. Es wird zuerst die erste Regel angewendet (\textit{für das Argument username wurde der Wert admin verwendet}) und dann mit der Regel \textit{die IP-Adresse ist nicht 192.168.1.111} kombiniert. Falls beide Regeln wahr sind, wird die Anfrage abgelehnt. Dies entspricht also der Regel \textit{Ein Administrator darf sich nur ausgehend von der IP-Adresse 192.168.1.111 einloggen}.
 
-\subsection{Log format}
+\subsection{Log Format}
 
 Das \textit{mod\_security} Format entspricht nicht 100\% anderen bekannten Log-Formaten. Eine protokollierte Transaktion wird über mehrere Sublogs beschrieben. Jedes Sublog beginnt mit einem MIME-ähnlichem Header, dieser besteht aus einer eindeutigen ID über welchen die Sublogs aggregiert werden können (in dem Beispiel \textit{f9adec1d}) und einer Log-Kategorie (dies ist der angehängte Buchstabe).
 
@@ -243,7 +243,7 @@ Engine-Mode: "ENABLED"
 --f9adec1d-Z--
 \end{minted}
 
-In Abhängigkeit der Transkation können unterschiedliche Log-Kategorien befüllt werden. \textit{A} beinhaltet immer den Zeitstempel und die Adressen der betroffenen Kommunikationspartner, \textit{B} ist der eingehende Request, \textit{F} die erzeugte Antwort; \textit{H} beschreibt die Regel die angewandt wurde.
+In Abhängigkeit der Transaktion können unterschiedliche Log-Kategorien befüllt werden. \textit{A} beinhaltet immer den Zeitstempel und die Adressen der betroffenen Kommunikationspartner, \textit{B} ist der eingehende Request, \textit{F} die erzeugte Antwort; \textit{H} beschreibt die Regel die angewandt wurde.
 
 Leider ist es nicht so einfach diese Informationen mittels \textit{grep} zu parsen.
 
@@ -259,14 +259,11 @@ Ein häufiges Problem von Web Application Firewalls ist, dass valide Anfragen al
 
 \begin{enumerate}
 	\item Was versteht man unter einer Web-Application Firewall? Welche Einsatzzwecke bzw. Verwendungsmöglichkeitne gibt es für solche?
-	\item Aus welchen Teilen besteht eine mod\_security Regel? Erläutere die jweiligen Teile.
+	\item Aus welchen Teilen besteht eine mod\_security Regel? Erläutere die jeweiligen Teile.
 	\item Was wird durch folgende Regel: \textit{SecRule ARGS "@contains <script>" log,deny,status:404} durchgeführt?
 \end{enumerate}
 
 \begin{enumerate}
 	\item Was ist der Grundgedanke dabei, DevOps und Security zu verbinden?
 	\item Welche Sicherheitsmaßnahmen können im Zuge von SecDevOps automatisiert durchgeführt werden? Erläutere die jeweiligen Maßnahmen.
-	\item Was sind Docker Registries? Welchen negativen Einfluss auf die Sicherheit können diese nehmen?
-	\item Auf welche Best-Practises sollte beim Bau von Container geachtet werden?
-	\item Welche grundlegenden Sicherheitsprobleme gibt es bei Docker (bzw. bei Containerlösungen)? Erläutere vier davon.
 \end{enumerate}

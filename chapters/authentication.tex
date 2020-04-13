@@ -8,7 +8,7 @@ Authentifikation kann als die Verifikation einer behaupteten Benutzeridentität 
 
 Bei der Identifikation claimed der Benutzer seine Identität, z. B. durch Angabe eines zuvor registrierten Benutzernamens. Weitere Möglichkeiten wären z. B. SmartCards oder biometrische Methoden. Die Identifikation wird zumeist mit einer Authentifikation kombiniert.
 
-Die Authentifikation dient zur Validierung der behaupteten Identität des Benutzers. Es gibt mehrere Möglichkeiten (Faktoren) über welche ein Benutzer seine Identität authentifizieren kann, Tabelle \ref{tbl:factors} gibt eine kurze Übersicht häufig genutzer Faktoren.
+Die Authentifikation dient zur Validierung der behaupteten Identität des Benutzers. Es gibt mehrere Möglichkeiten (Faktoren) über welche ein Benutzer seine Identität authentifizieren kann, Tabelle \ref{tbl:factors} gibt eine kurze Übersicht häufig genutzter Faktoren.
 
 \begin{table}[h!]
 	\begin{center}
@@ -121,7 +121,7 @@ Prinzipiell können Angriffe gegen Passwörter in drei Kategorien eingeteilt wer
 
 \begin{enumerate}
 	\item Disclosure tritt auf, wenn das Passwort unbeabsichtigt ``veröffentlicht'' wird. Dies kann z. B. durch Notizzettel, Wikis oder auch durch phishing geschehen.
-	\item Online Attacks sind Angriffe gegenüber einem Login-System. Diese können druch das Websystem erkannt werden.
+	\item Online Attacks sind Angriffe gegenüber einem Login-System. Diese können durch das Websystem erkannt werden.
 	\item Offline Attacks sind Angriffe gegenüber geleakten Passwort-Hashes. Diese können durch das Websystem nicht erkannt werden.
 \end{enumerate}
 
@@ -187,11 +187,11 @@ TOTP ist ein Verfahren, dass zur Implementierung eines zweiten Faktors eingesetz
 
 \subsection{TOTP}
 
-Time-based One-Time Passwords (TOTP, RFC 6238) ist ein häufig verwendetes Verfahren zur Implementierung eines weiteren Authentication-Faktors. Es ist ein Zusammenspiel zwischen Authentikator (meist eine mobile Applikation) und einer Webapplikation.
+Time-based One-Time Passwords (TOTP, RFC 6238) ist ein häufig verwendetes Verfahren zur Implementierung eines weiteren Authentication-Faktors. Es ist ein Zusammenspiel zwischen Authenticator (meist eine mobile Applikation) und einer Webapplikation.
 
 Initial wird ein shared secret key zwischen Authenticator und Webapplikation ausgetauscht. Wird nun eine Authentifikation benötigt wird nun auf beiden Seiten die aktuelle Systemzeit (in Sekunden seit Beginn der UNIX Epoche) auf 30 Sekunden gerundet und ein MAC (unter Zuhilfenahme des shared secret keys) gebildet. Dieser MAC wird nun auf 31 bit gekürzt und in einen 6 oder 8 stelligen Zahlencode verwandelt. Dieser wird am Authenticator angezeigt und muss vom User in der Webapplikation als weiterer Faktor eingegeben werden. Sofern beide berechnete Werte ident sind, wird die Authentifikation erfolgreich durchgeführt.
 
-Ein Vorteil dieses Verfahrens ist, dass nach dem initialen Schlüsselaustausch keine Netzwerkverbindung zwischen Authenticator und Applikation benötigt wird. Ein Nachteil ist, dass die Systemuhren der betroffenen Systeme synchronisiert werden müssen. Ebenso kann bei TOTP kein \textit{device-binding} durchgeführt werden: die Webapplikation kann nicht feststellen, auf wievielen devices ein TOTP-Secret eingespielt wurde. Ebenso ist der Vorgang der initialen Secret-Verteilung gefährlich: wird hier z. B. von einem Benutzer ein Selfie inklusive dem QR-Code/Secret-Code erstellt und veröffentlicht, wurde auf diese Weise die gesamte Sicherheit des Verfahrens kompromittiert.
+Ein Vorteil dieses Verfahrens ist, dass nach dem initialen Schlüsselaustausch keine Netzwerkverbindung zwischen Authenticator und Applikation benötigt wird. Ein Nachteil ist, dass die Systemuhren der betroffenen Systeme synchronisiert werden müssen. Ebenso kann bei TOTP kein \textit{device-binding} durchgeführt werden: die Webapplikation kann nicht feststellen, auf wie vielen devices ein TOTP-Secret eingespielt wurde. Ebenso ist der Vorgang der initialen Secret-Verteilung gefährlich: wird hier z. B. von einem Benutzer ein Selfie inklusive dem QR-Code/Secret-Code erstellt und veröffentlicht, wurde auf diese Weise die gesamte Sicherheit des Verfahrens kompromittiert.
 
 \subsection{Protokolle der FIDO-Alliance}
 
@@ -215,7 +215,7 @@ Wird FIDO mit TOTP verglichen, können konzeptionelle Unterschiede erkannt werde
 \begin{itemize}
 	\item FIDO1/2 überträgt nur einen öffentlichen Schlüssel während der Registrierung eines neuen Authenticators. TOTP überträgt ein shared secret. Bei FIDO verlässt der geheime Schlüssel niemals den Authenticator.
 	\item TOTP benötigt im Gegensatz zu FIDO während der Authentifizierung keine aktive Netzwerkverbindung zwischen Authenticator und Service. Stattdessen benötigt TOTP eine synchronisierte Systemzeit zwischen allen beteiligten Parteien.
-	\item Da bei FIDO der geheime Schlüssel nicht den Authenticator verlässt, gibt es ein Pairing zwischen dem Device und dem Service. Bei TOTP kann ein Benutzer das idente shared secret mit mehreren Authenticatoren verwenden, eine Zuordnung zu einem dedizierten Authenticator ist daher nicht möglich.
+	\item Da bei FIDO der geheime Schlüssel nicht den Authenticator verlässt, gibt es ein Pairing zwischen dem Device und dem Service. Bei TOTP kann ein Benutzer das idente shared secret mit mehreren Authenticators verwenden, eine Zuordnung zu einem dedizierten Authenticator ist daher nicht möglich.
 	\item TOTP besitzt keine Hardware-Requirements und kann daher gratis in Software implementiert werden. Während FIDO ein freier Standard ist, setzt es einen Hardware-Token voraus --- dadurch ist der Einsatz von FIDO mit Hardware-Kosten verbunden und ist tendenziell nicht ``gratis''.
 \end{itemize}
 
@@ -231,7 +231,7 @@ Das schwerwiegendste Problem wäre es, wenn keine Kontrolle der Authentication d
 
 In abgeschwächter Form kann eine ähnliche Schwachstelle teilweise bei historisch gewachsenen Applikationen gefunden werden. Hier haben sich im Laufe der Zeit Technologietrends, Firmen-Guidelines oder Programmierteams verändert und die Gesamtapplikation besteht aus Komponenten, die in verschiedenen Programmiersprachen/Frameworks implementiert wurden. Da Authentication-Daten zumeist über das Framework abgehandelt werden, passiert es hier nun häufig, dass bei einem Teil der Applikationen die Authentication vergessen wird.
 
-Ein weiteres häufiges Problem sind selbst geschriebene Komponenten. Ähnlich wie bei dem letzten Fehlerfall wird hier eine bestehende Applikation um eine weitere Funktion erweitert, auch hier kann dies zeitverzögert durch neue Programmierer geschehen. Bei den neu geschriebenen Komponenten wird gerne auf die Authentication vergessen --- eine mögliche Ausrede wäre es, dass externe Programmierer eventuell das bestehende System nicht gut kennen.
+Ein weiteres häufiges Problem sind selbst geschriebene Komponenten. Ähnlich wie bei dem letzten Fehlerfall wird hier eine bestehende Applikation um eine weitere Funktion erweitert, auch hier kann dies zeit verzögert durch neue Programmierer geschehen. Bei den neu geschriebenen Komponenten wird gerne auf die Authentication vergessen --- eine mögliche Ausrede wäre es, dass externe Programmierer eventuell das bestehende System nicht gut kennen.
 
 Beispiel: eine Kundenwebseite erlaubt den Download von Rechnungen. Die gesamte Webseite ist in JSP geschrieben, die Downloadseite allerdings in ASP.Net. Rechnungen können über die URL /documents/download/123 bezogen werden. Bei Tests wurde festgestellt, dass über freie Wahl der ID (Zahl) beliebige Kundenrechnungen heruntergeladen werden konnten, da keine Authentication implementiert wurde. Bei Analyse der Logdateien wurde weiters festgestellt, dass die betroffenen Daten bereits vom Google SearchBot indiziert wurden und somit im Suchindex aufgenommen waren.
 

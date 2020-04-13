@@ -1,6 +1,6 @@
 \chapter{Security Principles}
 
-Während sich Technologien und Architekturen permanent wandeln und verändern, gibt es Sicherheitsprinzipien die quasi allgemeingültig als Grundlage für alle weiteren Entscheidungen dienen. Einige dieser werden in diesem Kapitel erläutert.
+Während sich Technologien und Architekturen permanent wandeln und verändern, gibt es Sicherheitsprinzipien die quasi allgemein gültig als Grundlage für alle weiteren Entscheidungen dienen. Einige dieser werden in diesem Kapitel erläutert.
 
 \section{Minimalprinzip}
 
@@ -50,17 +50,17 @@ Jeder Benutzer und jede Funktion sollte nur jene minimalen Rechte und Privilegie
 Every program and every priviledged user of the system should operate using the least amount of priviledge necessary to complete the job.
 \end{quote}
 
-Wird dieses Prinzip bereits während des Designs beachtet, fürht dies zumeist zu Systemen, welche aus mehreren Komponenten bestehen. Diese Komponenten kommunizieren über wohl-definierte Interfaces und können nicht ``direkt'' auf die Daten anderer Komponenten zugreifen. Dies verbessert die Testbarkeit der einzelnen Komponenten, da diese getrennt voneinander überprüft werden können. Aus Sicherheitssicht ist diese Architektur ebenso stark zu bevorzugen da eine kompromittierte Komponente nicht automatisch ein kompromittiertes Gesamtsystem zur Folge hat.
+Wird dieses Prinzip bereits während des Designs beachtet, führt dies zumeist zu Systemen, welche aus mehreren Komponenten bestehen. Diese Komponenten kommunizieren über wohl-definierte Interfaces und können nicht ``direkt'' auf die Daten anderer Komponenten zugreifen. Dies verbessert die Testbarkeit der einzelnen Komponenten, da diese getrennt voneinander überprüft werden können. Aus Sicherheitssicht ist diese Architektur ebenso stark zu bevorzugen da eine kompromittierte Komponente nicht automatisch ein kompromittiertes Gesamtsystem zur Folge hat.
 
 Um diese Trennung zu ermöglichen, müssen Komponenten mit unterscheidbaren Identitäten und mit zuweisbaren Ressourcen betrieben werden. Dies inkludiert sowohl Benutzer- und Zugriffsrechte als auch Entitlements auf Ressourcen (RAM, CPU, Speicher, Netzwerkbandbreite). Weiters inkludiert dies Netzwerkzugriffsrechte: die Applikation sollte nur auf jene remote Server zugreifen können, die auch wirklich zwingend für den Betrieb notwendig sind.
 
 \section{Separation of Duties}
 
-Separation of Duties besagt, dass zur Ausführung einer Operation die Zustimmung von mehr als einer Person benötigt wird. Ein klassisches Beispiel hierfür wäre die Aktivierung eines Atomstprengkopfes für das mehrere Personen ihre Zustimmung geben müssen. Das Ziel von Separation of Duties ist auf der einen Seite die Vermeidung von Insider-Threats, auf der anderen Seite soll dadurch die Entdeckungsrate von nicht-gewollten Aktivitäten erhöht werden. Grundsätzlich sollte ein kompromittierter Benutzer nicht die Möglichkeit besitzen, das Gesamtsystem zu korrumpieren.
+Separation of Duties besagt, dass zur Ausführung einer Operation die Zustimmung von mehr als einer Person benötigt wird. Ein klassisches Beispiel hierfür wäre die Aktivierung eines Atomsprengkopfes für das mehrere Personen ihre Zustimmung geben müssen. Das Ziel von Separation of Duties ist auf der einen Seite die Vermeidung von Insider-Threats, auf der anderen Seite soll dadurch die Entdeckungsrate von nicht-gewollten Aktivitäten erhöht werden. Grundsätzlich sollte ein kompromittierter Benutzer nicht die Möglichkeit besitzen, das Gesamtsystem zu korrumpieren.
 
 Eine Anwendung dieser Idee ist das Vier-Augen-Prinzip bei dem sensible Operationen vor Ausführung zuerst durch zumindest zwei Personen bestätigt werden müssen.
 
-Um diese Prinzipien anwenden zu können, müssen Anwender zweifelsfrei identifiziert, authentifiziert und für die auszuführende Operatione authorisiert werden. Aus diesem Grund werden Mehr-Faktor-Authentifizierungslösungen häufig im Umfeld des Separation of Duties Prinzips gefunden.
+Um diese Prinzipien anwenden zu können, müssen Anwender zweifelsfrei identifiziert, authentifiziert und für die auszuführende Operationen autorisiert werden. Aus diesem Grund werden Mehr-Faktor-Authentifizierungslösungen häufig im Umfeld des Separation of Duties Prinzips gefunden.
 
 \section{Defense in Depth/Hardening}
 
@@ -97,13 +97,13 @@ Man sollte Simplicity nicht mit primitiven Lösungen verwechseln. Der Grundgedan
 
 \section{Security-by-Design bzw. Security-by-Default}
 
-Analog zu dem in der DSGVO/GDPR verankerten privacy-by-design bzw. privacy-by-default wird mittlerweile uach gerne von secrity-by-design und security-by-default gesprochen. Ersteres bedeutet, dass eine Software so geschrieben sein sollte, dass ein sicherer Betrieb prinzipiell möglich ist. Letzteres bedeutet, dass, wenn ein sicherer Betrieb möglich ist, dieser auch per-default so konfiguriert sein sollte.
+Analog zu dem in der DSGVO/GDPR verankerten privacy-by-design bzw. privacy-by-default wird mittlerweile auch gerne von security-by-design und security-by-default gesprochen. Ersteres bedeutet, dass eine Software so geschrieben sein sollte, dass ein sicherer Betrieb prinzipiell möglich ist. Letzteres bedeutet, dass, wenn ein sicherer Betrieb möglich ist, dieser auch per-default so konfiguriert sein sollte.
 
 Dies soll Sicherheitsfehler aufgrund von ``vergessener'' bzw. unterlassender Konfiguration vermeiden, Sicherheitslücken müssen explizit geöffnet werden.
 
 \section{Trennung von Daten- und Programm-Logik}
 
-Ein typsicher Vorfall der zu einer Sicherheitslücke führt ist, wenn ein Programm bei der Zuordnung zwischen Daten und Programmlogik verwirrt wird. Eine SQL-Injection fällt in dieses Muster: eine Benutzereingabe (Daten) wird durch inadequate Programmierung als Programmlogik bzw. Programmcode interpretiert und ausgeführt.
+Ein typischer Vorfall der zu einer Sicherheitslücke führt ist, wenn ein Programm bei der Zuordnung zwischen Daten und Programmlogik verwirrt wird. Eine SQL-Injection fällt in dieses Muster: eine Benutzereingabe (Daten) wird durch inadäquate Programmierung als Programmlogik bzw. Programmcode interpretiert und ausgeführt.
 
 Historisch gab es gegenläufige Computerarchitekturen: die Harvard-Architektur verwendete eine strikte Hardware-Trennung zwischen Daten- und Programmspeicher. Die konkurrierende Von-Neumann-Architektur verwendete einen Speicher sowohl für Daten als auch für Programmcode und setzte sich aufgrund der höheren Effizienz durch. Mittlerweile gibt es mehrere Sicherheitsvorkehrungen um eine konzeptionelle Trennung von Programmcode und Daten auch in diesen Architekturen durchzuführen.
 

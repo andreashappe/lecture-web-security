@@ -1,12 +1,12 @@
 \chapter{Web Applikationen}
 
-Der Gegendstand unserer Untersuchungen ist eine programmierte Webapplikation. Dieses Kapitel soll ein Grundverständnis über den Aufbau einer Webapplikation bieten.
+Der Gegenstand unserer Untersuchungen ist eine programmierte Webapplikation. Dieses Kapitel soll ein Grundverständnis über den Aufbau einer Webapplikation bieten.
 
 \section{Struktur}
 
 Eine Webapplikation besitzt sowohl eine interne Architektur (Struktur der Applikation bzw. des Source Codes) als auch eine Systemarchitektur (Integration mit externen Systemen). Eine Webapplikation wird in einer oder mehreren Programmiersprachen implementiert, zumeist unter Zuhilfenahme von Web-Frameworks bzw. -bibliotheken (diese können auch Bestandteil der Standardbibliothek einer der verwendeten Programmiersprachen sein).
 
-Das Werk des Entwicklers ist der Source Code, welcher die benötigten Funktionen der Webapplikation implementiert. In Abhängigkeit von der verwendeten Technologie wird dieser Code auf den Applikationsserver als source code oder in kompilierter Form eingespielt und auf diesem schlußendlich auch exekutiert. Während der Exekution wird zumeist ein Applikationsserver involviert. Dieser kann entweder als eigenständiger Prozess (z. B. \textit{Apache Tomcat} als Applikationsserver für Java Servlets), innerhalb des Webservers (z. B. die Kombination von Apache Webserver mit \textit{mod\_php} für PHP) oder sogar ein Teil des kompilierten Programms sein (z. B. bei Verwendung von statischen binaries mit Go oder Rust).
+Das Werk des Entwicklers ist der Source Code, welcher die benötigten Funktionen der Webapplikation implementiert. In Abhängigkeit von der verwendeten Technologie wird dieser Code auf den Applikationsserver als source code oder in kompilierter Form eingespielt und auf diesem schlussendlich auch exekutiert. Während der Exekution wird zumeist ein Applikationsserver involviert. Dieser kann entweder als eigenständiger Prozess (z. B. \textit{Apache Tomcat} als Applikationsserver für Java Servlets), innerhalb des Webservers (z. B. die Kombination von Apache Webserver mit \textit{mod\_php} für PHP) oder sogar ein Teil des kompilierten Programms sein (z. B. bei Verwendung von statischen Binaries mit Go oder Rust).
 
 Ein häufiges Problem ist die Zuordnung der Admin-Verantwortung zu den jeweiligen Komponenten. Es kann passieren, dass Entwickler davon ausgehen, dass eine Komponente von Administratoren verwaltet wird und vice versa. Dadurch kann es zum Unterlassen wichtiger Updates kommen.
 
@@ -14,13 +14,13 @@ Ein häufiges Problem ist die Zuordnung der Admin-Verantwortung zu den jeweilige
 
 Zur Umsetzung einer Applikation wird eine Programmiersprache bemüht. Je nach Abstraktionslevel und Zielpublikum der Programmiersprache (bzw. des verwendeten Frameworks) ergeben sich positive und negative Auswirkungen auf die Sicherheit der Applikation.
 
-Hierdurch sollte allerdings kein Chauvinismus bedingt werden. Es ist sowohl möglich in einer sicheren Programmiersprache unsicher zu programmieren als auch vice versa. Programmierer sollten sich der jeweiligen Eigenarten der gewählten Programmiersprache bewußt sein und ggf. vorsorglich gewisse Features nur unter Bedacht einsetzen.
+Hierdurch sollte allerdings kein Chauvinismus bedingt werden. Es ist sowohl möglich in einer sicheren Programmiersprache unsicher zu programmieren als auch vice versa. Programmierer sollten sich der jeweiligen Eigenarten der gewählten Programmiersprache bewusst sein und ggf. vorsorglich gewisse Features nur unter Bedacht einsetzen.
 
 Einflussreicher auf die Sicherheit der Applikation ist die Selektion von sicheren Bibliotheken und Komponenten. Hier sollten Komponenten mit einer guten Sicherheitshistorie gewählt werden, es ist essentiell, zeitnahe auch Sicherheitsupdates für verwendete Komponenten einzuspielen.
 
 \subsection{Interne Architektur}
 
-Die interne Struktur beschreibt, wie die Webapplikation selbst gebaut und der Code strukturiert wurde --- wie die Funtkionen auf Source-Code Komponenten aufgeteilt wurden. Die interne Architektur wird stark durch das verwendete Framework und der verwendeten Programmiersprache geprägt. Es ist sinnvoll, sich an die Annahmen und Konventionen des verwendeten Frameworks zu halten anstatt gegen diese Konventionen anzukämpfen.
+Die interne Struktur beschreibt, wie die Webapplikation selbst gebaut und der Code strukturiert wurde --- wie die Funktionen auf Source-Code Komponenten aufgeteilt wurden. Die interne Architektur wird stark durch das verwendete Framework und der verwendeten Programmiersprache geprägt. Es ist sinnvoll, sich an die Annahmen und Konventionen des verwendeten Frameworks zu halten anstatt gegen diese Konventionen anzukämpfen.
 
 \subsubsection{Request-Routing}
 
@@ -39,7 +39,7 @@ Ein häufiges Muster für die interne Code-Struktur ist das MVC-Pattern. Hier wi
 \begin{description}
 	\item[Model] ist zuständig für die Speicherung von Daten. Zumeist wird die Geschäftslogik innerhalb des Models abgebildet (\textit{thin controller, fat model}).
 	\item[View]: eine View dient zur Darstellung von Daten. Zumeist wird jede einzelne Webseite über ein View-Objekt abgebildet. Mehrere View-Objekte pro Datum sind möglich, so kann z. B. das gleiche Model mittels einer View als Webseite ausgegeben ausgegeben, und mittels eines weiteren View-Objekts als Excel-Sheet heruntergeladen, werden.
-	\item[Controller] akzeptiert Eingaben (z. B. HTTP- oder WebSocket-Requests), überprüft diese und interagiert mit dem Model um Geschäftsprozesse anzustossen. Um eine Antwort gegenüber dem Client zu präsentieren, werden Daten vom Controller an die View-Objekte übergeben.
+	\item[Controller] akzeptiert Eingaben (z. B. HTTP- oder WebSocket-Requests), überprüft diese und interagiert mit dem Model um Geschäftsprozesse anzustoßen. Um eine Antwort gegenüber dem Client zu präsentieren, werden Daten vom Controller an die View-Objekte übergeben.
 \end{description}
 
 Klassische Webapplikationen waren historisch thin-client Applikationen: die gesamte Logik wird server-seitig ausgeführt, der Client (Webbrowser) dient rein zur statischen Darstellung. Mit JavaScript entstand die Möglichkeit, innerhalb des Browsers Code auszuführen. Einige Frameworks wie \textit{Angular.js} implementieren das MVC-Pattern samt Routing innerhalb des Browsers. Der Server dient als Datenquelle und bietet jene zumeist über Webservices an.
@@ -49,13 +49,13 @@ Klassische Webapplikationen waren historisch thin-client Applikationen: die gesa
 	\centering
 \end{figure}
 
-Die Wahl der Struktur besitzt Einfluss auf Sicherheitsentscheidungen der Applikation. Bei einem klasssischen server-seitigen MVC-Pattern werden z. B. technische Überprüfungen auf Schadcode in User-Eingaben, Authentication- und Authorization-Checks innerhalb von Controllern implementiert. Wird client-seitig JavaScript verwendet, muss der server-seitige Service eine Überprüfung der JavaScript-Anfragen auf Schadcode, Authentication- und Authorization durchführen.
+Die Wahl der Struktur besitzt Einfluss auf Sicherheitsentscheidungen der Applikation. Bei einem klassischen server-seitigen MVC-Pattern werden z. B. technische Überprüfungen auf Schadcode in User-Eingaben, Authentication- und Authorization-Checks innerhalb von Controllern implementiert. Wird client-seitig JavaScript verwendet, muss der server-seitige Service eine Überprüfung der JavaScript-Anfragen auf Schadcode, Authentication- und Authorization durchführen.
 
 \subsubsection{Single-Page Applications und Progressive Web Applications}
 
 Die Möglichkeiten von JavaScript und HTML5 wurden immer mächtiger. Dies führte zu Architekturen wie Single-Page Applications (SPA) bei denen alle Inhalte dynamisch per JavaScript geladen bzw. generiert werden.
 
-Werden diese SPAs mit HTML5 Offline-Fähigkeiten (HTML5 localStorage) und langlebigen nebenläufigen JavaScript-Prozessen (HTML5 WebWorker) kombiniert, könnnen offline lauffähige Webseiten geschrieben werden, die klassischen Desktop-Applikationen  sehr ähnlich sind. Diese werden häufig Progressive Web Applications (PWA) genannt. Werden Daten offline gespeichert, müssen deren Integrität und Vertraulichkeit mit geeigneten Methoden gewährleistet werden.
+Werden diese SPAs mit HTML5 Offline-Fähigkeiten (HTML5 localStorage) und langlebigen nebenläufigen JavaScript-Prozessen (HTML5 WebWorker) kombiniert, können offline lauffähige Webseiten geschrieben werden, die klassischen Desktop-Applikationen  sehr ähnlich sind. Diese werden häufig Progressive Web Applications (PWA) genannt. Werden Daten offline gespeichert, müssen deren Integrität und Vertraulichkeit mit geeigneten Methoden gewährleistet werden.
 
 \subsection{System-Architektur einer primitiven Web-Applikation}
 
@@ -85,7 +85,7 @@ Um einige der hier vorkommenden Komponenten zu erwähnen:
 \begin{itemize}
 	\item Load-Balancer: verteilen den Traffic auf mehrere Webserver. Hier kann es zu Problemen beim Session-Management kommen.
 	\item Content Delivery Networks (CDNs): dienen zur Performancesteigerung bei der Zustellung statischer Daten. Die Inhalte werden über ein geographisch verteiltes Netzwerk direkt an die Clients zugestellt.
-	\item Caching Services werden verwendet, um häufig benötigte Daten oder Webseitenfragmente zwischenzuspeichern. Zumeist geschieht dies in-memory, bekannte Produkte sind z. B. memcached. Ein häufiges Problem ist, dass der Zugriff ohne Überprüfung der Authorisierung erfolgt. Somit erhält ein Angreifer mit Zugriff auf einen Caching Service potentiell auch Zugriff auf sensible Daten.
+	\item Caching Services werden verwendet, um häufig benötigte Daten oder Webseitenfragmente zwischenzuspeichern. Zumeist geschieht dies in-memory, bekannte Produkte sind z. B. memcached. Ein häufiges Problem ist, dass der Zugriff ohne Überprüfung der Autorisierung erfolgt. Somit erhält ein Angreifer mit Zugriff auf einen Caching Service potentiell auch Zugriff auf sensible Daten.
 	\item Job Server: eine Client-Anfrage muss innerhalb kurzer Zeit beantwortet werden, falls dies nicht erfolgt kann im worst-case der Client-Browser die Verbindung unterbrechen. Um trotzdem langfristige Operationen auszuführen, können diese nebenläufig durch einen Job-Servers ausgeführt werden. Bekannte Produkte in diesem Umfeld sind RabbitMQ oder Redis. Ein potentielles Problem ist, dass Jobs Datenbankzugriffe benötigen und daher der Job Worker eine bestehende Verbindung zur Datenbank besitzt (welche von einem Angreifer ausgenutzt werden kann).
 	\item Full-Text Search: viele Webapplikationen benötigen eine Volltextsuche, diese wird teilweise über einen externen Suchserver implementiert. Dieser beinhaltet eine bearbeite Version des Datenbestands der Datenbank. Ein mögliches Problem sind fehlende Berechtigungsüberprüfungen --- während auf der Datenbank der Datenzugriff zwar eingeschränkt wird, wird dies häufig innerhalb der Suchdatenbank vergessen.
 	\item External Services werden häufig von Webapplikationen aufgerufen bzw. integriert. Ein Problem dabei ist, dass Webapplikationen häufig davon ausgehen, dass externe Services sich an definierte Protokolle halten.

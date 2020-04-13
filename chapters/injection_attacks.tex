@@ -40,7 +40,7 @@ Ein Spezialfall des Uploads von malicious Dateien ist der Upload von Dateien, di
 
 Falls eine Webapplikation nicht-vertrauenswürde Dateien verarbeiten muss, muss diese Dateien aus nicht-vertrauenswürdigen Quellen (Benutzer) analysieren. Dies ist eine notorisch gefährliche Operation und wird selten vollkommen sicher implementiert werden können. Um das potentielle Schadmass zu reduzieren kann Sandboxing verwendet werden. Dabei wird der Parse-Code in einem abgeschotteten Bereich des Systems ausgeführt, im Falle eines erfolgreichen Angriffs wird zumindest nicht das Gesamtsystem kompromittiert.
 
-Wird server-seitig ein Virenscanner verwendet um hochgeladene Dateien auf Schadcode hin zu überprüfen, sollte dieser ebenso vom Rest des Systems abgeschottet werden. In den letzten Jahren wurden vermehrt Angriffe gegen Virenscanner festgestellt. Diese sind für Angreifer sehr lohnende Ziele, da sie alle incoming Dateien vorgereicht bekommen und zumeist mit administrativen Rechten ausgestattet sind.
+Wird server-seitig ein Virenscanner verwendet um hochgeladene Dateien auf Schadcode hin zu überprüfen, sollte dieser ebenso vom Rest des Systems abgeschottet werden. In den letzten Jahren wurden vermehrt Angriffe gegen Virenscanner festgestellt. Diese sind für Angreifer sehr lohnende Ziele, da sie alle incoming Dateien vor gereicht bekommen und zumeist mit administrativen Rechten ausgestattet sind.
 
 Techniken in diesem Umfeld beinhalten chroots, Jails, Container und Microservice-Architekturen.
 
@@ -342,7 +342,7 @@ Wie man an dem Beispiel sehen kann, ist der alleinige Einsatz von NoSQL-Datenban
 \section{Type Juggling Angriffe}
 \index{type juggling attacks}
 
-Type Juggling Angriffe können in mehreren Programmiersprachen aufteten, besonders ``bekannt'' ist dieser Angriffsvektor in PHP. Diese Angriffe sind möglich, wenn durch eine automatische, implizite Typkonvertierung das erwartete Resultat einer Operation verfälscht wird. In PHP liegt das Grundproblem in den beiden Vergleichsoperatoren \textit{==} (loose) und \textit{===} (strict), ersterer führt automatisch Typkonvertierungen durch und wird leider häufig anstatt des sicheren zweiten Operators verwendet.
+Type Juggling Angriffe können in mehreren Programmiersprachen auftreten, besonders ``bekannt'' ist dieser Angriffsvektor in PHP. Diese Angriffe sind möglich, wenn durch eine automatische, implizite Typkonvertierung das erwartete Resultat einer Operation verfälscht wird. In PHP liegt das Grundproblem in den beiden Vergleichsoperatoren \textit{==} (loose) und \textit{===} (strict), ersterer führt automatisch Typkonvertierungen durch und wird leider häufig anstatt des sicheren zweiten Operators verwendet.
 
 Wird z. B. server-seitig in PHP ein String mit einer Zahl verglichen, wird der String automatisch in eine Zahl konvertiert, dies inkludiert Hex- und Octal-Darstellungen von Zahlen:
 
@@ -544,9 +544,9 @@ Da diese Sicherungsmassnahmen teilweise schwer umsetzbar sind, empfiehlt OWASP, 
 
 Bei HTTP Request Smuggling versucht der Angreifer, einzelne HTTP Requests in ein System einzuschleusen.
 
-Zumeist wird dies durch Unterschiede bei der Request-Behandlung zwischen Front-End und Backend-Systemen ermöglicht. Bei einem häufigen Setup empfängt ein Frontend-System die Benutzerrequests aller Browser. Diese werden eventuell gefilteret und dann über eine Verbindung an ein Backend-System weitergeleitet. Hier wird zumeist aus Performance-Gründen nur eine Verbindung verwendet, dass heißt auch, dass Requests unterschiedlicher Browser nacheinander über diese Verbindung übertragen werden. Das Backend-System empfängt nun über diese Verbindung die Anfragen, muss diese nun wieder in einzelne Anfragen zerlegen und schlußendlich abarbeiten. Werden hier die Anfrage-Grenzen (also die Länge der HTTP Requests) unterschiedlich interpretiert, kann dies dazu führen, dass der Angreifer im Backend-System dies dazu ausnutzen kann, Daten ``vor'' einem Folgerequest anzuhängen.
+Zumeist wird dies durch Unterschiede bei der Request-Behandlung zwischen Front-End und Backend-Systemen ermöglicht. Bei einem häufigen Setup empfängt ein Frontend-System die Benutzerrequests aller Browser. Diese werden eventuell gefiltert und dann über eine Verbindung an ein Backend-System weitergeleitet. Hier wird zumeist aus Performance-Gründen nur eine Verbindung verwendet, dass heißt auch, dass Requests unterschiedlicher Browser nacheinander über diese Verbindung übertragen werden. Das Backend-System empfängt nun über diese Verbindung die Anfragen, muss diese nun wieder in einzelne Anfragen zerlegen und schlussendlich abarbeiten. Werden hier die Anfrage-Grenzen (also die Länge der HTTP Requests) unterschiedlich interpretiert, kann dies dazu führen, dass der Angreifer im Backend-System dies dazu ausnutzen kann, Daten ``vor'' einem Folgerequest anzuhängen.
 
-Häufig kann dies durch modifizierte Längen-Header inititiert werden. Beispielsweise könnte das Front-End System den \textit{Content-Length} Header verwenden, während das Backend-System den \textit{Transfer-Encoding} Header zur Längenbestimmung verwendet.
+Häufig kann dies durch modifizierte Längen-Header initiiert werden. Beispielsweise könnte das Front-End System den \textit{Content-Length} Header verwenden, während das Backend-System den \textit{Transfer-Encoding} Header zur Längenbestimmung verwendet.
 
 Die Gegenmaßnahmen liegen eher im Administrator-Umfeld, daher wird in diesem Skript auf diese Angriffe nicht weiter eingegangen. Eine gute Einleitung in diese kann auf der PortSwigger Homepage\footnote{\url{https://portswigger.net/web-security/request-smuggling}} gefunden werden.
 

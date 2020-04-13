@@ -1,6 +1,6 @@
 \chapter{Web Technologien}
 
-Der Titel dieses Dokumentes ist Web Security, dementsprechend sind unsere Zeile/Patienten auch Webapplikationen. Eine Definition fällt nicht einfach --- allgemein betrachtet ist eine Webapplikation eine auf der Client-Server-Architektur basierte Applikation die als Kommunikationsprotokoll HTTP verwendet.
+Der Titel dieses Dokumentes ist Web Security, dementsprechend sind unsere Zeile/Patienten auch Webapplikationen. Eine Definition fällt nicht einfach --- allgemein betrachtet ist eine Webapplikation eine auf der Client-Server-Architektur basierte Applikation die als Kommunikationprotokoll HTTP verwendet.
 
 Bei einer Client-Server Applikation versendet der Client einen Auftrag an einen Server; letzterer führt diesen im Namen des Clients aus und sendet die Antwort zurück. Im Zusammenhang mit Webapplikationen gehen wir von einem Webbrowser als Client aus. Die meisten vorgestellten Probleme betreffen auch Web-API Clients, auf diese wird allerdings nicht explizit eingegangen.
 
@@ -63,13 +63,13 @@ Ein verwendetes HTTP Verb kann sowohl \textit{safe} als auch \textit{idempotent}
 
 Idempotente Verben sollten auch bei wiederholtem Aufruf auf eine Resource das idente Ergebnis liefern. Sie können also beliebig häufig aufgerufen und wiederholt werden. Wenn z. B. während eines DELETE Aufrufs ein Timeout geschieht, kann der Client die Operation wiederholen ohne einen undefinierten server-seitigen State zu erzeugen. Aus diesem Grund wird z. B. ein Update eines bestehenden Datensatzes gerne über das PUT Verb implementiert: wird ein Update mit den gleichen übergebenen Daten ausgeführt, kann es beliebig häufig wiederholt werden und der server-seitige State sollte ident sein.
 
-Die Verwendung des richtigen Verbes besitzt rein semantische Natur und muss von der Web-Applikation umgesetzt werden. Nichts hindert einen Programmierer, eine Operation mit einem unpassenden HTTP Verb anzubieten. Allerdings gehen mehrere Komponenten (wie z. B. Web Proxies, Caches oder Web Application Firewalls) von der richtigen Verwendung der jeweiligen Verben aus, wird ein falsches Verb verwendet kann dadurch inkorrektes Verhalten provoziert werden.
+Die Verwendung des richtigen Verbs besitzt rein semantische Natur und muss von der Web-Applikation umgesetzt werden. Nichts hindert einen Programmierer, eine Operation mit einem unpassenden HTTP Verb anzubieten. Allerdings gehen mehrere Komponenten (wie z. B. Web Proxies, Caches oder Web Application Firewalls) von der richtigen Verwendung der jeweiligen Verben aus, wird ein falsches Verb verwendet kann dadurch inkorrektes Verhalten provoziert werden.
 
 \subsubsection{Representational State Transfer (REST)}
 
 Das REST-Paradigma wurde von Roy Fielding 2000 im Zuge seiner Dissertation veröffentlicht. Das Paradigma versucht es, zustandlose APIs über eine einheitliche Schnittstelle anzubieten. Jede gespeicherte Ressource sollte eine eindeutige URL besitzen, als Kommunikationssprache wird häufig HTTP eingesetzt.
 
-Tabelle \ref{tbl:rest} zeigit wie häufig benötige CRUD-Funktionalität\footnote{Create, Update, Read and Delete of Resources.} auf HTTP Verben umgelegt wird.
+Tabelle \ref{tbl:rest} zeigt wie häufig benötige CRUD-Funktionalität\footnote{Create, Update, Read and Delete of Resources.} auf HTTP Verben umgelegt wird.
 
 \begin{table}
 	\begin{center}
@@ -120,7 +120,7 @@ Content-Type: text/html; charset=iso-8859-1
 
 Hier fällt zuerst der Statuscode (302) auf. Prinzipiell beschreiben Codes aus dem 100er Bereich \textit{Continue}, Codes im 200er Bereich Erfolg (\textit{success}), Code im 300er Bereich sind Redirects, Codes im 400er Bereich sind clientseitige Fehler und Codes im 500er Bereich beschreiben serverseitige Fehler.
 
-Webserver können mehrere optionale HTTP Header inkludieren und auf diese Weise dem Webbrowser Informationen mitteilen. Diese Möglichkeit wird häufig im Zuge des Browser-Hardenings verwendet: hierbei teilt der Webserver Securityannahmen dem Client mit. Dieser kann dadurch effizient gegen client-seitige Angriffe innerhalb des erhaltenen Conents vorgehen.
+Webserver können mehrere optionale HTTP Header inkludieren und auf diese Weise dem Webbrowser Informationen mitteilen. Diese Möglichkeit wird häufig im Zuge des Browser-Hardenings verwendet: hierbei teilt der Webserver Securityannahmen dem Client mit. Dieser kann dadurch effizient gegen client-seitige Angriffe innerhalb des erhaltenen Contents vorgehen.
 
 \subsubsection{Information Disclosure durch HTTP Header}
 
@@ -241,7 +241,7 @@ Set-Cookie: CookieName=CookieValue; SameSite=Strict; httpOnly; Secure;
 
 1997 wurde aus JavaScript ECMAScript, dies ist teilweise auch dadurch begründet, dass JavaScript zwischenzeitlich eine Marke des Unternehmens Oracle wurde.
 
-ECMAScript kann auf verschiedeneste Arten verwendet werden. So kann es auf der einen Seite für User-Tracking angewendet, auf der anderen Seite zur sicheren Verschlüsslung von Benutzerdaten am Client (wie es z. B. EDRi in ihren Ethical Web Development Guidelines vorsieht) verwendet werden.
+ECMAScript kann auf verschiedenste Arten verwendet werden. So kann es auf der einen Seite für User-Tracking angewendet, auf der anderen Seite zur sicheren Verschlüsslung von Benutzerdaten am Client (wie es z. B. EDRi in ihren Ethical Web Development Guidelines vorsieht) verwendet werden.
 
 Zusätzlich kann auch ein ``positiv'' gemeinter ECMAScript-Einsatz missbraucht werden, ein Beispiel hierfür wären XSS-Angriffe.
 
@@ -249,7 +249,7 @@ Zusätzlich kann auch ein ``positiv'' gemeinter ECMAScript-Einsatz missbraucht w
 
 Die Same-Origin-Policy ist fixer Bestandteil moderner Browser. \textit{Origin} ist definiert als die Kombination von Schema, Domainname und Port\footnote{Achtung: der Internet Explorer Browser ignoriert den Port bei der Bestimmung des Origins!} (z. B. \url{https://snikt.net:443}). Die Same-Origin-Policy moderner Browser sagt aus, dass ein Skript das von Seite 1 geladen wurde, nur auf Ressourcen auf Seite 2 zugreifen darf, wenn beide Seiten den identen Origin besitzen.
 
-Die Same-Origin-Policy ist essentiell für die Sicherheit. Würde es diese nicht geben, könnte Javascript ausgehend von einer Seite auf die Daten (DOM) einer externen Seite zugreifen. Da dieser Zugriff durch den Webbrowser geschieht, würde bei diesem Zugriff das Session-Cookie mitübertragen werden und die Operation würde mit der Identität des Webbrowser-Benutzers durchgeführt werden.
+Die Same-Origin-Policy ist essentiell für die Sicherheit. Würde es diese nicht geben, könnte Javascript ausgehend von einer Seite auf die Daten (DOM) einer externen Seite zugreifen. Da dieser Zugriff durch den Webbrowser geschieht, würde bei diesem Zugriff das Session-Cookie mit übertragen werden und die Operation würde mit der Identität des Webbrowser-Benutzers durchgeführt werden.
 
 \subsection{Cross-Origin Resource Sharing (CORS)}
 
@@ -304,7 +304,7 @@ Es wird also vom Server ein Funktionsaufruf (auf die Callback-Funktion) mit den 
 
 WebSockets bieten eine bidirektionale Verbindung zwischen Webbrowser und Webserver. Im Gegensatz zu klassischen HTTP (1.0/1.1) kann der Server auch Nachrichten zum Client pushen, ebenso ist der Overhead geringer, da keine dezidierten HTTP-Header pro übertragener Nachricht anfallen.
 
-Der Websocket wird durch einen Client-Request aufgebaut. Bei diesem teilt der Client mit, dass er gerne die Verbindung auf einen WebSocket upgraden will, im Erfolgsfall entgegnet der Server mit einem HTTP 101 Code. Bei der initialen Client-Anfrage werden alle HTTP Header mitübertragen, der Server erlangt so Zugriff auf etwaige Authorization-Header und/oder Session-Cookies und kann so Clients identifizieren.
+Der WebSocket wird durch einen Client-Request aufgebaut. Bei diesem teilt der Client mit, dass er gerne die Verbindung auf einen WebSocket upgraden will, im Erfolgsfall entgegnet der Server mit einem HTTP 101 Code. Bei der initialen Client-Anfrage werden alle HTTP Header mit übertragen, der Server erlangt so Zugriff auf etwaige Authorization-Header und/oder Session-Cookies und kann so Clients identifizieren.
 
 \section{WebAssembly}
 
@@ -317,7 +317,7 @@ Hier wären zwei Angriffsmöglichkeiten offensichtlich:
 	\item Verwendung von WebAssembly zum Auslagern von Teilen von JavaScript-Schadcode um auf diese Weise die Detektion durch Anti-Malware Tools zu umgehen.
 \end{itemize}
 
-Aktuell (Stand Anfang 2020) waren keine grossflächigen Angriffe mittels WebAssembly bekannt.
+Aktuell (Stand Anfang 2020) waren keine großflächigen Angriffe mittels WebAssembly bekannt.
 
 \section{HTML5 / Progressive Web Appplications}
 
@@ -350,7 +350,7 @@ Da WebWorker selbst AJAX-Requests (XMLHttpRequest) ausführen, und potentiell di
 
 \subsection{Interaktionsmöglichkeiten}
 
-Webbrowser ersetzen aktuell Desktop-Applikationen, benötigen hierfür allerdings erweiterte Interaktionsmöglichkeiten. Deise werden durch neue Standards geschaffen, zum Beispiel:
+Webbrowser ersetzen aktuell Desktop-Applikationen, benötigen hierfür allerdings erweiterte Interaktionsmöglichkeiten. Diese werden durch neue Standards geschaffen, zum Beispiel:
 
 \begin{itemize}
 	\item WebRTC erlaubt die peer-to-peer Kommunikation zwischen Browsern und wird z. B. für Audio- oder Videokonferenzen verwendet.

@@ -1,16 +1,16 @@
 \chapter{Integration mit der Umgebung}
 
-Eine Webapplikation sollte niemals isoliert betrachtet werden. Auch wenn die vorgestellten Kopmonenten perfekt umgesetzt werden, ergibt sich aus der Interaktion zwischen der theoretischen Webapplikation und der realen Umgebung immer ein Gefahren- bzw. Verbesserungspotential.
+Eine Webapplikation sollte niemals isoliert betrachtet werden. Auch wenn die vorgestellten Komponenten perfekt umgesetzt werden, ergibt sich aus der Interaktion zwischen der theoretischen Webapplikation und der realen Umgebung immer ein Gefahren- bzw. Verbesserungspotential.
 
-Hierbei kann es sich z. B. um nicht-funktionale Elemente wie Logging handeln, oder aber auch um Aspekte wie Prgrammiersprach-inheränte Muster, die einen negativen Einfluss auf die Sicherheit der Webapplikation besitzen können.
+Hierbei kann es sich z. B. um nicht-funktionale Elemente wie Logging handeln, oder aber auch um Aspekte wie Programmiersprache-inhärente Muster, die einen negativen Einfluss auf die Sicherheit der Webapplikation besitzen können.
 
 \section{Using Components with Known Vulnerabilities}
 
-Die Verwendung vorhandener (und gewarteter) externer Komponenenten wie Bibliotheken oder Framworks besitzt sicherheitstechnisch viele Vorteile: man kann von Fehlern anderen lernen (und vermeidet diese selbst) bzw. muss das Rad nicht neu erfinden.
+Die Verwendung vorhandener (und gewarteter) externer Komponenten wie Bibliotheken oder Frameworks besitzt sicherheitstechnisch viele Vorteile: man kann von Fehlern anderen lernen (und vermeidet diese selbst) bzw. muss das Rad nicht neu erfinden.
 
 Damit wird allerdings auch der Nachteil eingekauft, dass eine Verwundbarkeit innerhalb einer integrierten externen Komponente automatisch auch eine Verwundbarkeit der eigenen Applikation impliziert. Daher müssen aktiv und regelmäßig verwendete Komponenten auf bekannte Schwachstellen hin überprüft, und ggf. die betroffenen Komponenten aktualisiert werden.
 
-Um den Aufwand dieser Überprüfungen zu reduzieren und damit optimaler-weise deren Frequenz zu erhöhen gibt es automatisierte tools wie den OWASP Dependency-Check\footnote{\url{https://jeremylong.github.io/DependencyCheck/analyzers/index.html}}. Diese analysieren automatisch Projekte auf Dependencies (z. B. über Ruby Gemfiles, NPM package-lock.json Files, Maven Projektbeschreibungen), extrahieren automatisch dependencies und korrelieren diese mit öffentlichen Verwundbarkeitsdatenbanken. Wird hier nun eine potentiell anwendbare Schwachstelle gefunden, wird der Entwickler via Email oder Slack notifiziert.
+Um den Aufwand dieser Überprüfungen zu reduzieren und damit optimaler-weise deren Frequenz zu erhöhen gibt es automatisierte Tools wie den OWASP Dependency-Check\footnote{\url{https://jeremylong.github.io/DependencyCheck/analyzers/index.html}}. Diese analysieren automatisch Projekte auf Dependencies (z. B. über Ruby Gemfiles, NPM package-lock.json Files, Maven Projektbeschreibungen), extrahieren automatisch dependencies und korrelieren diese mit öffentlichen Verwundbarkeitsdatenbanken. Wird hier nun eine potentiell anwendbare Schwachstelle gefunden, wird der Entwickler via Email oder Slack notifiziert.
 
 \section{Insufficient Logging and Monitoring}
 
@@ -25,7 +25,7 @@ Folgende groben Anforderungen an das Log-System werden gestellt:
 	\item Das Log-System muss Möglichkeiten zur nachträglichen Auswertung der gesammelten Daten bieten. Bonuspunkte, wenn man ein automatisiertes Monitoring mit dem Log-System betreiben kann.
 \end{itemize}
 
-Die jeweiligen loggenden Systeme sollten alle sicherheitsrelevanten Events (z. B. Input Validation Fehler, Authentication Fehler, Authorization Fehler, Applikations-Fehler) an das zentrale Log-System schicken. Diese Daten sollen um Business Process Events angereichtert werden. Diese dienen dazu, relevante geschäfts-relevante Prozesse und Ereignisse mit den Sicherheits-Events zu korrelieren. Weitere Datenquellen sind z. B. Anti-Automatisierungssysteme, welche Brute-Force Angriffe erkennen, Datenverarbeitungssysteme (können auch Batch-Systeme sein, die z. B. einen Daten-Export oder Backups ausführen) und alle direkt und indirekt involvierten Services, wie z. B. Mailserver, Datenbankserver, Backupdienste. Falls vorhanden, sollten die Loginformationen sicherheitsrelevanter Komponenten (HIDS, NIDS, WAFs) auf jeden Fall inkludiert werden.
+Die jeweiligen loggenden Systeme sollten alle sicherheitsrelevanten Events (z. B. Input Validation Fehler, Authentication Fehler, Authorization Fehler, Applikations-Fehler) an das zentrale Log-System schicken. Diese Daten sollen um Business Process Events angereichert werden. Diese dienen dazu, relevante geschäfts-relevante Prozesse und Ereignisse mit den Sicherheits-Events zu korrelieren. Weitere Datenquellen sind z. B. Anti-Automatisierungssysteme, welche Brute-Force Angriffe erkennen, Datenverarbeitungssysteme (können auch Batch-Systeme sein, die z. B. einen Daten-Export oder Backups ausführen) und alle direkt und indirekt involvierten Services, wie z. B. Mailserver, Datenbankserver, Backupdienste. Falls vorhanden, sollten die Loginformationen sicherheitsrelevanter Komponenten (HIDS, NIDS, WAFs) auf jeden Fall inkludiert werden.
 
 Bei dem Loggen sollte darauf geachtet werden, dass, wenn möglich, standardisierte Log-Formate wie CEF oder LEEF verwendet werden. Dadurch wird das Konvertieren der jeweiligen Datenquellen auf ein gemeinsames Format vermieden.
 
@@ -40,7 +40,7 @@ Welche Daten sollten pro Event erfasst werden?
 
 Die Verwendung von personenbezogenen Daten kann das Logging verkomplizieren. Ein Unternehmen sollte klare Regeln erstellen, welche Daten geloggt werden und, falls notwendig, Anonymisierung oder Pseudonymisierung verwenden um sensible Daten zu maskieren. Ein ähnliches Problem tritt auf, wenn Log-Informationen zwischen Unternehmen geteilt werden sollte (z. B. im Zuge eines Informations-Lagebilds). Da diese Daten unter anderem personen-bezogene Informationen als auch Betriebsgeheimnisse inkludieren können, wird davon meistens abgesehen.
 
-Die erfassten Daten sollten im Zuge einer Auswertung verwendet werden. Hier werden häufig "normale" Texteditoren in Verbindung mit regulären Ausdrücken verwendet. Fortgeschrittenere Lösungen wären ELK-Stacks, Kibana und Logstash und z. B. Splunk.
+Die erfassten Daten sollten im Zuge einer Auswertung verwendet werden. Hier werden häufig "normale" Texteditoren in Verbindung mit regulären Ausdrücken verwendet. Fortgeschrittene Lösungen wären ELK-Stacks, Kibana und Logstash und z. B. Splunk.
 
 In einem ähnlichem Umfeld arbeiten SIEM-Systeme (Security Information and Event Management). Diese werden zumeist als weiterer Schritt nach Log-Management angesehen. Zusätzlich zum Log-Management wird zumeist auch Security Event Management (real-time monitoring), Security Information Management (long-term storage of security events) und Security Event Correlattion durchgeführt.
 
@@ -50,7 +50,7 @@ DevOps ist eine neuere Strömung die versucht, Development und Operations zu ver
 
 Webapplikationen werden zumeist von Entwickler erstellt und dann einem Administratoren-Team zur Installation übergeben. Teilweise wird die Applikation auch von den Entwicklern installiert und dann von den Administratoren langfristig gewartet. In größeren Unternehmen wird die Installation und Wartung teilweise auf zwei unterschiedliche Administratorenteams aufgeteilt.
 
-Dies führt zu getrennten Teams mit getrennten Wissensstand und kann im worst-case auch zu Bunkerdenken --- us vs them --- führen. Diese Trennung behindert den Informationsfluss und verhindert, und führt künstliche Schranken im Verantwortlichkeitsgefühl ein ("die Admins sind dafür verantwortlich"). Im Fehlerfall führt dieses Bunkerdenken auch zum Herumschieben der Verantwortung zwischen Parteien.
+Dies führt zu getrennten Teams mit getrennten Wissensstand und kann im worst-case auch zu Bunkerdenken --- us vs them --- führen. Diese Trennung behindert den Informationsfluss und verhindert, und führt künstliche Schranken im Verantwortlichkeitsgefühl ein ("die Admins sind dafür verantwortlich"). Im Fehlerfall führt dieses Bunkerdenken auch zum Herum schieben der Verantwortung zwischen Parteien.
 
 DevOps versucht nun, wie der Name schon sagt, die Trennung von Entwicklung ("Development") und Administration ("Operations") zu beenden. Prinzipiell ist DevOps mehr eine Philosophie/gelebte Firmenkultur die stark von der Kultur der kontinuierlichen schritt-weisen Verbesserung (z. B. Kanban in Japan) geprägt ist. Bei der Umsetzung bindet es stärker Entwickler in klassische Operations-Bereiche wie Deployment ein.
 
@@ -87,7 +87,7 @@ Ein weiterer Vorteil dieses Ansatz ist, dass die verwendete Konfiguration innerh
 
 \subsection{Continuous Integration and Continuous Delivery}
 
-Die Verwendung von Tests zur Sicherung der Softwarequalität ist ein essentieller Bestandteil Agiler Methoden. Dem Kunden werden regelmäßig neue Programmversionen mit erweiterten Features zugestellt und anhand des Kundenwunsches neue Features selektiert und im nächsten Programmier-Sprint hinzugefügt. Würden Features fertiggestellt werden, die Fehler beinhalten und müsste man nachträglich diese Fehler immer wieder neu korrigieren, würde dadurch die Geschwindigkeit des Programmierteams stark leiden. Um dies zu verhindern, werden massiv Softwaretests geschrieben, die überprüfen ob die gewünschten Kundenfeatures ausreichend implementiert wurden. Diese Tests werden aufgerufen, bevor ein neues Feature in die, dem Kunden übermittelten, Version integriert wird. Auf diese Weise wird automatisch eine Kontrolle der Qualität durchgeführt.
+Die Verwendung von Tests zur Sicherung der Softwarequalität ist ein essentieller Bestandteil Agiler Methoden. Dem Kunden werden regelmäßig neue Programmversionen mit erweiterten Features zugestellt und anhand des Kundenwunsches neue Features selektiert und im nächsten Programmier-Sprint hinzugefügt. Würden Features fertig gestellt werden, die Fehler beinhalten und müsste man nachträglich diese Fehler immer wieder neu korrigieren, würde dadurch die Geschwindigkeit des Programmierteams stark leiden. Um dies zu verhindern, werden massiv Softwaretests geschrieben, die überprüfen ob die gewünschten Kundenfeatures ausreichend implementiert wurden. Diese Tests werden aufgerufen, bevor ein neues Feature in die, dem Kunden übermittelten, Version integriert wird. Auf diese Weise wird automatisch eine Kontrolle der Qualität durchgeführt.
 
 Um sicher zu stellen, dass diese Tests auch wirklich aufgerufen werden, werden diese Tests automatisiert aufgerufen. Dies wird im Zuge des Continuous Integration Prozess durchgeführt: nach jeder Änderung wird versucht, die Software zu bauen (builden) und anschließend werden die vorhandenen Tests ausgeführt. Falls ein Fehler auftritt, wird der betroffene Entwickler sofort notifiziert.
 
@@ -129,7 +129,7 @@ Integrations-Tests testen die Funktionalität des Gesamtsystems. Hierbei kann un
 
 Analog zur Analyse der Qualität des Source Codes (während des normalen DevOps-Prozesses) können auch Tools zur statischen Analyse des Source Codes inkludiert werden. Diese prüfen den Source Code auf bekannte Programmiermuster und -fehler die sicherheitsrelevante Konsequenzen besitzen können.
 
-Hier gibt es meistens Programmier- und Framework-abhängige Tools wie z. B. \textit{bandit} für \textit{Python}, \textit{Brakeman} für \textit{Ruby on Rails} und \textit{SpotBugs} für \textit{Java}. Eine Ebene über diesen Einzeltools funktioniert \textit{OWASP SonarCube}. Dieses Tool kann intern die gesamten erwähnten Subtools anwenden und besitzt auch Plugins um mittels \textit{OWAPS dependency-check} eine Überprüfung der verwendeten Abhängigkeiten (z. B. Bibliotheken) auf Schadcode hin durchzuführen.
+Hier gibt es meistens Programmier- und Framework-abhängige Tools wie z. B. \textit{bandit} für \textit{Python}, \textit{Brakeman} für \textit{Ruby on Rails} und \textit{SpotBugs} für \textit{Java}. Eine Ebene über diesen Einzeltools funktioniert \textit{OWASP SonarCube}. Dieses Tool kann intern die gesamten erwähnten Subtools anwenden und besitzt auch Plugins um mittels \textit{OWASP dependency-check} eine Überprüfung der verwendeten Abhängigkeiten (z. B. Bibliotheken) auf Schadcode hin durchzuführen.
 
 \subsubsection{Dynamic Application Scans}
 

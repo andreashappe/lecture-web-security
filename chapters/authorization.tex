@@ -107,7 +107,7 @@ Durch die Verwendung des User-Scopes wird implizit der Zugriff auf Rechnungen de
 
 \section{Time of Check, Time of Use (TOCTOU)}
 
-Der Zeitpunkt der Berechtigungsüberprüfung ist essentiall. Sogenannte \textit{Time of Check, Time of Use} Angriffe nutzen racing conditions zwischen der Überprüfung von Operationsberechtigungen und der Ausführung von Operationen aus.
+Der Zeitpunkt der Berechtigungsüberprüfung ist essentiell. So genannte \textit{Time of Check, Time of Use} Angriffe nutzen racing conditions zwischen der Überprüfung von Operationsberechtigungen und der Ausführung von Operationen aus.
 
 Ein gutes Beispiel für die TOCTOU-Problematik sind zumeist Token-basierte Systeme. Hier wird die Berechtigung eines Anwenders überprüft und danach ein Token mit einer definierten Laufzeit ausgestellt. Wird das Token während der Laufzeit an eine Operation überreicht, wird dieses valide Token als Zugangsberechtigung akzeptiert und die Operation ausgeführt auch wenn zwischenzeitlich die Berechtigungen des Benutzer modifiziert wurden und der Benutzer die Operation eigentlich nicht mehr ausführen dürfe.
 

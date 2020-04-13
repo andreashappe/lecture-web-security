@@ -1,16 +1,16 @@
 \chapter{Allgemeines}
 
-Software ist in den letzten Jahren allgegenwärtig geworden. Der Siegeszug verbundener Systeme, wie dem Internet,  ist unaufhaltsam. Der freie Zugriff auf Informationen und das neue Level an Verbundenheit führt zu sozialen und ökonomischen Entwicklungen deren Auswirkungen teilweise nicht absehbar sind. Es sind interessante Zeiten, in denen wir leben, wir (als Informatiker bzw. die Leser dieses Dokumentes) sind Teil einer privilegierten Schicht und dürfen auch den Anspruch erheben, Teil dieses Wandels zu sein. Im ursprünglichen Sinn des Wortes, waren Hacker Personen, die Spass an der Arbeit mit neuen Technologien hatten, diese auch zweckentfremdeten --- \textit{The Street will find its own uses for things} wie William Gibson richtig bemerkte.
+Software ist in den letzten Jahren allgegenwärtig geworden. Der Siegeszug verbundener Systeme, wie dem Internet,  ist unaufhaltsam. Der freie Zugriff auf Informationen und das neue Level an Verbundenheit führt zu sozialen und ökonomischen Entwicklungen deren Auswirkungen teilweise nicht absehbar sind. Es sind interessante Zeiten, in denen wir leben, wir (als Informatiker bzw. die Leser dieses Dokumentes) sind Teil einer privilegierten Schicht und dürfen auch den Anspruch erheben, Teil dieses Wandels zu sein. Im ursprünglichen Sinn des Wortes, waren Hacker Personen, die Spaß an der Arbeit mit neuen Technologien hatten, diese auch zweckentfremdeten --- \textit{The Street will find its own uses for things} wie William Gibson richtig bemerkte.
 
-Technologie verbessert das Leben der Menschen, beinhaltet aber auch Risiken. Durch die Allgegenwärtigkeit von Software wurden und werden Personen von dieser abhängig. Fehler gefährden Menschen und Ökonomien. Gerade weil Software so vielseitig ist, können auch vielseitige Fehler entstehen. Wenn diese bösartig ausgenutzt werden\footnote{Subjektiv im Auge des Betrachters.} ist der Schritt vom Hacker zum Cracker vollzogen. \textit{With great power comes great responsibility} --- dies gilt auch für Softwareentwickler. Ich selbst hielt mich für einen guten Softwareentwickler, wurde Penetration-Tester und sah meinen ehemaligen Code mit neuen Augen. Meine Meinung über mich selbst änderte sich rapide.
+Technologie verbessert das Leben der Menschen, beinhaltet aber auch Risiken. Durch die Allgegenwärtigkeit von Software wurden und werden Personen von dieser abhängig. Fehler gefährden Menschen und Ökonomie. Gerade weil Software so vielseitig ist, können auch vielseitige Fehler entstehen. Wenn diese bösartig ausgenutzt werden\footnote{Subjektiv im Auge des Betrachters.} ist der Schritt vom Hacker zum Cracker vollzogen. \textit{With great power comes great responsibility} --- dies gilt auch für Softwareentwickler. Ich selbst hielt mich für einen guten Softwareentwickler, wurde Penetration-Tester und sah meinen ehemaligen Code mit neuen Augen. Meine Meinung über mich selbst änderte sich rapide.
 
-Im Frühjahr 2019 erhielt ich das Angebot, an der FH/Technikum Wien einen Kurs \textit{Web Security} zu halten und hoffe, dass ich damit einen kleinen Teil betrage, die sub-optimale Sicherheitssituation zu verbessern. Dieses Dokument dient als Skript, auch weil ich befürchte, während des Vortrags wichtige Punkte zu übersehen bzw. als Möglichkeit Basisinformationen aus der Vorlesung auszulagern. Es gibt leider zu viele Schwachstellen und zuwenig Zeit um jede durchzugehen. Ein Beweggrund für mich auf der Fachhochschule zu unterrichten ist, dass wir alle Fehler machen\ldots unser Ausbildungsniveau sollte zumindest so gut sein, dass wir zumindest interessante Fehler begehen.
+Im Frühjahr 2019 erhielt ich das Angebot, an der FH/Technikum Wien einen Kurs \textit{Web Security} zu halten und hoffe, dass ich damit einen kleinen Teil betrage, die sub-optimale Sicherheitssituation zu verbessern. Dieses Dokument dient als Skript, auch weil ich befürchte, während des Vortrags wichtige Punkte zu übersehen bzw. als Möglichkeit Basisinformationen aus der Vorlesung auszulagern. Es gibt leider zu viele Schwachstellen und zu wenig Zeit um jede durchzugehen. Ein Beweggrund für mich auf der Fachhochschule zu unterrichten ist, dass wir alle Fehler machen\ldots unser Ausbildungsniveau sollte zumindest so gut sein, dass wir zumindest interessante Fehler begehen.
 
-Ich spüre aber auch die Angst, etwas zu veröffentlichen das potentiell Fehler beinhaltet oder auch teilweise meine Meinung wiederspiegelt. Auch in der Webentwicklung gibt es keine perfekte Wahrheit, Dinge ändern sich. Ich habe dieses Skript nach der zweiten Iteration meiner Vorlesung, nach viel positivem Feedback sowohl durch Foren als auch Studenten, 2020 offiziell höchst-nervös veröffentlicht.
+Ich spüre aber auch die Angst, etwas zu veröffentlichen das potentiell Fehler beinhaltet oder auch teilweise meine Meinung widerspiegelt. Auch in der Webentwicklung gibt es keine perfekte Wahrheit, Dinge ändern sich. Ich habe dieses Skript nach der zweiten Iteration meiner Vorlesung, nach viel positivem Feedback sowohl durch Foren als auch Studenten, 2020 offiziell höchst-nervös veröffentlicht.
 
 Ich hoffe, dass die schlimmsten Missverständnisse bereits durch meine Studenten erkannt, und von mir ausgebessert, wurden. Wenn nicht, würde ich mich um ein kurzes Feedback unter \url{mailto:andreashappe@snikt.net} freuen. Ich sehe solch Feedback als essentiell dafür ein, dass meine zukünftigen Studenten einen guten Unterricht erhalten.
 
-Die aktuelle Version dieses Dokumentes ist unter \url{https:/snikt.net/websec/} unter einer Creative-Commons Lizenz verfügbar. Der idente Inhalt wird von mir periodisch als neue Version als Amazon Kindle eBook veröffentlicht. Auf Anfrage einzelner Studenten werde ich dieses Skript auch als dead-tree Buch veröffentlichen. Leider ist das Update eines Papier-Buchs nicht so einfach möglich, aus diesem Grund habe ich einen niedrigen Buchpreis gewählt, der quasi der Gegenwert eines spendierten (belgischen) Bieres ist. Ich hoffe, dies wird als fair empfunden.
+Die aktuelle Version dieses Dokumentes ist unter \url{https:/snikt.net/websec/} unter einer Creative-Commons Lizenz verfügbar. Der idente Inhalt wird von mir periodisch als neue Version als Amazon Kindle eBook veröffentlicht. Auf Anfrage einzelner Studenten werde ich dieses Skript auch als dead-tree Buch veröffentlichen. Leider ist das Update eines Papier-Buchs nicht so einfach möglich, aus diesem Grund habe ich einen niedrigen Buchpreis gewählt, der quasi der Gegenwert eines spendierten (belgischen) Biers ist. Ich hoffe, dies wird als fair empfunden.
 
 \section{Struktur dieses Dokumentes}
 
@@ -18,7 +18,7 @@ Dieses Dokument und die dazugehörige Vorlesung verfolgt einen Top-Down Approach
 
 Beide beginnen mit high-level Themen, die beschreiben wie Security in die weitere Softwarewelt passt. Um eine Informations-Gleichheit zu schaffen, wird danach ein Kurzüberblick über die verschiedensten Webtechnologien geboten.
 
-Der nächste Part (\textit{Authentication und Authorisierung}) behandelt high-level Fehler bei der Implementierung der Benutzer- und Berechtigungskontrolle. Drei Kapitel (\textit{Authentication}, \textit{Authorization}, \textit{Federation/Single Sign-On}) beschreiben Gebiete, die applikationsweit betrachtet werden müssen --- falls hierbei Fehler auftreten, ist zumeist die gesamte Applikation betroffen und gebrochen.
+Der nächste Part (\textit{Authentication und Autorisierung}) behandelt high-level Fehler bei der Implementierung der Benutzer- und Berechtigungskontrolle. Drei Kapitel (\textit{Authentication}, \textit{Authorization}, \textit{Federation/Single Sign-On}) beschreiben Gebiete, die applikationsweit betrachtet werden müssen --- falls hierbei Fehler auftreten, ist zumeist die gesamte Applikation betroffen und gebrochen.
 
 Im darauf folgenden Part (\textit{Injection Attacks}) wird auf verschiedene Injection-Angriffe eingegangen. Hier wurde zwischen Angriffen, die direkt gegen den Webserver, und Angriffen die einen Client (zumeist Webbrowser) benötigen, unterschieden. Während auch hier Schutzmaßnahmen am besten global für die gesamte Applikation durchgeführt werden sollten, betrifft hier eine Schwachstelle zumeist einzelne Operationen und kann dadurch auch lokal korrigiert werden.
 
@@ -32,7 +32,7 @@ Der OWASP Application Security Verification Standard\footnote{\url{https://www.o
 
 Der OWASP Testing Guide\footnote{\url{https://www.owasp.org/images/1/19/OTGv4.pdf}} liefert zu jedem Angriffsvektor Hintergrundinformationen, potentielle Testmöglichkeiten als auch Referenzen auf Gegenmaßnahmen. Dieser Guide sollte eher als Referenz und nicht als Einführungsdokument verwendet werden.
 
-OWASP selbst ist in Städte-zentrischen Chapters organisiert, ich bin einer der Leader des OWASP Chapters Vienna (Austria) und würde mich freuen den Leser bei einem der unregelmässigen OWASP Stammtische in Wien begrüßen zu dürfen.
+OWASP selbst ist in Städte-zentrischen Chapters organisiert, ich bin einer der Leader des OWASP Chapters Vienna (Austria) und würde mich freuen den Leser bei einem der unregelmäßigen OWASP Stammtische in Wien begrüßen zu dürfen.
 
 \section{Out-of-Scope für dieses Skript}
 
@@ -40,9 +40,9 @@ Auf drei wichtige Bereiche wird im Zuge dieses Skripts nicht implizit eingegange
 
 \subsection{Denial-of-Service Angriffe}
 
-Denial-of-Service Angriffe zielen darauf ab, die Verfügbarkeit einer Applikation zu beeinträchtigen. Dadurch kann der Dienst nicht mehr benutzt bzw. konsumiert werden und dem Betreiber entstehen Kosten, z. B. Verdientsentgang druch einen ausgefallenen Webshop.
+Denial-of-Service Angriffe zielen darauf ab, die Verfügbarkeit einer Applikation zu beeinträchtigen. Dadurch kann der Dienst nicht mehr benutzt bzw. konsumiert werden und dem Betreiber entstehen Kosten, z. B. Verdienstentgang durch einen ausgefallenen Webshop.
 
-Ein DoS-Angriff zielt entweder auf eine Applikations-bezogene Ressource wie z. B. erlaubte Verbindungen pro Applikationsbenutzer oder eine fundamentale Systemresource wie z. B. CPU-Zeit, Speicher oder Netzwerkbandbreite ab. Als Applikationsentwickler kann man bei Ressourcen-intensiven Operationen mittels Rate-Limits die Situation leicht entschärfen.
+Ein DoS-Angriff zielt entweder auf eine Applikations-bezogene Ressource wie z. B. erlaubte Verbindungen pro Applikationsbenutzer oder eine fundamentale Systemressource wie z. B. CPU-Zeit, Speicher oder Netzwerkbandbreite ab. Als Applikationsentwickler kann man bei Ressourcen-intensiven Operationen mittels Rate-Limits die Situation leicht entschärfen.
 
 In diesem Dokument wird nicht tiefer auf DoS-Angriffe eingegangen, da diese quasi die Holzhammermethode darstellen. Gerade gegenüber Angriffen gegen die Netzwerkbandbreite kann nur über kommerzielle Cloud- bzw. Rechenzentrenbetreiber entgegengewirkt werden. Diese sind kostspielig und es entsteht eine Asymmetrie: die Abwehr des Angriffs ist kostspieliger als der Angriff selbst. Somit wird aus einem technischen DoS ein monetärer DoS.
 
@@ -54,7 +54,7 @@ Der Benutzer will primär eine Aufgabe erledigen. Im Zuge der Erledigung dieser 
 
 Ebenso sollte der Benutzer nicht mit irrelevanten Fragen bombardiert werden. Tests zeigen, dass dadurch nur der ``Meldung-wegklicken''-Reflex konditioniert wird. Die Willigkeit eines Benutzers, auf Sicherheit Rücksicht zu nehmen ist begrenzt, vergleichbar mit einer Batterie. Wenn diese erschöpft ist, wird weniger (oder gar keine) Rücksicht auf die Security genommen.
 
-Ein besserer Weg ist es, per default sichere Prozesse zu implementieren und im Bedarfsfall unsichere Operationen druch den Benutzer explizit zu erlauben. Die dabei verwendeten Benutzerinteraktionen sollten dem NEAT-Prinzipien genügen:
+Ein besserer Weg ist es, per default sichere Prozesse zu implementieren und im Bedarfsfall unsichere Operationen durch den Benutzer explizit zu erlauben. Die dabei verwendeten Benutzerinteraktionen sollten dem NEAT-Prinzipien genügen:
 
 \begin{itemize}
 	\item Necessary: kann die Applikation, anstatt den Benutzer zu fragen, das Problem auf eine andere sichere Art und Wiese lösen?
