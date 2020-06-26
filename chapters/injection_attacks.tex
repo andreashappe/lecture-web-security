@@ -339,6 +339,52 @@ Hier wird nun innerhalb der Abfrage eine Javascript-Funktion definiert und sofor
 
 Wie man an dem Beispiel sehen kann, ist der alleinige Einsatz von NoSQL-Datenbanken nicht ausreichend um eine Datenbank-Injection zu vermeiden.
 
+\section{LDAP-Injections}
+
+Das Lightweight Directory Access Protocol (LDAP) ist ein standardisiertes Protokoll welches aktuell häufig für den Zugriff auf Identifikations und Authentikationsdaten verwendet wird. Ein Angreifer kann hier, ähnlich zu Datenbank-Injections, das Verketten von Strings als Angriffsvektor verwenden.
+
+LDAP verwendet Key-Value Pairs um Daten zu speichern, bzw. zu identifizieren. Ein Beispiel:
+
+\begin{minted}{text}
+(cn=Andreas Happe, ou=IT Security, dc=technikum-wien, ec=at)
+\end{minted}
+
+Abfragen werden mit Hilfe einiger Sonderzeichen gebildet, diese müssen innerhalb von Datenfeldern nicht maskiert werden:
+
+\begin{minted}{text}
+* ( ) . & - _ [ ] ` ~ | @ $ % ^ ? : { } ! '
+\end{minted}
+
+Abfragen werden in prefix Notation geschrieben, folgende Abfrage sucht alle Namen, welche mit Andreas beginnen:
+
+\begin{minted}{text}
+(cn=Andreas*)
+\end{minted}
+
+Mehrere Abfragen können mit logsischen Operatoren verknüpft werden, z. B. sucht folgendes nach einem Namen der mit `Andreas'' beginnt und mit `Happe'' endet:
+
+\begin{minted}{text}
+(&(cn=Andreas*)(cn=*Happe))
+\end{minted}
+
+Verwendet ein Entwickler eine ungesicherte String-Concatination zur Erstellung einer Abfrage können, analog zu SQL-Injections, Fehler geschehen.
+
+Beispiel: wird ein Login über Benutzername und Passwort überprüft könnte die dabei entstehende Abfrage folgend aussehen:
+
+\begin{minted}{text}
+(&(userID=happe)(password=trustno1))
+\end{minted}
+
+Was passsiert, wenn der Angreifer \textit{*)(userID=*))(|(userID=*} als Benutzername eingibt? Die resultierende Abfrage wäre:
+
+\begin{minted}{text}
+(&(userID=*)(userID=*))(|(userID=*)(password=anything))
+\end{minted}
+
+Es entsteht eine Abfrage mit zwei Teilen die Und-verknüpft werden. Der erste Part ist immer war (Tautologie). Aufgrund der Oder-Verknüpfung ist auch der zweite Part immer war, in Summe ist der entstehende Ausdruck immer wahr und somit kann der Login umgangen werden.
+
+Weiter Informationen können dem Blog der Netsparker-Homepage\footnote{\url{https://www.netsparker.com/blog/web-security/ldap-injection-how-to-prevent/}} entnommen werden.
+
 \section{Type Juggling Angriffe}
 \index{type juggling attacks}
 
