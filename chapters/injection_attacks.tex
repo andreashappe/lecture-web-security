@@ -588,13 +588,92 @@ Da diese Sicherungsmassnahmen teilweise schwer umsetzbar sind, empfiehlt OWASP, 
 
 \subsection{HTTP Request Smuggling}
 
-Bei HTTP Request Smuggling versucht der Angreifer, einzelne HTTP Requests in ein System einzuschleusen.
+Bei HTTP Request Smuggling versucht der Angreifer, einzelne HTTP Requests in ein System einzuschleusen. Der Angriff erfolgt nicht direkt gegen eine Webapplikation an-sich, sondern nutzt aus, dass bei modernen Webapplikationen zumeist mehrere Server involviert sind.Das HTTP verwendet eine nicht-eindeutige Kodierung der Request-Länge, HTTP Request Smuggling tritt auf, wenn die verschiedenen Server bei dem indenten Request von unterschiedlichen Request-Längen ausgehen und daher diesen Request unterschiedlich zusammensetzen.
 
-Zumeist wird dies durch Unterschiede bei der Request-Behandlung zwischen Front-End und Backend-Systemen ermöglicht. Bei einem häufigen Setup empfängt ein Frontend-System die Benutzerrequests aller Browser. Diese werden eventuell gefiltert und dann über eine Verbindung an ein Backend-System weitergeleitet. Hier wird zumeist aus Performance-Gründen nur eine Verbindung verwendet, dass heißt auch, dass Requests unterschiedlicher Browser nacheinander über diese Verbindung übertragen werden. Das Backend-System empfängt nun über diese Verbindung die Anfragen, muss diese nun wieder in einzelne Anfragen zerlegen und schlussendlich abarbeiten. Werden hier die Anfrage-Grenzen (also die Länge der HTTP Requests) unterschiedlich interpretiert, kann dies dazu führen, dass der Angreifer im Backend-System dies dazu ausnutzen kann, Daten ``vor'' einem Folgerequest anzuhängen.
+Ein typisches Setup besteht aus einem Frontend- und einem einem Backend-Server. Das Frontend dient zumeist zum Cachen von Daten oder auch zur Zugriffskontrolle. Das Backend beinhaltet den Applikationsserver welcher schlussendlich den Request innerhalb des Applikationscodes behandelt. Problematisch ist, dass ein Frontend-System die Anfragen mehrerer Clients (Web-Browser) parallel entgegen nimmt und diese über eine Verbindung an ein Backend-System weiterleitet. Die Verwendung einer TCP-Verbindung geschieht zumeist aus Performancegründen, da das wiederholte Aufbauen einer Verbindung zeitaufwendig wäre. Da nur nur eine Verbindung verwendet wird, müssen Requests unterschiedlicher Browser nacheinander über diese Verbindung übertragen werden. Das Backend-System empfängt nun über diese Verbindung die Anfragen, muss diese erneut in einzelne Requests zerlegen und schlussendlich abarbeiten. Damit das Backend die Grenzen der einzelnen Requests identifizieren kann, wird die Längenangabe innerhalb der Requests verwendet.
 
-Häufig kann dies durch modifizierte Längen-Header initiiert werden. Beispielsweise könnte das Front-End System den \textit{Content-Length} Header verwenden, während das Backend-System den \textit{Transfer-Encoding} Header zur Längenbestimmung verwendet.
 
-Die Gegenmaßnahmen liegen eher im Administrator-Umfeld, daher wird in diesem Skript auf diese Angriffe nicht weiter eingegangen. Eine gute Einleitung in diese kann auf der PortSwigger Homepage\footnote{\url{https://portswigger.net/web-security/request-smuggling}} gefunden werden.
+HTTP beeinhaltet zwei Möglichkeiten die Requestlänge zu definieren:
+
+\begin{enumerate}
+	\item Der HTTP-Header \textit{Content-Lenght} beinhaltet die Länge des Request-Bodies.
+	\item Wird als HTTP-Header \textit{Transfer-Encoding: chunked} verwendet, gibt es keinen Header mit der Länge des Requestbodies. Anstatt dessen können als Requestbody mehrere Chunks übertragen werden. Ein Chunk besteht immer aus einer initialen Zeile mit der Länge der Daten innerhalb des aktuellen Chunks. Diese Länge wird in hexadezimal Notation übergeben. Direkt an die Zeile mit der Länge werden Daten (entsprechend der übertragenen Länge) angehängt. Ein Chunk wird mit einer Leerzeile beendet. Schlussendlich wird der Reqeust mit einem Chunk der Länge 0 beendet.
+\end{enumerate}
+
+Der Fall, dass sowohl \textit{Content-Length} als auch \textit{Transfer-Encoding: chunked} gesetzt sind, wurde im HTTP-Standard nicht definiert. Dementsprechend reagieren unterschiedliche Server auch unterschiedlich auf solche Requests. Dies kann von einem Angreifer ausgenutzt werden.
+
+Zwei einfache Beispiele\footnote{Aus dem exzellenten PortSwigger-Tutorial unter \url{https://portswigger.net/web-security/request-smuggling}.} sollen dieses Verhalten erläutern.
+
+Nehmen wir initial an, dass das Frontend \textit{Content-Length} und das Backend \textit{chunked encoding} verwendet. Folgender Request wird empfangen:
+
+\begin{minted}{http}
+ POST / HTTP/1.1
+ Host: vulnerable-website.com
+ Content-Length: 13
+ Transfer-Encoding: chunked
+
+ 0
+
+ SMUGGLED 
+\end{minted}
+
+Das Frontend würde (aufgrund des \textit{Content-Length: 11} Headers) die gesamte Nachricht auf die Verbindung zum Backend kopieren. Ein paralleler Request eines zweiten Benutzers wird direkt danach auf die gleiche Leitung kopiert. Das Backend liest den Request, verwendet aber \textit{Chunked Encoding}. Aufgrund des 0-Chunks (die initiale 0-Zeile) beendet es den ersten Request nach der Leerzeile (nach der 0) und verwendet den Rest der Eingabe als Beginn eines neuen Requests (der daher mit `` SMUGGLED'' beginnt). Der parallele Request eines anderen Benutzers wird direkt an den eingeschleusten Request als String angehängt und wird dadurch Teil des eingeschleusten Requests.
+
+Der umgekehrte Fall: Frontend verwendet \textit{Chunked-Encoding}, Backend verwendet \textit{Content-Length} funktioniert ähnlich:
+
+\begin{minted}{http}
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 3
+Transfer-Encoding: chunked
+
+8
+SMUGGLED
+0
+\end{minted}
+
+Hier wird allerdings eine Zeile mit 0 zwischen dem eingeschleusten Request und dem dazu-kopierten Folgerequest eines anderen Benutzers eingefügt (da das Chunked-Encoding diese Zeile zum Beenden des Requests benötigt). Dies muss der Angreifer bei der Erstellung seines Angriffscodes berücksichtigen.
+
+Wie kann dieses Verhalten bei einem Angriff ausgenutzt werden? Ein schönes Beispiel wäre eine Webapplikation, bei dem ein Benutzer Kommentare absetzen kann. Das Registrieren eines Benutzers ist auch für einen Angreifer möglich. Hier könnte z. B. folgender Request als Angriff verwendet werden\footnote{Quelle: \url{https://portswigger.net/web-security/request-smuggling/exploiting}}:
+
+\begin{minted}{http}
+GET / HTTP/1.1
+Host: vulnerable-website.com
+Transfer-Encoding: chunked
+Content-Length: 324
+
+0
+
+POST /post/comment HTTP/1.1
+Host: vulnerable-website.com
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 400
+Cookie: session=BOe1lFDosZ9lk7NLUpWcG8mjiwbeNZAO
+
+csrf=SmsWiwIJ07Wg5oqX87FfUVkMThn9VzO0&postId=2&name=Carlos+Montoya&email=carlos%40normal-user.net&website=https%3A%2F%2Fnormal-user.net&comment=
+\end{minted}
+
+Unter der Annahme, dass das Frontend \textit{Content-Length} und das Backend \textit{Chunked-Encoding} verwendet würde folgendes passieren:
+\begin{itemize}
+	\item Das Frontend kopiert den gesamten Request auf die Verbindung zum Backend.
+	\item Das Backend versucht den Request zu erkennen, verwendet dafür \textit{Chunked-Encoding} und beendet den Request mit dem 0-Chunk.
+	\item Das Backend liest die nächste Zeile Text und interpretiert diese als Beginn eines neuen Requests. In diesem Fall wäre dies ein POSt Request auf \url{/post/comment}.
+	\item Da der Angreifer selbst ein Konto erstellen konnte, konnte dieser eine valide Session als auch ein valides CSRF-Token generieren. Die Session wird als HTTP-Header eingeschleust. Innerhalb des eingeschleusten Requests wird auch das bekannte CSRF-Token gesetzt.
+	\item Innerhalb des eingeschleusten Requests wird mit einem Request-Body begonnen. In diesem werden mehrere Parameter gesetzt. Der eingeschleuste Request endet mit einem \textit{comment=}, also dem Wert der als Kommentar vom User eingegeben werden sollte.
+	\item Da das Backend nicht weiss, dass der Request beendet ist, liest es die nächsten Daten aus der eingehenden Verbindung. In diesem Fall ist dies ein Request eines anderen Benutzers, der zeitgleich abgegeben und vom Frontend direkt nach dem eingeschleusten Reqeust in die Verbindung kopiert wurde.
+	\item Die Applikationslogik interpretiert nun den Folgerequest als Inhalt des Parameters \textit{comment}, also als Kommentar der als Kommetar gepostet werden sollte (da die Operation \url{/comment/post} war).
+	\item Der Angreifer überprüft nun, ob ein neuer Kommentar mit sensiblen Daten eines anderen Users an der betroffenen Stelle auftaucht. Sensible Daten könnte z. B. Credentials im Zuge einer Login-Operation oder auch ein HTTP-Header mit Session-Cookies sein. Falls möglich, würde der Angreifer diese Verwenden um serverseitig die Identität des anderen Benutzers anzunehmen.
+	\item Falls kein Kommentar erscheint oder der Kommentar nur sinnlose Informationen beinhaltet, wiederholt der Angreifer den Angriffsrequest (potentiell würde er ein neues CSRF-Token initial generieren).
+\end{itemize}
+
+Was kann man gegen HTTP Request Smuggling Angriffe unternehmen? Mehrere Möglichkeiten würden diese unterbinden;
+
+\begin{itemize}
+	\item Sicherstellen, dass Front- und Backend die Request-Länge ident interpretieren.
+	\item Am Frontend potentiell mehrdeutige Request-Längen mit eindeutigen Längen ersetzen.
+	\item Zwischen Front- und Backend für jeden Client-Request eine neue Verbindung aufbauen. Dies wird zumeist aus Performance-Gründen nicht durchgeführt.
+	\item Zwischen Front- und Backend HTTP/2 verwenden. Diese Protokollversion besitzt die Mehrdeutigkeit der Requestlängen nicht mehr.
+\end{itemize}
 
 \section{Reflektionsfragen}
 
