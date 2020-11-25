@@ -270,6 +270,8 @@ Der Angreifer setzt über \textit{window.opener} die Adresse der aufgerufenen Se
 
 Als Gegenmaßnahme sollte bei ausgehenden Links immer das \textit{rel} Attribute auf \textit{noopener noreferrer} gesetzt werden. Dadurch kann die geöffnete Seite nicht mehr über \textit{windows.opener} auf die Location der öffnenden Seite zugreifen. Zusätzlich kann über die \textit{Referrer-Policy} das Übermitteln des Referrer-Headers an die aufgerufene Webseite unterbunden werden.
 
+\textbf{Update 2020}: mehrere Browser bieten mittlerweile automatische Verteidigungsmassnahmen gegenüber Reverse Tabnabbing Angriffe. Firefox (seit 2016), Microsoft Edge und Firefox sollten out-of-the-box nicht mehr gegenüber diesem Angriff verwundbar sein (sie setzen das \textit{noopener}-Flag automatisch). In zukünftigen Google Chrome Versionen ab 2021 sollte diese Browserfamilie dies auch durchführen und auf diese Weise Tabnabbing-Angriffe unterbinden.
+
 \section{HTML5 PostMessage als Angriffskanal}
 
 Eine Webapplikation wird innerhalb eines Browser-Tabs geöffnet, ihre Einflussmöglichkeiten (z. B. mittels Javascript) beschränken sich auf Inhalte innerhalb des Browser-Tabs. Es gibt Use-Cases, bei denen eine Applikation mit einer Webseite innerhalb eines anderen Browser-Tabs bzw. Browser-Fensters interagieren will. Ein Beispiel sind web-basierte Präsentationsframeworks. Hier gibt es meistens zwei Browserfenster: eines für die aktuell dargestellte Präsentationsfolie und ein Fenster mit Notzien für den Vortragenden. Wird die Folie gewechselt sollten im zweiten Fenster ebenso die Kommentare für die aktuell angezeigte Folie dargestellt werden.
