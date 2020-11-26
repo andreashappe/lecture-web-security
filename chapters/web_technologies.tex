@@ -1,6 +1,6 @@
 \chapter{Web Technologien}
 
-Der Titel dieses Dokumentes ist Web Security, dementsprechend sind unsere Zeile/Patienten auch Webapplikationen. Eine Definition fällt nicht einfach --- allgemein betrachtet ist eine Webapplikation eine auf der Client-Server-Architektur basierte Applikation die als Kommunikationprotokoll HTTP verwendet.
+Der Titel dieses Dokumentes ist Web Security, dementsprechend sind unsere Zeile/Patienten auch Webapplikationen. Eine Definition fällt nicht einfach --- allgemein betrachtet ist eine Webapplikation eine auf der Client-Server-Architektur basierte Applikation die als Kommunikationsprotokoll HTTP verwendet.
 
 Bei einer Client-Server Applikation versendet der Client einen Auftrag an einen Server; letzterer führt diesen im Namen des Clients aus und sendet die Antwort zurück. Im Zusammenhang mit Webapplikationen gehen wir von einem Webbrowser als Client aus. Die meisten vorgestellten Probleme betreffen auch Web-API Clients, auf diese wird allerdings nicht explizit eingegangen.
 
@@ -8,7 +8,7 @@ Bei einer Client-Server Applikation versendet der Client einen Auftrag an einen 
 
 Das Hypertext Transfer Protocol (HTTP) ist ein textbasiertes Protokoll welches primär zur Kommunikation zwischen Webservern und Web-Clients (wie z. B. Webbrowsern) verwendet wird. HTTP 1.0 wurde 1996 als RFC 1945 als expliziter Non-Standard veröffentlicht. 1999 wurde das Protokoll mit dem Update auf HTTP 1.1 (RFC 2616) modernisiert, es wurde z. B. HTTP Pipelining (die Übertragung mehrerer Dateien innerhalb einer HTTP Verbindung) in den Standard aufgenommen.
 
-2015 wurde HTTP/2 im RFC 7540/7541 definiert: Verbesserungen betreffen das Multiplexing von Anfragen, serverseitige Push-Nachrichten und die Kompression der übertragenen Daten. Per Stand 2020 kann davon ausgegangen werden, dass Zwei-Drittel bis Drei-Viertel der Webkommunikation bereits über HTTP/2 abgewickelt wird.
+2015 wurde HTTP/2 im RFC 7540/7541 definiert: Verbesserungen betreffen das Multiplexing von Anfragen, server-seitige Push-Nachrichten und die Kompression der übertragenen Daten. Per Stand 2020 kann davon ausgegangen werden, dass Zwei-Drittel bis Drei-Viertel der Webkommunikation bereits über HTTP/2 abgewickelt wird.
 
 HTTP verwendet zumeist TCP auf Port 80, die verschlüsselte Variante HTTPS verwendet Port 443. Häufig verwendete Ports für weitere HTTP-basierte Services sind 3000, 8000, 8080 und 8081.
 
@@ -20,7 +20,7 @@ Aktuell wird HTTP/3 basierend auf QUIC entwickelt. Diese Protokollversion wird v
 
 Bei HTTP 1.0/1.1 werden Anfragen von Webbrowsern an Webserver als mehrzeilige Textdokumente verschickt. Die erste Zeile dieses Dokuments beinhaltet als erstes Wort das zu verwendete HTTP Verb gefolgt von dem aufgerufenen Pfad und der verwendeten HTTP-Version. Jede weitere Zeile beinhaltet einen HTTP Header, diese sind immer als \textit{Key: Value} strukturiert.
 
-Bei folgendem Beispiel versucht ein Webbrowser auf die Datei \textit{/index.html} eines Webservers lesens (Verb: GET) zuzugreifen:
+Bei folgendem Beispiel versucht ein Webbrowser auf die Datei \textit{/index.html} eines Webservers lesend (Verb: GET) zuzugreifen:
 
 \begin{minted}{http}
 GET /index.html HTTP/1.1
@@ -171,7 +171,7 @@ Eine WebSocket-URL beinhaltet das zu verwendende Protokoll, dieses kann entweder
 
 Eine Session ist eine stehende Verbindung zwischen einem Client und einem Server. Innerhalb der Session kann der Server Zugriffe einem Client zuordnen. Nach erfolgtem Login kennt der Server die Benutzeridentität des Clients (bis zum erfolgten Logout).
 
-HTTP ist ein zustandsloses Protokoll, jeder Zugriff ist alleinstehend. Die Session muss daher auf einer höheren Ebene (ISO/OSI: Applikationslayer) gebaut werden. Im Web-Umfeld werden zumeist Cookie-basierte Sessions verwendet, andere Möglichkeiten wären z. B. Token basierte Systeme.
+HTTP ist ein zustandsloses Protokoll, jeder Zugriff ist alleinstehend. Die Session muss daher auf einer höheren Ebene (ISO/OSI: Application-Layer) gebaut werden. Im Web-Umfeld werden zumeist Cookie-basierte Sessions verwendet, andere Möglichkeiten wären z. B. Token basierte Systeme.
 
 Ein Cookie ist ein kleines Datenpaket welches im Zuge des Session-Managements vom Server dem Client mitgeteilt wird. Der Client speichert nun dieses Cookie und inkludiert es in jedem Folgeaufruf von Operationen auf dem setzenden Webserver. Ein Cookie besteht aus einem Namen, Wert, Ablaufdatum und einem Gültigkeitsbereich (Domain und/oder Pfad).
 
