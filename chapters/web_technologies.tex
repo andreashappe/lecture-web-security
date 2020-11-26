@@ -237,13 +237,23 @@ Set-Cookie: CookieName=CookieValue; SameSite=Strict; httpOnly; Secure;
 
 \section{JavaScript}
 
-1996 wurde im Zuge der Netscape Navigator 2.0 Einführung auch \textit{LiveScript} vorgestellt. Dieser Vorläufer von JavaScript erlaubt es, im Webbrowser Code auszuführen, initiale Use-Cases waren z. B. das client-seitige Überprüfen von Formulardaten vor dem Absenden des Formulars zum Server. Damit begann der Siegeszug von JavaScript. Im Laufe der Zeit wurde der Sprachumfang bzw. die Möglichkeiten, mit dem Webbrowser zu interagieren, immer umfangreiche, die aktuelle Krönung dieser Bewegung sind Progressive Web Applications (PWA).
+Wird über Webprogrammierung gesprochen fällt früher oder später der Name der Programmiersprache \textit{JavaScript} (auch teilweise mit JS abgekürzt). Im Jahr 1995 war das Web noch statisch\footnote{Im Sinne von: alle Webseiten wurden von Servern zugestellt, die Webbrowser zeigten diesen Content nur statisch an.}, der vorherrschende Webbrowser war Netscape Navigator, Microsoft Internet Explorer war gerade in einer ersten Version erschienen. Um dynamische client-seitige Webseiten zu ermöglichen beauftrage Netscape Brendon Eich damit eine neue Programmiersprache für die Exekution innerhalb des Webbrowsers zu entwicklern. Diese wurde initial \textit{LiveScript} getauft, aus Marketing-Gründen --- Java war damals der aktuelle Hype --- wurde diese Sprache in JavaScript umbenannt.
 
-1997 wurde aus JavaScript ECMAScript, dies ist teilweise auch dadurch begründet, dass JavaScript zwischenzeitlich eine Marke des Unternehmens Oracle wurde.
+Im Laufe der Zeit entwicklete\footnote{eigentlich reverse-engineerte\ldots} Microsoft für den Internet Explorer einen Klon: \textit{JScript}. Leider waren die Netscape- und Microsoft-Versionen teilweise inkompatibel zueinander. Netscape versuchte diesen Wildwuchs durch eine Standardisierung der Sprache durch ECMA namens ECMAScript entgegen zu wirken, da mittlerweile Microsoft Internet Explorer marktbeherrschend war, und das damalige Microsoft noch weniger offener, wurde dieser Standard nie von der breiten Masse angenommen.
 
-ECMAScript kann auf verschiedenste Arten verwendet werden. So kann es auf der einen Seite für User-Tracking angewendet, auf der anderen Seite zur sicheren Verschlüsslung von Benutzerdaten am Client (wie es z. B. EDRi in ihren Ethical Web Development Guidelines vorsieht) verwendet werden.
+Dies änderte sich 2008: seit 2005 wurde AJAX vermehrt verwendet und basierte auf JavaScript, ebenso gab es mittlerweile drei große JavaScript-Familien: Mozilla/Firefox, Microsoft/Internet Explorer und Google/Chrome. Die Hersteller entschlossen sich, JavaScript zu standardisieren und gemeinsam an ECMAScript zu arbeiten. Ende 2009 wurde als Ergebnis ECMAScript5 veröffentlicht. Mit ECMAScript6 entstand 2015 die ,,moderne'' JavaScript Sprache, seitdem entscheiden jährlich neue ECMAScript-Versionen.
 
-Zusätzlich kann auch ein ``positiv'' gemeinter ECMAScript-Einsatz missbraucht werden, ein Beispiel hierfür wären XSS-Angriffe.
+Während JavaScript-Engines ursprünglich nur im Browser eingesetzt wurden, änderte sich dies 2010 mit dem Erscheinen von \textit{node.js}. Diese Umgebung verwendete zwar die Google V8 JavaScript-Engine, wurde aber als ein Server gestartet. Durch diese Entwicklung konnte in JavaScript auch server-seitig entwickelt werden. Da ,,die Branche'' immer einen Mangel an Programmierern hat und viele ,,Entwickler'' JavaScript ,,konnten'' wurde diese Möglichkeit gerne genutzt.
+
+Auch außerhalb von Browsern wurden Einsatzgebiete für JavaScript entdeckt. \textit{PhoneGap} (mittlerweile \textit{Apache Cordova}) erlaubte das Entwickeln von mobilen Anwendungen mittels HTML, JavaScript und CSS seit 2009, seit 2010 können mittels \textit{Electron} traditionelle Desktop-Applikationen in JavaScript entwickelt werden.
+
+\subsection{Die Sprache JavaScript}
+
+JavaScript selbst ist eine Multi-Paradigma Programmiersprache und war initial primär für imperative und funktionale Programmierstile ausgelegt. Mit späteren ECMAScript-Versionen wurden die Objekt-orientierten Ansätze ausgebaut, es blieb allerdings bei einer Prototyp-basierten Vererbung. Auch das Typsystem ist noch immer dynamisch, optionales static-typing wird durch Projekte wie \textit{TypeScript} oder \textit{flow} bereitgestellt. Source Code kann in mehrere Module strukturiert werden, auch dies ist mittlerweile Teil des ECMAScript Standards.
+
+Betreffend der Nebenläufigkeit wurde ein Event-basierter Ansatz gewählt. Dies führte zu Problemen bei langlaufenden Prozessen/Requests, daher hat sich innerhalb von JavaScript-Programmen die Verwendung von Callback-Funktionen etabliert. In ECMAScript6 wurden ,,elegantere'' Konzepte wie \textit{Promises} und \textit{Futures} eingeführt, mit ECMAScript7 dieser Einsatz durch Schlüsselwörter wie \textit{async}/\textit{await} vereinfacht.
+
+Aktuell kann davon ausgegangen werden, dass JavaScript nicht so schnell von der Bildfläche verschwinden wird. Für weiterführende Informationen zu der Programmiersprache, bzw. zu deren moderneren Versionen, wird die Lektüre von \textit{The Modern JavaScript Tutorial}\footnote{\url{https://javascript.info/}} bzw. von \textit{You don't know JS}\footnote{\url{https://github.com/getify/You-Dont-Know-JS}} empfohlen.
 
 \section{Same-Origin-Policy (SOP)}
 
