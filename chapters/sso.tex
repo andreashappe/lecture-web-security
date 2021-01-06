@@ -6,7 +6,7 @@ Werden mehrere Webapplikationen betrieben, entsteht schnell der Wunsch, Benutzer
 	\item SSO erlaubt es mehreren Applikationen eine gemeinsame Login/Logout-Lösung zu verwenden. Dadurch können redundante Lösungen eingespart und duplizierte Sicherheitsprobleme vermieden werden. Nachteil: der Login-Server ist ein Single-Point-of-Failure.
 	\item Das gesamte Passwort-Management kann aus der Webapplikation ausgelagert werden. Es müssen keine Passwörter mehr selbst erhoben, bearbeitet oder gespeichert werden.
 	\item Die User-Experience ist angeblich besser. Der Aufwand für einen Benutzer einen neuen Account anzulegen wird minimiert.
-	\item Durch den Login-Server können weitere Authenticationsservices implementiert worden sein, z. B. Ausweiskontrolle oder eine Multi-Faktor-Authentication.
+	\item Durch den Login-Server können weitere Authenticationsservices implementiert worden sein, z.B. Ausweiskontrolle oder eine Multi-Faktor-Authentication.
 \end{itemize}
 
 \section{Festival-Beispiel}
@@ -17,7 +17,7 @@ Um die Situation zu verbessern, werden beim Festivaleingang die Besucher einmali
 
 In diesem Beispiel ist das Registrationszelt der Identity Provider, die Getränkehändler sind Service Provider, das Armband ein Token und der Besucher der Client.
 
-Das Beispiel zeigt auch zwei Probleme von token-basierten Lösungen. Das Armband gilt für die gesamte Dauer des Festivals (im Folgejahr werden andere Farben verwendet). Es gibt keine Möglichkeit einen Teil der Armbänder nach dem ersten Festivaltag zu invalidieren. Ebenso wird klar, dass jegliche Form von Zugriffskontrolle durch das Armband ersetzt wird. Wollen z. B. ein Vater und Sohn beide Alkohol kaufen, kann der Vater initial den Identitätscheck durchführen und dann sein Armband an seinen Sohn weitergeben. Der Vater geht danach wiederholt zum Registrationszelt und kauft sich ein zweites Zugangsband. Mit dem ersten Band kann nun der Sohn beliebig Alkohol kaufen ohne dass auffällt, dass sein Alter dies eigentlich verbieten sollte. Der alleinige Zeitpunkt der Überprüfung (Authorization) geschieht während der Bandausgabe.
+Das Beispiel zeigt auch zwei Probleme von token-basierten Lösungen. Das Armband gilt für die gesamte Dauer des Festivals (im Folgejahr werden andere Farben verwendet). Es gibt keine Möglichkeit einen Teil der Armbänder nach dem ersten Festivaltag zu invalidieren. Ebenso wird klar, dass jegliche Form von Zugriffskontrolle durch das Armband ersetzt wird. Wollen z.B. ein Vater und Sohn beide Alkohol kaufen, kann der Vater initial den Identitätscheck durchführen und dann sein Armband an seinen Sohn weitergeben. Der Vater geht danach wiederholt zum Registrationszelt und kauft sich ein zweites Zugangsband. Mit dem ersten Band kann nun der Sohn beliebig Alkohol kaufen ohne dass auffällt, dass sein Alter dies eigentlich verbieten sollte. Der alleinige Zeitpunkt der Überprüfung (Authorization) geschieht während der Bandausgabe.
 
 \section{OAuth2}
 
@@ -28,11 +28,12 @@ Da die Rechte eines ausgestellten Token im Normalfall nur während der Ausstellu
 \begin{figure}[h!]
 	\includegraphics[width=\textwidth]{graphs/oauth2.pdf}
 	\centering
+	\caption{Beispiel für einen OAuth2-Fluss}
 \end{figure}
 
 Ein interessanter Aspekt ist der Zeitpunkt der Authorization: die Überprüfung der eigentlich Zugriffsberechtigung wird durch den Authorization-Server zum Zeitpunkt der Ausstellung des Tokens durchgeführt. Bei einem Zugriff auf den Resourcen Server werden die eigentlichen Berechtigungen nicht mehr überprüft, sondern nur noch getestet ob das übergebene Token Zugriff auf die angeforderten Resourcen inkludiert und von einem validen Authorization Server signiert wurde.
 
-Das Token besitzt eine Laufzeit und ist bis zum Ende der Laufzeit gültig. Da der Resource Server nicht direkt mit dem Authorization Server kommuniziert, gibt es keine Möglichkeit ein Token zuvorig zu invalidieren. Dies ist problematisch, falls eine lange Laufzeit (z. B. ein Jahr) gewählt wurde und ein Token abhanden gekommen ist. Ein Angreifer mit dem entwendeten Token kann nun bis zum Ende der Laufzeit dieses Token verwenden um auf die Resource zuzugreifen.
+Das Token besitzt eine Laufzeit und ist bis zum Ende der Laufzeit gültig. Da der Resource Server nicht direkt mit dem Authorization Server kommuniziert, gibt es keine Möglichkeit ein Token zuvorig zu invalidieren. Dies ist problematisch, falls eine lange Laufzeit (z.B. ein Jahr) gewählt wurde und ein Token abhanden gekommen ist. Ein Angreifer mit dem entwendeten Token kann nun bis zum Ende der Laufzeit dieses Token verwenden um auf die Resource zuzugreifen.
 
 Um dieses Problem zu entschärfen werden zumeist zwei Tokens generiert: ein Access-Token und ein Refresh-Token. Das Access-Token wird zum Zugriff auf den Resource Server verwendet und besitzt eine sehr kurze Laufzeit, zumeist im Minuten-Bereich. Falls ein Access-Token abgelaufen ist, kann der Client das Refresh-Token verwenden um (ohne Benutzerinteraktion) ein neues Access-Token zu erhalten. Dies verbessert die Sicherheitssituation, da der Authorization-Server vor dem Ausstellen eines Access-Tokens überprüft, ob das Subject/der User überhaupt noch die notwendige Berechtigung besitzt. Dadurch wird das verwundbare Zeitfenster zwar nicht entfernt, aber zumindest reduziert.
 
@@ -42,9 +43,9 @@ OpenID-Connect verwendet OAuth2 um eine Benutzeridentifikation und -authenticati
 
 \section{SAML2}
 
-Die Abkürzung SAML2 steht für Security Assertion Markup Language (Version 2). Diese XML-basierte Sprache dient zum Austausch von Authentication und Authorization Informationen zwischen mehreren Parteien. Dabei will sich ein Benutzer mittels eines Clients (z. B. Webbrowser) an einem Service Provider (z. B. Webserver) anmelden. Um dies durchzuführen wird ein Identity Provider (IdP) bemüht dieser ist ein Service welches für einen User gegenüber einem Service Provider authentifiziert und autorisiert; ebenso kann dieser Service einen synchronen Single Sign-Out durchführen.
+Die Abkürzung SAML2 steht für Security Assertion Markup Language (Version 2). Diese XML-basierte Sprache dient zum Austausch von Authentication und Authorization Informationen zwischen mehreren Parteien. Dabei will sich ein Benutzer mittels eines Clients (z.B. Webbrowser) an einem Service Provider (z.B. Webserver) anmelden. Um dies durchzuführen wird ein Identity Provider (IdP) bemüht dieser ist ein Service welches für einen User gegenüber einem Service Provider authentifiziert und autorisiert; ebenso kann dieser Service einen synchronen Single Sign-Out durchführen.
 
-Die jeweiligen Operationen werden im SAML2 Jargon häufig \textit{Flows} genannt. Es gibt Login- und Logout-Flows, beide können entweder vom Service Provider oder vom Identity Provider gestartet werden. Diese unterschiedliche Ausprägung ist durch unterschiedliche Use-Cases bedingt. Falls ein Betrieb mehrere Websysteme betreibt, die eigenständig sind (z. B. eine GitLab-Instanz, eine NextCloud-Instanz), diese aber mit einem unified Sign-In versehen will, macht der SP-trigered flow Sinn. Der Benutzer wird beim Login auf z. B. GitLab zu dem IdP weitergeleitet und loggt sich auf diesem ein. Es wird eine Bestätigung für GitLab generiert (Token) und der User wird automatisch mit diesem Token zu dem GitLab-Server weitergeleitet (auf dem er nun eingeloggt ist). Den IdP-triggered flow würde man eher in einem Portal-Umfeld verwenden: hier gibt es eine initiale Login-Seite und dem Benutzer wird danach ein typisches Portal mit mehreren eigenständigen aber integrierten Applikationen angezeigt. Wenn er nun auf eine Subapplikation klickt, wird das Token automatisch mit übertragen und der User ist in der Subapplikation eingeloggt (ohne zuvor vom SP zum IdP umgeleitet zu werden).
+Die jeweiligen Operationen werden im SAML2 Jargon häufig \textit{Flows} genannt. Es gibt Login- und Logout-Flows, beide können entweder vom Service Provider oder vom Identity Provider gestartet werden. Diese unterschiedliche Ausprägung ist durch unterschiedliche Use-Cases bedingt. Falls ein Betrieb mehrere Websysteme betreibt, die eigenständig sind (z.B. eine GitLab-Instanz, eine NextCloud-Instanz), diese aber mit einem unified Sign-In versehen will, macht der SP-trigered flow Sinn. Der Benutzer wird beim Login auf z.B. GitLab zu dem IdP weitergeleitet und loggt sich auf diesem ein. Es wird eine Bestätigung für GitLab generiert (Token) und der User wird automatisch mit diesem Token zu dem GitLab-Server weitergeleitet (auf dem er nun eingeloggt ist). Den IdP-triggered flow würde man eher in einem Portal-Umfeld verwenden: hier gibt es eine initiale Login-Seite und dem Benutzer wird danach ein typisches Portal mit mehreren eigenständigen aber integrierten Applikationen angezeigt. Wenn er nun auf eine Subapplikation klickt, wird das Token automatisch mit übertragen und der User ist in der Subapplikation eingeloggt (ohne zuvor vom SP zum IdP umgeleitet zu werden).
 
 \subsection{SAML2 Assertions}
 
@@ -87,11 +88,13 @@ Bei Webbrowser-basierten Flows wird meistens das HTTP Redirect oder das HTTP POS
 
 \subsection{Beispiel: Single Sign-On}
 
-Hier ein Beispiel für ein SP-initiated Single-Sign on welches das HTTP POST Binding verwendet:
+Abbildung \ref{saml2_sso} zeigt ein Beispiel für ein SP-initiated Single-Sign On welches durch einen Service Provider gestartet und mittels HTTP POST Binding implementiert wurde. 
 
 \begin{figure}[h!]
 	\includegraphics[width=\textwidth]{graphs/saml2.pdf}
 	\centering
+	\caption{Beispiel für ein Single-Sign On welches durch einen Service-Provider angestossen wurde.}
+	\label{saml2_sso}
 \end{figure}
 
 In diesem Beispiel will ein Client (\textit{User Agent}) auf einen Service Provider zugreifen und benötigt hierfür eine Autorisierung. Nach dem initialen Client-Zugriff (Schritt 1) verwendet der SP zusammen mit dem Client das \textit{IdP Discovery} Protokoll um den zugehörigen IdP zu identifizieren. Sobald dieser bekannt ist, erstellt der SP einen Authorization Request und teilt diesen (samt der Adresse des IdPs) dem Client mit. Der Client kontaktiert nun den IdP und übermittelt den Request.

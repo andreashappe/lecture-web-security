@@ -3,13 +3,14 @@
 Client-seitige Angriffe zielen auf die Web-Browser der Benutzer ab und sind häufig Teil von Social Engineering Angriffen (da eine End-User Interaktion benötigt wird). Webserver besitzen die Möglichkeit, mittels optionaler HTTP Header den Clients Sicherheitspolicies und Verwendungshinweise mitzuteilen; Clients können auf diese Weise Schadcode erkennen und filtern.
 
 \section{JavaScript-Injections (XSS)}
+\label{xss}
 \index{xss}
 
 Javascript-Injections (Cross-Site Scripting XSS) sind ein sehr häufig genutzter Angriffsvektor. Aufgrund der Häufigkeit dieses Angriffsvektor sind für diesen auch mehrere Hardening-Maßnahmen verfügbar.
 
 Prinzipiell findet bei diesem Angriffsvektor der Angreifer einen Weg um JavaScript-Code innerhalb einer Webseite zu platzieren. Wird diese Webseite nun von einem Opfer in dessen Browser angezeigt, wird dieser Code exekutiert und der Angreifer kann auf diese Wiese unvorhergesehenen Code exekutieren.
 
-Ein einfaches Beispiel wäre innerhalb der Kommentarfunktion einer Webseite möglich. Im Normalfall kann hier ein Benutzer Text eingeben, z.B. ``Hallo'', und dies wird für alle anderen Benutzer als Teil der HTML-Seite ausgegeben. Das resultierende HTML-Fragment könnte z. B. so aussehen:
+Ein einfaches Beispiel wäre innerhalb der Kommentarfunktion einer Webseite möglich. Im Normalfall kann hier ein Benutzer Text eingeben, z.B. ``Hallo'', und dies wird für alle anderen Benutzer als Teil der HTML-Seite ausgegeben. Das resultierende HTML-Fragment könnte z.B. so aussehen:
 
 \begin{minted}{html}
 <div class="comment">
@@ -27,7 +28,7 @@ Ein Angreifer würde nun versuchen, JavaScript-Code als Eingabe zu übergeben, i
 </div>
 \end{minted}
 
-Ein Problem bei der defensiven Identifikation von potentiellen XSS-Lücken ist, dass die XSS-Angriffsfläche immens ist. Fast jede mögliche Benutzereingabe kann XSS-Schadmuster beinhalten. Ein Beispiel dafür wäre ein XSS-Fehler innerhalb von Flickr. Hier konnten Hacker XSS-Schadcode in den Metadaten der hochgeladenen JPEGs integrieren (z. B. als Kameramodel). Diese Daten wurden von Flickr ausgelesen, auf der Homepage ausgegeben und dadurch anderen Benutzern als Schadcode ``untergejubelt''. Ein weiteres Beispiel für unerwartete XSS-Angriffsvektoren ist dieses Dokument. Auf Anfrage hin habe ich eine eBook-Version dieses Dokuments erstellt und auf Amazon Kindle Direct Publishing hochgeladen. In der Entwurfsansicht wurden dann mehrere Hundert Rechtschreibfehler bemängelt. Wenn nun allerdings in der Detailansicht die Rechtschreibfehler betrachtet wurden, wurden automatisch XSS-Fragmente aus dem Dokument als Teil der Weboberfläche ausgeführt und hatten teilweise Zugriff auf Amazon-Cookies, etc.
+Ein Problem bei der defensiven Identifikation von potentiellen XSS-Lücken ist, dass die XSS-Angriffsfläche immens ist. Fast jede mögliche Benutzereingabe kann XSS-Schadmuster beinhalten. Ein Beispiel dafür wäre ein XSS-Fehler innerhalb von Flickr. Hier konnten Hacker XSS-Schadcode in den Metadaten der hochgeladenen JPEGs integrieren (z.B. als Kameramodel). Diese Daten wurden von Flickr ausgelesen, auf der Homepage ausgegeben und dadurch anderen Benutzern als Schadcode ``untergejubelt''. Ein weiteres Beispiel für unerwartete XSS-Angriffsvektoren ist dieses Dokument. Auf Anfrage hin habe ich eine eBook-Version dieses Dokuments erstellt und auf Amazon Kindle Direct Publishing hochgeladen. In der Entwurfsansicht wurden dann mehrere Hundert Rechtschreibfehler bemängelt. Wenn nun allerdings in der Detailansicht die Rechtschreibfehler betrachtet wurden, wurden automatisch XSS-Fragmente aus dem Dokument als Teil der Weboberfläche ausgeführt und hatten teilweise Zugriff auf Amazon-Cookies, etc.
 
 \subsection{Arten und Payloads}
 
@@ -35,8 +36,8 @@ XSS-Angriffe werden in drei grobe Familien eingeteilt:
 
 \begin{description}
 	\item[Reflected XSS]\index{xss!reflected xss}: hier wird kein XSS-Code am Server persistiert sondern vom Server an den Client zurück reflektiert. Dies wird meistens durch das Einschleusen von JavaScript-Code über einen HTTP Parameter erfüllt --- dies impliziert allerdings auch, dass der Angreifer einen Weg findet, das Opfer zum Aufruf der modifizierten URL zu bewegen. Beispiel einer modifizierten URL: \url{http://opfer.xyz/operation?parameter=<script>alert(1)</script>}.
-	\item[Stored/Persistent XSS]\index{xss!persistent xss}: hier besitzt der Angreifer die Möglichkeit den Javascript-Code am Server zu persistieren, ihn z. B. als Datenbank-Inhalt oder über eine hochgeladene Datei zuzustellen. Das Opfer betrachtet nun eine Webseite und bekommt durch den Server das XSS-Fragment übertragen. Ein Beispiel wäre das Übertragen von \mintinline{html}{<script>alert(1)</script>} als Chatnachricht innerhalb einer Webseite.
-	\item[DOM-based XSS]\index{xss!dom-based xss}: dieser Angriffsvektor betrifft vor allem client-seitige Javascript-Frameworks die Eingaben aus dem DOM\footnote{Das Document-Object-Model beschreibt eine Programmierschnittstelle welche HTML/XML-Daten als Baumstruktur darstellt. Mittels Javascript kann das DOM modifiziert werden um beispielsweise Elemente bzw. deren Attribute hinzuzufügen, entfernen oder zu modifizieren; Eventhandler zu setzen bzw. Events zu feuern; bzw. um CSS zu verändern.} des Browsers übernehmen. Der Angreifer versucht, Schadcode innerhalb des DOMs zu platzieren (z. B. über die verwendete URL) und hofft, dass die Webapplikation dieses Element zum Bau einer Webseite verwendet. Bei dieser Form des XSS wird der bösartige Javascript Code erst im Client gebaut.
+	\item[Stored/Persistent XSS]\index{xss!persistent xss}: hier besitzt der Angreifer die Möglichkeit den Javascript-Code am Server zu persistieren, ihn z.B. als Datenbank-Inhalt oder über eine hochgeladene Datei zuzustellen. Das Opfer betrachtet nun eine Webseite und bekommt durch den Server das XSS-Fragment übertragen. Ein Beispiel wäre das Übertragen von \mintinline{html}{<script>alert(1)</script>} als Chatnachricht innerhalb einer Webseite.
+	\item[DOM-based XSS]\index{xss!dom-based xss}: dieser Angriffsvektor betrifft vor allem client-seitige Javascript-Frameworks die Eingaben aus dem DOM\footnote{Das Document-Object-Model beschreibt eine Programmierschnittstelle welche HTML/XML-Daten als Baumstruktur darstellt. Mittels Javascript kann das DOM modifiziert werden um beispielsweise Elemente bzw. deren Attribute hinzuzufügen, entfernen oder zu modifizieren; Eventhandler zu setzen bzw. Events zu feuern; bzw. um CSS zu verändern.} des Browsers übernehmen. Der Angreifer versucht, Schadcode innerhalb des DOMs zu platzieren (z.B. über die verwendete URL) und hofft, dass die Webapplikation dieses Element zum Bau einer Webseite verwendet. Bei dieser Form des XSS wird der bösartige Javascript Code erst im Client gebaut.
 	\item[mXSS]\index{xss!mxss}: Webbrowser erlauben es, über eine Stringzuweisung in das \textit{innerHTML}-Attribute HTML-Code zu erstellen. Bevor der übergebene String in HTML-Code verwandelt wird, wenden die unterschiedlichen Browser-Familien Optimierungen (Mutationen) auf den String an. Dies kann ein Angreifer ausnutzen, indem er Schadcode so formatiert, dass er innerhalb des Strings noch harmlos wirkt, aber nach der String-Mutation bösartig wird.
 	\item[uXSS]\index{xss!uxss}: Universal XSS zielen auf Fehler innerhalb von Webbrowsern bzw. innerhalb von Webbrowserplugin ab. Da diese auf ein Client-Programm abzielen, sind sie für diese Vorlesung out-of-scope.
 \end{description}
@@ -60,7 +61,7 @@ Ein Problem an XSS-Angriffsmustern ist, dass diese sehr stark variieren können 
 
 Eine gute Quelle für weitere XSS-Beispiele ist das OWASP XSS Filter Evasion Cheat Sheet\footnote{\url{https://www.owasp.org/index.php/XSS_Filter_Evasion_Cheat_Sheet}}.
 
-Mittels des eingeschleusten JavaScript-Code versucht der Angreifer nun, negativen Einfluss auf einen Benutzer zu nehmen. Ein gutes Beispiel wäre der Versuch, das Session-Cookie des aktuellen Benutzers (des Opfers) auszulesen und an einen externen Server zu übermitteln. Auf diese Weise würde ein Identitätsdiebstal durchgeführt werden. Ein weiteres Beispiel wäre \textit{Virtual Defacement}: bei diesem wird mittels JavaScript die dargestellt Webseite verändert und dadurch ein Defacement durchgeführt. Bösartig an diesem ist, dass die direkten Inhalte (Webseiten im Filesystem des Webservers) korrekt aussehen. In den letzten Jahren wurden XSS-Injections auch für Bitcoin/Crypto-Mining missbraucht. In diesem Fall wird jedes Opfer welches eine Webseite besucht kurzfristig Teil des Mining-Kollektivs. Last but not least kann XSS verwendet werden, um den Browser des Opfers Teil eines DDoS-Botnets zu machen. Ein berühmtes Beispiel hierfür ist die Low-Orbit Ion Canon die z. B. auch gerne von Anonymous verwendet wurde.
+Mittels des eingeschleusten JavaScript-Code versucht der Angreifer nun, negativen Einfluss auf einen Benutzer zu nehmen. Ein gutes Beispiel wäre der Versuch, das Session-Cookie des aktuellen Benutzers (des Opfers) auszulesen und an einen externen Server zu übermitteln. Auf diese Weise würde ein Identitätsdiebstal durchgeführt werden. Ein weiteres Beispiel wäre \textit{Virtual Defacement}: bei diesem wird mittels JavaScript die dargestellt Webseite verändert und dadurch ein Defacement durchgeführt. Bösartig an diesem ist, dass die direkten Inhalte (Webseiten im Filesystem des Webservers) korrekt aussehen. In den letzten Jahren wurden XSS-Injections auch für Bitcoin/Crypto-Mining missbraucht. In diesem Fall wird jedes Opfer welches eine Webseite besucht kurzfristig Teil des Mining-Kollektivs. Last but not least kann XSS verwendet werden, um den Browser des Opfers Teil eines DDoS-Botnets zu machen. Ein berühmtes Beispiel hierfür ist die Low-Orbit Ion Canon die z.B. auch gerne von Anonymous verwendet wurde.
 
 \subsubsection{Stehlen von Daten aus einem Passwortmanager}
 
@@ -78,16 +79,16 @@ setTimeout('alert("Password: " + document.getElementById("password").value)', 10
 \subsection{Upload von HTML/Javascript-Dateien}
 \label{upload_js}
 
-Falls der Angreifer die Möglichkeit besitzt Dateien hochzuladen, kann dieser versuchen, auf diese Weise Javascript-Code in der Applikation zu hinterlegen. Hier ist der Angriffsvektor, diese Dateien von einem anderen Benutzer öffnen zu lassen. Da die hochgeladenen Dateien innerhalb der Applikation geöffnet werden, erhalten diese Zugriff auf sensible Benutzerdaten wie z. B. Session-Daten.
+Falls der Angreifer die Möglichkeit besitzt Dateien hochzuladen, kann dieser versuchen, auf diese Weise Javascript-Code in der Applikation zu hinterlegen. Hier ist der Angriffsvektor, diese Dateien von einem anderen Benutzer öffnen zu lassen. Da die hochgeladenen Dateien innerhalb der Applikation geöffnet werden, erhalten diese Zugriff auf sensible Benutzerdaten wie z.B. Session-Daten.
 
-Auch hier sollten die erlaubten Dateitypen durch eine whitelist eingeschränkt werden. Zusätzlich sollte der \textit{Content-Disposition}-Header verwendet werden. Durch diesen teilt der Webserver dem Browser mit, dass eine Datei zum Download bestimmt ist. In diesem Fall lädt der Webbrowser die Datei herunter und öffnet anschließend potentiell die lokal heruntergeladene Datei --- dadurch ist diese nicht mehr Teil der Webapplikation und kann daher nicht mehr auf z. B. Session-Cookies zugreifen.
+Auch hier sollten die erlaubten Dateitypen durch eine whitelist eingeschränkt werden. Zusätzlich sollte der \textit{Content-Disposition}-Header verwendet werden. Durch diesen teilt der Webserver dem Browser mit, dass eine Datei zum Download bestimmt ist. In diesem Fall lädt der Webbrowser die Datei herunter und öffnet anschließend potentiell die lokal heruntergeladene Datei --- dadurch ist diese nicht mehr Teil der Webapplikation und kann daher nicht mehr auf z.B. Session-Cookies zugreifen.
 
 \subsubsection{X-Content-Type-Options}
 \label{x_content_type_options}
 
 Webserver übermitteln den MIME-Datentypen von übertragenen Dateien über den \textit{Content-Type} Header. Da diese Header ``früher'' ab und zu falsch gesetzt wurden, verwenden einige Browser (primär verschiedene Microsoft Internet Explorer und Edge Versionen) eine Heuristik um dynamisch den Content-Type zu bestimmen. Dabei wird der Anfang einer Datei gelesen, engl. ``sniffing'', und basierend auf der gefundenen Struktur ein MIME-Typ zugeordnet.
 
-Dies kann ein Angreifer missbrauchen indem er z. B. ein Textfile hoch lädt (Datentyp \textit{text/plain}). Diese Datei enthält HTML-Code inklusive bösartigem JavaScript. Wenn nun ein Opfer auf dieses File zugreift und dessen Browser eine Heuristik verwendet, würde der Dateityp als JavaScript erkannt, und vom Browser das inkludierte bösartige JavaScript ausgeführt werden. Auf diese Weise kann der Angreifer eine potentielle Javascript-Upload-Sperre umgehen.
+Dies kann ein Angreifer missbrauchen indem er z.B. ein Textfile hoch lädt (Datentyp \textit{text/plain}). Diese Datei enthält HTML-Code inklusive bösartigem JavaScript. Wenn nun ein Opfer auf dieses File zugreift und dessen Browser eine Heuristik verwendet, würde der Dateityp als JavaScript erkannt, und vom Browser das inkludierte bösartige JavaScript ausgeführt werden. Auf diese Weise kann der Angreifer eine potentielle Javascript-Upload-Sperre umgehen.
 
 Mittels des \textit{X-Content-Type-Options: nosniff}-Headers kann der Webserver dem Webbrowser mitteilen, dass kein sniffing durchgeführt, und dem vom Server übermittelten Content-Type vertraut werden kann.
 
@@ -104,7 +105,7 @@ Werden Daten aus nicht-vertrauenswürdigen Quellen verwendet, müssen diese auto
 
 Da es eine Vielzahl möglicher Schadcodevarianten als auch viele potentielle Tarnmethoden gibt, ist das Filtern von Schadcode effektiv nur durch Verwendung einer (extern) gewarteten Bibliothek möglich.
 
-Eine weiter Möglichkeit ist die Verwendung einer Web-Application Firewall wie z. B. \textit{mod\_security} im Zusammenspiel mit dem OWASP Core Rule Set (2). Hierbei wird jeder eingehende HTTP Request auf Schadcode hin überprüft und ggf. der Schadcode gefiltert bzw. der gesamte Request verworfen. Ein Problem bei der Verwendung von WAFs ist deren Ressourcen-Verbrauch als auch die potentiell hohe Anzahl von False-Positives (Anfragen die zwar nicht bösartig sind, aber von der WAF als bösartig erkannt, und daher geblockt werden).
+Eine weiter Möglichkeit ist die Verwendung einer Web-Application Firewall wie z.B. \textit{mod\_security} im Zusammenspiel mit dem OWASP Core Rule Set (2). Hierbei wird jeder eingehende HTTP Request auf Schadcode hin überprüft und ggf. der Schadcode gefiltert bzw. der gesamte Request verworfen. Ein Problem bei der Verwendung von WAFs ist deren Ressourcen-Verbrauch als auch die potentiell hohe Anzahl von False-Positives (Anfragen die zwar nicht bösartig sind, aber von der WAF als bösartig erkannt, und daher geblockt werden).
 
 \subsubsection{Quoting während der Ausgabe}
 
@@ -129,7 +130,7 @@ Einige Grundregeln zur Verwendung von user-supplied Daten innerhalb von Javascri
 \item Die Verwendung von Benutzerdaten sollte so weit wie möglich minimiert werden.
 \item User-Supplied Daten sollten niemals auf der linken Seite (LHS) einer Zuweisung verwendet werden.
 \item die Methoden \textit{element.write} und \textit{element.writeln} als auch die Attribute \textit{innerHTML} und \textit{outerHTML} rendern die übergebenen Texte als HTML-Code. Dabei kann auch Code exekutiert werden --- es wird empfohlen stattdessen \textit{innerText} und \textit{textContent} zu verwenden.
-\item die Methode \textit{eval} sollte vermieden werden. Achtung: teilweise wird eval intern verwendet (z. B. bei Verwendung von Timeout-Funktionen), hier sollten keine Benutzereingaben verwendet werden.
+\item die Methode \textit{eval} sollte vermieden werden. Achtung: teilweise wird eval intern verwendet (z.B. bei Verwendung von Timeout-Funktionen), hier sollten keine Benutzereingaben verwendet werden.
 \item Ebenso sollte niemals user-supplied Data als Event-Handler verwendet werden.
 \end{itemize}
 
@@ -210,7 +211,7 @@ Eine weitere Schutzmaßnahme (im Sinne des Hardening) ist der Einsatz des \texti
 
 \section{Unverified Forwards and Redirects}
 
-Diese Schwachstelle war in den OWASP Top 10 2013 vorhanden, wurde allerdings 2017 aus der Liste der Top 10 entfernt. Die Schwachstelle entsteht, falls eine Operation einer Webapplikation den Benutzerbrowser auf eine weitere Seite weiterleitet und das Ziel über einen Parameter bestimmt wird. Ein Angreifer kann nun versuchen, das Opfer auf eine externe Seite zu leiten um dies im Zuge eines Social Engineering Angriffs auszunutzen. Eine verwundbare Operation würde z. B. folgendermaßen aussehen: \url{http://example.com/example.php?url=http://malicious.example.com}.
+Diese Schwachstelle war in den OWASP Top 10 2013 vorhanden, wurde allerdings 2017 aus der Liste der Top 10 entfernt. Die Schwachstelle entsteht, falls eine Operation einer Webapplikation den Benutzerbrowser auf eine weitere Seite weiterleitet und das Ziel über einen Parameter bestimmt wird. Ein Angreifer kann nun versuchen, das Opfer auf eine externe Seite zu leiten um dies im Zuge eines Social Engineering Angriffs auszunutzen. Eine verwundbare Operation würde z.B. folgendermaßen aussehen: \url{http://example.com/example.php?url=http://malicious.example.com}.
 
 Besonders gefährlich ist es, wenn die verlinkte URL nicht über ein HTTP Redirect aufgerufen wird, sondern wenn die übergebene URL als Ziel eines eingebetteten IFrames verwendet wird. Auf diese Weise kann der Angreifer Inhalte auf der (vermeintlichen) Opferwebseite platzieren, die meisten Enduser werden nicht bemerken, dass sie gerade Daten in einem Iframe und nicht in der Opfer-Webseite eingeben.
 
@@ -274,7 +275,7 @@ Als Gegenmaßnahme sollte bei ausgehenden Links immer das \textit{rel} Attribute
 
 \section{HTML5 PostMessage als Angriffskanal}
 
-Eine Webapplikation wird innerhalb eines Browser-Tabs geöffnet, ihre Einflussmöglichkeiten (z. B. mittels Javascript) beschränken sich auf Inhalte innerhalb des Browser-Tabs. Es gibt Use-Cases, bei denen eine Applikation mit einer Webseite innerhalb eines anderen Browser-Tabs bzw. Browser-Fensters interagieren will. Ein Beispiel sind web-basierte Präsentationsframeworks. Hier gibt es meistens zwei Browserfenster: eines für die aktuell dargestellte Präsentationsfolie und ein Fenster mit Notzien für den Vortragenden. Wird die Folie gewechselt sollten im zweiten Fenster ebenso die Kommentare für die aktuell angezeigte Folie dargestellt werden.
+Eine Webapplikation wird innerhalb eines Browser-Tabs geöffnet, ihre Einflussmöglichkeiten (z.B. mittels Javascript) beschränken sich auf Inhalte innerhalb des Browser-Tabs. Es gibt Use-Cases, bei denen eine Applikation mit einer Webseite innerhalb eines anderen Browser-Tabs bzw. Browser-Fensters interagieren will. Ein Beispiel sind web-basierte Präsentationsframeworks. Hier gibt es meistens zwei Browserfenster: eines für die aktuell dargestellte Präsentationsfolie und ein Fenster mit Notzien für den Vortragenden. Wird die Folie gewechselt sollten im zweiten Fenster ebenso die Kommentare für die aktuell angezeigte Folie dargestellt werden.
 
 Eine moderne Implementierungsmöglichkeit für diese Funktion ist \textit{HTML5 postMessage}. Die Webseite, welche eine Aktion ausführen will, kann eine Nachricht via Javascript absenden. Diese Nachricht beinhaltet die message, einen \textit{Target-Origin} (kann auch das Wildcard \textit{*} sein) und eine Liste von serialisierten Objekten (deren Owernship an den Empfänger übergehen). Die empfangende Webseite kann einen Callback-Handler für empfangene Webseiten registrieren und auf diese Weise auf die Nachricht reagieren.
 
@@ -304,7 +305,7 @@ otherWindow.postMessage(message, targetOrigin, [transfer])
 Die jeweiligen Variablen wären:
 
 \begin{itemize}
-\item \textbf{otherWindow} gibt den Empfänger an. Dieser kann z. B. \textit{parent}, ein Iframe, \textit{window.opener} oder\textit{window.source} sein.
+\item \textbf{otherWindow} gibt den Empfänger an. Dieser kann z.B. \textit{parent}, ein Iframe, \textit{window.opener} oder\textit{window.source} sein.
 \item \textbf{message} ist der String der als Nachricht an den Empfänger übertragen wird.
 \item \textbf{targetOrigin} gibt die origin des Empfängers an, kann aber auch als Wildcard (\textit{*}) ausgeführt sein.
 \item \textbf{tranfer} ist eine Liste von übertragenen Objekten. Diese können vom Sender nicht mehr verwendet werden und gehen in den Besitz des Empfängers über.
@@ -313,7 +314,7 @@ Die jeweiligen Variablen wären:
 Hier ergeben sich zwei Angriffsszenarien:
 
 \begin{enumerate}
-	\item Eine Webseite akzeptiert Nachrichten von beliebigen Quellen. Dies könnte z. B. im Zuge eines XSS-Angriffs ausgenutzt werden.
+	\item Eine Webseite akzeptiert Nachrichten von beliebigen Quellen. Dies könnte z.B. im Zuge eines XSS-Angriffs ausgenutzt werden.
 	\item Beim Senden der Nachricht werden sensible Daten versendet ohne dass der Empfänger eingeschränkt wird. Dies geht zumeist mit einer \textit{TargetOrigin} von \textit{*} herein.
 \end{enumerate}
 

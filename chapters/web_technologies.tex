@@ -1,12 +1,12 @@
 \chapter{Web Technologien}
 
-Der Titel dieses Dokumentes ist Web Security, dementsprechend sind unsere Zeile/Patienten auch Webapplikationen. Eine Definition fällt nicht einfach --- allgemein betrachtet ist eine Webapplikation eine auf der Client-Server-Architektur basierte Applikation die als Kommunikationsprotokoll HTTP verwendet.
+Der Titel dieses Dokumentes ist Web Security, dementsprechend sind unsere Ziele/Patienten auch Webapplikationen. Eine Definition fällt nicht einfach --- allgemein betrachtet ist eine Webapplikation eine auf der Client-Server-Architektur basierte Applikation die als Kommunikationsprotokoll HTTP verwendet.
 
 Bei einer Client-Server Applikation versendet der Client einen Auftrag an einen Server; letzterer führt diesen im Namen des Clients aus und sendet die Antwort zurück. Im Zusammenhang mit Webapplikationen gehen wir von einem Webbrowser als Client aus. Die meisten vorgestellten Probleme betreffen auch Web-API Clients, auf diese wird allerdings nicht explizit eingegangen.
 
 \section{HTTP Protokoll}
 
-Das Hypertext Transfer Protocol (HTTP) ist ein textbasiertes Protokoll welches primär zur Kommunikation zwischen Webservern und Web-Clients (wie z. B. Webbrowsern) verwendet wird. HTTP 1.0 wurde 1996 als RFC 1945 als expliziter Non-Standard veröffentlicht. 1999 wurde das Protokoll mit dem Update auf HTTP 1.1 (RFC 2616) modernisiert, es wurde z. B. HTTP Pipelining (die Übertragung mehrerer Dateien innerhalb einer HTTP Verbindung) in den Standard aufgenommen.
+Das Hypertext Transfer Protocol (HTTP) ist ein textbasiertes Protokoll welches primär zur Kommunikation zwischen Webservern und Web-Clients (wie z.B. Webbrowsern) verwendet wird. HTTP 1.0 wurde 1996 als RFC 1945 als expliziter Non-Standard veröffentlicht. 1999 wurde das Protokoll mit dem Update auf HTTP 1.1 (RFC 2616) modernisiert, es wurde z.B. HTTP Pipelining (die Übertragung mehrerer Dateien innerhalb einer HTTP Verbindung) in den Standard aufgenommen.
 
 2015 wurde HTTP/2 im RFC 7540/7541 definiert: Verbesserungen betreffen das Multiplexing von Anfragen, server-seitige Push-Nachrichten und die Kompression der übertragenen Daten. Per Stand 2020 kann davon ausgegangen werden, dass Zwei-Drittel bis Drei-Viertel der Webkommunikation bereits über HTTP/2 abgewickelt wird.
 
@@ -14,7 +14,7 @@ HTTP verwendet zumeist TCP auf Port 80, die verschlüsselte Variante HTTPS verwe
 
 Das Protokoll basiert auf Nachrichten, die zwischen Client (Browser) und Server übertragen werden. Dabei folgt auf den initialen Request des Clients immer eine Response des Servers.
 
-Aktuell wird HTTP/3 basierend auf QUIC entwickelt. Diese Protokollversion wird vieles verändern, so wird z. B. ein Umstieg von TCP auf UDP diskutiert, auch die Verwendung von Port 443 bleibt eventuell nicht mehr bestehen.
+Aktuell wird HTTP/3 basierend auf QUIC entwickelt. Diese Protokollversion wird vieles verändern, so wird z.B. ein Umstieg von TCP auf UDP diskutiert, auch die Verwendung von Port 443 bleibt eventuell nicht mehr bestehen.
 
 \subsection{HTTP Request}
 
@@ -61,9 +61,9 @@ Ein Request beginnt immer mit einem HTTP Verb (auf Englisch auch HTTP Request Me
 
 Ein verwendetes HTTP Verb kann sowohl \textit{safe} als auch \textit{idempotent} sein. Safe Verben sollten niemals Resourcen verändern (also Daten am Server modifizieren).
 
-Idempotente Verben sollten auch bei wiederholtem Aufruf auf eine Resource das idente Ergebnis liefern. Sie können also beliebig häufig aufgerufen und wiederholt werden. Wenn z. B. während eines DELETE Aufrufs ein Timeout geschieht, kann der Client die Operation wiederholen ohne einen undefinierten server-seitigen State zu erzeugen. Aus diesem Grund wird z. B. ein Update eines bestehenden Datensatzes gerne über das PUT Verb implementiert: wird ein Update mit den gleichen übergebenen Daten ausgeführt, kann es beliebig häufig wiederholt werden und der server-seitige State sollte ident sein.
+Idempotente Verben sollten auch bei wiederholtem Aufruf auf eine Resource das idente Ergebnis liefern. Sie können also beliebig häufig aufgerufen und wiederholt werden. Wenn z.B. während eines DELETE Aufrufs ein Timeout geschieht, kann der Client die Operation wiederholen ohne einen undefinierten server-seitigen State zu erzeugen. Aus diesem Grund wird z.B. ein Update eines bestehenden Datensatzes gerne über das PUT Verb implementiert: wird ein Update mit den gleichen übergebenen Daten ausgeführt, kann es beliebig häufig wiederholt werden und der server-seitige State sollte ident sein.
 
-Die Verwendung des richtigen Verbs besitzt rein semantische Natur und muss von der Web-Applikation umgesetzt werden. Nichts hindert einen Programmierer, eine Operation mit einem unpassenden HTTP Verb anzubieten. Allerdings gehen mehrere Komponenten (wie z. B. Web Proxies, Caches oder Web Application Firewalls) von der richtigen Verwendung der jeweiligen Verben aus, wird ein falsches Verb verwendet kann dadurch inkorrektes Verhalten provoziert werden.
+Die Verwendung des richtigen Verbs besitzt rein semantische Natur und muss von der Web-Applikation umgesetzt werden. Nichts hindert einen Programmierer, eine Operation mit einem unpassenden HTTP Verb anzubieten. Allerdings gehen mehrere Komponenten (wie z.B. Web Proxies, Caches oder Web Application Firewalls) von der richtigen Verwendung der jeweiligen Verben aus, wird ein falsches Verb verwendet kann dadurch inkorrektes Verhalten provoziert werden.
 
 \subsubsection{Representational State Transfer (REST)}
 
@@ -124,7 +124,7 @@ Webserver können mehrere optionale HTTP Header inkludieren und auf diese Weise 
 
 \subsubsection{Information Disclosure durch HTTP Header}
 
-Die optionalen Header können einen negativen Sicherheitsimpact besitzen, häufig kommt es z. B. zu einer Information Disclosure. Bei dieser erhält der Angreifer durch gesprächige Server Informationen, die ein normaler Benutzer eigentlich nicht benötigen sollte aber einem Angreifer behilflich sind. Im gezeigten Antwortdokument teil der Server den verwendeten Webserver (\textit{Apache}), das verwendete Betriebssystem (\textit{Debian}) und die Versionsnummer des Webservers (\textit{2.4.25}) über den \textit{Server} Header mit. Dies erlaubt es einem Angreifer, gezielt nach Schwachstellen für diese Softwarekomponente zu suchen. Im Zuge des Hardenings werden solche Versionsinformationen zumeist maskiert.
+Die optionalen Header können einen negativen Sicherheitsimpact besitzen, häufig kommt es z.B. zu einer Information Disclosure. Bei dieser erhält der Angreifer durch gesprächige Server Informationen, die ein normaler Benutzer eigentlich nicht benötigen sollte aber einem Angreifer behilflich sind. Im gezeigten Antwortdokument teil der Server den verwendeten Webserver (\textit{Apache}), das verwendete Betriebssystem (\textit{Debian}) und die Versionsnummer des Webservers (\textit{2.4.25}) über den \textit{Server} Header mit. Dies erlaubt es einem Angreifer, gezielt nach Schwachstellen für diese Softwarekomponente zu suchen. Im Zuge des Hardenings werden solche Versionsinformationen zumeist maskiert.
 
 \section{Transportlevel-Sicherheit}
 
@@ -138,20 +138,20 @@ Wenn möglich sollten ältere TLS-Versionen vermieden werden, da dadurch schlech
 
 \subsection{Welche Kanäle müssen beachtet werden?}
 
-Die Entwickler und Administratoren müssen darauf achten, dass alle Kommunikationswege auf die gleiche Art und Weise geschützt werden. Eine Situation, die vermieden werden muss, ist z. B. dass ein Webserver mit einer sicheren TLS-Konfiguration konfiguriert wurde, aber die identen Operationen mittels eines Webservices ungesichert über HTTP bereitgestellt werden.
+Die Entwickler und Administratoren müssen darauf achten, dass alle Kommunikationswege auf die gleiche Art und Weise geschützt werden. Eine Situation, die vermieden werden muss, ist z.B. dass ein Webserver mit einer sicheren TLS-Konfiguration konfiguriert wurde, aber die identen Operationen mittels eines Webservices ungesichert über HTTP bereitgestellt werden.
 
-Ein häufiger Diskussionspunkt ist, welche Verbindungen durch TLS abgesichert und verschlüsselt werden müssen. Prinzipiell sollte jegliche Übertragung über öffentliche Kanäle gesichert erfolgen. Der Einsatz von Verschlüsselung innerhalb des Rechenzentrums, z. B. zwischen Applikationsserver und Datenbanken, wird allerdings teilweise stark diskutiert. Die Verwendung der Verschlüsselung bewirkt geringere Performance, höhere Kosten und verhindert teilweise die Verwendung anderer Sicherheitstechniken (z. B. von Network-based IDSen) --- daher wird teilweise ein Rechenzentrum als a-priori sicher angenommen und innerhalb dessen nicht verschlüsselt. Die jeweilige Entscheidung muss dokumentiert und durch das Management unterzeichnet werden.
+Ein häufiger Diskussionspunkt ist, welche Verbindungen durch TLS abgesichert und verschlüsselt werden müssen. Prinzipiell sollte jegliche Übertragung über öffentliche Kanäle gesichert erfolgen. Der Einsatz von Verschlüsselung innerhalb des Rechenzentrums, z.B. zwischen Applikationsserver und Datenbanken, wird allerdings teilweise stark diskutiert. Die Verwendung der Verschlüsselung bewirkt geringere Performance, höhere Kosten und verhindert teilweise die Verwendung anderer Sicherheitstechniken (z.B. von Network-based IDSen) --- daher wird teilweise ein Rechenzentrum als a-priori sicher angenommen und innerhalb dessen nicht verschlüsselt. Die jeweilige Entscheidung muss dokumentiert und durch das Management unterzeichnet werden.
 
 \subsection{Perfect Forward Secrecy}
 
-Perfect Forward Secrecy (PFS) ist eine optionale Eigenschaft von Key-Exchange Protokollen und kann z. B. bei TLS zum Einsatz kommen. TLS verwendet einen Langzeitschlüssel --- während des Verbindungsaufbau wird basierend auf diesem ein Sitzungsschlüssel ausgemacht. Zeichnet ein Angreifer die verschlüsselte Kommunikation auf und erhält auf irgendeine Weise den Langzeitschlüssel, kann er die Verschlüsselung aufbrechen. Dies ist problematisch, da der Langzeitschlüssel auch Jahre nach der eigentlich erfolgten Kommunikation verloren gehen könnte.
+Perfect Forward Secrecy (PFS) ist eine optionale Eigenschaft von Key-Exchange Protokollen und kann z.B. bei TLS zum Einsatz kommen. TLS verwendet einen Langzeitschlüssel --- während des Verbindungsaufbau wird basierend auf diesem ein Sitzungsschlüssel ausgemacht. Zeichnet ein Angreifer die verschlüsselte Kommunikation auf und erhält auf irgendeine Weise den Langzeitschlüssel, kann er die Verschlüsselung aufbrechen. Dies ist problematisch, da der Langzeitschlüssel auch Jahre nach der eigentlich erfolgten Kommunikation verloren gehen könnte.
 
 Bei Verwendung von PFS kann mit dem Langzeitschlüssel der Sitzungsschlüssel nicht mehr rekonstruiert werden. Dadurch wird die Gefahr einer späteren Offenlegung der Kommunikation durch Verlust des Langzeitschlüssels gebannt.
 
 \subsection{HSTS}
 \label{hsts}
 
-Der \textit{HTTP Strict Transport Security} (HSTS, RFC 6797) Header teilt dem Webbrowser mit, dass Folgezugriffe auf die Webseite immer über ein sicheres Protokoll zu erfolgen haben. Bei Angabe des Headers wird eine Laufzeit in Sekunden (z. B. 31536000 entspricht einem Jahr) für diese Regel angegeben:
+Der \textit{HTTP Strict Transport Security} (HSTS, RFC 6797) Header teilt dem Webbrowser mit, dass Folgezugriffe auf die Webseite immer über ein sicheres Protokoll zu erfolgen haben. Bei Angabe des Headers wird eine Laufzeit in Sekunden (z.B. 31536000 entspricht einem Jahr) für diese Regel angegeben:
 
 \begin{minted}{text}
 Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -171,7 +171,7 @@ Eine WebSocket-URL beinhaltet das zu verwendende Protokoll, dieses kann entweder
 
 Eine Session ist eine stehende Verbindung zwischen einem Client und einem Server. Innerhalb der Session kann der Server Zugriffe einem Client zuordnen. Nach erfolgtem Login kennt der Server die Benutzeridentität des Clients (bis zum erfolgten Logout).
 
-HTTP ist ein zustandsloses Protokoll, jeder Zugriff ist alleinstehend. Die Session muss daher auf einer höheren Ebene (ISO/OSI: Application-Layer) gebaut werden. Im Web-Umfeld werden zumeist Cookie-basierte Sessions verwendet, andere Möglichkeiten wären z. B. Token basierte Systeme.
+HTTP ist ein zustandsloses Protokoll, jeder Zugriff ist alleinstehend. Die Session muss daher auf einer höheren Ebene (ISO/OSI: Application-Layer) gebaut werden. Im Web-Umfeld werden zumeist Cookie-basierte Sessions verwendet, andere Möglichkeiten wären z.B. Token basierte Systeme.
 
 Ein Cookie ist ein kleines Datenpaket welches im Zuge des Session-Managements vom Server dem Client mitgeteilt wird. Der Client speichert nun dieses Cookie und inkludiert es in jedem Folgeaufruf von Operationen auf dem setzenden Webserver. Ein Cookie besteht aus einem Namen, Wert, Ablaufdatum und einem Gültigkeitsbereich (Domain und/oder Pfad).
 
@@ -209,7 +209,7 @@ Aus diesem Grund wird empfohlen, auf Webservern immer HTTP TRACE zu deaktivieren
 
 Das \textit{sameSite}-Flag dient zur Vermeidung von CSRF-Angriffen. Das Flag unterrichtet den Browser, wann ein Session-Cookie an eine Webseite übertragen werden soll und wann nicht.
 
-Bei Verwendung von \textit{strict} wird niemals ein Session-Cookie im cross-domain Kontext übertragen. Dies bedeutet, dass das Cookie nur übertragen wird, wenn der Benutzer von der Webseite auf einen Link/eine Operation auf der identen Webseite navigiert. Wird z. B. ein Link auf die Webseite von einer externen Quelle angeklickt (z. B. innerhalb eines Forums oder ein Link innerhalb einer Email), wird bei dem URL-Aufruf kein Cookie übergeben. Hier muss beachtet werden, dass falls die Webseite eine \textit{Unvalidated Forward or Redirect}-Lücke besitzt, der Angreifer diese ansteuern kann und bei dem durchgeführten zweiten Aufruf der Browser das Cookie inkludiert und dadurch potentiell bösartige Aktionen ausgeführt werden können.
+Bei Verwendung von \textit{strict} wird niemals ein Session-Cookie im cross-domain Kontext übertragen. Dies bedeutet, dass das Cookie nur übertragen wird, wenn der Benutzer von der Webseite auf einen Link/eine Operation auf der identen Webseite navigiert. Wird z.B. ein Link auf die Webseite von einer externen Quelle angeklickt (z.B. innerhalb eines Forums oder ein Link innerhalb einer Email), wird bei dem URL-Aufruf kein Cookie übergeben. Hier muss beachtet werden, dass falls die Webseite eine \textit{Unvalidated Forward or Redirect}-Lücke besitzt, der Angreifer diese ansteuern kann und bei dem durchgeführten zweiten Aufruf der Browser das Cookie inkludiert und dadurch potentiell bösartige Aktionen ausgeführt werden können.
 
 Bei Verwendung von \textit{lax} darf der Browser bei dem cross-site Zugriff auf die Webseite das Cookie übertragen, dies aber nur wenn eine sichere HTTP Methode (nicht daten-verändernd) verwendet wird und das Ziel eine \textit{top-level navigation} ist (sprich die Webseite aufgerufen wird und nicht eine Operation innerhalb der Webseite).
 
@@ -257,7 +257,7 @@ Aktuell kann davon ausgegangen werden, dass JavaScript nicht so schnell von der 
 
 \section{Same-Origin-Policy (SOP)}
 
-Die Same-Origin-Policy ist fixer Bestandteil moderner Browser. \textit{Origin} ist definiert als die Kombination von Schema, Domainname und Port\footnote{Achtung: der Internet Explorer Browser ignoriert den Port bei der Bestimmung des Origins!} (z. B. \url{https://snikt.net:443}). Die Same-Origin-Policy moderner Browser sagt aus, dass ein Skript das von Seite 1 geladen wurde, nur auf Ressourcen auf Seite 2 zugreifen darf, wenn beide Seiten den identen Origin besitzen.
+Die Same-Origin-Policy ist fixer Bestandteil moderner Browser. \textit{Origin} ist definiert als die Kombination von Schema, Domainname und Port\footnote{Achtung: der Internet Explorer Browser ignoriert den Port bei der Bestimmung des Origins!} (z.B. \url{https://snikt.net:443}). Die Same-Origin-Policy moderner Browser sagt aus, dass ein Skript das von Seite 1 geladen wurde, nur auf Ressourcen auf Seite 2 zugreifen darf, wenn beide Seiten den identen Origin besitzen.
 
 Die Same-Origin-Policy ist essentiell für die Sicherheit. Würde es diese nicht geben, könnte Javascript ausgehend von einer Seite auf die Daten (DOM) einer externen Seite zugreifen. Da dieser Zugriff durch den Webbrowser geschieht, würde bei diesem Zugriff das Session-Cookie mit übertragen werden und die Operation würde mit der Identität des Webbrowser-Benutzers durchgeführt werden.
 
@@ -291,7 +291,7 @@ Ist eine CORS-Authorization notwendig, werden folgende Schritte durchgeführt:
 
 Vor der Verfügbarkeit von \textit{CORS} wurde häufig \textit{JSONP} zum Datenaustausch mittels Javascript bzw. zum Umgehen der SOP verwendet. Bei diesem Verfahren werden die gewünschten Daten über einen GET-Request als Javascript-Datei geladen. Damit die geladenen Daten an Javascript übergeben werden, wird beim Inkludieren der Daten eine Callback Funktion mit übergeben.
 
-Ein Beispiel, mittels der URL \url{/php/jsonp.php?callback=callback} wird eine Operation aufgerufen, der Parameter \textit{callback} gibt an, wie die lokale Javascript-Callback Funktion heißt. Das Antwortdokument ist z. b:
+Ein Beispiel, mittels der URL \url{/php/jsonp.php?callback=callback} wird eine Operation aufgerufen, der Parameter \textit{callback} gibt an, wie die lokale Javascript-Callback Funktion heißt. Das Antwortdokument ist z.B.:
 
 \begin{minted}{javascript}
 callback('{ "name":"John", "age":30, "city":"New York" }');
@@ -345,7 +345,7 @@ Verglichen zu Cookie ist WebStorage und SessionStorage stärker gegenüber XSS-A
 
 \begin{enumerate}
 \item Cookies können durch Verwendung des \textit{httpOnly}-Flags den Zugriff durch JavaScript unterbinden. Bei WebStorage wurde dieser Sicherheitsmechanismus nicht vorgesehen.
-\item Cookies können auf einen Unterpfad gescoped werden. Werden z.B. zwei Webapplikationen auf einem gemeinsamen Server Betrieben, kann ein Cookie z. B. für \url{https://example.local/app1} und ein Cookie für \url{https.//example.local/app2} ausgestellt werden. Eine Applikation besitzt keinen Zugriff auf das Cookie der anderen Applikation. Bei WebStorage kann dies nicht durchgeführt werden, WebStorage ist immer für die Domain gültig. Das heißt, dass ein Angreifer mit einem XSS-Fehler in app1 auf den WebStorage der app2 zugreifen kann.
+\item Cookies können auf einen Unterpfad gescoped werden. Werden z.B. zwei Webapplikationen auf einem gemeinsamen Server Betrieben, kann ein Cookie z.B. für \url{https://example.local/app1} und ein Cookie für \url{https.//example.local/app2} ausgestellt werden. Eine Applikation besitzt keinen Zugriff auf das Cookie der anderen Applikation. Bei WebStorage kann dies nicht durchgeführt werden, WebStorage ist immer für die Domain gültig. Das heißt, dass ein Angreifer mit einem XSS-Fehler in app1 auf den WebStorage der app2 zugreifen kann.
 \end{enumerate}
 
 Aus diesen Gründen verbieten einige Sicherheitsrichtlinien den Einsatz von HTML5 Web- und SessionStorage.
@@ -363,7 +363,7 @@ Da WebWorker selbst AJAX-Requests (XMLHttpRequest) ausführen, und potentiell di
 Webbrowser ersetzen aktuell Desktop-Applikationen, benötigen hierfür allerdings erweiterte Interaktionsmöglichkeiten. Diese werden durch neue Standards geschaffen, zum Beispiel:
 
 \begin{itemize}
-	\item WebRTC erlaubt die peer-to-peer Kommunikation zwischen Browsern und wird z. B. für Audio- oder Videokonferenzen verwendet.
+	\item WebRTC erlaubt die peer-to-peer Kommunikation zwischen Browsern und wird z.B. für Audio- oder Videokonferenzen verwendet.
 	\item WebNFC erlaubt die Verwendung von NFC über Webbrowser.
 	\item WebBluetooth erlaubt es, JavaScript auf konfigurierte BlueTooth LE devices zuzugreifen und wird für SmartHealth bzw. SmartHome Anwendungen benötigt.
 \end{itemize}

@@ -26,6 +26,8 @@ Im darauf folgenden Part (\textit{Injection Attacks}) wird auf verschiedene Inje
 
 Dieses Dokument ist (und kann) nur eine grobe Einführung in Sicherheitsthemen bieten. Es ist als kurzweiliges Anfixen gedacht und soll weitere selbstständige Recherchen motivieren.
 
+Dieses Kapitel gibt einen kurzen Überblick über weitere Informationsseiten, Praxisbeispiele und Security-Konferenzen. Diese sollen als erste Anlaufstelle für ein potentielles Selbststudium dienen.
+
 \subsection{What to read?}
 
 Für weitere Informationen sind die Dokumente des OWASP\footnote{Open Web Application Security Project} empfehlenswert. OWASP selbst ist eine Non-Profit Organisation welche ursprünglich das Ziel hatte, die Sicherheit von Web-Anwendungen zu erhöhen, mittlerweile aber auch im Mobile Application bzw. IoT Umfeld tätig ist. Das bekannteste OWASP-Dokument sind wahrscheinlich die OWASP Top 10\footnote{\url{https://www.owasp.org/index.php/Category:OWASP_Top_Ten_Project}} welche eine Sammlung der 10 häufigsten Sicherheitsschwachstellen im Web sind.
@@ -36,7 +38,7 @@ Um auf den aktuellen Stand im Bereich Web Security zu bleiben ist ein Besuch von
 
 \subsection{What to hack?}
 
-Web Security kann nicht ausschließlich theoretisch gelehrt werden, wenn man in dem Umfeld aktiv sein will muss man hands-on Praxisbeispiele sehen und auch versuchen. Das Gefühl, bei einer Web-Applikation permanent mit dem Kopf gegen die Wand zu laufen, immer weider neue Angriffe erfolglos zu versuchen bis mein einen funktionierenden Angriff gefunden hat und sich nach erfolgter Ausnutzung zufrieden zurücklehnen kann, kann nur erlebt werden. Glückerlicher Weise gibt es mittlerweile eine Vielzahl an gratis bzw. freemium-basierten Webangeboten welche genau diese Gelegenheit bieten. Eine Auflistung dieser kann in folgender Tabelle vorgefunden werden\footnote{Ich habe mich bei dieser Liste auf Angebote welche, zumindest teilweise, gratis nutzbar sind, beschränkt, daher fehlt hier z. B. Offensive Security (\url{www.offensive-security.com}) obwohl diese von mir hoch geschätzt werden.}:
+Web Security kann nicht ausschließlich theoretisch gelehrt werden, wenn man in dem Umfeld aktiv sein will muss man hands-on Praxisbeispiele sehen und auch versuchen. Das Gefühl, bei einer Web-Applikation permanent mit dem Kopf gegen die Wand zu laufen, immer weider neue Angriffe erfolglos zu versuchen bis mein einen funktionierenden Angriff gefunden hat und sich nach erfolgter Ausnutzung zufrieden zurücklehnen kann, kann nur erlebt werden. Glückerlicher Weise gibt es mittlerweile eine Vielzahl an gratis bzw. freemium-basierten Webangeboten welche genau diese Gelegenheit bieten. Eine Auflistung dieser kann in folgender Tabelle vorgefunden werden\footnote{Ich habe mich bei dieser Liste auf Angebote welche, zumindest teilweise, gratis nutzbar sind, beschränkt, daher fehlt hier z.B. Offensive Security (\url{www.offensive-security.com}) obwohl diese von mir hoch geschätzt werden.}:
 
 
 \begin{table}[h!]
@@ -64,13 +66,13 @@ OWASP selbst ist in Städte-zentrischen Chapters organisiert, ich bin zum Beispi
 
 \section{Out-of-Scope für dieses Skript}
 
-Auf drei wichtige Bereiche wird im Zuge dieses Skripts nicht implizit eingegangen:
+Auf drei wichtige Bereiche wird im Zuge dieses Skripts nicht explizit eingegangen:
 
 \subsection{Denial-of-Service Angriffe}
 
-Denial-of-Service Angriffe zielen darauf ab, die Verfügbarkeit einer Applikation zu beeinträchtigen. Dadurch kann der Dienst nicht mehr benutzt bzw. konsumiert werden und dem Betreiber entstehen Kosten, z. B. Verdienstentgang durch einen ausgefallenen Webshop.
+Denial-of-Service Angriffe zielen darauf ab, die Verfügbarkeit einer Applikation zu beeinträchtigen. Dadurch kann der Dienst nicht mehr benutzt bzw. konsumiert werden und dem Betreiber entstehen Kosten, z.B. Verdienstentgang durch einen ausgefallenen Webshop.
 
-Ein DoS-Angriff zielt entweder auf eine Applikations-bezogene Ressource wie z. B. erlaubte Verbindungen pro Applikationsbenutzer oder eine fundamentale Systemressource wie z. B. CPU-Zeit, Speicher oder Netzwerkbandbreite ab. Als Applikationsentwickler kann man bei Ressourcen-intensiven Operationen mittels Rate-Limits die Situation leicht entschärfen.
+Ein DoS-Angriff zielt entweder auf eine Applikations-bezogene Ressource wie z.B. erlaubte Verbindungen pro Applikationsbenutzer oder eine fundamentale Systemressource wie z.B. CPU-Zeit, Speicher oder Netzwerkbandbreite ab. Als Applikationsentwickler kann man bei Ressourcen-intensiven Operationen mittels Rate-Limits die Situation leicht entschärfen.
 
 In diesem Dokument wird nicht tiefer auf DoS-Angriffe eingegangen, da diese quasi die Holzhammermethode darstellen. Gerade gegenüber Angriffen gegen die Netzwerkbandbreite kann nur über kommerzielle Cloud- bzw. Rechenzentrenbetreiber entgegengewirkt werden. Diese sind kostspielig und es entsteht eine Asymmetrie: die Abwehr des Angriffs ist kostspieliger als der Angriff selbst. Somit wird aus einem technischen DoS ein monetärer DoS.
 

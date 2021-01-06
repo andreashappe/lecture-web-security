@@ -19,7 +19,7 @@ Einige dieser Punkte werden in den Folgekapiteln etwas genauer erläutert.
 
 \section{Schützenswertes Gut}
 
-Eine zentrale Frage einer Sicherheitsdiskussion ist, was überhaupt beschützt werden sollte. Diese Operationen oder Daten werden häufig \textit{Schützenswertes Gut} genannt. Beispiele für diese sind z. B. sensible Benutzerdaten, ein essentieller Geschäftsprozess aber auch immaterielle Werte wie die Reputation eines Unternehmens, dessen Aktienkurs oder intellectual property.
+Eine zentrale Frage einer Sicherheitsdiskussion ist, was überhaupt beschützt werden sollte. Diese Operationen oder Daten werden häufig \textit{Schützenswertes Gut} genannt. Beispiele für diese sind z.B. sensible Benutzerdaten, ein essentieller Geschäftsprozess aber auch immaterielle Werte wie die Reputation eines Unternehmens, dessen Aktienkurs oder intellectual property.
 
 Häufig wird die sog. CIA-Triad zur Klassifizierung verwendet. Die einzelnen Buchstaben stehen für:
 
@@ -43,7 +43,7 @@ Bei realen Projekten ist die Einschätzung immer vom Kunden abhängig. Ein IT-Sy
 
 \section{Requirementsanalyse}
 
-In der \textit{Requirementsanalyse} sollte bereits Security berücksichtigt werden. Dies wird meistens unterlassen, da Security-Anforderungen non-functional\footnote{Functional Requirements beschreiben die Funktionsweise einer Applikation und sind z. B. mittels use-cases abgebildet. Non-Functional Requirements beschreiben eher die Qualität der erstellen Applikation wie Sicherheit und Performance.} requirements sind. Negative Auswirkungen dieses Versäumnis sind fehlende Awareness für Security, nicht ausreichende Ressourcen (Zeit, Personal, Budget) und schlussendlich fehlende Sicherheit im resultierenden Softwareprodukt.
+In der \textit{Requirementsanalyse} sollte bereits Security berücksichtigt werden. Dies wird meistens unterlassen, da Security-Anforderungen non-functional\footnote{Functional Requirements beschreiben die Funktionsweise einer Applikation und sind z.B. mittels use-cases abgebildet. Non-Functional Requirements beschreiben eher die Qualität der erstellen Applikation wie Sicherheit und Performance.} requirements sind. Negative Auswirkungen dieses Versäumnis sind fehlende Awareness für Security, nicht ausreichende Ressourcen (Zeit, Personal, Budget) und schlussendlich fehlende Sicherheit im resultierenden Softwareprodukt.
 
 \section{Sicheres Design}
 
@@ -59,9 +59,10 @@ Bei der Erstellung der Software Architektur/des Software Designs sollte auf Sich
 
 Die ersten vier Punkte stellen die Anforderungen aus der CIA Triade dar.
 
-Audit Logs dienen u.a. dazu, um im Fehlerfall die Schwachstelle zu erkennen als auch den Schadfall einzugrenzen (z. B. welche User sind in welchem Umfang betroffen?). Unter Non-Repudiation versteht man die Nicht-Abstreitbarkeit: falls eine Operation von einem Benutzer durchgeführt wurde, sollte nachträglich auch verifizierbar sein, dass diese Operation auch wirklich von dem jeweiligen Benutzer in Auftrag gegeben wurde.
+Audit Logs dienen u.a. dazu, um im Fehlerfall die Schwachstelle zu erkennen als auch den Schadfall einzugrenzen (z.B. welche User sind in welchem Umfang betroffen?). Unter Non-Repudiation versteht man die Nicht-Abstreitbarkeit: falls eine Operation von einem Benutzer durchgeführt wurde, sollte nachträglich auch verifizierbar sein, dass diese Operation auch wirklich von dem jeweiligen Benutzer in Auftrag gegeben wurde.
 
 \section{Secure Design Review / Threat Modeling}
+\label{threat_model}
 
 Threat Models dienen zur systematischen Analyse von Softwareprodukten auf Risiken, Schwachstellen und Gegenmaßnahmen. Durch die Verwendung eines formalisierten Ablaufs wird die gleich bleibende Qualität der Analyse gewährleistet.
 
@@ -85,7 +86,7 @@ Folgende Bereiche sollten durch das Threat Model abgedeckt werden:
 	\item Schützenswertes Gut: vor welchen Angriffen hat ein Unternehmen Angst bzw. welche Daten sind schützenswert. Die Dokumentation schützenswerter Güter ergibt Synergie-Effekte zu der notwendigen DSGVO-Dokumentation.
 	\item Grundlegende Sicherheitsannahmen: im Laufe eines Softwareprojektes werden Produktentscheidungen aufgrund des aktuellen Wissensstand getroffen. Hier sollten diese Entscheidungen dokumentiert\footnote{Bonuspunkte wenn nicht nur die Annahme, sondern zusätzlich auch die Auswirkungen im Falle einer gebrochenen Annahme, wer für die Überprüfung der Annahme zuständig ist, und wer fachlich die Annahme überprüfen kann, dokumentiert ist.} werden. Beispielsweise könnte für embedded systems eine schwächere Verschlüsselungstechnik gewählt worden sein, da die vorhandene Hardware nicht potent genug für ein besseres Verfahren war. Durch die Dokumentation der Annahmen können diese periodische auf ihre Haltbarkeit hin überprüft werden. Die Dokumentation dieser Annahmen ist auch essentiell im Falle des Ausfalls eines Entwicklungsteams.
 	\item Scope: welche Bereiche unterliegen der Sicherheitsobacht des Entwicklers? Ist die Datenbank, der Webserver, etc. Teil des Projekts oder werden diese von externen Personen bereitgestellt?
-	\item Komponenten und Datenflüsse: die Applikation wird in einzelne Komponenten de-konstruiert. Der Datenfluss (samt Klassifizierung der betroffenen Daten) zwischen den Komponenten wird meistens mittels Datenflussdiagrammen (data flow diagrams, DFDs) dargestellt.
+	\item Komponenten und Datenflüsse: die Applikation wird in einzelne Komponenten dekonstruiert. Der Datenfluss (samt Klassifizierung der betroffenen Daten) zwischen den Komponenten wird meistens mittels Datenflussdiagrammen (data flow diagrams, DFDs) dargestellt.
 \end{itemize}
 
 \subsection{What could go wrong?}
@@ -112,6 +113,8 @@ Basierend auf den Datenflussdiagrammen werden potentielle Risiken und Schwachste
 
 Im Privacy Umfeld existiert mit LINDDUN eine ähnliche Methode, die jeweiligen Angriffe zielen hier nun nicht auf die Sicherheit, sondern auf die Privatsphäre der Benutzer ab. Die Tabelle \ref{tbl:linddun} listet die jeweiligen Gefährdungen für die Privatsphäre auf.
 
+Teilweise sind diese Methoden widersprüchlich. So wird im Zuge von STRIDE auf die Repudiation hin geachtet, also auf die Nicht-Abstreitbarkeit der Durchführung einer Operation, während LINDDUN dies als Non-Repudation als negativ für die Privatsphäre des Benutzers betrachtet wird.
+
 \begin{table}
 	\begin{center}
 \begin{tabular}{lp{5cm}}
@@ -132,8 +135,6 @@ Im Privacy Umfeld existiert mit LINDDUN eine ähnliche Methode, die jeweiligen A
 \end{center}
 \end{table}
 
-Teilweise sind diese Methoden widersprüchlich.
-
 \subsection{What should you do about those things that could go wrong?}
 
 Die identifizierten Gefährdungen können dann mittels DREAD quantifiziert und sortiert. Diese Reihenfolge kann bei der Behebung der identifizierten Gefährdungen durch das Entwicklungsteam berücksichtigt werden.
@@ -153,18 +154,11 @@ Die Ausarbeitung eines Threat Models macht Sinn wenn das Model mit der realen Ap
 
 Wird im Zuge des Softwareprojekts automatisiert getestet wird empfohlen, mittels Unit Tests die implementierten Mitigations zu verifizieren. Dadurch wird der Security Test Teil der Continues-Integration Pipeline und damit Teil der Qualitätssicherung der Software.
 
-Zusätzlich können Penetration Tests zur Überprüfung der Sicherheit durchgeführt werden. Penetration Tests können Sicherheitsmängel aufdecken, sie sind allerdings nicht zur gezielten Erhöhung der Softwarequalität dienlich, da diese vor dem Testen bereits gewährleistet werden sollte (\textit{You can't test quality in}). Auch hier gibt es eine Interaktion mit dem Threat Model: während ein Threat Model im Gegensatz zu Penetration-Tests weniger direkte Sicherheitslücken findet, richtet es den Fokus der Penetration-Tests auf die wichtigsten bzw. gefährdetsten Komponenten der zu testenden Applikation.
+Zusätzlich können Penetration Tests zur Überprüfung der Sicherheit durchgeführt werden. Penetration Tests können Sicherheitsmängel aufdecken, sie sind allerdings nicht zur gezielten Erhöhung der Softwarequalität dienlich, da diese vor dem Testen bereits gewährleistet werden sollte (\textit{You can't test quality in}). Auch hier gibt es eine Interaktion mit dem Threat Model\footnote{Threatmodel: siehe Kapitel \ref{threat_model}, Seite \pageref{threat_model}}: während ein Threat Model im Gegensatz zu Penetration-Tests weniger direkte Sicherheitslücken findet, richtet es den Fokus der Penetration-Tests auf die wichtigsten bzw. gefährdetsten Komponenten der zu testenden Applikation.
 
 \section{Secure Coding}
 
-Während der Entwicklung sollte durch folgende Maßnahmen die Sicherheit der erstellten Software gewährleistet werden: 
-
-\begin{itemize}
-	\item Verwendung von Secure Coding Guidelines
-	\item Einhaltung von Best-Practises
-\end{itemize}
-
-Der Großteil dieser Maßnahmen zielt darauf ab, nicht das Rad neu zu erfinden. Durch Verwendung etablierter Methodiken und Frameworks kann auf den Erfahrungsschatz dieser zugegriffen werden und potentielle Fehler vermieden werden.
+Während der Entwicklung sollte durch die Verwendung von Secure Code Guidelines und der Einhaltung von Best-Practises die Sicherheit der erstellten Software gewährleistet werden. Diese Maßnahmen zielen darauf ab, das Rad nicht neu zu erfinden. Durch Verwendung etablierter Methodiken und Frameworks kann auf den Erfahrungsschatz dieser zugegriffen werden und potentielle Fehler vermieden werden.
 
 Bei der Wahl von Bibliotheken und Frameworks sollte man auf deren Security-Historie Rücksicht nehmen. Regelmäßige Bugfix-Releases mit dezidierten Security-Releases sind ein gutes Zeichen. Ebenso sind dies regelmäßige Security-Audits. Falls keine Sicherheitsinformationen verfügbar sind oder die Bibliothek/das Framework keinen langfristigen Support gewährleistet, ist dies ein Grund ggf. dieses Framework nicht zu verwenden.
 
@@ -185,7 +179,7 @@ Diese Vorkehrungen müssen nicht nur den eigenen Code, sondern auch Schwachstell
 \section{Reflektionsfragen}
 
 \begin{enumerate}
-	\item Was versteht man unter einem Threat Model, welche Elemente sollten vorhanden sein (1-2 Sätze Beschreibung pro Element)
+	\item Was versteht man unter einem Threat Model, welche Elemente sollten vorhanden sein (1-2 Sätz.B.schreibung pro Element)
 	\item Welche Maßnahmen sollten im Zuge des Secure Development Lifecycles betrachtet werden? Erläutere einige der Maßnahmen.
 \end{enumerate}
 
