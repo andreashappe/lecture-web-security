@@ -2,8 +2,7 @@
 *.aux
 *.swp
 *.bak
-_minted-print/
-_minted-memoir/
+_minted-book/
 _minted-ebook/
 .bbl
 *.bcf

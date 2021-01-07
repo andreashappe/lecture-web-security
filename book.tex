@@ -12,7 +12,6 @@
 \usepackage{lmodern}
 \usepackage[ngerman]{babel}
 \usepackage{makeidx}
-\usepackage{todonotes}
 \usepackage{booktabs}
 
 \makeindex
@@ -56,40 +55,6 @@
 
 \cleardoublepage % Forces the first chapter to start on an odd page so it's on the right side of the book
 
-\include{chapters/allgemeines}
-
-\mainmatter
-
-\part{Einführung}
-
-\include{chapters/security_principles}
-
-\include{chapters/security_as_process}
-
-\include{chapters/integration}
-
-\include{chapters/web_technologies}
-
-\include{chapters/web_applications}
-
-\include{chapters/crypto_basics}
-
-\part{Authentication und Authorisierung}
-
-\include{chapters/authentication}
-
-\include{chapters/authorization}
-
-\include{chapters/session_management}
-
-\include{chapters/sso}
-
-\part{Injection Attacks}
-
-\include{chapters/injection_attacks}
-
-\include{chapters/client_side_attacks}
-
-\include{chapters/client_side_hardening}
+\input{structure}
 
 \end{document}
