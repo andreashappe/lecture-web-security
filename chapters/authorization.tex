@@ -1,4 +1,5 @@
 \chapter{Authorization}
+\index{Authorization-Angriffe}
 
 Unter Authorization versteht man die Kontrolle der Benutzerrechte vor der Ausführung der jeweiligen Operation.
 
@@ -27,6 +28,7 @@ Falls eine Webapplikation Daten oder Operationen auf unterschiedliche Arten und 
 Wird z.B. eine Operation direkt mittels der Webseite als auch über eine SOAP Webservice-Schnittstelle (z.B. für eine mobile Applikation) angeboten, müssen auf beiden Schnittstellen die gleichen Zugriffsberechtigungen überprüft werden. Häufig kann man während Penetration-Tests verminderte Schutzmaßnahmen bei Webservice-Schnittstellen feststellen.
 
 \subsubsection{Probleme bei Verwendung von WebSockets} 
+\index{Websockets!Probleme bei Authorization}
 
 WebSockets unterliegen nicht der Same-Origin-Policy moderner Webbrowser. Es wird daher empfohlen, bei öffnen des WebSockets serverseitig den \textit{Origin}-Header auf valide aufrufende Webseiten hin zu überprüfen. Während des initialen Handshakes wird ein \textit{Web-Socket-Key} übertragen. Dieser dient nur zur Identifikation des Browsers gegenüber dem Webserver und darf nicht zu Authentications- bzw. Authorization-Zwecken verwendet werden.
 
@@ -43,12 +45,14 @@ POST /user/update/1 HTTP/1.1
 
 Als Parameter wird ein JSON-String mit den neuen Werten übergeben:
 
+\begin{listing}[H]
 \begin{minted}{json}
 {
 	"id" : "1",
 	"name" : "happe"
 }
 \end{minted}
+\end{listing}
 
 Bei diesem Beispiel fallen folgende sicherheitsrelevanten Fragen an:
 
@@ -61,6 +65,7 @@ Bei diesem Beispiel fallen folgende sicherheitsrelevanten Fragen an:
 \end{itemize}
 
 \subsection{Mass-Assignments}
+\index{Mass-Assignments}
 
 Moderne Web-Frameworks versuchen die Effizienz von Programmierern zu verbessern. Ein Feature, welches potentiell negativen Einfluss auf die Sicherheit einer Applikation besitzt ist \textit{mass assignments}.
 
@@ -108,6 +113,7 @@ Die Update-Operation sollte nun folgendermaßen aussehen:
 Durch die Verwendung des User-Scopes wird implizit der Zugriff auf Rechnungen des aktuellen Benutzers erzwungen. Dadurch müssen Zugriffsberechtigungen nicht zusätzlich explizit kontrolliert werden.
 
 \section{Time of Check, Time of Use (TOCTOU)}
+\index{Time of Check, Time of Use (TOCTOU)}
 
 Der Zeitpunkt der Berechtigungsüberprüfung ist essentiell. So genannte \textit{Time of Check, Time of Use} Angriffe nutzen racing conditions zwischen der Überprüfung von Operationsberechtigungen und der Ausführung von Operationen aus.
 

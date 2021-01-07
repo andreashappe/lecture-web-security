@@ -18,12 +18,13 @@ Professionelle Softwareentwicklung verwendet meistens einen (semi-)standardisier
 Einige dieser Punkte werden in den Folgekapiteln etwas genauer erläutert.
 
 \section{Schützenswertes Gut}
+\index{Schützenswertes Gut}
 
 Eine zentrale Frage einer Sicherheitsdiskussion ist, was überhaupt beschützt werden sollte. Diese Operationen oder Daten werden häufig \textit{Schützenswertes Gut} genannt. Beispiele für diese sind z.B. sensible Benutzerdaten, ein essentieller Geschäftsprozess aber auch immaterielle Werte wie die Reputation eines Unternehmens, dessen Aktienkurs oder intellectual property.
 
-Häufig wird die sog. CIA-Triad zur Klassifizierung verwendet. Die einzelnen Buchstaben stehen für:
+Häufig wird die sog. CIA-Triade\index{CIA-Triade} zur Klassifizierung verwendet. Hierbei stehen die einzelnen Buchstaben für einen schützenswerten Bereich: \textit{Confidentiality}, \textit{Integrity} und \textit{Availability}. Diese werden in Tabelle \ref{tbl:cia_triad} genauer erläutert. Die jeweiligen Bereiche sind verwandt, Availability kann stark von der Integrität der Daten abhängig sein. Beispiel: wenn eine Fahrzeitauskunft zwar als Webservice verfügbar ist, aber den Daten nicht vertraut werden kann, ist das Gesamtservice aus Usersicht wahrscheinlich nicht available.
 
-\begin{table}[h!]
+\begin{table}
 	\begin{center}
 \begin{tabular}{llp{5cm}}
 	\toprule
@@ -35,9 +36,9 @@ Häufig wird die sog. CIA-Triad zur Klassifizierung verwendet. Die einzelnen Buc
 	\bottomrule
 \end{tabular}
 \end{center}
+\caption{CIA-Triade}
+\label{tbl:cia_triad}
 \end{table}
-
-Die jeweiligen Bereiche sind verwandt, Availability kann stark von der Integrität der Daten abhängig sein. Beispiel: wenn eine Fahrzeitauskunft zwar als Webservice verfügbar ist, aber den Daten nicht vertraut werden kann, ist das Gesamtservice aus Usersicht wahrscheinlich nicht available.
 
 Bei realen Projekten ist die Einschätzung immer vom Kunden abhängig. Ein IT-System ist immer in die Kundenlandschaft integriert und daher können klassische IT-Fehler unterschiedliche Auswirkungen besitzen. Z. B. wird einem reinen Online-Shop die Availability wichtiger sein, als einem physikalischen Shop der nebenbei einen kleinen Onlineshop betreibt; teilweise werden Fehler durch organisatorische Maßnahme (Buchhaltung) abgefangen, etc.
 
@@ -62,6 +63,7 @@ Die ersten vier Punkte stellen die Anforderungen aus der CIA Triade dar.
 Audit Logs dienen u.a. dazu, um im Fehlerfall die Schwachstelle zu erkennen als auch den Schadfall einzugrenzen (z.B. welche User sind in welchem Umfang betroffen?). Unter Non-Repudiation versteht man die Nicht-Abstreitbarkeit: falls eine Operation von einem Benutzer durchgeführt wurde, sollte nachträglich auch verifizierbar sein, dass diese Operation auch wirklich von dem jeweiligen Benutzer in Auftrag gegeben wurde.
 
 \section{Secure Design Review / Threat Modeling}
+\index{Threat Modeling}
 \label{threat_model}
 
 Threat Models dienen zur systematischen Analyse von Softwareprodukten auf Risiken, Schwachstellen und Gegenmaßnahmen. Durch die Verwendung eines formalisierten Ablaufs wird die gleich bleibende Qualität der Analyse gewährleistet.

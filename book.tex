@@ -8,7 +8,7 @@
 \stockheight\paperheight
 
 % setup memoir class
-\chapterstyle{veelo}
+% \chapterstyle{veelo}
 \setsecnumdepth{subsection}
 
 % stuff for tables
@@ -21,10 +21,11 @@
 \usepackage[ngerman]{babel}
 \inputencoding{utf8}
 
-% todo: should I use an index in the bookversion (as there is no search function)?
-% todo: a glossary might be nice, can I combine that with an index?
+% index for the bookversion (as there is no search function)
 \usepackage{makeidx}
 \makeindex
+
+% todo: a glossary might be nice, can I combine that with an index?
 
 % stuff for links
 \usepackage{xurl}
@@ -57,11 +58,21 @@
 
 % finally the document
 \begin{document}
+
+	\frontmatter
+
 	% Print the table of contents itself
 	\tableofcontents
 
 	% Forces the first chapter to start on an odd page so it's on the right side of the book
 	\cleardoublepage
 
+	\mainmatter
+
 	\input{structure}
+
+	\backmatter
+
+	\printindex
+
 \end{document}

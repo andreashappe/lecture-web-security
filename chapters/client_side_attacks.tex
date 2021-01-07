@@ -4,7 +4,7 @@ Client-seitige Angriffe zielen auf die Web-Browser der Benutzer ab und sind häu
 
 \section{JavaScript-Injections (XSS)}
 \label{xss}
-\index{xss}
+\index{XSS-Angriffe}
 
 Javascript-Injections (Cross-Site Scripting XSS) sind ein sehr häufig genutzter Angriffsvektor. Aufgrund der Häufigkeit dieses Angriffsvektor sind für diesen auch mehrere Hardening-Maßnahmen verfügbar.
 
@@ -85,6 +85,7 @@ Auch hier sollten die erlaubten Dateitypen durch eine whitelist eingeschränkt w
 
 \subsubsection{X-Content-Type-Options}
 \label{x_content_type_options}
+\index{HTTP Header!X-Content-Type-Options}
 
 Webserver übermitteln den MIME-Datentypen von übertragenen Dateien über den \textit{Content-Type} Header. Da diese Header ``früher'' ab und zu falsch gesetzt wurden, verwenden einige Browser (primär verschiedene Microsoft Internet Explorer und Edge Versionen) eine Heuristik um dynamisch den Content-Type zu bestimmen. Dabei wird der Anfang einer Datei gelesen, engl. ``sniffing'', und basierend auf der gefundenen Struktur ein MIME-Typ zugeordnet.
 
@@ -136,6 +137,7 @@ Einige Grundregeln zur Verwendung von user-supplied Daten innerhalb von Javascri
 
 \subsection{Hardening mittels X-XSS-Protection}
 \label{x_xss_protection}
+\index{HTTP Header!X-XSS-Protection}
 
 Moderne Browser verwendeten Heuristiken um \textit{Reflected-XSS} Angriffe automatisiert zu erkennen. Zumeist werden hierfür die ausgehenden HTTP Requests (inkl. Parameter) mit den eingehenden Antwortdokumenten verglichen.
 
@@ -159,12 +161,14 @@ Während das automatische Filtern von XSS-Schadcode theoretisch positiv aus Sich
 Aus diesem Grund ignorieren moderne Browser diesen Sicherheitsheader mittlerweile (Google Chrome, Mozilla Firefox und Microsoft Edge, Stand 31.12.2019). Als Gegenmaßnahme gegenüber XSS kann daher nur der Einsatz von CSP empfohlen werden (abgesehen davon, XSS-Lücken generell nicht zu implementieren).
 
 \subsection{Hardening mittels CSP}
+\index{HTTP Header!Content Security Policy}
 
 Die Content Security Policy kann verwendet werden um potentielle Javascript-Lücken zu vermeiden. Hierbei wird durch eine Policy definiert in welchen Dateien überhaupt Javascript-Code vorkommen darf. Falls eine saubere Trennung in JavaScript- und HTML-Dateien durchgeführt wurde, kann die Definition von JavaScript-Fragmenten in HTML Dateien vollkommen deaktiviert werden. Falls es ein Angreifer nun schafft, durch eine Injection Lücke JavaScript-Code in einer HTML-Seite zu platzieren, würde dieser durch den Browser einfach ignoriert werden.
 
 Ein Problem beim Einsatz von CSP sind \textit{polyglot} Files. Dies sind Dateien, die so gebaut wurden, dass sie gleichzeitig zwei unterschiedliche Datentypen erfüllen. Ein Beispiel für ein polyglot File ist eine JPEG-Datei welche, wenn sie als Textdatei eingebunden wird, validen Javascript-Code beinhaltet. Ein Beispiel für solche Dateien kann unter \url{https://portswigger.net/blog/bypassing-csp-using-polyglot-jpegs} gefunden werden. Dies ist problematisch, da ein Angreifer ein JavaScript File als Bild hochladen kann (während der Upload von JavaScript-Files normalerweise durch eine Webapplikation blockiert wird) und danach mittels eines \textit{script}-Tags dieses Bild als Javascript-Source File innerhalb von HTML inkludieren kann. Dies umgeht potentielle CSP-Richtlinien.
 
 \section{CSRF Angriffe}
+\index{CSRF-Angriffe}
 
 CSRF-Angriffe nutzen ein bestehendes Vertrauensverhältnis zwischen dem Web-Browser des Opfers und einem Webserver aus. Das grundsätzliche Problem ist, das Webbrowser, bei Requests zu bereits eingeloggten Webservern, automatisch Sessions anhängen. Dabei wird nicht überprüft, ob der ausgehende Request wirklich vom Benutzer in Auftrag gegeben worden ist.
 
@@ -198,6 +202,7 @@ Ein Beispiel für ein HTML Formular welches der Angreifer auf seinem Webserver h
 In diesem Fall wird die Operation \url{http://bank.com/transfer.do} mit den Parametern \textit{acct} und \textit{amount} aufgerufen. Bei diesem Beispiel wurden die Felder versteckt und der Button mit einem \textit{ablenkenden} Text beschriftet. Alternativ könnte der Angreifer das Formular auch in einem 1x1 Pixel großem IFrame verstecken und automatisiert mittels Javascript abschicken.
 
 \subsection{Synchronizer Token Pattern}
+\index{CSRF-Angriffe!Synchronizer Token Pattern}
 
 Es gibt mehrere Gegenmaßnahmen gegen CSRF-basierte Angriffe, sicherheitstechnisch ist das so genannte \textit{Synchronizer Token}-Pattern vorzuziehen. Bei diesem fügt der Webserver bei jedem Formular ein verstecktes HTML-Feld hinzu, in dieses schreibt der Server einen zufälligen Zahlenwert. Wird eine Operation am Server aufgerufen wird dieses Feld an den Server übertragen und dieser vergleicht den übertragenen Zahlenwert mit dem vom Server erwarteten Zahlenwert. Falls diese übereinstimmen, wird die Operation ausgeführt, ansonsten wird die Operation verworfen. Dieser Schutz funktioniert, da der Angreifer auf seinem remote Server den Zahlenwert erraten und in das Angriffs-Formular einfügen müsste.
 
@@ -206,10 +211,12 @@ Damit dieser Schutz verlässlich funktioniert, muss der Zahlenwert regelmäßig 
 Wichtig ist, dass eine Operation die einen CSRF-Check implementiert nicht nur überprüft, ob ein potentiell übergebener CSRF-Wert mit dem server-gespeicherten CSRF-Wert übereinstimmt, sondern auch überprüft ob überhaupt ein CSRF-Wert übergeben wurde. Während Tests wurde häufig das fehlerhafte Verhalten vorgefunden, dass wenn der CSRF-Parameter einfach gelöscht wird, die Operation ausgeführt wird (also CSRF-Tokens nur verglichen werden, wenn beim Aufruf zumindest ein CSRF-Wert übergeben wird).
 
 \subsection{SameSite-Flag bei Session Cookies}
+\index{CSRF-Angriffe!Cookie-Flags}
 
 Eine weitere Schutzmaßnahme (im Sinne des Hardening) ist der Einsatz des \textit{SameSite} Cookie-Flags (siehe auch Kapitel \ref{session_cookies_samesite}, Seite \pageref{session_cookies_samesite}). Bei korrektem Setzen dieses Flags erlaubt der Web-Browser des Opfers das Übertragen der Session-Id nur, wenn sowohl das Formular als auch das Ziel des Formulars sich auf dem identen Webserver befinden.
 
 \section{Unverified Forwards and Redirects}
+\index{Unverified Forwards and Redirects}
 
 Diese Schwachstelle war in den OWASP Top 10 2013 vorhanden, wurde allerdings 2017 aus der Liste der Top 10 entfernt. Die Schwachstelle entsteht, falls eine Operation einer Webapplikation den Benutzerbrowser auf eine weitere Seite weiterleitet und das Ziel über einen Parameter bestimmt wird. Ein Angreifer kann nun versuchen, das Opfer auf eine externe Seite zu leiten um dies im Zuge eines Social Engineering Angriffs auszunutzen. Eine verwundbare Operation würde z.B. folgendermaßen aussehen: \url{http://example.com/example.php?url=http://malicious.example.com}.
 
@@ -218,6 +225,7 @@ Besonders gefährlich ist es, wenn die verlinkte URL nicht über ein HTTP Redire
 Falls es wirklich notwendig sein sollte, dass eine Zieladresse über einen URL-Parameter übergeben wird, sollte penibles Whitelisting der erlaubten URLs betrieben werden.
 
 \section{Clickjacking}
+\index{Clickjacking}
 
 Clickjacking wird auch teilweise \textit{UI redress attack} genannt. Bei diesem Angriff will der Angreifer einen unbedarften Benutzer dazu bringen, eine Webseite zu bedienen. Um dies durchzuführen, baut der Angreifer eine eigene, harmlos aussehende, Webseite, welche den identen Bedienfluss wie die Webseite besitzt, die der Angreifer gerne fernsteuern würde. Mittels eines IFrames wird die Opferwebseite über die erstellte Webseite des Angreifers gelegt, die Transparenz der Opfer-Webseite wird auf 100\% gesetzt.
 
@@ -227,6 +235,7 @@ Eine gute Abwehrmassnahme gegen Clickjacking ist der \textit{X-Frame-Options} HT
 
 \subsection{X-Frame-Options}
 \label{x_frame_options}
+\index{Clickjacking!X-Frame-Options}
 
 Der \textit{X-Frame-Options} Header wird verwendet um dem Webbrowser mitzuteilen, innerhalb welcher Webseiten die eigene Webseite eingebunden werden darf. Dadurch werden Clickjacking-Angriffe unterbunden.
 
@@ -239,6 +248,7 @@ Der Webserver kann über das Setzen des \textit{X-Frame-Options} Header auf folg
 \end{description}
 
 \section{Reverse Tab Nabbing}
+\index{Reverse Tab Nabbing}
 
 Bei einem Reverse Tab Nabbing navigiert der Benutzer zuerst auf eine Opferseite. Diese öffnet nun einen Link auf eine bösartige Seite in einem neuen Fenster. Die aufgerufene bösartige Seite verwendet nun Javascript um die Adresse der aufrufenden Seite (die wahrscheinlich gerade im Hintergrund ist) zu verändern, der Webbrowser führt nun ein redirect auf die neu verlinkte Seite im Hintergrund vor (während der Benutzer noch immer die neu geöffnete Seite betrachtet). Wenn der Benutzer nun das geöffnete Fenster schließt befindet er sich vermeintlich auf der ursprünglichen Seite, welche den Link öffnete, befindet sich allerdings in Wirklichkeit auf einer Seite, die vom Angreifer bestimmt wurde.
 
@@ -274,6 +284,7 @@ Als Gegenmaßnahme sollte bei ausgehenden Links immer das \textit{rel} Attribute
 \textbf{Update 2020}: mehrere Browser bieten mittlerweile automatische Verteidigungsmassnahmen gegenüber Reverse Tabnabbing Angriffe. Firefox (seit 2016), Microsoft Edge und Firefox sollten out-of-the-box nicht mehr gegenüber diesem Angriff verwundbar sein (sie setzen das \textit{noopener}-Flag automatisch). In zukünftigen Google Chrome Versionen ab 2021 sollte diese Browserfamilie dies auch durchführen und auf diese Weise Tabnabbing-Angriffe unterbinden.
 
 \section{HTML5 PostMessage als Angriffskanal}
+\index{HTML5 PostMessage}
 
 Eine Webapplikation wird innerhalb eines Browser-Tabs geöffnet, ihre Einflussmöglichkeiten (z.B. mittels Javascript) beschränken sich auf Inhalte innerhalb des Browser-Tabs. Es gibt Use-Cases, bei denen eine Applikation mit einer Webseite innerhalb eines anderen Browser-Tabs bzw. Browser-Fensters interagieren will. Ein Beispiel sind web-basierte Präsentationsframeworks. Hier gibt es meistens zwei Browserfenster: eines für die aktuell dargestellte Präsentationsfolie und ein Fenster mit Notzien für den Vortragenden. Wird die Folie gewechselt sollten im zweiten Fenster ebenso die Kommentare für die aktuell angezeigte Folie dargestellt werden.
 

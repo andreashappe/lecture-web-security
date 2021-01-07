@@ -38,12 +38,13 @@ Um auf den aktuellen Stand im Bereich Web Security zu bleiben ist ein Besuch von
 
 \subsection{What to hack?}
 
-Web Security kann nicht ausschließlich theoretisch gelehrt werden, wenn man in dem Umfeld aktiv sein will muss man hands-on Praxisbeispiele sehen und auch versuchen. Das Gefühl, bei einer Web-Applikation permanent mit dem Kopf gegen die Wand zu laufen, immer weider neue Angriffe erfolglos zu versuchen bis mein einen funktionierenden Angriff gefunden hat und sich nach erfolgter Ausnutzung zufrieden zurücklehnen kann, kann nur erlebt werden. Glückerlicher Weise gibt es mittlerweile eine Vielzahl an gratis bzw. freemium-basierten Webangeboten welche genau diese Gelegenheit bieten. Eine Auflistung dieser kann in folgender Tabelle vorgefunden werden\footnote{Ich habe mich bei dieser Liste auf Angebote welche, zumindest teilweise, gratis nutzbar sind, beschränkt, daher fehlt hier z.B. Offensive Security (\url{www.offensive-security.com}) obwohl diese von mir hoch geschätzt werden.}:
+Web Security kann nicht ausschließlich theoretisch gelehrt werden, wenn man in dem Umfeld aktiv sein will muss man hands-on Praxisbeispiele sehen und auch versuchen. Das Gefühl, bei einer Web-Applikation permanent mit dem Kopf gegen die Wand zu laufen, immer weider neue Angriffe erfolglos zu versuchen bis mein einen funktionierenden Angriff gefunden hat und sich nach erfolgter Ausnutzung zufrieden zurücklehnen kann, kann nur erlebt werden. Glückerlicher Weise gibt es mittlerweile eine Vielzahl an gratis bzw. freemium-basierten Webangeboten welche genau diese Gelegenheit bieten.
 
+Eine Auflistung dieser kann in Tabelle \ref{tbl:online_hacking} vorgefunden werden\footnote{Ich habe mich bei dieser Liste auf Angebote welche, zumindest teilweise, gratis nutzbar sind, beschränkt, daher fehlt hier z.B. Offensive Security (\url{www.offensive-security.com}) obwohl diese von mir hoch geschätzt werden.}.
 
-\begin{table}[h!]
+\begin{table}
 	\begin{center}
-\begin{tabular}{|l|l|lll|}
+\begin{tabular}{lllll}
 	\toprule
 	Name & auch kommerziell & Online & VPN & VM \\
 	\midrule
@@ -54,6 +55,8 @@ Web Security kann nicht ausschließlich theoretisch gelehrt werden, wenn man in 
 	\bottomrule
 \end{tabular}
 \end{center}
+	\caption{Online-Angebote für Hacking-,,Praxisbeispiele''}
+	\label{tbl:online_hacking}
 \end{table}
 
 Die Spalten ,,online'', ,,VPN'' und ,,VM'' sollten darstellen, wie das jeweilige Angebot genutzt werden kann. ,,Online'' sind Kurse, bei denen eine verwundbare Webapplikation direkt über den Browser des Benutzers getestet werden kann: es muss nicht zwingend am lokalen Rechner eine Virtualisierungslösung oder ähnliches installiert werden. Lösungen der Spalte ,,VM'' sind das genaue Gegenteil: hier kann zumeist eine virtuelle Maschine bezogen und lokal installiert werden. In dieser virtuellen Maschine befindet sich die zu testende Software. In diesem Fall benötigt man zwar lokal installierte Virtualisierungssoftware, dafür ist man allerdings von der Internet-/Netzwerkverbindungsqualität großteils unabhängig. ,,VPN''-Lösungen sind eine Mischform: bei diesen erhält man Zugangsdaten für einen VPN-Einwahlknoten und gelangt über diesen zu einem virtuellen Labornetzwerk in welchem sich virtuelle Maschinen mit verwundbarer Software befinden. In diesem Fall muss man zwar lokal einen VPN-Client installieren, diese ist allerdings leichtgewichtiger als eine volle Virtualisierungslösung. Zusätzlich bieten ,,VPN''-basierte Ansätze auch teilweise größere Netzwerke in denen man auch Post-Exploitation Tätigkeiten wie Lateral Movement trainieren kann.
