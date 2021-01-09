@@ -17,3 +17,15 @@ _minted-ebook/
 *.toc
 *.html
 *.dvi
+*.out
+content.opf
+ebook-epub/
+ebook.4ct
+ebook.4tc
+ebook.css
+ebook.idv
+ebook.lg
+ebook.ncx
+ebook.tmp
+ebook.xref
+graphs/*-.png

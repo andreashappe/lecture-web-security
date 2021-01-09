@@ -20,6 +20,7 @@ In diesem Beispiel ist das Registrationszelt der Identity Provider, die Getränk
 Das Beispiel zeigt auch zwei Probleme von token-basierten Lösungen. Das Armband gilt für die gesamte Dauer des Festivals (im Folgejahr werden andere Farben verwendet). Es gibt keine Möglichkeit einen Teil der Armbänder nach dem ersten Festivaltag zu invalidieren. Ebenso wird klar, dass jegliche Form von Zugriffskontrolle durch das Armband ersetzt wird. Wollen z.B. ein Vater und Sohn beide Alkohol kaufen, kann der Vater initial den Identitätscheck durchführen und dann sein Armband an seinen Sohn weitergeben. Der Vater geht danach wiederholt zum Registrationszelt und kauft sich ein zweites Zugangsband. Mit dem ersten Band kann nun der Sohn beliebig Alkohol kaufen ohne dass auffällt, dass sein Alter dies eigentlich verbieten sollte. Der alleinige Zeitpunkt der Überprüfung (Authorization) geschieht während der Bandausgabe.
 
 \section{OAuth2}
+\index{OAuth2}
 
 OAuth (Open Authorization) erlaubt es einem Benutzer (Resource Owner) einer Applikation (Client) Zugriff auf Resourcen/Operationen auf einem Server (Resource Server) zu erteilen. Ein Authorization Server wird verwendet um ein Zugriffs-Token für einen definierten Bereich (scope) am Resourcen-Server auszustellen. Zusätzlich zu dem Zugriffs-Token wird zumeist auch ein Refresh-Token ausgestellt mit dem ein Client ein neues Zugriffstoken ohne Benutzerinteraktion generieren kann.
 
@@ -38,10 +39,51 @@ Das Token besitzt eine Laufzeit und ist bis zum Ende der Laufzeit gültig. Da de
 Um dieses Problem zu entschärfen werden zumeist zwei Tokens generiert: ein Access-Token und ein Refresh-Token. Das Access-Token wird zum Zugriff auf den Resource Server verwendet und besitzt eine sehr kurze Laufzeit, zumeist im Minuten-Bereich. Falls ein Access-Token abgelaufen ist, kann der Client das Refresh-Token verwenden um (ohne Benutzerinteraktion) ein neues Access-Token zu erhalten. Dies verbessert die Sicherheitssituation, da der Authorization-Server vor dem Ausstellen eines Access-Tokens überprüft, ob das Subject/der User überhaupt noch die notwendige Berechtigung besitzt. Dadurch wird das verwundbare Zeitfenster zwar nicht entfernt, aber zumindest reduziert.
 
 \section{OpenID Connect}
+\index{OpenID Connect}
 
-OpenID-Connect verwendet OAuth2 um eine Benutzeridentifikation und -authentication umzusetzen.
+OpenID Connect verwendet OAuth2 um eine Benutzerauthentication durchzuführen. Es gibt verschiedene Subprotokolle (\textit{flows} genannt). Im Allgemeinen funktioniert das OpenID Connect Protokoll auf folgende Weise:
+
+\begin{enumerate}
+	\item Der Client schickt einen Request zu dem OpenID Provider.
+	\item Der OpenID Provider authentifiziert den Benutzer, der Benutzer bestätigt den Authentication Request.
+	\item Der OpenID Provider returniert einen ID Token (und zumeist auch einen Access Token).
+	\item Der Cient kann das Access Token verwenden um weitere Informationen über den User über den \textit{UserInfo Endpoint} zu erhalten.
+\end{enumerate}
+
+Das ID Token ist ein JSON Web Token (JWT, siehe auch Kapitel \ref{jwt}, Seite \pageref{jwt}), folgende Felder müssen in diesem ausgefüllt werden:
+
+\begin{description}
+	\item[iss]: der Aussteller des Tokens. Dieser muss ein https-Endpunkt sein.
+	\item[sub]: der subject identifier identifiziert den Benutzer.
+	\item[aud]: der Identifier für den Server, der die Authentification anforderte.
+	\item[exp]: Ablaufdateum des Tokens.
+	\item[iat]: Austellungsdatum des Tokens.
+\end{description}
+
+OpenID Connect definiert drei verschiedene flows (\textit{code}, \textit{implicit} oder \textit{hybrid}), ihre Unterschiede werden kurz in Tabelle \ref{tbl:oidc} aufgeführt. Für ,,normale'' Applikationen wird die Verwendung des \textit{code} Flows empfohlen.
+
+\begin{table}
+	\begin{center}
+\begin{tabular}{llll}
+	\toprule
+	Eigenschaft & Code & Implicit & Hybrid \\
+	\midrule
+	Authorization Endpoint versendet alle Tokens & nein & ja   & nein \\
+	Token Endpunkt versendet alle Tokens			   & ja   & nein & nein \\
+	User Agent erhält Tokens                     & ja   & nein & nein \\
+	Client kann authenticated werden             & ja   & nein & ja \\
+	Refresh Tokens können verwendet werden       & ja   & nein & ja \\
+	Kommunikation geschieht in einem Roundtrip   & nein & ja   & nein \\
+	Großteils Server-zu-Server Kommunikation     & ja   & nein & teilweise \\
+	\bottomrule
+\end{tabular}
+\end{center}
+	\caption{Übersicht über die verschiedenen OpenID Connect Flüsse}
+	\label{tbl:oidc}
+\end{table}
 
 \section{SAML2}
+\index{SAML2}
 
 Die Abkürzung SAML2 steht für Security Assertion Markup Language (Version 2). Diese XML-basierte Sprache dient zum Austausch von Authentication und Authorization Informationen zwischen mehreren Parteien. Dabei will sich ein Benutzer mittels eines Clients (z.B. Webbrowser) an einem Service Provider (z.B. Webserver) anmelden. Um dies durchzuführen wird ein Identity Provider (IdP) bemüht dieser ist ein Service welches für einen User gegenüber einem Service Provider authentifiziert und autorisiert; ebenso kann dieser Service einen synchronen Single Sign-Out durchführen.
 
