@@ -1,0 +1,28 @@
+@startuml
+skinparam monochrome true
+skinparam shadowing false
+
+actor RO as "Resource Owner"
+participant UA as "Web Browser"
+participant WS as "Client (Web Service)"
+participant AS as "Authorization Server"
+participant RS as "Resource Server"
+
+RO -> UA: ruft Operation auf
+UA -> WS: Operation mit\r Resourcenzugriff
+WS->WS: Benötigt Zugriff\rauf die Resource
+WS -> UA: Redirect zu\rAuthorization Server
+ 
+UA-> AS: Authorization Request
+AS-> UA: Authorization GUI
+
+UA->RO: Anzeige des Authorization GUIs
+RO->UA: Authorization  durchführen
+UA->AS: Authorization Code
+AS->UA: Redirect inkl.\rAuthorization Code
+UA->WS: Authorization Code
+WS->AS: Authorization Code
+AS->WS: Access Token,\rRefresh Token
+WS->RS: Zugriff mit Access Token
+RS->WS: Angefragte Resource
+@enduml

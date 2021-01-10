@@ -29,7 +29,13 @@ Da die Rechte eines ausgestellten Token im Normalfall nur während der Ausstellu
 \begin{figure}[h!]
 	\includegraphics[width=\textwidth]{graphs/oauth2.pdf}
 	\centering
-	\caption{Beispiel für einen OAuth2-Fluss}
+	\caption{Beispiel für einen OAuth2-Fluss (tex into pdf)}
+\end{figure}
+
+\begin{figure}[h!]
+	\includegraphics[width=\textwidth]{graphs/test2.pdf}
+	\centering
+	\caption{Beispiel für einen OAuth2-Fluss (svg into pdf)}
 \end{figure}
 
 Ein interessanter Aspekt ist der Zeitpunkt der Authorization: die Überprüfung der eigentlich Zugriffsberechtigung wird durch den Authorization-Server zum Zeitpunkt der Ausstellung des Tokens durchgeführt. Bei einem Zugriff auf den Resourcen Server werden die eigentlichen Berechtigungen nicht mehr überprüft, sondern nur noch getestet ob das übergebene Token Zugriff auf die angeforderten Resourcen inkludiert und von einem validen Authorization Server signiert wurde.
