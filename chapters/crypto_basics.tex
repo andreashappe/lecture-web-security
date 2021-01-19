@@ -2,11 +2,13 @@
 
 Kryptographie beschreibt die Technik (und Kunst) über nicht-vertrauenswürdige Kanäle bzw. Speicherorte Daten integritäts- und vertraulichkeitsgesichert zu übertragen. Dadurch kann Kryptographie als Mittel gegen \textit{spoofing}, \textit{tampering}, \textit{repudiation} und \textit{information disclosure} dienen. Dieses Kapitel soll eine (extrem) kurze Einführung in die, in diesem Dokument, verwendeten Konzepte geben.
 
+Bei der Verschlüsselung wird der ursprüngliche Text (häufig \textit{plaintext} genannt) durch den Algorithmus in einen neuen, verschlüsselten, Text (häufig \textit{ciphertext} genannt) konvertiert. Dieser Ciphertext kann durch die Entschlüsselung wieder in den Plaintext zurück verwandelt werden. Die hierbei verwendeten Algorithmen werden häufig \textit{Cipher} genannt. In der Literatur werden die dabei beteiligten Partein meistens ident benannt: \textit{Alice} und \textit{Bob} sind die beiden Parteien die miteinander sicher kommunizieren wollen. \textit{Eve} ist ein Angreifer, der diese Nachrichten abhören, aber nicht modifizieren kann; \textit{Mallory} ist ein Angreifer, der auch aktiv angreifen darf.
+
 Grundlegend sollten folgende Grundsätze bei der Verwendung von Kryptographie beachtet werden:
 
 \begin{itemize}
 	\item Niemals selbst ein kryptographisches System entwerfen, sondern immer ein etabliertes (und getestetes) System verwenden.
-	\item Niemals selbst einen kryptographischen Algorithmus/Bibliothek schreiben, sondern immer etablierte und getestet Komponenten verwenden.
+	\item Niemals selbst einen kryptographischen Algorithmus/Bibliothek implementieren, sondern immer etablierte und getestet Komponenten verwenden.
 	\item Die richtige kryptographische Methode wählen.
 	\item Immer davon ausgehen, dass der eigene Source Code früher oder später öffentlich wird. Aus diesem Grund darf ein kryptographischer Schlüssel (oder auch Credentials) niemals Teil des Source Codes werden.
 	\item Nicht auf das Key Management (inklusive Key Revocation) vergessen.
@@ -18,7 +20,7 @@ Ein häufiger verwendeter Begriff ist \textit{Rubber Hose Cryptography}. Ein noc
 
 \section{Verschlüsselung}
 
-Zur Wahrung der Vertraulichkeit von Daten wird Verschlüsselung eingesetzt. Bei dieser wird der Originaltext (engl. plain-text) in einen verschlüsselten Text (engl. cipher-text) konvertiert. Dieser kann wieder durch den Entschlüsselungs-Vorgang in den Originaltext zurück verwandelt werden. Verschlüsselungsalgorithmen können in zwei Familien eingeteilt werden: symmetrisch und asymmetrisch (auch public-key encryption genannt). Bei symmetrischer Verschlüsselung wird zum ver- und entschlüsseln der idente Schlüssel verwendet. Problematisch hierbei ist, dass dieser geteilte geheime Schlüssel initial zwischen allen Beteiligten verteilt werden muss. Bei der asymmetrischen Verschlüsselung wird statt einem geteilten Schlüssel ein Schlüsselpaar\footnote{Das Schlüsselpaar ist mathematisch ``verwandt''.} verwendet. Dieses besteht aus einem öffentlichen Schlüssel der zur Verschlüsselung dient und einem zugehörigen privaten Schlüssel der zum Entschlüsseln verwendet wird. Dadurch wird die Problematik des initialen Schlüsselverteilens entschärft, da nur öffentliche Schlüssel verteilt werden müssen (diese dürfen veröffentlicht bzw. verloren werden). Ein Nachteil asymmetrischer Verschlüsselung gegenüber symmetrischer Verschlüsselung ist, dass sie langsamer als symmetrische Verschlüsselung ist.
+Zur Wahrung der Vertraulichkeit von Daten wird Verschlüsselung eingesetzt. Bei dieser wird der Originaltext (engl. \textit{plaintext}) in einen verschlüsselten Text (engl. \textit{ciphertext}) konvertiert. Dieser kann wieder durch den Entschlüsselungs-Vorgang in den Originaltext zurück verwandelt werden. Verschlüsselungsalgorithmen können in zwei Familien eingeteilt werden: symmetrisch und asymmetrisch (auch public-key encryption genannt). Bei symmetrischer Verschlüsselung wird zum ver- und entschlüsseln der idente Schlüssel verwendet. Problematisch hierbei ist, dass dieser geteilte geheime Schlüssel initial zwischen allen Beteiligten verteilt werden muss. Bei der asymmetrischen Verschlüsselung wird statt einem geteilten Schlüssel ein Schlüsselpaar\footnote{Das Schlüsselpaar ist mathematisch ``verwandt''.} verwendet. Dieses besteht aus einem öffentlichen Schlüssel der zur Verschlüsselung dient und einem zugehörigen privaten Schlüssel der zum Entschlüsseln verwendet wird. Dadurch wird die Problematik des initialen Schlüsselverteilens entschärft, da nur öffentliche Schlüssel verteilt werden müssen (diese dürfen veröffentlicht bzw. verloren werden). Ein Nachteil asymmetrischer Verschlüsselung gegenüber symmetrischer Verschlüsselung ist, dass sie langsamer als symmetrische Verschlüsselung ist.
 
 \section{Block- und Stream-Cipher}
 
@@ -32,7 +34,11 @@ Bei einem Message Authentication Code (MAC) wird der Hash um ein geheimes geteil
 
 Je nach Einsatzbereich muss nun ein geeignetes Verfahren zur Integritätssicherung und Verschlüsselung gewählt werden. Werden Daten über ein öffentliches bzw. feindliches Netzwerk transferiert ist z. B. der Einsatz eines Hashes problematisch. Falls ein Angreifer einen Datensatz abfangen und modifizieren kann, kann er ebenso einen neuen Hash berechnen und so den Integritätsschutz umgehen. Bei diesem Beispiel wäre der Einsatz eines MACs oder von Signaturen sinnvoller.
 
-Bei der korrekten Verwendung von kryptographischen Methoden ist der Einsatz guter Zufallszahlengenerator essentiell. Dieser sollte Zufallszahlen mit hoher Entropie generieren. Dies kann z. B. durch Einsatz eines Hardware-Zufallsgenerators sichergestellt werden. Ist ein solcher nicht verfügbar, muss ein kryptographisch sicherer Pseudo-Zufallszahlengenerator (PRNG) verwendet werden.
+\section{Zufallszahlen}
+
+Bei der korrekten Verwendung von kryptographischen Methoden ist der Einsatz guter Zufallszahlengenerator essentiell. Dieser sollte Zufallszahlen mit hoher Entropie generieren. Dies kann z. B. durch Einsatz eines Hardware-Zufallsgenerators sichergestellt werden. Ist ein solcher nicht verfügbar, muss ein kryptographisch sicherer Pseudo-Zufallszahlengenerator (PRNG) verwendet werden. Moderne Betriebssysteme bieten zumeist hybride Lösungen an: hierbei werden zwar PRNGs verwendet, diese allerdings mit Entropie aus weiteren Quelle\footnote{Z. B. aus CPU-Zufallszahlengeneratoren, etc.} angereichert.
+
+Die Qualität der generierten Zufallszahlen kann über deren Entropie bestimmt werden. Hierbei wird über statistische Methoden die Qualität der Zufälligkeit der generierten Karten ermittelt.
 
 \section{Weitere Informationsquellen}
 
