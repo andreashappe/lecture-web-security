@@ -5,6 +5,7 @@
 Werden externe Inhalte innerhalb der eigenen Seite inkludiert, erhöht sich die Angriffsfläche: ein Angreifer mit Zugriff auf die externe Seite kann über diese Schadcode in die, eigentlich sichere, eigene Webseite einschleusen. Falls die Einbindung externer Inhalte zwingend benötigt wird, kann das Gefahrenpotential durch Einsatz folgender Techniken reduziert werden:
 
 \subsection{IFrame: sandbox-Flag}
+\index{IFrame Sandbox Attribute}
 
 Wird eine externe Resource über das HTML \textit{iframe} Tag eingebunden kann durch Verwendung des \textit{sandbox}-Attributes die Sicherheit erhöht werden. Bei Verwendung dieses Attributes werden folgende Einschränkungen aktiviert:
 
@@ -27,6 +28,7 @@ style="border: 0; width:130px; height:20px;"
 \end{minted}
 
 \subsection{Subresource Integrity (SRI)}
+\index{SRI}\index{Subresource Integrity}
 
 Webapplikationen lagern statische Dateien häufig auf externe Server aus. Ein Beispiel hierfür wäre z.B. das Auslagern von statische Javascript- oder CSS-Dateien auf ein CDN-Netzwerk. Dies wird zumeist zur Erhöhung der Performance bzw. Reduktion der Latenzzeit durchgeführt.
 
@@ -50,6 +52,8 @@ Content-Security-Policy: require-sri-for script style;
 
 \section{Referrer-Policy}
 \label{referrer_policy}
+\index{Referrer-Policy}
+\index{HTTP Header!Referrer-Policy}
 
 Ein Standard-Header der von Webbrowsern gesetzt wird ist der \textit{Referer}-Header. Dieser inkludiert bei jedem Seitenaufruf die URL der aufrufenden Seite. Dies kann einen negativen Security-Impact haben, falls die URL der aufrufenden Seite sensible Informationen (wie z.B. eine Session-Id oder auch sensible Benutzerdaten) beinhaltet. Potentiell wird der Header vom Empfangsserver und, bei unverschlüsselter Kommunikation, von allen verbundenen Geräten entlang des Kommunikationspfades gesehen.
 
@@ -69,6 +73,8 @@ Web-Server können das gewünschte Verhalten durch Verwendung des Headers \texti
 Es wird empfohlen, eine \textit{Referrer-Policy} zu wählen, die nicht \textit{no-referrer-when-downgrade} bzw. \textit{unsafe-url} ist.
 
 \section{Content-Security-Policy}
+\index{Content-Security-Policy}
+\index{HTTP Header!Content-Security-Policy}
 \label{csp}
 
 Die Content-Security-Policy (CSP) erlaubt es, eine umfangreiche Policy von Webservern an Browser zu übertragen. Prinzipiell sind mittels einer CSP viele der bereits erwähnten Security-Header abbildbar.

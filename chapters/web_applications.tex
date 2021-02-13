@@ -4,15 +4,15 @@ Der Gegenstand unserer Untersuchungen ist eine programmierte Webapplikation. Die
 
 \section{Struktur}
 
-Eine Webapplikation besitzt sowohl eine interne Architektur (Struktur der Applikation bzw. des Source Codes) als auch eine Systemarchitektur (Integration mit externen Systemen). Eine Webapplikation wird in einer oder mehreren Programmiersprachen implementiert, zumeist unter Zuhilfenahme von Web-Frameworks bzw. -bibliotheken (diese können auch Bestandteil der Standardbibliothek einer der verwendeten Programmiersprachen sein).
+Eine Webapplikation besitzt sowohl eine interne Architektur (Struktur der Applikation bzw. des Source Codes) als auch eine Systemarchitektur (Integration mit externen Systemen). Eine Webapplikation wird in einer oder mehreren Programmiersprachen implementiert, zumeist unter Zuhilfenahme von Web-Frameworks bzw. -bibliotheken. Diese können auch Bestandteil der Standardbibliothek einer der verwendeten Programmiersprachen sein.
 
-Das Werk des Entwicklers ist der Source Code, welcher die benötigten Funktionen der Webapplikation implementiert. In Abhängigkeit von der verwendeten Technologie wird dieser Code auf den Applikationsserver als source code oder in kompilierter Form eingespielt und auf diesem schlussendlich auch exekutiert. Während der Exekution wird zumeist ein Applikationsserver involviert. Dieser kann entweder als eigenständiger Prozess (z.B. \textit{Apache Tomcat} als Applikationsserver für Java Servlets), innerhalb des Webservers (z.B. die Kombination von Apache Webserver mit \textit{mod\_php} für PHP) oder sogar ein Teil des kompilierten Programms sein (z.B. bei Verwendung von statischen Binaries mit Go oder Rust).
+Das Werk des Entwicklers ist der Source Code, welcher die benötigten Funktionen der Webapplikation implementiert. In Abhängigkeit von der verwendeten Technologie wird dieser Code auf den Applikationsserver als Source Code oder in kompilierter Form eingespielt und auf diesem schlussendlich auch exekutiert. Während der Exekution wird zumeist ein Applikationsserver involviert. Dieser kann entweder als eigenständiger Prozess (z.B. \textit{Apache Tomcat} als Applikationsserver für Java Servlets), innerhalb des Webservers (z.B. die Kombination von Apache Webserver mit \textit{mod\_php} für PHP) oder sogar ein Teil des kompilierten Programms sein (z.B. bei Verwendung von statischen Binaries mit Go oder Rust).
 
 Ein häufiges Problem ist die Zuordnung der Admin-Verantwortung zu den jeweiligen Komponenten. Es kann passieren, dass Entwickler davon ausgehen, dass eine Komponente von Administratoren verwaltet wird und vice versa. Dadurch kann es zum Unterlassen wichtiger Updates kommen.
 
 \subsection{Wahl der Programmiersprache}
 
-Zur Umsetzung einer Applikation wird eine Programmiersprache bemüht. Je nach Abstraktionslevel und Zielpublikum der Programmiersprache (bzw. des verwendeten Frameworks) ergeben sich positive und negative Auswirkungen auf die Sicherheit der Applikation.
+Zur Umsetzung einer Applikation wird eine Programmiersprache bemüht. Je nach Abstraktionslevel und Zielpublikums der Programmiersprache (bzw. des verwendeten Frameworks) ergeben sich positive und negative Auswirkungen auf die Sicherheit der Applikation.
 
 Hierdurch sollte allerdings kein Chauvinismus bedingt werden. Es ist sowohl möglich in einer sicheren Programmiersprache unsicher zu programmieren als auch vice versa. Programmierer sollten sich der jeweiligen Eigenarten der gewählten Programmiersprache bewusst sein und ggf. vorsorglich gewisse Features nur unter Bedacht einsetzen.
 
@@ -20,19 +20,21 @@ Einflussreicher auf die Sicherheit der Applikation ist die Selektion von sichere
 
 \subsection{Interne Architektur}
 
-Die interne Struktur beschreibt, wie die Webapplikation selbst gebaut und der Code strukturiert wurde --- wie die Funktionen auf Source-Code Komponenten aufgeteilt wurden. Die interne Architektur wird stark durch das verwendete Framework und der verwendeten Programmiersprache geprägt. Es ist sinnvoll, sich an die Annahmen und Konventionen des verwendeten Frameworks zu halten anstatt gegen diese Konventionen anzukämpfen.
+Die interne Struktur beschreibt, wie die Webapplikation selbst gebaut, und der Code strukturiert wurde --- also wie die Funktionen auf Source-Code Komponenten aufgeteilt wurden. Die interne Architektur wird stark durch das verwendete Framework und der verwendeten Programmiersprache geprägt. Es ist sinnvoll, sich an die Annahmen und Konventionen des verwendeten Frameworks zu halten anstatt gegen diese Konventionen anzukämpfen.
 
 \subsubsection{Request-Routing}
 
-Ein guter Unterscheidungspunkt ist, wie der Webserver erkennen kann, dass ein eingehender HTTP Request über einen Applikationsserver, und damit als Applikationscode, ausgeführt werden soll. Initial wurde dies primär über die Dateien im Dateisystem erkannt. Gegeben ein Webroot von \url{/var/www/} und eine Datei \url{/var/www/operation.php} wird ein Aufruf der zugeordneten Webseite \url{https://www.example.local/operation.php} an die Datei \textit{operation.php} weitergeleitet und (falls PHP am server konfiguriert wurde) als PHP Applikation ausgeführt. Dieser Aufbau ist fehleranfällig: falls ein Entwickler eine .php-Datei am Server vergisst oder ein Angreifer eine zusätzliche .php-Datei am Server hochladen kann, kann es zu einer ungewollten Code-Execution kommen. Neuere Frameworks bieten zumeist die Möglichkeit, ein explizites Request-Routing zu definieren, so könnte z.B. das PHP-Framework Laraval mit folgender \url{routes/web.php} Konfiguration\footnote{\url{https://laravel.com/docs/5.7/routing}} gestartet werden:
+Ein guter Unterscheidungspunkt ist, wie der Webserver erkennen kann, dass ein eingehender HTTP Request über einen Applikationsserver, und damit als Applikationscode, ausgeführt werden soll. Initial wurde dies primär über die Dateien im Dateisystem erkannt. Ein Beispiel: gegeben ein Webroot von \url{/var/www/} und eine Datei \url{/var/www/operation.php} wird ein Aufruf der zugeordneten Webseite \url{https://www.example.local/operation.php} an die Datei \textit{operation.php} weitergeleitet und (falls PHP am Server konfiguriert wurde) als PHP Applikation ausgeführt. Dieser Aufbau ist fehleranfällig: falls ein Entwickler eine .php-Datei am Server vergisst oder ein Angreifer eine zusätzliche .php-Datei am Server hochladen kann, kann es zu einer ungewollten Code-Execution kommen. Neuere Frameworks bieten zumeist die Möglichkeit, ein explizites Request-Routing zu definieren, so könnte z.B. das PHP-Framework Laraval mit folgender \url{routes/web.php} Konfiguration\footnote{\url{https://laravel.com/docs/5.7/routing}} gestartet werden:
 
 \begin{minted}{php}
 Route::get('/operation.php', 'SomeController@operation');
 \end{minted}
 
-In diesem Fall wird ein eingehender Request auf \url{/operation.php} an die Methode \textit{operation} des Controllers \textit{SomeController} weitergeleitet. Auf diese Weise wird explizit definiert, welche Operationen wie erreichbar sind und wo sich der aufzurufende Source-Code befindet.
+In diesem Fall wird ein eingehender Request auf \url{/operation.php} an die Methode \textit{operation} des Controllers \textit{SomeController} weitergeleitet. Auf diese Weise wird explizit definiert, welche Operationen wie erreichbar sind und wo sich der aufzurufende Source-Code befindet. Falls ein Angreifer eine zusätzliche PHP-Datei am Webserver hinterlegt, fehlt diese Routing-Konfiguration und sie wird vom Applikationsserver nicht verwendet.
 
 \subsubsection{Model-View-Controller (MVC) Pattern}
+\index{MVC}
+\index{Model-View-Controller}
 
 Ein häufiges Muster für die interne Code-Struktur ist das MVC-Pattern. Hier wird die Funktionalität auf folgende groben Bereiche aufgeteilt:
 
@@ -42,7 +44,7 @@ Ein häufiges Muster für die interne Code-Struktur ist das MVC-Pattern. Hier wi
 	\item[Controller] akzeptiert Eingaben (z.B. HTTP- oder WebSocket-Requests), überprüft diese und interagiert mit dem Model um Geschäftsprozesse anzustoßen. Um eine Antwort gegenüber dem Client zu präsentieren, werden Daten vom Controller an die View-Objekte übergeben.
 \end{description}
 
-Klassische Webapplikationen waren historisch thin-client Applikationen: die gesamte Logik wird server-seitig ausgeführt, der Client (Webbrowser) dient rein zur statischen Darstellung. Mit JavaScript entstand die Möglichkeit, innerhalb des Browsers Code auszuführen. Einige Frameworks wie \textit{Angular.js} implementieren das MVC-Pattern samt Routing innerhalb des Browsers. Der Server dient als Datenquelle und bietet jene zumeist über Webservices an.
+Klassische Webapplikationen waren historisch thin-client Applikationen: die gesamte Logik wird server-seitig ausgeführt, der Client (Webbrowser) dient rein zur statischen Darstellung. Mit JavaScript entstand die Möglichkeit, innerhalb des Browsers Code auszuführen. Einige Frameworks wie \textit{Angular.js} oder \textit{React} implementieren das MVC-Pattern samt Routing innerhalb des Browsers. Der Server dient als Datenquelle und bietet jene zumeist über Webservices an.
 
 \begin{figure}[h!]
 	\includegraphics[width=\textwidth]{graphs/mvc.pdf}
@@ -63,7 +65,7 @@ Werden diese SPAs mit HTML5 Offline-Fähigkeiten (HTML5 localStorage) und langle
 Eine einfache Webapplikation wird zumeist aus drei groben Komponenten bestehen:
 
 \begin{itemize}
-	\item Webserver: dient zur Bereitstellung statischer Dateien und leitet dynamische Anfragen an die jeweiligen Applikationsserver weiter. Webserver sind optimiert für das effiziente Zustellen statischer Inhalte.
+	\item Webserver: dient zur Bereitstellung statischer Dateien und leitet dynamische Anfragen an die jeweiligen Applikationsserver weiter. Webserver sind optimiert für das effiziente Zustellen statischer Inhalte. Unter POSIX-Betriebssystemen wie Linux befinden sich am Websever die Web-Dateien häufig im Verzeichnis \url{/var/www}.
 	\item Applikationsserver: beinhalten die Applikation und bieten die Laufzeitumgebung der Applikation an. Die Applikation kommuniziert mit einer Datenbank zur Speicherung dynamischer Daten.
 	\item Datenbank: beinhaltet dynamische Daten.
 \end{itemize}
@@ -74,15 +76,14 @@ Je nach Webserver- und Applikationsserverimplementierung kann der Applikationsse
 
 \subsubsection{Potentielle zusätzliche Komponenten bei Webapplikationen}
 
-Während Webserver, Applikationsserver und Datenbank zum Betrieb einer dynamischen Webapplikation prinzipiell ausreichen, kann es zu einer Inflation von externen Komponenten kommen:
+Während Webserver, Applikationsserver und Datenbank zum Betrieb einer dynamischen Webapplikation prinzipiell ausreichen, kann es zu einer Inflation von externen Komponenten kommen, dies wird in Grafik \ref{component_inflation} gezeigt. Beispiele potentieller zusätzlicher Komponenten:
 
 \begin{figure}[h!]
 \includegraphics[width=10cm]{images/web_components.pdf}
 \centering
 \caption{Beispiel der Komponenten einer Webapplikation}
+\label{component_inflation}
 \end{figure}
-
-Um einige der hier vorkommenden Komponenten zu erwähnen:
 
 \begin{itemize}
 	\item Load-Balancer: verteilen den Traffic auf mehrere Webserver. Hier kann es zu Problemen beim Session-Management kommen.
@@ -94,6 +95,8 @@ Um einige der hier vorkommenden Komponenten zu erwähnen:
 \end{itemize}
 
 \section{Angriffsfläche/Attack Surface}
+\index{Angriffsfläche}
+\index{Attack Surface}
 
 Die Angriffsfläche ist jener Bereich, auf den ein potentieller Angreifer Zugriff erhält. Die extern sichtbare Webapplikation ist Teil der Angriffsfläche. Im Sinne der Systemsicherheit sollten Entwickler versuchen, die Angriffsfläche zu minimieren. Problematisch ist, dass die Angriffsfläche nicht nur die direkte Applikation, sondern auch alle verbundenen Funktionen und Komponenten, beinhaltet. Bei der Definition der Angriffsfläche sollten u.a. folgende Fragen gestellt werden: 
 
@@ -124,7 +127,7 @@ Durch das Outsourcing von Funktionalität in die Cloud wurde dieses Problem noch
 
 Wenn Credentials unbedingt innerhalb der Applikation gespeichert werden müssen, sind Schutzmaßnahmen für deren Vertraulichkeit unabdingbar. Sie dürfen niemals in plain-text (unverschlüsselt) persistiert werden, sondern sollten so früh wie möglich mittels einer Einwegfunktion transformiert werden. Dies sollte innerhalb der Applikation und nicht erst z.B. in einer nachgelagerten Datenbank geschehen. Würde dies z.B. mittels eines Datenbanktriggers durchgeführt werden, muss die Applikation das Passwort an die DB übergeben: falls die DB nun das Passwort unsicher bearbeitet oder speichert (DB-Logs, Journal, Fehlerlogs) kann dies durch die Applikation nicht beeinflusst werden.
 
-Als Einwegfunktion wird zumeist eine kryptographische Hash-Variante verwendet. Da Hashes auf deren Geschwindigkeit hin optimiert wurden, sind diese eigentlich suboptimal für Passwort-Hashing geeignet: durch diese Optimierung kann ein Angreifer ebenso effizient einen Brute-Force-Angriff durchführen. Aus diesem Grund sind Key-Derivation-Functions (KDFs) vorzuziehen. Dies sind Verfahren, die ``konfigurierbar langsam'' sind. Sie werden so langsam konfiguriert, dass sie im Normalbetrieb noch keinen übertriebenen negativen Impact auf die Performance besitzen, aber gleichzeitig wirkungsvoll Brute-Force-Angriffe unterbinden. Beispiele für KDFs sind \textit{PDKDF2}, \textit{bcrypt} und \textit{scrypt}.
+Als Einwegfunktion wird zumeist eine kryptographische Hash-Variante verwendet. Da Hashes auf deren Geschwindigkeit hin optimiert wurden, sind diese eigentlich suboptimal für Passwort-Hashing geeignet: durch diese Optimierung kann ein Angreifer ebenso effizient einen Brute-Force-Angriff durchführen. Aus diesem Grund sind Key-Derivation-Functions (KDFs) vorzuziehen. Dies sind Verfahren, die ``konfigurierbar langsam'' sind. Sie werden so langsam konfiguriert, dass sie im Normalbetrieb noch keinen übertriebenen negativen Impact auf die Performance besitzen, aber gleichzeitig wirkungsvoll Brute-Force-Angriffe unterbinden. Beispiele für KDFs sind \textit{PDKDF2}, \textit{bcrypt} und \textit{scrypt}.\index{Key-Derivation Function}
 
 Werden Hashes extrahiert können offline Brute-Force Angriffe gegen diese Hashes verwendet werden. Diese verwenden meistens multiple Grafikkarten und benötigen keine online Verbindung zu der Online-Applikation. Die dabei erreichten Geschwindigkeiten sind um eine Vielzahl höher als die bei Online-Brute Force Angriffen erreichte Geschwindigkeit\footnote{Ein Beispiel aus dem Jahr 2020 wären 10 GeForce RTX 2080 Ti Grafikkarten, diese erreichen z.B. 551 Giga-Hashes/Sekunde (Quelle: \url{https://www.onlinehashcrack.com/tools-benchmark-hashcat-gtx-1080-ti-1070-ti.php}.}.
 
@@ -155,5 +158,6 @@ Als Beispiel wird hier kurz das Credential-Konzept von Ruby on Rails (Version 5.
 \begin{enumerate}
 	\item Was versteht man unter der Angriffsfläche? Gib mehrere Beispiele für Angriffsflächen die über die reine Webapplikation hinausgehen.
 	\item Erkläre das Problem der Wartungszuständigkeit/Verantwortlichkeiten wenn die Entwicklung und der Betrieb einer Webapplikation auf mehrere Administratoren und Entwickler verteilt wird.
+	\item Erläutere den Unterschied zwischen impliziten und expliziten Routing von Operationen am Applikationsserver.
+	\item Wie können Konfigurationsdaten sicher innerhalb einer Applikation bereitgestellt werden?
 \end{enumerate}
-

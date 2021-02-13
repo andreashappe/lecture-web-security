@@ -28,6 +28,8 @@ Der Dateiname, unter dem ein hochgeladenes File abgelegt wird, sollte niemals du
 Ein architekturelles Problem ist durch die Struktur von Webapplikationen bedingt. Eine deployte Webapplikation besteht meistens aus einem Webserver und einem Applikationsserver. Ersterer ist für die Zustellung statischer Dateien optimiert, letzterer beinhaltet die Applikationslogik inkl. der Zugriffskontrollen. Werden Dateien direkt über ein Upload-Verzeichnis bereitgestellt, übernimmt diese Aufgabe der Webserver (der für diese statische Zustellung optimiert ist) und nicht der Applikationsserver --- in diesem Fall kann es passieren, dass die Authentication und Authorization nicht überprüft wird. Um dies zu vermeiden, sollte ein Download immer mittels einer dezidierten Downloadoperation, z.B. mittels \url{https://example.local/download?file_id=xxx}, durchgeführt, und auf diese Weise durch den Applikationsserver ausgeführt werden. Dabei sollten serverseitig die benötigten Zugriffsrechte überprüft werden, als Id wird die Verwendung einer zufälligen ID wie z.B. einer UUID empfohlen.
 
 \subsection{Upload von Malicious Files}
+\index{HTTP Header!Content-Disposition}
+\index{Content-Disposition}
 
 Ein einfacher Angriff ist der der Upload von Dateien, die Code zur serverseitigen Ausführung beinhalten --- z.B. das Hochladen von einer \textit{.php} Datei bei Verwendung einer PHP Webapplikation. Der Angreifer würde nach dem Upload auf die Datei zugreifen und dadurch den Code am Server zur Ausführung bringen. Bei einem File-Upload sollten daher die möglichen Dateitypen durch eine Whitelist auf Dateitypen, die nicht am Server exekutiert werden, beschränkt werden. Ebenso sollte mittels dem \textit{Content Disposition} HTTP Header dem Browser mitgeteilt werden, dass eine bezogene Datei explizit heruntergeladen sollte (und nicht als Teil der Webapplikation ausgeführt werden sollte).
 
@@ -207,7 +209,9 @@ An den Suchausdruck wird also eine Substring-Abfrage hinzugefügt. Diese extrahi
 
 Der Angreifer besitzt die Möglichkeit ein SQL-Fragment an eine Anfrage anzuhängen und zur Exekution zu bringen. Wieder wird eine IF-Abfrage verwendet, in dem konkreten Fall wird, falls die Abfrage erfolgreich ist, die Antwort um 10 Sekunden verzögert:
 
-\url{http://www.examplecom/product.php?id=10 AND IF(ASCII(SUBSTRING(username,1,1))=97, sleep(10), ‘false’))--}
+\begin{minted}{text}
+http://www.examplecom/product.php?id=10 AND IF(ASCII(SUBSTRING(username,1,1))=97, sleep(10), ‘false’))--
+\end{minted}
 
 Als Abfrage wird der idente ``fängt der Benutzername mit A an?'' verwendet. Falls dies war sein sollte wird mittels \textit{sleep(10)} die Antwort verzögert, wenn nicht wird sofort geantwortet. Mittels vieler Abfragen kann der Angreifer auf diese Weise die gesamte Datenbank extrahieren.
 
@@ -260,7 +264,7 @@ MySQL bietet auch die beiden Zusätze \textit{into outfile} bzw. \textit{into du
 
 Da das Grundproblem von SQL-Injections die Erstellung von dynamischen SQL-Kommandos basierend auf bösartigen Benutzereingaben ist, wäre das Escapen der Eingabe die erste mögliche Gegenmaßnahme. Dabei werden die Benutzereingaben so maskiert, dass sie gefahrenlos per String-Concatenation verwendet werden können. Da diese Lösung fehleranfällig und Datenbank-spezifisch ist, sollte sie so weit wie möglich vermieden werden.
 
-Ein besserer Lösungsansatz für SQL-Injection ist die Verwendung von \textit{prepared statements}. Bei diesen wird eine SQL-Abfrage mittels einer API gebaut (und mit Daten befüllt) anstatt ``nur'' Strings zu verknüpfen. Aufgrund der zusätzlich bereitgestellten Information ist die Datenbankbibliothek in der Lage, die benutzer-bereitgestellten Daten in einer Form einzusetzen, welche SQL-Injections verhindert.
+Ein besserer Lösungsansatz für SQL-Injection ist die Verwendung von \textit{prepared statements}\index{Prepared Statements}. Bei diesen wird eine SQL-Abfrage mittels einer API gebaut (und mit Daten befüllt) anstatt ``nur'' Strings zu verknüpfen. Aufgrund der zusätzlich bereitgestellten Information ist die Datenbankbibliothek in der Lage, die benutzer-bereitgestellten Daten in einer Form einzusetzen, welche SQL-Injections verhindert.
 
 Ein Beispiel in Java:
 
@@ -299,10 +303,11 @@ Falls diese Felder befüllt werden müssen, wird empfohlen die Applikationslogik
 
 Ein Vorteil von Prepared Statements ist, dass die Absicherungslogik Teil der Applikationslogik ist. Andere Methoden (wie z.B. Stored Procedures) verschieben die Absicherung direkt in den Datenbankserver. Dabei besteht das Problem, dass z.B. Anwendungsentwickler annehmen könnten, dass gewisse Datenbank-Funktionen sicher implementiert wurden und Datenbank-Entwickler annehmen könnten, dass Daten bereits durch die Applikationsentwickler abgesichert wurden. Hierdurch kann es zu Diskrepanzen bei der Absicherung kommen.
 
-	Eine weitere Gegenmaßnahme sind \textit{Stored Procedures}. Dies sind Funktionen die im Datenbanksystem abgelegt und von der Applikation aufgerufen werden. Eine früher häufig genutzte Sprache zum Erstellen von Stored Procedures ist PL/SQL, mittlerweile können Stored Procedures auch in ``normalen'' Programmiersprachen entwickelt werden. Sie besitzen die gleichen Probleme wie applikatorische Abfragen: falls eine String-Verkettung verwendet wird, können SQL-Injections durchgeführt werden. Stored Procedures sind aber eher auf die Verwendung von Sprachmustern ausgelegt, die Injection-Angriffe vermeiden (ähnlich wie Prepared Statements) und da sie meistens von Datenbank-Spezialisten geschrieben werden, sind sie meistens sicher implementiert. Aus diesem Grund werden Stored Procedures häufig als Gegenmaßnahme zu SQL-Injections angeführt, auch wenn dies potentiell vom implementierenden Programmierer abhängig ist. Ein Nachteil von Stored Procedures ist, dass der Applikationscode dadurch auf den Applikationsserver und den Datenbankserver aufgeteilt wird und dadurch potentiell schwerer wartbar wird.
+Eine weitere Gegenmaßnahme sind \textit{Stored Procedures}\index{Stored Procedures}. Dies sind Funktionen die im Datenbanksystem abgelegt und von der Applikation aufgerufen werden. Eine früher häufig genutzte Sprache zum Erstellen von Stored Procedures ist PL/SQL, mittlerweile können Stored Procedures auch in ``normalen'' Programmiersprachen entwickelt werden. Sie besitzen die gleichen Probleme wie applikatorische Abfragen: falls eine String-Verkettung verwendet wird, können SQL-Injections durchgeführt werden. Stored Procedures sind aber eher auf die Verwendung von Sprachmustern ausgelegt, die Injection-Angriffe vermeiden (ähnlich wie Prepared Statements) und da sie meistens von Datenbank-Spezialisten geschrieben werden, sind sie meistens sicher implementiert. Aus diesem Grund werden Stored Procedures häufig als Gegenmaßnahme zu SQL-Injections angeführt, auch wenn dies potentiell vom implementierenden Programmierer abhängig ist. Ein Nachteil von Stored Procedures ist, dass der Applikationscode dadurch auf den Applikationsserver und den Datenbankserver aufgeteilt wird und dadurch potentiell schwerer wartbar wird.
 
 \subsection{Object-Relational Mapping}
-\index{SQL-Injections!Object-Relational Mapping}
+\index{SQL-Injection!Object-Relational Mapping}
+\index{ORM}
 
 Object-Relational Mapping (ORM) wird verwendet um basierend auf einer relationalen Datenbank eine virtuelle Objektdatenbank zu erstellen. Dabei wird eine ORM-Software verwendet, um aus Datenbank-Zeilen eine Repräsentation der Daten als Programmiersprachen-Objekt herzustellen. Datenabfragen und -veränderungsoperationen werden anschließend auf dieser Objekt-Repräsentation durchgeführt und intern als Datenbankbefehle ausgeführt.
 
@@ -327,7 +332,8 @@ models.Items.findAll({
 An den Limit-Parameter wird eine Stacked-Query angehängt und auf diese Weise eine SQL-Injection ausgeführt. Anhand diese Beispiels kann erkannt werden, das ORMs kein Allheilmittel für SQL-Injections sind.
 
 \subsection{NoSQL-Injections}
-\index{SQL-Injections!NoSQL}
+\index{SQL-Injection!NoSQL}
+\index{NoSQL}
 
 In den letzten Jahren werden vermehrt NoSQL-Datenbanken eingesetzt. Diese verwenden nicht SQL als Abfragesprache, sondern meistens eigenständige Abfragesprachen oder exekutieren JavaScript-Snippets als Query. Hier ein Beispiel in MongoDB:
 
@@ -865,10 +871,14 @@ Ein Exploit gegen ein Template-System kann selten zu 100\% statisch erfolgen da 
 \begin{enumerate}
 	\item Wie funktioniert eine SQL union-based Injection? Womit können SQL-Injections vermieden werden?
 	\item Wie funktioniert eine SQL time-based Injection? Womit können SQL-Injections vermieden werden?
-	\item Was sollte bei der Verwendung von WebSockets beachtet werden?
 	\item Warum sollten SQL prepared statements verwendet werden?
 	\item Was versteht man unter einer Serialisierungs-Schwachstelle? Welche negativen Auswirkungen können Serialisierungsangriffe auf eine Applikation besitzen?
 	\item Was versteht man unter XML External Entity Attacks? Welche negativen Auswirkungen auf die Applikation können erzielt werden und welche Gegenmaßnahmen sind möglich?
 	\item Welche Probleme können beim Upload eines Files auf einen Webserver auftreten? Welche Best-Practises im Zusammenhang mit File-Uploads sollten beachtet werden?
 	\item Unterschied der Angriffsvektoren mit einem File, dass serverseitig exekutierten Code enthält und einem File, dass client-seitig exekutierten Code enthält?
+	\item Wie können Path-Traversal Angriffe eingesetzt werden?
+	\item Erläutere LDAP-Injections.
+	\item Welche Schwachstelle wird bei Type-Juggling Angriffen ausgenutzt? Erläutere ein solches Beispiel.
+	\item Was versteht man unter HTTP Request Smuggling?
+	\item Erläutere Server-Side Template Injection (SSTI).
 \end{enumerate}

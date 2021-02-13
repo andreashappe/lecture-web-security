@@ -1,15 +1,13 @@
 \chapter{Sicherheit als Prozess}
 
-Dieses Skript betrachtet die Sicherheit von Web-Applikationen. Sicherheit kann nicht alleine stehen, man kann nicht ``Sicherheit programmieren'' sondern nur ``eine Applikation sicher programmieren''. Dementsprechend soll der erste Teil des Skripts das organisatorische Umfeld als auch technische Grundlagen klären.
+Sicherheit kann nicht alleine stehen, man kann nicht ``Sicherheit programmieren'' sondern nur ``eine Applikation sicher programmieren''. Sie ist keine One-Shot Operation die einmalig vor Projektende durchgeführt wird, sondern muss während der gesamten Laufzeit der Softwareentwicklung beachtet werden. Ein typisches (fiktives) Beispiel: ein Softwareprojekt wurde als klassisches Wasserfall-Model geplant. Nach drei Jahren Laufzeit sollte das Projekt abgeschlossen sein, ca. sechs Monate vor Ende ist ein Penetration-Test der Software vorgesehen --- die sechs Monate sollten ausreichend sein um potentiell gefundene Schwachstellen auch zu beheben. Es entwickelt sich leider eine typische ``Softwareprojekt''-Geschichte: die Fertigstellung verzögert sich, schlussendlich kann der Penetration-Test erst eine Woche vor Go-Live durchgeführt werden. Natürlich werden kritische Fehler gefunden --- aufgrund der Verzögerungen und der Mehrbelastung der Entwickler war zu wenig Zeit für Sicherheits- bzw. Qualitätssicherheitsmaßnahmen vorhanden. Der Launch-Zeitpunkt kann aufgrund zugekaufter Werbung nicht mehr verschoben werden, was nun? Wie kann man diese Situation vermeiden?
 
-Sicherheit ist keine One-Shot Operation, die einmalig vor Projektende durchgeführt wird, sondern muss während der gesamten Laufzeit der Softwareentwicklung beachtet werden. Ein typisches (fiktives) Beispiel: ein Softwareprojekt wurde als klassisches Wasserfall-Model geplant. Nach drei Jahren Laufzeit sollte das Projekt abgeschlossen sein, ca. sechs Monate vor Ende ist ein Penetration-Test der Software vorgesehen --- die sechs Monate sollten ausreichend sein um potentiell gefundene Schwachstellen auch zu beheben. Es entwickelt sich leider eine typische ``Softwareprojekt''-Geschichte: die Fertigstellung verzögert sich, schlussendlich kann der Penetration-Test erst eine Woche vor Go-Live durchgeführt werden. Natürlich werden kritische Fehler gefunden --- aufgrund der Verzögerungen und der Mehrbelastung der Entwickler war auch nicht mehr ausreichend Zeit für Sicherheits- bzw. Qualitätssicherheitsmaßnahmen. Der Launch-Zeitpunkt kann aufgrund zugekaufter Werbung nicht mehr verschoben werden, was nun? Wie kann man diese Situation vollständig vermeiden?
-
-Professionelle Softwareentwicklung verwendet meistens einen (semi-)standardisierten Software Development Lifecycle (SDLC), es gibt verschiedene Ausprägungen bei diesem Security einzubringen. Zumeist werden in den jeweiligen Phasen sicherheitsrelevante Inhalte hinzugefügt:
+Professionelle Softwareentwicklung verwendet meistens einen (semi-)standardisierten Software Development Lifecycle (SDLC), es gibt verschiedene Ausprägungen hier Security einzubringen. Zumeist werden in den jeweiligen Phasen sicherheitsrelevante Inhalte hinzugefügt:
 
 \begin{itemize}
-	\item Security Training
+	\item Security Training des Personals
 	\item Requirements and Risk Analysis
-	\item Security Design Review, Threat Modeling
+	\item Threat Modeling
 	\item Secure Coding Guidelines, Secure Coding Checklists
 	\item Security Testing Guides, Pen-Tests
 	\item Vulnerability Management and Incident Response
@@ -17,7 +15,11 @@ Professionelle Softwareentwicklung verwendet meistens einen (semi-)standardisier
 
 Einige dieser Punkte werden in den Folgekapiteln etwas genauer erläutert.
 
-\section{Schützenswertes Gut}
+\section{Requirementsanalyse}
+
+In der \textit{Requirementsanalyse} sollte bereits Security berücksichtigt werden. Dies wird meistens unterlassen, da Security-Anforderungen non-functional\footnote{Functional Requirements beschreiben die Funktionsweise einer Applikation und sind z.B. mittels use-cases abgebildet. Non-Functional Requirements beschreiben eher die Qualität der erstellen Applikation wie Sicherheit und Performance.} requirements sind. Negative Auswirkungen dieses Versäumnis sind fehlende Awareness für Security, nicht ausreichende Ressourcen (Zeit, Personal, Budget) und schlussendlich fehlende Sicherheit im resultierenden Softwareprodukt.
+
+\subsection{Schützenswertes Gut}
 \index{Schützenswertes Gut}
 
 Eine zentrale Frage einer Sicherheitsdiskussion ist, was überhaupt beschützt werden sollte. Diese Operationen oder Daten werden häufig \textit{Schützenswertes Gut} genannt. Beispiele für diese sind z.B. sensible Benutzerdaten, ein essentieller Geschäftsprozess aber auch immaterielle Werte wie die Reputation eines Unternehmens, dessen Aktienkurs oder intellectual property.
@@ -42,11 +44,8 @@ Häufig wird die sog. CIA-Triade\index{CIA-Triade} zur Klassifizierung verwendet
 
 Bei realen Projekten ist die Einschätzung immer vom Kunden abhängig. Ein IT-System ist immer in die Kundenlandschaft integriert und daher können klassische IT-Fehler unterschiedliche Auswirkungen besitzen. Z. B. wird einem reinen Online-Shop die Availability wichtiger sein, als einem physikalischen Shop der nebenbei einen kleinen Onlineshop betreibt; teilweise werden Fehler durch organisatorische Maßnahme (Buchhaltung) abgefangen, etc.
 
-\section{Requirementsanalyse}
 
-In der \textit{Requirementsanalyse} sollte bereits Security berücksichtigt werden. Dies wird meistens unterlassen, da Security-Anforderungen non-functional\footnote{Functional Requirements beschreiben die Funktionsweise einer Applikation und sind z.B. mittels use-cases abgebildet. Non-Functional Requirements beschreiben eher die Qualität der erstellen Applikation wie Sicherheit und Performance.} requirements sind. Negative Auswirkungen dieses Versäumnis sind fehlende Awareness für Security, nicht ausreichende Ressourcen (Zeit, Personal, Budget) und schlussendlich fehlende Sicherheit im resultierenden Softwareprodukt.
-
-\section{Sicheres Design}
+\subsection{Sicheres Design}
 
 Bei der Erstellung der Software Architektur/des Software Designs sollte auf Sicherheit geachtet werden. Um die Ziele der CIA-Triad zu erfüllen, empfehlt OWASP folgende Elemente bei der Analyse eines sicheren Designs zu beachten:
 
@@ -62,7 +61,7 @@ Die ersten vier Punkte stellen die Anforderungen aus der CIA Triade dar.
 
 Audit Logs dienen u.a. dazu, um im Fehlerfall die Schwachstelle zu erkennen als auch den Schadfall einzugrenzen (z.B. welche User sind in welchem Umfang betroffen?). Unter Non-Repudiation versteht man die Nicht-Abstreitbarkeit: falls eine Operation von einem Benutzer durchgeführt wurde, sollte nachträglich auch verifizierbar sein, dass diese Operation auch wirklich von dem jeweiligen Benutzer in Auftrag gegeben wurde.
 
-\section{Secure Design Review / Threat Modeling}
+\section{Threat Modeling}
 \index{Threat Modeling}
 \label{threat_model}
 

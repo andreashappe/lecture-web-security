@@ -1,4 +1,6 @@
 \chapter{Federation/Single-Sign on}
+\index{Single-Sign On}
+\index{SSO}
 
 Werden mehrere Webapplikationen betrieben, entsteht schnell der Wunsch, Benutzerkonten zwischen diesen Applikationen zu synchronisieren. Die Grundidee ist es, ein unified Authentication/Authorization-Konzept über mehrere Server hinweg zu implementieren. Potentielle Gründe für den Einsatz einer Single-Sign On oder Federation Lösung sind:
 
@@ -22,7 +24,7 @@ Das Beispiel zeigt auch zwei Probleme von token-basierten Lösungen. Das Armband
 \section{OAuth2}
 \index{OAuth2}
 
-OAuth (Open Authorization) erlaubt es einem Benutzer (Resource Owner) einer Applikation (Client) Zugriff auf Resourcen/Operationen auf einem Server (Resource Server) zu erteilen. Ein Authorization Server wird verwendet um ein Zugriffs-Token für einen definierten Bereich (scope) am Resourcen-Server auszustellen. Zusätzlich zu dem Zugriffs-Token wird zumeist auch ein Refresh-Token ausgestellt mit dem ein Client ein neues Zugriffstoken ohne Benutzerinteraktion generieren kann.
+OAuth2 (Open Authorization\footnote{url{https://tools.ietf.org/html/rfc6749}}) erlaubt es einem Benutzer (Resource Owner) einer Applikation (Client) Zugriff auf Resourcen/Operationen auf einem Server (Resource Server) zu erteilen. Ein Authorization Server wird verwendet um ein Zugriffs-Token für einen definierten Bereich (scope) am Resourcen-Server auszustellen. Zusätzlich zu dem Zugriffs-Token wird zumeist auch ein Refresh-Token ausgestellt mit dem ein Client ein neues Zugriffstoken ohne Benutzerinteraktion generieren kann.
 
 Da die Rechte eines ausgestellten Token im Normalfall nur während der Ausstellung überprüft werden und danach für die gesamte Lebenszeit des Tokens gültig sind, wird bestenfalls eine sehr kurze Lebenszeit im Minutenbereich gewählt. Läuft das Token ab, kann mit den Refresh-Token ein neues Access-Token angefordert werden. Da hierfür keine Benutzerinteraktion benötigt wird, kann dies automatisiert und transparent für den Endbenutzer erfolgen. Der Vorteil liegt darin, dass während der Ausstellung durch den Authorisationsserver die angeforderten Rechte des Tokens wiederholt überprüft werden.
 
@@ -32,20 +34,15 @@ Da die Rechte eines ausgestellten Token im Normalfall nur während der Ausstellu
 	\caption{Beispiel für einen OAuth2-Fluss (tex into pdf)}
 \end{figure}
 
-\begin{figure}[h!]
-	\includegraphics[width=\textwidth]{graphs/test2.pdf}
-	\centering
-	\caption{Beispiel für einen OAuth2-Fluss (svg into pdf)}
-\end{figure}
-
 Ein interessanter Aspekt ist der Zeitpunkt der Authorization: die Überprüfung der eigentlich Zugriffsberechtigung wird durch den Authorization-Server zum Zeitpunkt der Ausstellung des Tokens durchgeführt. Bei einem Zugriff auf den Resourcen Server werden die eigentlichen Berechtigungen nicht mehr überprüft, sondern nur noch getestet ob das übergebene Token Zugriff auf die angeforderten Resourcen inkludiert und von einem validen Authorization Server signiert wurde.
 
 Das Token besitzt eine Laufzeit und ist bis zum Ende der Laufzeit gültig. Da der Resource Server nicht direkt mit dem Authorization Server kommuniziert, gibt es keine Möglichkeit ein Token zuvorig zu invalidieren. Dies ist problematisch, falls eine lange Laufzeit (z.B. ein Jahr) gewählt wurde und ein Token abhanden gekommen ist. Ein Angreifer mit dem entwendeten Token kann nun bis zum Ende der Laufzeit dieses Token verwenden um auf die Resource zuzugreifen.
 
-Um dieses Problem zu entschärfen werden zumeist zwei Tokens generiert: ein Access-Token und ein Refresh-Token. Das Access-Token wird zum Zugriff auf den Resource Server verwendet und besitzt eine sehr kurze Laufzeit, zumeist im Minuten-Bereich. Falls ein Access-Token abgelaufen ist, kann der Client das Refresh-Token verwenden um (ohne Benutzerinteraktion) ein neues Access-Token zu erhalten. Dies verbessert die Sicherheitssituation, da der Authorization-Server vor dem Ausstellen eines Access-Tokens überprüft, ob das Subject/der User überhaupt noch die notwendige Berechtigung besitzt. Dadurch wird das verwundbare Zeitfenster zwar nicht entfernt, aber zumindest reduziert.
+Um dieses Problem zu entschärfen werden zumeist zwei Tokens generiert: ein Access-Token\index{OAuth2!Access-Token} und ein Refresh-Token\index{OAuth2!Refresh-Token}. Das Access-Token wird zum Zugriff auf den Resource Server verwendet und besitzt eine sehr kurze Laufzeit, zumeist im Minuten-Bereich. Falls ein Access-Token abgelaufen ist, kann der Client das Refresh-Token verwenden um (ohne Benutzerinteraktion) ein neues Access-Token zu erhalten. Dies verbessert die Sicherheitssituation, da der Authorization-Server vor dem Ausstellen eines Access-Tokens überprüft, ob das Subject/der User überhaupt noch die notwendige Berechtigung besitzt. Dadurch wird das verwundbare Zeitfenster zwar nicht entfernt, aber zumindest reduziert.
 
 \section{OpenID Connect}
 \index{OpenID Connect}
+\index{OIDC}
 
 OpenID Connect verwendet OAuth2 um eine Benutzerauthentication durchzuführen. Es gibt verschiedene Subprotokolle (\textit{flows} genannt). Im Allgemeinen funktioniert das OpenID Connect Protokoll auf folgende Weise:
 
@@ -134,7 +131,7 @@ SAML2 dient zur Vereinheitlichung bestehender SSO-Lösung, daher wurde beim Entw
 
 Bei Webbrowser-basierten Flows wird meistens das HTTP Redirect oder das HTTP POST Binding verwendet. Bei dem Redirect binding werden die übertragenen SAML Dokumente mittels Base64 codiert und als HTTP Parameter innerhalb von HTTP Redirects verwendet. Da die Länge der Parameter durch die jeweiligen Webbrowser limitiert ist, wird dieses Verfahren vor allem für kurze Nachrichten verwendet. HTTP POST basierte Verfahren verpacken die Nachrichten innerhalb von HTML Formularen und umgehen dadurch die Größenlimitierung. Um den Fluss zu automatisieren, werden die Formular zumeist mittels JavaScript automatisch versendet.
 
-\subsection{Beispiel: Single Sign-On}
+\subsection{SAML2-Beispiel: Single Sign-On}
 
 Abbildung \ref{saml2_sso} zeigt ein Beispiel für ein SP-initiated Single-Sign On welches durch einen Service Provider gestartet und mittels HTTP POST Binding implementiert wurde. 
 
@@ -157,4 +154,5 @@ Der IdP authentisiert und autorisiert nun den Client. Falls dies erfolgreich dur
 	\item Wie ist ein JSON Web Token aufgebaut? Welches Problem kann im Zusammenhang mit Verwechslungen der Signatur und er MAC-Adresse passieren?
 	\item Welche Rolle übernimmt das IdP Discovery Protokoll innerhalb von SAML2?
 	\item Gegeben eine SAML2 Example Assertion, was sagt diese aus (wer ist issuer? wer ist subject, etc.)?
+	\item Wie ist das Verhältnis zwischen OIDC und OAuth2?
 \end{enumerate}

@@ -1,5 +1,5 @@
 \chapter{Authorization}
-\index{Authorization-Angriffe}
+\index{Authorization}
 
 Unter Authorization versteht man die Kontrolle der Benutzerrechte vor der Ausführung der jeweiligen Operation.
 
@@ -19,16 +19,17 @@ Analog zu den Fehlern bei der Authentication, kann es zu Problemen kommen wenn e
 
 \textit{There is a special place in hell for developers that think that not-displaying UI elements is a kind of authorization}. Häufig werden in Abhängigkeit der Benutzerrolle nur Teile der Funktionalität angezeigt. Ein Angreifer der einen zweiten Benutzeraccount mit diesen Rechten (oder Log-Dateien) besitzt, erhält allerdings Informationen über die Operationen und kann diese direkt aufrufen. Dies ist ein Fall von Security by Obscurity.
 
-Das erzwungene Aufrufen von Webseiten über URLs wird auch \textit{Forceful Browsing} genannt. Wird direkt auf Ressourcen, wie z. b. Downloadlinks, zugegriffen, wird dies \textit{direct object reference} genannt.
+Das erzwungene Aufrufen von Webseiten über URLs wird auch \textit{Forceful Browsing}\index{Forceful Browsing} genannt. Wird direkt auf Ressourcen, wie z. b. Downloadlinks, zugegriffen, wird dies \textit{direct object reference}\index{direct object reference} genannt.
 
 \subsection{Unterschiedliche Authorization in Alternate Channels}
+\index{Authorization!Alternate Channels}
 
 Falls eine Webapplikation Daten oder Operationen auf unterschiedliche Arten und Weisen anbietet, müssen die Schutzmechanismen auf den verschiedenen Kanälen synchronisiert werden.
 
 Wird z.B. eine Operation direkt mittels der Webseite als auch über eine SOAP Webservice-Schnittstelle (z.B. für eine mobile Applikation) angeboten, müssen auf beiden Schnittstellen die gleichen Zugriffsberechtigungen überprüft werden. Häufig kann man während Penetration-Tests verminderte Schutzmaßnahmen bei Webservice-Schnittstellen feststellen.
 
 \subsubsection{Probleme bei Verwendung von WebSockets} 
-\index{Websockets!Probleme bei Authorization}
+\index{WebSocket!Probleme bei Authorization}
 
 WebSockets unterliegen nicht der Same-Origin-Policy moderner Webbrowser. Es wird daher empfohlen, bei öffnen des WebSockets serverseitig den \textit{Origin}-Header auf valide aufrufende Webseiten hin zu überprüfen. Während des initialen Handshakes wird ein \textit{Web-Socket-Key} übertragen. Dieser dient nur zur Identifikation des Browsers gegenüber dem Webserver und darf nicht zu Authentications- bzw. Authorization-Zwecken verwendet werden.
 

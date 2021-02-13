@@ -1,4 +1,4 @@
-\chapter{Kryptographische Basics}
+\chapter{Kryptographische Grundlagen}
 
 Kryptographie beschreibt die Technik (und Kunst) über nicht-vertrauenswürdige Kanäle bzw. Speicherorte Daten integritäts- und vertraulichkeitsgesichert zu übertragen. Dadurch kann Kryptographie als Mittel gegen \textit{spoofing}, \textit{tampering}, \textit{repudiation} und \textit{information disclosure} dienen. Dieses Kapitel soll eine (extrem) kurze Einführung in die, in diesem Dokument, verwendeten Konzepte geben.
 
@@ -11,7 +11,7 @@ Grundlegend sollten folgende Grundsätze bei der Verwendung von Kryptographie be
 	\item Niemals selbst einen kryptographischen Algorithmus/Bibliothek implementieren, sondern immer etablierte und getestet Komponenten verwenden.
 	\item Die richtige kryptographische Methode wählen.
 	\item Immer davon ausgehen, dass der eigene Source Code früher oder später öffentlich wird. Aus diesem Grund darf ein kryptographischer Schlüssel (oder auch Credentials) niemals Teil des Source Codes werden.
-	\item Nicht auf das Key Management (inklusive Key Revocation) vergessen.
+	\item Essentiell zur sicheren Verwendung der verschiedenen kryptographischen Methoden sind die dabei verwendeten Schüssel. Diese müssen sowohl sicher gespeichert als auch transportiert werden. Noch komplexer ist das Herstellen eines Vertrauensverhältnis (Trust) zwischen den jeweiligen Kommunikationspartnern: woher weiss ein Partner, dass ein vorhandener Schlüssel eines anderen Kommunikationsparters vertrauenswürdig ist? Key Management ist komplex und sollte nicht unterschätzt werden!
 \end{itemize}
 
 Jede implementierte und konfigurierbare kryptographische Methode erhöht potentiell die Angriffsoberfläche. Ein Beispiel hierfür ist z. B. die OpenSSL-Bibliothek die dutzende Algorithmen implementiert. Als Alternative sind in den letzten Jahren kryptographische Bibliotheken wie \textit{NaCl} (``salt'') entstanden, die für jede kryptographische Methode genau eine sichere Implementierung anbieten. Auf diese Weise sollen Selektionsfehler durch Entwickler vermieden werden.
@@ -51,3 +51,9 @@ Entwickler benötigen Guidance zur Selektion der jeweiligen kryptographischen Al
 	\item das BetterCrypto.org\footnote{\url{https://www.bettercrypto.org}} bietet regelmäßig upgedatete Beispielskonfigurationen für geläufige Webserver. Diese sollten dazu dienen, dass ein Administrator diese Snippets direkt in die Konfiguration eines Webservers kopieren können und dadurch eine sichere Konfiguration erreicht wird.
 \end{enumerate}
 
+\section{Reflektionsfragen}
+
+\begin{enumerate}
+	\item Welche Grundideen sollten bei dem Entwurf und Einsatz kryptographischer Methoden angewandt werden?
+	\item Wann sollte ein MAC verwendet werden? Stelle diesen einem Hash oder einer kryptographsichen Signatur gegenüber.
+\end{enumerate}

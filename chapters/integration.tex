@@ -10,7 +10,7 @@ Die Verwendung vorhandener (und gewarteter) externer Komponenten wie Bibliotheke
 
 Damit wird allerdings auch der Nachteil eingekauft, dass eine Verwundbarkeit innerhalb einer integrierten externen Komponente automatisch auch eine Verwundbarkeit der eigenen Applikation impliziert. Daher müssen aktiv und regelmäßig verwendete Komponenten auf bekannte Schwachstellen hin überprüft, und ggf. die betroffenen Komponenten aktualisiert werden.
 
-Um den Aufwand dieser Überprüfungen zu reduzieren und damit optimaler-weise deren Frequenz zu erhöhen gibt es automatisierte Tools wie den OWASP Dependency-Check\footnote{\url{https://jeremylong.github.io/DependencyCheck/analyzers/index.html}}. Diese analysieren automatisch Projekte auf Dependencies (z.B. über Ruby Gemfiles, NPM package-lock.json Files, Maven Projektbeschreibungen), extrahieren automatisch dependencies und korrelieren diese mit öffentlichen Verwundbarkeitsdatenbanken. Wird hier nun eine potentiell anwendbare Schwachstelle gefunden, wird der Entwickler via Email oder Slack notifiziert.
+Um den Aufwand dieser Überprüfungen zu reduzieren und damit optimaler-weise deren Frequenz zu erhöhen gibt es automatisierte Tools wie den \textit{OWASP Dependency-Check}\footnote{\url{https://jeremylong.github.io/DependencyCheck/analyzers/index.html}} oder \textit{OWASP Dependency-Track}. Diese analysieren automatisch Projekte auf Dependencies (z.B. über Ruby Gemfiles, NPM package-lock.json Files, Maven Projektbeschreibungen), extrahieren automatisch dependencies und korrelieren diese mit öffentlichen Verwundbarkeitsdatenbanken. Wird hier nun eine potentiell anwendbare Schwachstelle gefunden, wird der Entwickler via Email oder Slack notifiziert.
 
 \section{Insufficient Logging and Monitoring}
 
@@ -140,4 +140,5 @@ Zusätzlich zur statischen Source-Code Analyse kann man auch dynamische Scans ve
 \begin{enumerate}
 	\item Was ist der Grundgedanke dabei, DevOps und Security zu verbinden?
 	\item Welche Sicherheitsmaßnahmen können im Zuge von SecDevOps automatisiert durchgeführt werden? Erläutere die jeweiligen Maßnahmen.
+	\item Wie kann während der Continuous Integration (CI) oder Continuous Delivery (CD) auf die Sicherheit eines Softwareprodukts Rücksicht genommen werden?
 \end{enumerate}

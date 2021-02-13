@@ -1,6 +1,7 @@
 \chapter{Authentifikation}
+\index{Authentication}
 
-Sobald eine Webapplikation sensitive bzw. privilegierte Operationen und Daten bereitstellt, besteht die Notwendigkeit die Identität des zugreifenden Benutzers zu erheben und verifizieren.
+Sobald eine Webapplikation sensitive bzw. privilegierte Operationen und Daten bereitstellt, besteht die Notwendigkeit die Identität des zugreifenden Benutzers zu erheben und zu verifizieren.
 
 Authentifikation kann als die Verifikation einer behaupteten Benutzeridentität über zuvor ausgetauschte Details (wie z.B. das während der Registrierung angegebenen Passwort) definiert werden. Nach erfolgtem Login wird zumeist eine langfristige Verbindung (Session) zu dem Benutzer aufgebaut. Bei Folgezugriffen wird dieses Vertrauensverhältnis verwendet, um den Benutzer sowohl zu identifizieren als auch authentifizieren.
 
@@ -33,7 +34,7 @@ Die Authentifikation dient zur Validierung der behaupteten Identität des Benutz
 
 Bei der initialen Registrierung und bei nachfolgenden Anmeldungen können unterschiedliche Faktoren verwendet werden. Z. B. VideoIdent bei der Registrierung, bei Folgeanmeldungen Passwörter.
 
-Durch die Kombination mehrere Faktoren erhält man eine Multifaktor-Authentifikation (MFA), häufig wird als Zweifaktoren-Authentifikation (2FA) ein Passwort mit einem Token kombiniert. Wichtig bei der MFA ist die Wahl von Faktoren aus unterschiedlichen Klassen. Es macht z.B. wenig Sinn eine Fingerprint-Authentifikation mit einer Iris-Authentifikation zu kombinieren. Ein schönes Beispiel, bei dem Faktoren verschiedener Klassen schlecht durch einen User kombiniert werden wäre es, wenn der Benutzer einer Bankomatkarte seinen PIN (something you know) auf seine Bankomatkarte (something you have) schreibt.
+Durch die Kombination mehrere Faktoren erhält man eine Multifaktor-Authentifikation (MFA), häufig wird als Zweifaktoren-Authentifikation (2FA) ein Passwort mit einem Token kombiniert. Wichtig bei der MFA ist die Wahl von Faktoren aus unterschiedlichen Klassen. Es macht z.B. wenig Sinn eine Fingerprint-Authentifikation mit einer Iris-Authentifikation zu kombinieren. Ein schönes Beispiel, bei dem Faktoren verschiedener Klassen schlecht durch einen User kombiniert werden wäre es, wenn der Benutzer einer Bankomatkarte seinen PIN (something you know) auf seine Bankomatkarte (something you have) schreibt.\index{Multi-Faktoren-Authentication}\index{Zwei-Faktoren-Authentication}\index{2FA}
 
 \section{Login- und Logout}
 \index{Login- und Logout}
@@ -44,18 +45,19 @@ Wenn ein Login- und Logout innerhalb der Applikation implementiert werden, müss
 
 Das Login-Formular sollte entsprechend dem KISS-Prinzip als einfaches HTML-Formular implementiert werden. Hauptgrund dafür ist, dass das Login-Formular mit Passwort-Managern kompatibel sein sollte. Dies impliziert, dass das Login-Formular aus Textfeldern für Benutzername und Passwort als auch einem Login-Button bestehen sollte.
 
-Negative Beispiele die den Umgang mit Passwort-Managern erschweren würden:
+Negative Beispiele die den Einsatz von Passwort-Managern erschweren:
 
 \begin{itemize}
-	\item Benutzername und Passwort-Feld nicht innerhalb der gleichen Seite
+	\item Benutzername und Passwort-Feld sind nicht innerhalb der gleichen Seite
 	\item Password-Feld wird erst angezeigt, nachdem ein Benutzername eingegeben wurde
-	\item Flash-, Silverlight- oder Java-Applets
+	\item Verwendung von Flash-, Silverlight- oder Java-Applets
 	\item Authentication through EMail a la Slack (Email mit Bestätigungslink dient als Passwortersatz)
 	\item HTTP BASIC basierte Authentifikation
 \end{itemize}
 
 \subsection{User Enumeration Angriffe}
 \index{Login- und Logout!User Enumeration}
+\index{User Enumeration}
 
 Eine User Enumeration liegt vor, wenn ein Angreifer gezielt Informationen über das Vorhandensein eines Benutzers erzielen kann. Zumeist geschieht dies über schlecht gewählte Fehlermeldungen. So kann ein Angreifer bei der Fehlermeldung ``Passwort invalid'' davon ausgehen, dass ein Benutzername dem System bekannt ist. Lösung: Verwendung generischer Fehlermeldungen wie ``Benutzer/Passwort-Kombination nicht bekannt''.
 
@@ -71,10 +73,11 @@ Generell ist dieser Bereich einer derjenigen, bei denen Usability und Security p
 
 \subsection{Brute-Force Angriffe gegen Login-Formular}
 \index{Login- und Logout!Brute Force Angriffe}
+\index{Brute Force Angriffe}
 
 Brute-Force Angriffe versuchen mittels automatisierter Anfragen eine valide Kombination von Benutzernamen und Passwort zu erraten. Durch die Kenntnis bekannter Benutzernamen können Brute-Force Angriffe beschleunigt werden (z.B. durch eine zu vorige User Enumeration).
 
-Technisch sind Brute-Force Angriffe einfach umzusetzen, Tool-Support ist massiv vorhanden. Die erreichte Geschwindigkeit befindet sich meistens bei mehreren Zehntausend Versuchen in der Stunde.
+Technisch sind Brute-Force Angriffe einfach umzusetzen, Tool-Support ist massiv vorhanden. Die erreichte Geschwindigkeit befindet sich meistens bei mehreren Zehntausend Versuchen pro Stunde.
 
 Brute-Force Angriffe versuchen entweder eine Kombination des gesamten Testbereichs (Buchstaben, Zahlen, Sonderzeichen) oder verwenden vorbereitete Passwortlisten. Diese können auf verschiedene Arten bereitgestellt werden:
 
@@ -89,7 +92,7 @@ Gegenmaßnahmen zielen auf eine Verlangsamung des Angriffs bzw. auf eine Sperre 
 \begin{itemize}
 	\item Rate-Limits bzw. Verlangsamung bei Fehlerseiten.
 	\item Sperre von Benutzeraccounts bzw. IP-Adressen nach einer definierten Anzahl von Fehlversuchen.
-	\item Einsatz einer Mehrfaktorauthentication
+	\item Einsatz einer Mehrfaktorauthentication. Durch die benötigte manuelle Interaktion wird eine Brute-Force Attacke ausgebremst. Hier ist die Wahl eines geeigneten Faktors und eine geeignete Integration notwendig.
 \end{itemize}
 
 \subsection{Logout}
@@ -103,9 +106,7 @@ Beispiel: Benutzer besitzt einen Desktop und einen Laptop. Der Laptop wird gesto
 \subsection{Deaktivieren/Sperren/Löschen von Accounts}
 \index{Login- und Logout!Sperren von Accounts}
 
-Wird ein Benutzeraccount gelöscht oder deaktiviert stellt sich die Frage, wie mit den gelöschten Daten des Benutzers umzugehen ist.
-
-Wurde ein Account gesperrt muss dafür Sorge getragen werden, dass:
+Wird ein Benutzeraccount gelöscht oder deaktiviert stellt sich die Frage, wie mit den gelöschten Daten des Benutzers umzugehen ist. Wurde ein Account gesperrt muss dafür Sorge getragen werden, dass:
 
 \begin{itemize}
 	\item bereits ausgestellte Recovery-Codes den Account nicht reaktivieren können
@@ -133,7 +134,7 @@ Prinzipiell können Angriffe gegen Passwörter in drei Kategorien eingeteilt wer
 \subsection{Passwort-Qualität}
 \index{Passwörter!Qualität}
 
-Kann ein neues Passwort in der Applikation gesetzt werden, sollte dieses gewisse Mindestanforderungen erfüllen. 2018 wurden die NIST 800-63-3: Digital Identity Guidelines veröffentlicht, diese inkludieren mehrere Best-Pracises im Umgang mit Passwörtern:
+Kann ein neues Passwort in der Applikation gesetzt werden, sollte dieses gewisse Mindestanforderungen erfüllen. 2018 wurden die NIST 800-63-3: Digital Identity Guidelines\footnote{\url{https://pages.nist.gov/800-63-3/}} veröffentlicht, diese inkludieren mehrere Best-Pracises im Umgang mit Passwörtern:
 
 \begin{itemize}
 	\item Minimale Passwortlänge: 8 Zeichen. Ein Unicode Zeichen ist ein Zeichen.
@@ -146,7 +147,7 @@ Kann ein neues Passwort in der Applikation gesetzt werden, sollte dieses gewisse
 
 Um eingegebene Passwörter gegen eine Liste von geleakten Passwörtern zu überprüfen, kann z.B. von \url{https://haveibeenpwned.com} (im Folgenden immer haveibeenpwned genannt) eine ca. 10 Gigabyte große Liste an Passwort-Hashes heruntergeladen werden. Alternativ bietet haveibeenpwned einen Passwort-Check Service an. Bei diesem werden Passwörter nicht als Hash übermittelt (ansonsten würde der Serverbetreiber Wissen über die verwendeten Passwörter erhalten), sondern es wird das Passwort gehashed, die ersten 5 Zeichen des Hashes übertragen und anschließend eine Liste aller gefundenen Hashes an den Client zurück übertragen.
 
-\subsection{Passwort Vergessen Funktion}
+\subsection{Passwort-Reset}
 \index{Passwörter!Vergessen Funktion}
 
 Ein wichtiger Grundsatz ist \textit{Account recovery not password recovery}. Dieser sagt aus, dass der Benutzer wieder Zugang zu seinem Account erhält, aber nicht sein bestehendes Passwort einsehen kann. In einer korrekt implementierten Applikation sollte das bestehende Passwort nirgends unverschlüsselt gespeichert werden, daher sollte diese Möglichkeit prinzipiell nicht technisch möglich sein.
@@ -166,7 +167,7 @@ Die Verifikation kann auch über Alternate Transports geschehen. Ein Beispiel w�
 
 Sobald ein neues Passwort gesetzt wurde sollte der Benutzer über mehrere Wege über diese Passwortänderung notifiziert, und ihm eine Möglichkeit der Account-Sperre gegeben, werden. Typische Nachrichtenwege wären z.B. Emails oder SMS.
 
-\subsection{Passwort ändern Funktion}
+\subsection{Ändern von Passwörtern}
 
 Der Benutzer sollte die Möglichkeit besitzen, sein Passwort neu zu setzen. Für eine sichere Operation muss folgendes gegeben sein:
 
@@ -193,6 +194,7 @@ Benutzer sind notorisch schlecht bei der Wahl sicherer Passwörter. Um diese Gef
 TOTP ist ein Verfahren, dass zur Implementierung eines zweiten Faktors eingesetzt werden kann. Im Gegensatz dazu, werden die Protokolle der FIDO-Allianz häufig für die Implementierung Passwort-loser Authentifizierungsvorgänge genutzt.
 
 \subsection{TOTP}
+\index{TOTP}
 
 Time-based One-Time Passwords (TOTP, RFC 6238) ist ein häufig verwendetes Verfahren zur Implementierung eines weiteren Authentication-Faktors. Es ist ein Zusammenspiel zwischen Authenticator (meist eine mobile Applikation) und einer Webapplikation.
 
@@ -201,6 +203,7 @@ Initial wird ein shared secret key zwischen Authenticator und Webapplikation aus
 Ein Vorteil dieses Verfahrens ist, dass nach dem initialen Schlüsselaustausch keine Netzwerkverbindung zwischen Authenticator und Applikation benötigt wird. Ein Nachteil ist, dass die Systemuhren der betroffenen Systeme synchronisiert werden müssen. Ebenso kann bei TOTP kein \textit{device-binding} durchgeführt werden: die Webapplikation kann nicht feststellen, auf wie vielen devices ein TOTP-Secret eingespielt wurde. Ebenso ist der Vorgang der initialen Secret-Verteilung gefährlich: wird hier z.B. von einem Benutzer ein Selfie inklusive dem QR-Code/Secret-Code erstellt und veröffentlicht, wurde auf diese Weise die gesamte Sicherheit des Verfahrens kompromittiert.
 
 \subsection{Protokolle der FIDO-Alliance}
+\index{FIDO}
 
 Die FIDO-Alliance ist eine nicht-kommerzielle Vereinigung von über 150 Unternehmen und Behörden mit dem Ziel, offene und lizenzfreie Authentifizierung-Industriestandards zu schaffen. Ihre Mitglieder beinhalten u.a. Alibaba, Google, Microsoft, Samsung und YubiCo. Die Abkürzung FIDO steht dabei für \textit{Fast IDentity Online}.
 

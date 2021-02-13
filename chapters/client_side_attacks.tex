@@ -1,10 +1,10 @@
 \chapter{Clientseitige Angriffe}
 
-Client-seitige Angriffe zielen auf die Web-Browser der Benutzer ab und sind häufig Teil von Social Engineering Angriffen (da eine End-User Interaktion benötigt wird). Webserver besitzen die Möglichkeit, mittels optionaler HTTP Header den Clients Sicherheitspolicies und Verwendungshinweise mitzuteilen; Clients können auf diese Weise Schadcode erkennen und filtern.
+Client-seitige Angriffe zielen auf den Web-Browser des Benutzers ab. Da eine Interaktion des Benutzers bei vielen Angriffen benötigt wird, werden sie zumeist im Zuge von Social-Engineering Angriffen eingesetzt. Webserver besitzen die Möglichkeit, mittels optionaler HTTP Header den Clients Sicherheitspolicies und Verwendungshinweise mitzuteilen; Clients können auf diese Weise Schadcode erkennen und filtern.
 
 \section{JavaScript-Injections (XSS)}
 \label{xss}
-\index{XSS-Angriffe}
+\index{xss}
 
 Javascript-Injections (Cross-Site Scripting XSS) sind ein sehr häufig genutzter Angriffsvektor. Aufgrund der Häufigkeit dieses Angriffsvektor sind für diesen auch mehrere Hardening-Maßnahmen verfügbar.
 
@@ -138,6 +138,7 @@ Einige Grundregeln zur Verwendung von user-supplied Daten innerhalb von Javascri
 \subsection{Hardening mittels X-XSS-Protection}
 \label{x_xss_protection}
 \index{HTTP Header!X-XSS-Protection}
+\index{X-XSS-Protection}
 
 Moderne Browser verwendeten Heuristiken um \textit{Reflected-XSS} Angriffe automatisiert zu erkennen. Zumeist werden hierfür die ausgehenden HTTP Requests (inkl. Parameter) mit den eingehenden Antwortdokumenten verglichen.
 
@@ -160,8 +161,7 @@ Während das automatische Filtern von XSS-Schadcode theoretisch positiv aus Sich
 
 Aus diesem Grund ignorieren moderne Browser diesen Sicherheitsheader mittlerweile (Google Chrome, Mozilla Firefox und Microsoft Edge, Stand 31.12.2019). Als Gegenmaßnahme gegenüber XSS kann daher nur der Einsatz von CSP empfohlen werden (abgesehen davon, XSS-Lücken generell nicht zu implementieren).
 
-\subsection{Hardening mittels CSP}
-\index{HTTP Header!Content Security Policy}
+\subsection{Verwendung der Content-Security-Policy}
 
 Die Content Security Policy kann verwendet werden um potentielle Javascript-Lücken zu vermeiden. Hierbei wird durch eine Policy definiert in welchen Dateien überhaupt Javascript-Code vorkommen darf. Falls eine saubere Trennung in JavaScript- und HTML-Dateien durchgeführt wurde, kann die Definition von JavaScript-Fragmenten in HTML Dateien vollkommen deaktiviert werden. Falls es ein Angreifer nun schafft, durch eine Injection Lücke JavaScript-Code in einer HTML-Seite zu platzieren, würde dieser durch den Browser einfach ignoriert werden.
 
@@ -169,6 +169,7 @@ Ein Problem beim Einsatz von CSP sind \textit{polyglot} Files. Dies sind Dateien
 
 \section{CSRF Angriffe}
 \index{CSRF-Angriffe}
+\label{csrf}
 
 CSRF-Angriffe nutzen ein bestehendes Vertrauensverhältnis zwischen dem Web-Browser des Opfers und einem Webserver aus. Das grundsätzliche Problem ist, das Webbrowser, bei Requests zu bereits eingeloggten Webservern, automatisch Sessions anhängen. Dabei wird nicht überprüft, ob der ausgehende Request wirklich vom Benutzer in Auftrag gegeben worden ist.
 
@@ -226,6 +227,7 @@ Falls es wirklich notwendig sein sollte, dass eine Zieladresse über einen URL-P
 
 \section{Clickjacking}
 \index{Clickjacking}
+\index{UI Redress Attacks}
 
 Clickjacking wird auch teilweise \textit{UI redress attack} genannt. Bei diesem Angriff will der Angreifer einen unbedarften Benutzer dazu bringen, eine Webseite zu bedienen. Um dies durchzuführen, baut der Angreifer eine eigene, harmlos aussehende, Webseite, welche den identen Bedienfluss wie die Webseite besitzt, die der Angreifer gerne fernsteuern würde. Mittels eines IFrames wird die Opferwebseite über die erstellte Webseite des Angreifers gelegt, die Transparenz der Opfer-Webseite wird auf 100\% gesetzt.
 
@@ -236,6 +238,7 @@ Eine gute Abwehrmassnahme gegen Clickjacking ist der \textit{X-Frame-Options} HT
 \subsection{X-Frame-Options}
 \label{x_frame_options}
 \index{Clickjacking!X-Frame-Options}
+\index{X-Frame-Options}
 
 Der \textit{X-Frame-Options} Header wird verwendet um dem Webbrowser mitzuteilen, innerhalb welcher Webseiten die eigene Webseite eingebunden werden darf. Dadurch werden Clickjacking-Angriffe unterbunden.
 
@@ -246,6 +249,10 @@ Der Webserver kann über das Setzen des \textit{X-Frame-Options} Header auf folg
 	\item[SAMEORIGIN]: die Webseite darf von allen Webseiten mit dem identen Origin eingebunden werden.
 	\item[ALLOW-FROM domain]: die Webseite darf explizit von der Domain \textit{domain} eingebunden werden.
 \end{description}
+
+Die Verwendung von \textit{X-Frame-Options} ist allerdings nicht problemlos. EIn häufiger Fehler ist es, dass bei \textit{ALLOW-FROM} mehr als ein Origin angegeben wird. Dies kann z.B. geschehen, falls der Entwickler das Inkludieren ausgehend von zwei externen Seiten, oder das Inkludieren ausgehend von der eigenen und von einer externen Seite erwünscht. Dies ist mittles \textit{X-Frame-Options} nicht abbildbar, wird dieses Verhalten gewünscht, muss eine Content-Security Policy angewendet werden.
+
+Ein weiteres Problem ist \textit{Double Framing}. Eine Webseite versucht durch Einsatz von \textit{SAMEORIGIN} das Einbinden durch eine externe Seite zu unterbinden. Der \textit{X-Frame-Options} Header bezieht sich allerdings immer auf das ,,äußerste'' IFrame. Wird z.B. auf der eigenen Seite ein IFrame mit einer externen Seite inkludiert, und diese externe Seite inkludiert selbst über ein IFrame die eigene Seite, wird diese angezeigt auch wenn dies durch den gesetzten Header als unterbunden gedacht wurde. Auch dies ist nicht einfach über \textit{X-Frame-Options} abbildbar.
 
 \section{Reverse Tab Nabbing}
 \index{Reverse Tab Nabbing}
@@ -284,7 +291,7 @@ Als Gegenmaßnahme sollte bei ausgehenden Links immer das \textit{rel} Attribute
 \textbf{Update 2020}: mehrere Browser bieten mittlerweile automatische Verteidigungsmassnahmen gegenüber Reverse Tabnabbing Angriffe. Firefox (seit 2016), Microsoft Edge und Firefox sollten out-of-the-box nicht mehr gegenüber diesem Angriff verwundbar sein (sie setzen das \textit{noopener}-Flag automatisch). In zukünftigen Google Chrome Versionen ab 2021 sollte diese Browserfamilie dies auch durchführen und auf diese Weise Tabnabbing-Angriffe unterbinden.
 
 \section{HTML5 PostMessage als Angriffskanal}
-\index{HTML5 PostMessage}
+\index{HTML5!PostMessage}
 
 Eine Webapplikation wird innerhalb eines Browser-Tabs geöffnet, ihre Einflussmöglichkeiten (z.B. mittels Javascript) beschränken sich auf Inhalte innerhalb des Browser-Tabs. Es gibt Use-Cases, bei denen eine Applikation mit einer Webseite innerhalb eines anderen Browser-Tabs bzw. Browser-Fensters interagieren will. Ein Beispiel sind web-basierte Präsentationsframeworks. Hier gibt es meistens zwei Browserfenster: eines für die aktuell dargestellte Präsentationsfolie und ein Fenster mit Notzien für den Vortragenden. Wird die Folie gewechselt sollten im zweiten Fenster ebenso die Kommentare für die aktuell angezeigte Folie dargestellt werden.
 
