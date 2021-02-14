@@ -5,6 +5,7 @@
 Werden externe Inhalte innerhalb der eigenen Seite inkludiert, erhöht sich die Angriffsfläche: ein Angreifer mit Zugriff auf die externe Seite kann über diese Schadcode in die, eigentlich sichere, eigene Webseite einschleusen. Falls die Einbindung externer Inhalte zwingend benötigt wird, kann das Gefahrenpotential durch Einsatz folgender Techniken reduziert werden:
 
 \subsection{IFrame: sandbox-Flag}
+\index{IFrame Sandbox Attribute}
 
 Wird eine externe Resource über das HTML \textit{iframe} Tag eingebunden kann durch Verwendung des \textit{sandbox}-Attributes die Sicherheit erhöht werden. Bei Verwendung dieses Attributes werden folgende Einschränkungen aktiviert:
 
@@ -27,8 +28,9 @@ style="border: 0; width:130px; height:20px;"
 \end{minted}
 
 \subsection{Subresource Integrity (SRI)}
+\index{SRI}\index{Subresource Integrity}
 
-Webapplikationen lagern statische Dateien häufig auf externe Server aus. Ein Beispiel hierfür wäre z. B. das Auslagern von statische Javascript- oder CSS-Dateien auf ein CDN-Netzwerk. Dies wird zumeist zur Erhöhung der Performance bzw. Reduktion der Latenzzeit durchgeführt.
+Webapplikationen lagern statische Dateien häufig auf externe Server aus. Ein Beispiel hierfür wäre z.B. das Auslagern von statische Javascript- oder CSS-Dateien auf ein CDN-Netzwerk. Dies wird zumeist zur Erhöhung der Performance bzw. Reduktion der Latenzzeit durchgeführt.
 
 Ein Angreifer, der Zugriff auf einen externen Server erlangt, kann auf diesen bösartigen JavaScript- oder CSS-Code hinterlegen. Lädt nun eine Webseite diese Dateien, wird diese automatisch infiziert. Um diesen Angriffsvektor zu vermeiden, kann Subresource Integrity verwendet werden. Bei dieser Technik wird ein Hashwert für jede eingebundene Resource berechnet und innerhalb der eigenen Webseite angegeben. Wird nun eine externe Resource angefordert, berechnet der Webbrowser den Hashwert der empfangenen Resource und vergleicht diesen mit dem konfigurierten Hashwert (innerhalb der Webseite). Die Resource wird nur verwendet, wenn diese Hashwerte ident sind.
 
@@ -50,25 +52,29 @@ Content-Security-Policy: require-sri-for script style;
 
 \section{Referrer-Policy}
 \label{referrer_policy}
+\index{Referrer-Policy}
+\index{HTTP Header!Referrer-Policy}
 
-Ein Standard-Header der von Webbrowsern gesetzt wird ist der \textit{Referer}-Header. Dieser inkludiert bei jedem Seitenaufruf die URL der aufrufenden Seite. Dies kann einen negativen Security-Impact haben, falls die URL der aufrufenden Seite sensible Informationen (wie z. B. eine Session-Id oder auch sensible Benutzerdaten) beinhaltet. Potentiell wird der Header vom Empfangsserver und, bei unverschlüsselter Kommunikation, von allen verbundenen Geräten entlang des Kommunikationspfades gesehen.
+Ein Standard-Header der von Webbrowsern gesetzt wird ist der \textit{Referer}-Header. Dieser inkludiert bei jedem Seitenaufruf die URL der aufrufenden Seite. Dies kann einen negativen Security-Impact haben, falls die URL der aufrufenden Seite sensible Informationen (wie z.B. eine Session-Id oder auch sensible Benutzerdaten) beinhaltet. Potentiell wird der Header vom Empfangsserver und, bei unverschlüsselter Kommunikation, von allen verbundenen Geräten entlang des Kommunikationspfades gesehen.
 
 Web-Server können das gewünschte Verhalten durch Verwendung des Headers \textit{Referrer-Policy}\footnote{Achtung: während der Header aufgrund eines Rechtschreibfehlers \textit{Referer} heißt, heißt der Policy Header \textit{Referrer-Policy}.} mitteilen, valide Werte sind:
 
 \begin{description}
 	\item[no-referrer]: der Referer-Header wird nicht übertragen.
-	\item[no-referrer-when-downgrad]: die URL wird als Referer übertragen sofern die Folgeseite nicht ein unsichereres Protokoll verwendet. Dadurch wird z. B. eine Übertragung der URL beim Übergang von HTTPS zu HTTP verboten. Dies ist häufig das Default-Verhalten der Webbrowser.
+	\item[no-referrer-when-downgrad]: die URL wird als Referer übertragen sofern die Folgeseite nicht ein unsichereres Protokoll verwendet. Dadurch wird z.B. eine Übertragung der URL beim Übergang von HTTPS zu HTTP verboten. Dies ist häufig das Default-Verhalten der Webbrowser.
 	\item[origin]: es wird immer nur der Origin übertragen.
-	\item[origin-when-cross-origin]: es wird die volle URL übertragen, sofern man sich innerhalb des identen Origins befindet. Falls es zu einem Origin-Wechsel kommt (z. B. durch Navigation auf eine externe Seite) wird nur der Origin übertragen.
+	\item[origin-when-cross-origin]: es wird die volle URL übertragen, sofern man sich innerhalb des identen Origins befindet. Falls es zu einem Origin-Wechsel kommt (z.B. durch Navigation auf eine externe Seite) wird nur der Origin übertragen.
 	\item[same-origin]: solange man sich innerhalb des Origins befindet, wird die URL gesetzt, ansonsten wird kein Referer-Header versendet.
 	\item[strict-origin]: es wird immer nur der Origin als Referer versendet, und dies auch nur falls das Sicherheitslevel ident ist (es wird also beim Übergang von einer HTTPS auf eine HTTP Seite kein Referer gesetzt).
-	\item[strict-origin-when-cross-origin]: es wird die volle URL innerhalb des identen Origin verwendet, wird auf Webseiten mit unterschiedlichen Origin zugegriffen (also z. B. beim Übergang auf externe Webseiten) wird nur der Origin als Referer verwendet. Falls die Sicherheit der Kommunikation schlechter wird (also z. B. beim Übergang von HTTPS auf HTTP) wird überhaupt kein Referer-Header versendet.
+	\item[strict-origin-when-cross-origin]: es wird die volle URL innerhalb des identen Origin verwendet, wird auf Webseiten mit unterschiedlichen Origin zugegriffen (also z.B. beim Übergang auf externe Webseiten) wird nur der Origin als Referer verwendet. Falls die Sicherheit der Kommunikation schlechter wird (also z.B. beim Übergang von HTTPS auf HTTP) wird überhaupt kein Referer-Header versendet.
 	\item[unsafe-url]: die gesamte URL wird im Referrer-Header immer übertragen.
 \end{description}
 
 Es wird empfohlen, eine \textit{Referrer-Policy} zu wählen, die nicht \textit{no-referrer-when-downgrade} bzw. \textit{unsafe-url} ist.
 
 \section{Content-Security-Policy}
+\index{Content-Security-Policy}
+\index{HTTP Header!Content-Security-Policy}
 \label{csp}
 
 Die Content-Security-Policy (CSP) erlaubt es, eine umfangreiche Policy von Webservern an Browser zu übertragen. Prinzipiell sind mittels einer CSP viele der bereits erwähnten Security-Header abbildbar.
@@ -84,7 +90,7 @@ Die grundlegende Funktionalität von CSP ist:
 \begin{itemize}
 	\item Definition von vertrauenswürdigem Javascript bzw. Javascript-Sourcen
 	\item Sicherstellen, dass Seitenelemente (CSS, Bilder, etc.) nur aus vertrauenswürden Quellen bezogen werden.
-	\item Definition der Interaktion mit externen Seiten (z. B. mittels iFrames)
+	\item Definition der Interaktion mit externen Seiten (z.B. mittels iFrames)
 	\item Sonstiges: Erhöhung der Verbindungssicherheit, etc.
 \end{itemize}
 
@@ -118,7 +124,7 @@ CSP besteht aus mehreren Direktiven, die Tabelle \ref{tbl:csp_elements} gibt ein
 
 \begin{table}
 	\begin{center}
-\begin{tabular}{lp{7cm}}
+\begin{tabular}{lp{10cm}}
 	\toprule
 	Name & Beschreibung\\ \midrule
 	default-src & definiert die default Policy zum Laden von remote Elementen für die meisten Elemente. \\
@@ -145,7 +151,7 @@ CSP besteht aus mehreren Direktiven, die Tabelle \ref{tbl:csp_elements} gibt ein
 
 \begin{table}
 	\begin{center}
-\begin{tabular}{lp{7cm}}
+	\begin{tabular}{lp{10cm}}
 	\toprule
 	Name & Beschreibung\\ \midrule
 	* & erlaubt alle URIs ausgenommen \textit{data:}, \textit{blob:} und \textit{filesystem:} \\
@@ -161,7 +167,7 @@ CSP besteht aus mehreren Direktiven, die Tabelle \ref{tbl:csp_elements} gibt ein
 	\bottomrule
 \end{tabular}
 	\caption{Häufig verwendete CSP Source-Werte}
-	\label{tbl:csp_}
+	\label{tbl:csp_values}
 \end{center}
 \end{table}
 
@@ -210,7 +216,7 @@ Content-Security-Policy:
 Folgende Einstellungen werden dadurch an den Browser übermittelt:
 
 \begin{itemize}
-	\item \textit{object-src: none} verhindert das Laden von Plugins wie z. B. Flash.
+	\item \textit{object-src: none} verhindert das Laden von Plugins wie z.B. Flash.
 	\item Die verwendete script-src Line verwendet ``neues'' als auch ``altes'' CSP damit unterschiedliche Browserversionen sichere CSP Einstellungen bekommen. Die Kombination von \textit{nonce} und \textit{unsafe-inline} bewirkt bei neueren Browsern, dass \textit{script}-Tags nur verwendet werden, wenn die angegebene Nonce bei dem Skript-Tag als Attribut hinterlegt ist. Neuere Browser ignorieren in dem Fall \textit{unsafe-inline}. Ältere Browser ignorieren die Nonce, über \textit{unsafe-inline} werden allerdings ``normale'' script-Tags erlaubt. \textit{strict-dynamic} erlaubt das Laden von remote JavaScript-Dateien ausgehend von trusted Scripts. Moderne Browser ignorieren die zusätzlichen Schemas (http und https), während ältere Browser die kein \textit{strict-dynamic} erkennen durch die Schemas externe JavaScript-Dateien laden können.
 	\item \textit{base-uri: none} deaktiviert das HTML \textit{base}-Element welches im Zusammenhang mit relativen Imports verwendet werden kann, um Injection-Angriffe durchzuführen.
 \end{itemize}

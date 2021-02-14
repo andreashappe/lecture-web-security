@@ -1,2 +1,2 @@
-§!/bin/sh
-tex4ebook -s -f mobi -e build.mk4 ebook.tex
+#!/bin/sh
+tex4ebook -s -f epub -e build.mk4 ebook.tex

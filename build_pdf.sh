@@ -1,2 +1,2 @@
 #!/bin/sh
-latexmk -e '$latex=q/pdflatex %O -shell-escape %S/' main.tex 
+latexmk -e '$latex=q/pdflatex %O -shell-escape %S/' book.tex 

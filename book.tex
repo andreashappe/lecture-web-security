@@ -1,0 +1,81 @@
+\documentclass[11pt]{memoir}
+\title{Einführung in die Web-Security}
+\author{Andreas Happe}
+
+% configure papersize
+
+% settings for A4 color:
+%\chapterstyle{veelo} % need to fix Beschnitt
+% \usemintedstyle{tango}
+
+% settings for 8.5x8.5 bw:
+\usepackage[paperwidth=8.5in,paperheight=8.5in]{geometry}
+\stockwidth\paperwidth
+\stockheight\paperheight
+
+% setup memoir class
+\setsecnumdepth{subsection}
+
+% stuff for tables
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{tabularx}
+
+% input encoding
+\usepackage[utf8]{inputenc}
+\usepackage[ngerman]{babel}
+\inputencoding{utf8}
+
+% index for the bookversion (as there is no search function)
+\usepackage{makeidx}
+\makeindex
+
+% todo: a glossary might be nice, can I combine that with an index?
+
+% stuff for links
+\usepackage{xurl}
+\usepackage[hidelinks]{hyperref}
+\hypersetup{pdftitle={Web Security},pdfauthor={Andreas Happe}} % Uncomment and fill out to include PDF metadata for the author and title of the book
+
+% todo: do I even need graphics?
+\usepackage{graphicx}
+
+% stuff for syntax highlighting
+\usepackage{minted}
+\usemintedstyle{bw}
+
+% todo: why have I done this?
+\ifdefined\HCode
+	\setminted{
+		autogobble,
+		fontsize=\footnotesize,
+		frame=single
+	}
+\else
+	\setminted{
+		autogobble,
+		breaklines,
+		breakanywhere,
+		fontsize=\footnotesize,
+		frame=single
+	}
+\fi
+
+% finally the document
+\begin{document}
+
+	\frontmatter
+
+	% Print the table of contents itself
+	\tableofcontents
+
+	% Forces the first chapter to start on an odd page so it's on the right side of the book
+	\cleardoublepage
+
+	\input{structure}
+
+	\backmatter
+
+	\printindex
+
+\end{document}

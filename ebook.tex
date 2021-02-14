@@ -2,7 +2,6 @@
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
 \usepackage{booktabs}
-\usepackage{todonotes}
 \usepackage{tabularx}
 \usepackage{tikz}
 \usepackage{tikz-uml}
@@ -10,7 +9,6 @@
 \usepackage{xurl}
 
 \usepackage{graphicx} % Required for including pictures
-\graphicspath{{Pictures/}} % Specifies the directory where pictures are stored
 
 \usepackage{tikz} % Required for drawing custom shapes
 
@@ -46,46 +44,6 @@
 
 \tableofcontents % Print the table of contents itself
 
-\include{chapters/allgemeines}
-
-\mainmatter
-
-\part{Einführung}
-
-\include{chapters/security_principles}
-
-\include{chapters/security_as_process}
-
-\include{chapters/integration}
-
-\include{chapters/web_technologies}
-
-\include{chapters/web_applications}
-
-\part{Authentication und Authorisierung}
-
-\include{chapters/authentication}
-
-\include{chapters/authorization}
-
-\include{chapters/session_management}
-
-\include{chapters/sso}
-
-\part{Injection Attacks}
-
-\include{chapters/injection_attacks}
-
-\include{chapters/client_side_attacks}
-
-\include{chapters/client_side_hardening}
-
-\appendix
-
-\part{Appendix}
-
-\include{chapters/crypto_basics}
-
-\include{chapters/mod_security}
+\input{structure}
 
 \end{document}

@@ -1,0 +1,25 @@
+@startuml
+skinparam monochrome true
+skinparam shadowing false
+
+actor U as "User"
+participant UA as "User Agent"
+participant SP as "Service Provider"
+participant IDP as "Identity Provider"
+
+U -> UA: Access Service
+UA->SP: Brwoser requests Resource
+SP->UA: Redirect to IdP
+ 
+UA->IDP: Browser Request SAML Token
+IDP-> UA: 401 Authenticate
+
+UA->U: Display Login Form
+U->UA: Authenticate
+
+UA->IDP: Authentication Information
+IDP->UA: SAML Token
+
+UA->SP: Request Resource with SAML Token
+SP->UA: Resource
+@enduml

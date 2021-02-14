@@ -1,0 +1,25 @@
+@startuml
+skinparam monochrome true
+skinparam shadowing false
+
+actor U as "User"
+participant UA as "Browser"
+participant TS as "Normale Website"
+participant MS as "Website des Angreifers"
+
+U -> UA: navigiert zu Webseite
+UA->TS: Zugriff auf die Webseite
+TS->UA: Login-Maske wird angezeigt
+UA->U
+U->UA: Login Daten
+UA->TS: Login Daten
+TS->UA: Session-Id
+UA->UA: Session-Id wird\rim Browser gespeichert
+
+U->UA: surft im Internet
+UA->MS: surft auf Angreifer Seite
+MS->UA: Webseite mit Formular auf die Ziel Webseite
+UA->UA: Formluar wird\rper JavaScript\rautomatisch\rabgeschickt
+UA->TS: Operation wird aufgerufen\rBrowers hängt Session-Id an
+TS->TS: Operation wird\rmit der Useridentiät\r ausgeführt
+@enduml

@@ -1,12 +1,13 @@
 \chapter{Authentifikation}
+\index{Authentication}
 
-Sobald eine Webapplikation sensitive bzw. privilegierte Operationen und Daten bereitstellt, besteht die Notwendigkeit die Identität des zugreifenden Benutzers zu erheben und verifizieren.
+Sobald eine Webapplikation sensitive bzw. privilegierte Operationen und Daten bereitstellt, besteht die Notwendigkeit die Identität des zugreifenden Benutzers zu erheben und zu verifizieren.
 
-Authentifikation kann als die Verifikation einer behaupteten Benutzeridentität über zuvor ausgetauschte Details (wie z. B. das während der Registrierung angegebenen Passwort) definiert werden. Nach erfolgtem Login wird zumeist eine langfristige Verbindung (Session) zu dem Benutzer aufgebaut. Bei Folgezugriffen wird dieses Vertrauensverhältnis verwendet, um den Benutzer sowohl zu identifizieren als auch authentifizieren.
+Authentifikation kann als die Verifikation einer behaupteten Benutzeridentität über zuvor ausgetauschte Details (wie z.B. das während der Registrierung angegebenen Passwort) definiert werden. Nach erfolgtem Login wird zumeist eine langfristige Verbindung (Session) zu dem Benutzer aufgebaut. Bei Folgezugriffen wird dieses Vertrauensverhältnis verwendet, um den Benutzer sowohl zu identifizieren als auch authentifizieren.
 
 \section{Identifikation und Authentifikation}
 
-Bei der Identifikation claimed der Benutzer seine Identität, z. B. durch Angabe eines zuvor registrierten Benutzernamens. Weitere Möglichkeiten wären z. B. SmartCards oder biometrische Methoden. Die Identifikation wird zumeist mit einer Authentifikation kombiniert.
+Bei der Identifikation claimed der Benutzer seine Identität, z.B. durch Angabe eines zuvor registrierten Benutzernamens. Weitere Möglichkeiten wären z.B. SmartCards oder biometrische Methoden. Die Identifikation wird zumeist mit einer Authentifikation kombiniert.
 
 Die Authentifikation dient zur Validierung der behaupteten Identität des Benutzers. Es gibt mehrere Möglichkeiten (Faktoren) über welche ein Benutzer seine Identität authentifizieren kann, Tabelle \ref{tbl:factors} gibt eine kurze Übersicht häufig genutzter Faktoren.
 
@@ -20,7 +21,7 @@ Die Authentifikation dient zur Validierung der behaupteten Identität des Benutz
 	Hardware-Tokens & something you have \\
 	Biometrie & something you are \\
 	Soziale Beziehungen & someone you know \\
-	Email-Konto & z. B. Slackanmeldung mittels Link in Email \\
+	Email-Konto & z.B. Slackanmeldung mittels Link in Email \\
 	PostIdent & Verifikation am Postamt mittels Ausweis \\
 	VideoIdent & Verifikation mit Ausweis mittels Videokonferenz \\
 	PhotoIdent & Verifikation über zugeschicktes Ausweisbild \\
@@ -33,27 +34,30 @@ Die Authentifikation dient zur Validierung der behaupteten Identität des Benutz
 
 Bei der initialen Registrierung und bei nachfolgenden Anmeldungen können unterschiedliche Faktoren verwendet werden. Z. B. VideoIdent bei der Registrierung, bei Folgeanmeldungen Passwörter.
 
-Durch die Kombination mehrere Faktoren erhält man eine Multifaktor-Authentifikation (MFA), häufig wird als Zweifaktoren-Authentifikation (2FA) ein Passwort mit einem Token kombiniert. Wichtig bei der MFA ist die Wahl von Faktoren aus unterschiedlichen Klassen. Es macht z. B. wenig Sinn eine Fingerprint-Authentifikation mit einer Iris-Authentifikation zu kombinieren. Ein schönes Beispiel, bei dem Faktoren verschiedener Klassen schlecht durch einen User kombiniert werden wäre es, wenn der Benutzer einer Bankomatkarte seinen PIN (something you know) auf seine Bankomatkarte (something you have) schreibt.
+Durch die Kombination mehrere Faktoren erhält man eine Multifaktor-Authentifikation (MFA), häufig wird als Zweifaktoren-Authentifikation (2FA) ein Passwort mit einem Token kombiniert. Wichtig bei der MFA ist die Wahl von Faktoren aus unterschiedlichen Klassen. Es macht z.B. wenig Sinn eine Fingerprint-Authentifikation mit einer Iris-Authentifikation zu kombinieren. Ein schönes Beispiel, bei dem Faktoren verschiedener Klassen schlecht durch einen User kombiniert werden wäre es, wenn der Benutzer einer Bankomatkarte seinen PIN (something you know) auf seine Bankomatkarte (something you have) schreibt.\index{Multi-Faktoren-Authentication}\index{Zwei-Faktoren-Authentication}\index{2FA}
 
 \section{Login- und Logout}
+\index{Login- und Logout}
 
 Wenn ein Login- und Logout innerhalb der Applikation implementiert werden, müssen gewisse Grundfunktionen abgedeckt sein.
 
 \subsection{Login-Formular}
 
-Das Login-Formular sollte entsprechend dem KISS Prinzip als einfaches HTML-Formular implementiert werden. Hauptgrund dafür ist, dass das Login-Formular mit Passwort-Managern kompatibel sein sollte. Dies impliziert, dass das Login-Formular aus Textfeldern für Benutzername und Passwort als auch einem Login-Button bestehen sollte.
+Das Login-Formular sollte entsprechend dem KISS-Prinzip als einfaches HTML-Formular implementiert werden. Hauptgrund dafür ist, dass das Login-Formular mit Passwort-Managern kompatibel sein sollte. Dies impliziert, dass das Login-Formular aus Textfeldern für Benutzername und Passwort als auch einem Login-Button bestehen sollte.
 
-Negative Beispiele die den Umgang mit Passwort-Managern erschweren würden:
+Negative Beispiele die den Einsatz von Passwort-Managern erschweren:
 
 \begin{itemize}
-	\item Benutzername und Passwort-Feld nicht innerhalb der gleichen Seite
+	\item Benutzername und Passwort-Feld sind nicht innerhalb der gleichen Seite
 	\item Password-Feld wird erst angezeigt, nachdem ein Benutzername eingegeben wurde
-	\item Flash-, Silverlight- oder Java-Applets
+	\item Verwendung von Flash-, Silverlight- oder Java-Applets
 	\item Authentication through EMail a la Slack (Email mit Bestätigungslink dient als Passwortersatz)
 	\item HTTP BASIC basierte Authentifikation
 \end{itemize}
 
 \subsection{User Enumeration Angriffe}
+\index{Login- und Logout!User Enumeration}
+\index{User Enumeration}
 
 Eine User Enumeration liegt vor, wenn ein Angreifer gezielt Informationen über das Vorhandensein eines Benutzers erzielen kann. Zumeist geschieht dies über schlecht gewählte Fehlermeldungen. So kann ein Angreifer bei der Fehlermeldung ``Passwort invalid'' davon ausgehen, dass ein Benutzername dem System bekannt ist. Lösung: Verwendung generischer Fehlermeldungen wie ``Benutzer/Passwort-Kombination nicht bekannt''.
 
@@ -68,10 +72,12 @@ Während dies bei einem Login-Formular leicht zu bewerkstelligen ist, sind weite
 Generell ist dieser Bereich einer derjenigen, bei denen Usability und Security potentiell konträre Ziele besitzen.
 
 \subsection{Brute-Force Angriffe gegen Login-Formular}
+\index{Login- und Logout!Brute Force Angriffe}
+\index{Brute Force Angriffe}
 
-Brute-Force Angriffe versuchen mittels automatisierter Anfragen eine valide Benutzernamen/Passwort-Kombination zu erraten. Durch die Kenntnis bekannter Benutzernamen können Brute-Force Angriffe beschleunigt werden (z. B. durch eine zu vorige User Enumeration).
+Brute-Force Angriffe versuchen mittels automatisierter Anfragen eine valide Kombination von Benutzernamen und Passwort zu erraten. Durch die Kenntnis bekannter Benutzernamen können Brute-Force Angriffe beschleunigt werden (z.B. durch eine zu vorige User Enumeration).
 
-Technisch sind Brute-Force Angriffe einfach umzusetzen, Tool-Support ist massiv vorhanden. Die erreichte Geschwindigkeit befindet sich meistens bei mehreren Zehntausend Versuchen in der Stunde.
+Technisch sind Brute-Force Angriffe einfach umzusetzen, Tool-Support ist massiv vorhanden. Die erreichte Geschwindigkeit befindet sich meistens bei mehreren Zehntausend Versuchen pro Stunde.
 
 Brute-Force Angriffe versuchen entweder eine Kombination des gesamten Testbereichs (Buchstaben, Zahlen, Sonderzeichen) oder verwenden vorbereitete Passwortlisten. Diese können auf verschiedene Arten bereitgestellt werden:
 
@@ -86,22 +92,21 @@ Gegenmaßnahmen zielen auf eine Verlangsamung des Angriffs bzw. auf eine Sperre 
 \begin{itemize}
 	\item Rate-Limits bzw. Verlangsamung bei Fehlerseiten.
 	\item Sperre von Benutzeraccounts bzw. IP-Adressen nach einer definierten Anzahl von Fehlversuchen.
-	\item Einsatz einer Mehrfaktorauthentication
+	\item Einsatz einer Mehrfaktorauthentication. Durch die benötigte manuelle Interaktion wird eine Brute-Force Attacke ausgebremst. Hier ist die Wahl eines geeigneten Faktors und eine geeignete Integration notwendig.
 \end{itemize}
 
 \subsection{Logout}
 
-Symmetrisch zum Login sollte auch eine Logout-Operation implementiert werden. Dadurch kann der Benutzer seine Session beenden und dadurch das mögliche verwendbare Zeitfenster gegenüber Angriffen (z. B. gegenüber CSRF-Angriffen) verkleinern.
+Symmetrisch zum Login sollte auch eine Logout-Operation implementiert werden. Dadurch kann der Benutzer seine Session beenden und dadurch das mögliche verwendbare Zeitfenster gegenüber Angriffen (z.B. gegenüber CSRF-Angriffen) verkleinern.
 
 Bei neueren Standards wie der ÖNORM A77.00 gibt es die Anforderung, dass der Benutzer nicht nur seine aktuelle, sondern auch alle seine bestehenden Sitzungen beenden kann.
 
 Beispiel: Benutzer besitzt einen Desktop und einen Laptop. Der Laptop wird gestohlen, es sollte möglich sein eine offene Web-session am Laptop über den Desktop zu beenden.
 
 \subsection{Deaktivieren/Sperren/Löschen von Accounts}
+\index{Login- und Logout!Sperren von Accounts}
 
-Wird ein Benutzeraccount gelöscht oder deaktiviert stellt sich die Frage, wie mit den gelöschten Daten des Benutzers umzugehen ist.
-
-Wurde ein Account gesperrt muss dafür Sorge getragen werden, dass:
+Wird ein Benutzeraccount gelöscht oder deaktiviert stellt sich die Frage, wie mit den gelöschten Daten des Benutzers umzugehen ist. Wurde ein Account gesperrt muss dafür Sorge getragen werden, dass:
 
 \begin{itemize}
 	\item bereits ausgestellte Recovery-Codes den Account nicht reaktivieren können
@@ -112,6 +117,7 @@ Wurde ein Account gesperrt muss dafür Sorge getragen werden, dass:
 Die Hauptfrage bei einem zu löschenden Account ist, welche Daten gelöscht, und welche Daten persistiert werden müssen (beides primär aus rechtlichen Gründen).
 
 \section{Behandlung von Passwörtern}
+\index{Passwörter}
 
 Die grundsätzliche Strategie wäre, keine Passwörter in der Applikation zu speichern, einzugeben oder zu verarbeiten. Wenn die Applikation niemals Zugriff auf Passwörter hat, können diese auch nicht verloren werden. Falls dies nicht möglich ist, müssen beim Umgang mit Passwörtern gewisse Grundregeln eingehalten werden.
 
@@ -120,14 +126,15 @@ Genauere Informationen zur sicheren Speicherung von Passwörtern können im Kapi
 Prinzipiell können Angriffe gegen Passwörter in drei Kategorien eingeteilt werden:
 
 \begin{enumerate}
-	\item Disclosure tritt auf, wenn das Passwort unbeabsichtigt ``veröffentlicht'' wird. Dies kann z. B. durch Notizzettel, Wikis oder auch durch phishing geschehen.
+	\item Disclosure tritt auf, wenn das Passwort unbeabsichtigt ``veröffentlicht'' wird. Dies kann z.B. durch Notizzettel, Wikis oder auch durch phishing geschehen.
 	\item Online Attacks sind Angriffe gegenüber einem Login-System. Diese können durch das Websystem erkannt werden.
 	\item Offline Attacks sind Angriffe gegenüber geleakten Passwort-Hashes. Diese können durch das Websystem nicht erkannt werden.
 \end{enumerate}
 
 \subsection{Passwort-Qualität}
+\index{Passwörter!Qualität}
 
-Kann ein neues Passwort in der Applikation gesetzt werden, sollte dieses gewisse Mindestanforderungen erfüllen. 2018 wurden die NIST 800-63-3: Digital Identity Guidelines veröffentlicht, diese inkludieren mehrere Best-Pracises im Umgang mit Passwörtern:
+Kann ein neues Passwort in der Applikation gesetzt werden, sollte dieses gewisse Mindestanforderungen erfüllen. 2018 wurden die NIST 800-63-3: Digital Identity Guidelines\footnote{\url{https://pages.nist.gov/800-63-3/}} veröffentlicht, diese inkludieren mehrere Best-Pracises im Umgang mit Passwörtern:
 
 \begin{itemize}
 	\item Minimale Passwortlänge: 8 Zeichen. Ein Unicode Zeichen ist ein Zeichen.
@@ -138,9 +145,10 @@ Kann ein neues Passwort in der Applikation gesetzt werden, sollte dieses gewisse
 	\item Passwort-Hints dürfen nicht mehr verwendet werden.
 \end{itemize}
 
-Um eingegebene Passwörter gegen eine Liste von geleakten Passwörtern zu überprüfen, kann z. B. von haveibeenpwned eine ca. 10 Gigabyte große Liste an Passwort-Hashes heruntergeladen werden. Alternativ bietet haveibeenpwned einen Passwort-Check Service an. Bei diesem werden Passwörter nicht als Hash übermittelt (ansonsten würde der Serverbetreiber Wissen über die verwendeten Passwörter erhalten), sondern es wird das Passwort gehashed, die ersten 5 Zeichen des Hashes übertragen und anschließend eine Liste aller gefundenen Hashes an den Client zurück übertragen.
+Um eingegebene Passwörter gegen eine Liste von geleakten Passwörtern zu überprüfen, kann z.B. von \url{https://haveibeenpwned.com} (im Folgenden immer haveibeenpwned genannt) eine ca. 10 Gigabyte große Liste an Passwort-Hashes heruntergeladen werden. Alternativ bietet haveibeenpwned einen Passwort-Check Service an. Bei diesem werden Passwörter nicht als Hash übermittelt (ansonsten würde der Serverbetreiber Wissen über die verwendeten Passwörter erhalten), sondern es wird das Passwort gehashed, die ersten 5 Zeichen des Hashes übertragen und anschließend eine Liste aller gefundenen Hashes an den Client zurück übertragen.
 
-\subsection{Passwort Vergessen Funktion}
+\subsection{Passwort-Reset}
+\index{Passwörter!Vergessen Funktion}
 
 Ein wichtiger Grundsatz ist \textit{Account recovery not password recovery}. Dieser sagt aus, dass der Benutzer wieder Zugang zu seinem Account erhält, aber nicht sein bestehendes Passwort einsehen kann. In einer korrekt implementierten Applikation sollte das bestehende Passwort nirgends unverschlüsselt gespeichert werden, daher sollte diese Möglichkeit prinzipiell nicht technisch möglich sein.
 
@@ -157,9 +165,9 @@ Hinweis: die aktuellen NIST Richtlinien verbieten explizit die Verwendung von ``
 
 Die Verifikation kann auch über Alternate Transports geschehen. Ein Beispiel wäre die österreichische Sozialversicherung, bei der ein neues Passwort über einen eingeschriebenen Brief an den User verschickt wird. Dadurch wird eine Identitätsfeststellung des Empfängers erzwungen.
 
-Sobald ein neues Passwort gesetzt wurde sollte der Benutzer über mehrere Wege über diese Passwortänderung notifiziert, und ihm eine Möglichkeit der Account-Sperre gegeben, werden. Typische Nachrichtenwege wären z. B. Emails oder SMS.
+Sobald ein neues Passwort gesetzt wurde sollte der Benutzer über mehrere Wege über diese Passwortänderung notifiziert, und ihm eine Möglichkeit der Account-Sperre gegeben, werden. Typische Nachrichtenwege wären z.B. Emails oder SMS.
 
-\subsection{Passwort ändern Funktion}
+\subsection{Ändern von Passwörtern}
 
 Der Benutzer sollte die Möglichkeit besitzen, sein Passwort neu zu setzen. Für eine sichere Operation muss folgendes gegeben sein:
 
@@ -175,7 +183,7 @@ Damit diese Schutzmaßnahme funktioniert, müssen sowohl das alte als auch das n
 
 \subsection{Passwörter für Dritt-Dienste}
 
-Teilweise können Passwörter nicht gehashed innerhalb der Applikation gespeichert werden. Dies tritt zum Beispiel auf, wenn das Passwort an eine Drittapplikationen weitergegeben werden muss -- eine Webapplikation welche zur Darstellung eines IMAP-Emailkontos dient muss z. B. innerhalb der Applikation die Zugangsdaten für das externe Email-System speichern. Falls dieser Email-Server das Passwort in plain-text benötigt, muss die Applikation nun auch das Passwort in plain-text speichern und kann daher keine Einweg-Hashfunktion anwenden.
+Teilweise können Passwörter nicht gehashed innerhalb der Applikation gespeichert werden. Dies tritt zum Beispiel auf, wenn das Passwort an eine Drittapplikationen weitergegeben werden muss -- eine Webapplikation welche zur Darstellung eines IMAP-Emailkontos dient muss z.B. innerhalb der Applikation die Zugangsdaten für das externe Email-System speichern. Falls dieser Email-Server das Passwort in plain-text benötigt, muss die Applikation nun auch das Passwort in plain-text speichern und kann daher keine Einweg-Hashfunktion anwenden.
 
 Prinzipiell ist hier das Grundproblem, dass das sensible Passwort an eine externe, potentiell nicht vertrauenswürdige, Applikation übergeben werden muss.
 
@@ -186,25 +194,27 @@ Benutzer sind notorisch schlecht bei der Wahl sicherer Passwörter. Um diese Gef
 TOTP ist ein Verfahren, dass zur Implementierung eines zweiten Faktors eingesetzt werden kann. Im Gegensatz dazu, werden die Protokolle der FIDO-Allianz häufig für die Implementierung Passwort-loser Authentifizierungsvorgänge genutzt.
 
 \subsection{TOTP}
+\index{TOTP}
 
 Time-based One-Time Passwords (TOTP, RFC 6238) ist ein häufig verwendetes Verfahren zur Implementierung eines weiteren Authentication-Faktors. Es ist ein Zusammenspiel zwischen Authenticator (meist eine mobile Applikation) und einer Webapplikation.
 
 Initial wird ein shared secret key zwischen Authenticator und Webapplikation ausgetauscht. Wird nun eine Authentifikation benötigt wird nun auf beiden Seiten die aktuelle Systemzeit (in Sekunden seit Beginn der UNIX Epoche) auf 30 Sekunden gerundet und ein MAC (unter Zuhilfenahme des shared secret keys) gebildet. Dieser MAC wird nun auf 31 bit gekürzt und in einen 6 oder 8 stelligen Zahlencode verwandelt. Dieser wird am Authenticator angezeigt und muss vom User in der Webapplikation als weiterer Faktor eingegeben werden. Sofern beide berechnete Werte ident sind, wird die Authentifikation erfolgreich durchgeführt.
 
-Ein Vorteil dieses Verfahrens ist, dass nach dem initialen Schlüsselaustausch keine Netzwerkverbindung zwischen Authenticator und Applikation benötigt wird. Ein Nachteil ist, dass die Systemuhren der betroffenen Systeme synchronisiert werden müssen. Ebenso kann bei TOTP kein \textit{device-binding} durchgeführt werden: die Webapplikation kann nicht feststellen, auf wie vielen devices ein TOTP-Secret eingespielt wurde. Ebenso ist der Vorgang der initialen Secret-Verteilung gefährlich: wird hier z. B. von einem Benutzer ein Selfie inklusive dem QR-Code/Secret-Code erstellt und veröffentlicht, wurde auf diese Weise die gesamte Sicherheit des Verfahrens kompromittiert.
+Ein Vorteil dieses Verfahrens ist, dass nach dem initialen Schlüsselaustausch keine Netzwerkverbindung zwischen Authenticator und Applikation benötigt wird. Ein Nachteil ist, dass die Systemuhren der betroffenen Systeme synchronisiert werden müssen. Ebenso kann bei TOTP kein \textit{device-binding} durchgeführt werden: die Webapplikation kann nicht feststellen, auf wie vielen devices ein TOTP-Secret eingespielt wurde. Ebenso ist der Vorgang der initialen Secret-Verteilung gefährlich: wird hier z.B. von einem Benutzer ein Selfie inklusive dem QR-Code/Secret-Code erstellt und veröffentlicht, wurde auf diese Weise die gesamte Sicherheit des Verfahrens kompromittiert.
 
 \subsection{Protokolle der FIDO-Alliance}
+\index{FIDO}
 
-Die FIDO-Alliance\footnote{Die Abkürzung FIDO steht für Fast IDentity Online.} ist eine nicht-kommerzielle Vereinigung von über 150 Unternehmen und Behörden mit dem Ziel, offene und lizenzfreie Authentifizierung-Industriestandards zu schaffen. Ihre Mitglieder beinhalten u.a. Alibaba, Google, Microsoft, Samsung und YubiCo.
+Die FIDO-Alliance ist eine nicht-kommerzielle Vereinigung von über 150 Unternehmen und Behörden mit dem Ziel, offene und lizenzfreie Authentifizierung-Industriestandards zu schaffen. Ihre Mitglieder beinhalten u.a. Alibaba, Google, Microsoft, Samsung und YubiCo. Die Abkürzung FIDO steht dabei für \textit{Fast IDentity Online}.
 
 Ende 2014 wurde FIDO 1.0 veröffentlicht, dieser Standard umfasste:
 
 \begin{itemize}
-	\item U2F (Universal Second Factor) standardisiert den Einsatz von physikalischen Tokens (wie z. B. einem Yubikey). Sofern die Webapplikation und der verwendete Webbrowser U2F unterstützen kann der Benutzer sich mit einem Hardware-Token authentifizieren (z. B. durch Knopfdruck auf einem USB-Stick oder durch Antappen eines NFC/BLE Tokens).
-	\item UAF (Universal Authentication Framework) dient zur Implementierung eines Passwort-losen Logins. Der Benutzer muss über ein UAF-kompatibles Endgerät verfügen (z. B. Windows 10) und registriert quasi sein Endgerät bei der Webapplikation.
+	\item U2F (Universal Second Factor) standardisiert den Einsatz von physikalischen Tokens (wie z.B. einem Yubikey). Sofern die Webapplikation und der verwendete Webbrowser U2F unterstützen kann der Benutzer sich mit einem Hardware-Token authentifizieren (z.B. durch Knopfdruck auf einem USB-Stick oder durch Antappen eines NFC/BLE Tokens).
+	\item UAF (Universal Authentication Framework) dient zur Implementierung eines Passwort-losen Logins. Der Benutzer muss über ein UAF-kompatibles Endgerät verfügen (z.B. Windows 10) und registriert quasi sein Endgerät bei der Webapplikation.
 \end{itemize}
 
-Das Grundprinzip basiert auf public key Kryptographie. Wenn ein Authenticator (z. B. Android Gerät) als Gerät eines Benutzers registriert wird, wird im Gerät ein public/private key pair generiert und der public key dem FIDO Server mitgeteilt. Im Falle einer Benutzerauthentication wird die Anfrage des Servers vom Client mit dem private key signiert, mit dem serverseitig hinterlegten public key verglichen und damit die Identität des Benutzers verifiziert. Lokal werden meistens biometrische Methoden zum Schutz der Tokens verwendet.
+Das Grundprinzip basiert auf public key Kryptographie. Wenn ein Authenticator (z.B. Android Gerät) als Gerät eines Benutzers registriert wird, wird im Gerät ein public/private key pair generiert und der public key dem FIDO Server mitgeteilt. Im Falle einer Benutzerauthentication wird die Anfrage des Servers vom Client mit dem private key signiert, mit dem serverseitig hinterlegten public key verglichen und damit die Identität des Benutzers verifiziert. Lokal werden meistens biometrische Methoden zum Schutz der Tokens verwendet.
 
 FIDO2 kombiniert mehrere Projekte um eine passwortlose Authentication zu erlauben. Das vom W3C standardisierte WebAuthn wird von Webbrowsern implementiert und erlaubt es Webapplikationen (mittels JavaScript) eine FIDO Benutzerauthentication durchzuführen. Das Client-to-Authenticator-Protocol (CTAP) standardisiert das Kommunikationprotokoll zwischen Authenticator (Hardware-Tokens) und dem Webbrowser (Client). Es gibt zwei Varianten CTAP1 und CTAP2 wobei CTAP1 dem FIDO U2F Standard entspricht.
 
