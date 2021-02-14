@@ -5,12 +5,28 @@ Eine Webapplikation sollte niemals isoliert betrachtet werden. Auch wenn die vor
 Hierbei kann es sich z.B. um nicht-funktionale Elemente wie Logging handeln, oder aber auch um Aspekte wie Programmiersprache-inhärente Muster, die einen negativen Einfluss auf die Sicherheit der Webapplikation besitzen können.
 
 \section{Using Components with Known Vulnerabilities}
+\index{Supply-Chain Attacks}
 
-Die Verwendung vorhandener (und gewarteter) externer Komponenten wie Bibliotheken oder Frameworks besitzt sicherheitstechnisch viele Vorteile: man kann von Fehlern anderen lernen (und vermeidet diese selbst) bzw. muss das Rad nicht neu erfinden.
+Die Verwendung vorhandener und gewarteter externer Komponenten wie Bibliotheken oder Frameworks besitzt sicherheitstechnisch viele Vorteile: man kann von Fehlern anderen lernen bzw. muss das Rad nicht neu erfinden.
 
-Damit wird allerdings auch der Nachteil eingekauft, dass eine Verwundbarkeit innerhalb einer integrierten externen Komponente automatisch auch eine Verwundbarkeit der eigenen Applikation impliziert. Daher müssen aktiv und regelmäßig verwendete Komponenten auf bekannte Schwachstellen hin überprüft, und ggf. die betroffenen Komponenten aktualisiert werden.
+Damit wird allerdings auch der Nachteil eingekauft, dass eine Verwundbarkeit innerhalb einer integrierten externen Komponente automatisch auch eine Verwundbarkeit der eigenen Applikation impliziert. Daher müssen aktiv und regelmäßig verwendete Komponenten auf bekannte Schwachstellen hin überprüft, und ggf. die betroffenen Komponenten aktualisiert werden. Falls über eine externe Komponente eine Schwachstelle ,,eingefangen'' wird, wird dies \textit{Supply-Chain Attack} genannt: der Angriff erfolgt nicht direkt gegen die Applikation selbst, sondern über die inkludierten Komponenten, quasi dem Zulieferer (engl. Supply Chain).
 
 Um den Aufwand dieser Überprüfungen zu reduzieren und damit optimaler-weise deren Frequenz zu erhöhen gibt es automatisierte Tools wie den \textit{OWASP Dependency-Check}\footnote{\url{https://jeremylong.github.io/DependencyCheck/analyzers/index.html}} oder \textit{OWASP Dependency-Track}. Diese analysieren automatisch Projekte auf Dependencies (z.B. über Ruby Gemfiles, NPM package-lock.json Files, Maven Projektbeschreibungen), extrahieren automatisch dependencies und korrelieren diese mit öffentlichen Verwundbarkeitsdatenbanken. Wird hier nun eine potentiell anwendbare Schwachstelle gefunden, wird der Entwickler via Email oder Slack notifiziert.
+
+\subsection{Typo-Squatting und Dependency Confusion}
+\index{Typo-Squatting}
+\index{Dependency Confusion}
+
+Bei \textit{Supply-Chain Angriffen} plazieren Angreifer Schadcode zumeist in neuen Versionen bereits verwendeter Bibliotheken. Der Angreifer muss also Zugriff auf den Source Code einer häufig verwendeten Bibliothek erlangen. Die Geschichte zeigt, dass dies durchaus einfacher als gedacht ist\footnote{\url{https://www.fireeye.com/blog/threat-research/2020/12/evasive-attacker-leverages-solarwinds-supply-chain-compromises-with-sunburst-backdoor.html}}.
+
+Ein Angreifer kann Supply-Chain Angriffe auch ohne Erlangen eines bestehenden Projektes durchführen. Bei \textit{Typo-Squatting} Angriffen kopiert der Angreifer eine bestehende Bibliothek, reichert diese um Schadcode an, und läd diese unter einem neuen Namen hoch. Der neue Name ist sehr ähnlich dem ursprünglichen Namen der Bibliothek gewählt, der Angriff zielt darauf ab, dass das Opfer beim Integrieren der eigentlich gewünschten Bibliothek sich vertut oder vertippt und dadurch die falsche Bibliothek samt Schadcode inkludiert.
+
+Ein weiterer Angriffsvektor ist \textit{Dependency Confusion}\footnote{\url{https://medium.com/@alex.birsan/dependency-confusion-4a5d60fec610}}. Hier entwickelt das Opfer eine Software, die sowohl öffentliche als auch interne (private) BBibliotheken verwendet. Der Angreifer kennt den Namen einer internen Bibliothek und läd eine Schadsoftware mit diesem Namen auf ein öffentliches Paketverzeichnis (welches von der Opfersoftware verwendet wird) hoch. In Abhängigkeit von der verwendeten Programmiersprache, der verwendeten Paketverwaltung und dessen Konfiguration können zwei potentielle Schwachstellen auftreten:
+
+\begin{enumerate}
+	\item Öffentliche Quelle werden gegenüber privaten Quellen bevorzugt: es wrid nun der Schadcode aus dem öffentlichen Repository geladen.
+	\item Bei der Auswahl der Bibliothek aus internen und öffentlichen Quellen ,,gewinnt'' das Paket mit der höchsten Version. In diesem Fall muss der Angreier nur ein Paket mit einer höheren Versionnummer in das öffentliche Repository hochladen um seinen Schadcode in die Opfersoftware zu integrieren.
+\end{enumerate}
 
 \section{Insufficient Logging and Monitoring}
 
@@ -141,4 +157,5 @@ Zusätzlich zur statischen Source-Code Analyse kann man auch dynamische Scans ve
 	\item Was ist der Grundgedanke dabei, DevOps und Security zu verbinden?
 	\item Welche Sicherheitsmaßnahmen können im Zuge von SecDevOps automatisiert durchgeführt werden? Erläutere die jeweiligen Maßnahmen.
 	\item Wie kann während der Continuous Integration (CI) oder Continuous Delivery (CD) auf die Sicherheit eines Softwareprodukts Rücksicht genommen werden?
+	\item Was sind Supply-Chain Angriffe und wie können diese geschehen?
 \end{enumerate}
