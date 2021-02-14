@@ -30,7 +30,7 @@ Ein Angreifer würde nun versuchen, JavaScript-Code als Eingabe zu übergeben, i
 
 Ein Problem bei der defensiven Identifikation von potentiellen XSS-Lücken ist, dass die XSS-Angriffsfläche immens ist. Fast jede mögliche Benutzereingabe kann XSS-Schadmuster beinhalten. Ein Beispiel dafür wäre ein XSS-Fehler innerhalb von Flickr. Hier konnten Hacker XSS-Schadcode in den Metadaten der hochgeladenen JPEGs integrieren (z.B. als Kameramodel). Diese Daten wurden von Flickr ausgelesen, auf der Homepage ausgegeben und dadurch anderen Benutzern als Schadcode ``untergejubelt''. Ein weiteres Beispiel für unerwartete XSS-Angriffsvektoren ist dieses Dokument. Auf Anfrage hin habe ich eine eBook-Version dieses Dokuments erstellt und auf Amazon Kindle Direct Publishing hochgeladen. In der Entwurfsansicht wurden dann mehrere Hundert Rechtschreibfehler bemängelt. Wenn nun allerdings in der Detailansicht die Rechtschreibfehler betrachtet wurden, wurden automatisch XSS-Fragmente aus dem Dokument als Teil der Weboberfläche ausgeführt und hatten teilweise Zugriff auf Amazon-Cookies, etc.
 
-\subsection{Arten und Payloads}
+\subsection{Arten von XSS-Angriffen}
 
 XSS-Angriffe werden in drei grobe Familien eingeteilt:
 
@@ -61,6 +61,8 @@ Ein Problem an XSS-Angriffsmustern ist, dass diese sehr stark variieren können 
 
 Eine gute Quelle für weitere XSS-Beispiele ist das OWASP XSS Filter Evasion Cheat Sheet\footnote{\url{https://www.owasp.org/index.php/XSS_Filter_Evasion_Cheat_Sheet}}.
 
+\subsection{XSS-Payloads}
+
 Mittels des eingeschleusten JavaScript-Code versucht der Angreifer nun, negativen Einfluss auf einen Benutzer zu nehmen. Ein gutes Beispiel wäre der Versuch, das Session-Cookie des aktuellen Benutzers (des Opfers) auszulesen und an einen externen Server zu übermitteln. Auf diese Weise würde ein Identitätsdiebstal durchgeführt werden. Ein weiteres Beispiel wäre \textit{Virtual Defacement}: bei diesem wird mittels JavaScript die dargestellt Webseite verändert und dadurch ein Defacement durchgeführt. Bösartig an diesem ist, dass die direkten Inhalte (Webseiten im Filesystem des Webservers) korrekt aussehen. In den letzten Jahren wurden XSS-Injections auch für Bitcoin/Crypto-Mining missbraucht. In diesem Fall wird jedes Opfer welches eine Webseite besucht kurzfristig Teil des Mining-Kollektivs. Last but not least kann XSS verwendet werden, um den Browser des Opfers Teil eines DDoS-Botnets zu machen. Ein berühmtes Beispiel hierfür ist die Low-Orbit Ion Canon die z.B. auch gerne von Anonymous verwendet wurde.
 
 \subsubsection{Stehlen von Daten aus einem Passwortmanager}
@@ -75,6 +77,30 @@ document.write('<form><input id=password type=password style=visibility:hidden><
 setTimeout('alert("Password: " + document.getElementById("password").value)', 100);
 </script>
 \end{minted}
+
+\subsection{DOM-based XSS-Angriffe}
+\index{xss!dom-based}
+
+Bei DOM-based XSS wird das DOM innerhalb des Browsers modifiziert. Da der Angriff innerhalb des Browsers geschieht, besitzt der Webserver keine Möglichkeit diese Angriffe zu erkennen oder sogar zu verhindern.
+
+Ein primitives Beispiel für eine über DOM-based XSS verwundbare Webseite (\url{seite.html}):
+
+\begin{minted}{html}
+<html>
+	<head>..</head>
+	<body>
+		<script>
+			document.write("<b>URL: " + document.baseURI + "</b>");
+		</script>
+	</body>
+</html>
+\end{minted}
+
+Bei dieser Seite wird die aktuelle URL via Javascript ausgelesen (über \textit{document.baseURI}) und dynamisch in die Webseite eingefügt. Wird diese Seite z.B. als \url{seite.html} aufgerufen würde \textit{URL: seite.html} ausgegeben werden. Dies geschieht im Browser des Opfers, keine Serveroperation wird dabei involviert.
+
+Ein Angreifer könnte diese Seite ausnutzen und z.B. über \url{seite.html#<script>alert(1)</script>} aufrufen. Auf diese Weise wird wieder die URL in das Dokument eingebaut, dabei wird allerdings auch der neue Script-Tag (welcher in der URL mitübergeben wurde) eingebaut, un dder Browser exekutiert den Inhalt dieser Script-Tags als Javascript-Code. In diesem Fall wird ein Popup ausgegeben, ein Angreifer könnte natürlich weitere Payloads verwenden.
+
+Warum ist diese Angriffsart gefährlich? Ein Angreifer kann ja immerhin nichts am Server modifizieren? Die Antwort liegt im \textit{Origin} der HTML-Seite. Falls ein Fehler innerhalb einer Webapplikation vorgefunden wird, kann das eingeführte Javascript auf alle Resourcen innerhalb des identen Origins zugreifen und so z. B. die verwendeten Session-Cookies mit der Benutzeridentität auslesen. Häufig werden DOM-based XSS-Fehler in inkludierten Dokumentationen vorgefunden. Entwickler downloaden z.B. Archive mit Javascript-Bibliotheken, entpacken diese, und inkludieren diese in einem \textit{asset} oder \textit{contrib} Verzeichnis. Die entpackten Archive (inkl. dabei vorhandener Dokumentation) werden auf diese Weise vollständig auf dem Webserver deployed und sind öffentlich zugreifbar. Wenn in diesen ein DOM-based XXS Fehler vorhanden ist, kann dieser von Angreifers missbraucht werden. Da beigemengte Dokumentation selten als möglicher Angriffsvektor erkannt wird (sie führt ja auch keine direkten serverseitigen Operationen aus), bleiben diese potentiellen Schwachstellen häufig lange unerkannt.
 
 \subsection{Upload von HTML/Javascript-Dateien}
 \label{upload_js}
