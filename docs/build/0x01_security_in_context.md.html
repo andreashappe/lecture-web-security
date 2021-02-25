@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="Andreas Happe">
+  <title>Web Application Security</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@3.9.2//css/reset.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@3.9.2//css/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@3.9.2//css/theme/solarized.css" id="theme">
+  <link rel="stylesheet" href="custom.css"/>
+  <!-- Printing and PDF exports -->
+  <script>
+    var link = document.createElement( 'link' );
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = window.location.search.match( /print-pdf/gi ) ? 'https://unpkg.com/reveal.js@3.9.2//css/print/pdf.css' : 'https://unpkg.com/reveal.js@3.9.2//css/print/paper.css';
+    document.getElementsByTagName( 'head' )[0].appendChild( link );
+  </script>
+  <!--[if lt IE 9]>
+  <script src="https://unpkg.com/reveal.js@3.9.2//lib/js/html5shiv.js"></script>
+  <![endif]-->
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide">
+  <h1 class="title">Web Application Security</h1>
+  <p class="author">Andreas Happe</p>
+</section>
+
+<section>
+<section id="security-im-kontext" class="title-slide slide level1">
+<h1>Security im Kontext</h1>
+
+</section>
+<section id="security-steht-nie-alleine" class="slide level2">
+<h2>Security steht nie alleine</h2>
+<ul>
+<li>Immer Security von “irgendwas”</li>
+<li>Nicht-funktionales Requirement</li>
+</ul>
+</section>
+<section id="problem-security-häufig-als-after-thought" class="slide level2">
+<h2>Problem: Security häufig als after-thought</h2>
+</section>
+<section id="beispiel" class="slide level2">
+<h2>Beispiel</h2>
+<ul>
+<li>Projektdesign: Wasserfallmodel</li>
+<li>Zeitraum: über mehrere Jahre hinweg</li>
+<li>Sicherheit wurde eingeplant, einen Monat vor Abschluss Pen-Test</li>
+<li>Natürlich ist das Projekt verspätet</li>
+<li>Natürlich wurden nicht-funktionale Dinge nach hinten verschoben</li>
+<li>Pen-Test kann erst nach erfolgter Implementierung stattfinden</li>
+<li>Im letzten Moment wird der Pen-Test gestartet</li>
+<li>Beim Pen-Test werden Mängel gefunden</li>
+<li>Launch kann nicht mehr verschoben werden (Werbung)</li>
+</ul>
+</section>
+<section id="meh." class="slide level2">
+<h2>meh.</h2>
+</section></section>
+<section>
+<section id="strukturierter-ansatz-wäre-vorteilhaft" class="title-slide slide level1">
+<h1>Strukturierter Ansatz wäre vorteilhaft</h1>
+
+</section>
+<section id="strukturierter-ansatz-wäre-vorteilhaft-1" class="slide level2">
+<h2>Strukturierter Ansatz wäre vorteilhaft</h2>
+<p>Suboptimal:</p>
+<blockquote>
+<p>Zwar keine Ahnung wohin, aber Hauptsache schnell!!!1</p>
+</blockquote>
+</section>
+<section id="wann-sollte-etwas-unternommen-werden" class="slide level2">
+<h2>Wann sollte etwas unternommen werden?</h2>
+<ul>
+<li>Während des gesamten SDLC</li>
+</ul>
+</section>
+<section id="wann-sollte-etwas-unternommen-werden-1" class="slide level2">
+<h2>Wann sollte etwas unternommen werden?</h2>
+<ul>
+<li>Training</li>
+<li>Requirementsanalyse</li>
+<li>Architektur/Design</li>
+<li>Implementierung und Testing</li>
+<li>Maintenance (Supply-Chain Attacks)</li>
+</ul>
+</section></section>
+<section>
+<section id="threat-model" class="title-slide slide level1">
+<h1>Threat Model</h1>
+
+</section>
+<section id="threat-model-1" class="slide level2">
+<h2>Threat Model</h2>
+<p>Formaliserte Herangehensweise an Sicherheitsbetrachtung</p>
+</section>
+<section id="grundlegende-fragen" class="slide level2">
+<h2>Grundlegende Fragen</h2>
+<ul>
+<li>Was muss geschützt werden?</li>
+<li>Vor wem/was habe ich Angst?</li>
+<li>Auf welche Bereiche kann ich Einfluss nehmen?</li>
+<li>Welche Schwachstellen können auftreten?</li>
+<li>Was wären potentielle Gegenmassnahmen?</li>
+</ul>
+</section>
+<section id="was-sollte-geschützt-werden" class="slide level2">
+<h2>Was sollte geschützt werden?</h2>
+<ul>
+<li>Schützenswertes Gut</li>
+<li>CIA-Triade
+<ul>
+<li>Confidenciality, Integrity, Availabilty</li>
+<li>Non-Repudiation, Auditing</li>
+</ul></li>
+<li>Aber schlußendlich immer Kundenspezifisch</li>
+</ul>
+</section>
+<section id="vor-wem-habe-ich-angst" class="slide level2">
+<h2>Vor wem habe ich Angst?</h2>
+<ul>
+<li>Threat-Actors</li>
+<li>Wichtig zur Einschätzung der Möglichkeiten, Hartnäckigkeit, Skills</li>
+<li>Beispiele:
+<ul>
+<li>Hacktivists</li>
+<li>Script-Kiddies</li>
+<li>Staaten</li>
+<li>organisiertes Verbrechen</li>
+</ul></li>
+</ul>
+</section>
+<section id="was-ist-mein-scope" class="slide level2">
+<h2>Was ist mein Scope?</h2>
+<ul>
+<li>Welche Systeme sind in-scope?</li>
+<li>Welche Systeme sind out-of-scope?</li>
+<li>Grundlegende Sicherheitsannahmen</li>
+</ul>
+</section>
+<section id="welche-schwachstellen-können-auftreten" class="slide level2">
+<h2>Welche Schwachstellen können auftreten?</h2>
+<ul>
+<li>Architektur- oder Datenfluss-Diagramme</li>
+<li>Brainstormen (Erfahrung) oder Kataloge</li>
+<li>STRIDE</li>
+</ul>
+</section>
+<section id="was-kann-ich-grundsätzlich-machen" class="slide level2">
+<h2>Was kann ich grundsätzlich machen?</h2>
+<ul>
+<li>Entfernen des Risikos</li>
+<li>Mitigieren</li>
+<li>Versichern/Delegieren</li>
+<li>Akzeptieren</li>
+<li>(Ignorieren)</li>
+</ul>
+</section>
+<section id="und-in-welcher-reihenfolge" class="slide level2">
+<h2>..und in welcher Reihenfolge?</h2>
+<ul>
+<li>Sortieren (z. B. mittels DREAD)</li>
+<li>Kataloge mit Absicherungsmassnahmen</li>
+</ul>
+</section>
+<section id="hoffnung" class="slide level2">
+<h2>Hoffnung</h2>
+<p>Auf diese Weise sollten die Schwachstellen überhaupt nicht im Softwareprodukt “aufschlagen”.</p>
+</section></section>
+<section id="fin" class="title-slide slide level1">
+<h1>Fin</h1>
+
+</section>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/reveal.js@3.9.2//js/reveal.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        // Push each slide change to the browser history
+        history: true,
+
+        // Optional reveal.js plugins
+        dependencies: [
+          { src: 'https://unpkg.com/reveal.js@3.9.2//lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'https://unpkg.com/reveal.js@3.9.2//plugin/zoom-js/zoom.js', async: true },
+          { src: 'https://unpkg.com/reveal.js@3.9.2//plugin/notes/notes.js', async: true }
+        ]
+      });
+    </script>
+    </body>
+</html>

@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="Andreas Happe">
+  <title>Web Application Security</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@3.9.2//css/reset.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@3.9.2//css/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@3.9.2//css/theme/solarized.css" id="theme">
+  <link rel="stylesheet" href="custom.css"/>
+  <!-- Printing and PDF exports -->
+  <script>
+    var link = document.createElement( 'link' );
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = window.location.search.match( /print-pdf/gi ) ? 'https://unpkg.com/reveal.js@3.9.2//css/print/pdf.css' : 'https://unpkg.com/reveal.js@3.9.2//css/print/paper.css';
+    document.getElementsByTagName( 'head' )[0].appendChild( link );
+  </script>
+  <!--[if lt IE 9]>
+  <script src="https://unpkg.com/reveal.js@3.9.2//lib/js/html5shiv.js"></script>
+  <![endif]-->
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide">
+  <h1 class="title">Web Application Security</h1>
+  <p class="author">Andreas Happe</p>
+</section>
+
+<section>
+<section id="nachtrag" class="title-slide slide level1">
+<h1>Nachtrag:</h1>
+
+</section>
+<section id="pen-test-vorlage" class="slide level2">
+<h2>Pen-Test ,,Vorlage’’</h2>
+<ul>
+<li>per moodle verschickt</li>
+<li>soll als erster Startpunkt helfen</li>
+<li>Informationen zum Tooling während der Vorlesung (siehe auch “Meta-Informationen”)</li>
+</ul>
+</section>
+<section id="targets" class="slide level2">
+<h2>Targets</h2>
+<ul>
+<li>bug-bounties sollten freigeschalten sein</li>
+<li>hint: out-of-scope für bug-bounties ist in-scope für Semniararbeit</li>
+</ul>
+</section></section>
+<section>
+<section id="webapplikation" class="title-slide slide level1">
+<h1>Webapplikation?</h1>
+
+</section>
+<section id="definition" class="slide level2">
+<h2>Definition?</h2>
+<ul>
+<li>Client-Server Applikation</li>
+<li>Web-Browser/-Client als Client</li>
+<li>Verwendet HTTP</li>
+</ul>
+</section>
+<section id="client-server-applikation" class="slide level2">
+<h2>Client-Server Applikation</h2>
+<ul>
+<li>Client schickt Request zum Server</li>
+<li>Server bearbeitet diesen im Auftrag des Clients</li>
+<li>Server schickt Antwort zum Client zurück</li>
+</ul>
+</section>
+<section id="http---versionen" class="slide level2">
+<h2>HTTP - Versionen</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Jahr</th>
+<th>Version</th>
+<th>Bemerkung</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1989</td>
+<td>-</td>
+<td>CERN</td>
+</tr>
+<tr class="even">
+<td>1991</td>
+<td>HTTP/0.9</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>1997</td>
+<td>HTTP/1.1</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>2015</td>
+<td>HTTP/2</td>
+<td>SPDY, semi-TLSv1.3, ~66%</td>
+</tr>
+<tr class="odd">
+<td>2018</td>
+<td>HTTP/3</td>
+<td>HTTP-over-QUIC, UDP</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="tim-berners-lee" class="slide level2">
+<h2>1989: Tim Berners-Lee</h2>
+<ul>
+<li>The Hoff – Looking for Freedom</li>
+</ul>
+</section>
+<section id="http-0.9" class="slide level2">
+<h2>1991: HTTP 0.9</h2>
+<ul>
+<li>Metallica – Nothing else Matters</li>
+</ul>
+<img data-src="0x02_bravo_91.jpg" title="fig:" class="stretch" alt="Picture" />
+</section>
+<section id="http-request" class="slide level2">
+<h2>HTTP Request</h2>
+<pre><code>GET / HTTP/1.1
+Host: www.example.com
+User-Agent: Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:73.0) Gecko/20100101 Firefox/73.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5</code></pre>
+</section>
+<section id="http-verben" class="slide level2">
+<h2>HTTP Verben</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Verb</th>
+<th>Verwendung</th>
+<th>Safe</th>
+<th>Idempotent</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>GET</td>
+<td>Abfrage von Informationen</td>
+<td>x</td>
+<td>x</td>
+</tr>
+<tr class="even">
+<td>HEAD</td>
+<td>Abfrage von Meta-Informationen</td>
+<td>x</td>
+<td>x</td>
+</tr>
+<tr class="odd">
+<td>OPTIONS</td>
+<td>Abfrage von Meta-Informationen</td>
+<td>x</td>
+<td>x</td>
+</tr>
+<tr class="even">
+<td>PUT</td>
+<td>Neues Objekt hochladen</td>
+<td></td>
+<td>x</td>
+</tr>
+<tr class="odd">
+<td>DELETE</td>
+<td>Löschen eines Objektes</td>
+<td></td>
+<td>x</td>
+</tr>
+<tr class="even">
+<td>POST</td>
+<td>Erstellen von Objekten</td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>PATCH</td>
+<td>Updaten eines Objektes</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="http-response" class="slide level2">
+<h2>HTTP Response</h2>
+<pre class="http"><code>HTTP/1.1 200 OK
+Date: Mon, 23 May 2005 22:38:34 GMT
+Content-Type: text/html; charset=UTF-8
+Content-Length: 138
+Last-Modified: Wed, 08 Jan 2003 23:11:55 GMT
+Server: Apache/1.3.3.7 (Unix) (Red-Hat/Linux)
+ETag: &quot;3f80f-1b6-3e1cb03b&quot;
+Accept-Ranges: bytes
+Connection: close
+
+&lt;html&gt;
+ &lt;head&gt;&lt;title&gt;Wohoo!&lt;/title&gt;&lt;/head&gt;
+ &lt;body&gt;&lt;p&gt;Hello World!!!1&lt;/p&gt;&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+</section>
+<section id="http-statuscode" class="slide level2">
+<h2>HTTP Statuscode</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Statuscode</th>
+<th>Verwendung</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1xx</td>
+<td>Information (continue, protocol switch)</td>
+</tr>
+<tr class="even">
+<td>2xx</td>
+<td>Erfolgreich</td>
+</tr>
+<tr class="odd">
+<td>3xx</td>
+<td>Umleitungen</td>
+</tr>
+<tr class="even">
+<td>4xx</td>
+<td>Client-Fehler (inkl.Authentication)</td>
+</tr>
+<tr class="odd">
+<td>5xx</td>
+<td>Server-Fehler</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="session-und-cookies" class="slide level2">
+<h2>1994: Session und Cookies</h2>
+<ul>
+<li>Ace of Base – I Saw The Sign</li>
+</ul>
+<img data-src="0x02_bravo_94.jpg" title="fig:" class="stretch" alt="Picture" />
+</section>
+<section id="sessions" class="slide level2">
+<h2>Sessions</h2>
+<ul>
+<li>HTTP: Zustandsloses Protokoll</li>
+<li>Interaktive Sessions werden zumeist mittels Cookies gebaut</li>
+<li>Werden automatisch vom Browser zu Requests hinzugefügt</li>
+</ul>
+</section>
+<section id="beispiele-für-cookies" class="slide level2">
+<h2>Beispiele für Cookies</h2>
+<p>Server -&gt; Browser</p>
+<pre class="http"><code>Set-Cookie: cookiename=somevalue</code></pre>
+<p>Browser -&gt; Server</p>
+<pre class="http"><code>Cookie: cookiename=somevalue</code></pre>
+</section>
+<section id="first-ideas-that-this-might-be-abused" class="slide level2">
+<h2>First ideas that this might be abused</h2>
+<img data-src="0x03_cookies.png" title="fig:" class="stretch" alt="Financial Times" />
+</section>
+<section id="javascript" class="slide level2">
+<h2>1995: JavaScript</h2>
+<ul>
+<li>Coolio - Gangster’s Paradise</li>
+</ul>
+<img data-src="0x02_bravo_96.jpg" title="fig:" class="stretch" alt="Picture" />
+</section>
+<section id="javascript-1" class="slide level2">
+<h2>JavaScript</h2>
+<ul>
+<li>ursprünglich als Hack (Mozilla)</li>
+<li>wird im Browser ausgeführt</li>
+<li>Gedacht für Benutzerinteraktionen
+<ul>
+<li>Single-Threaded Event-Based Response-Loop</li>
+</ul></li>
+</ul>
+</section>
+<section id="over-time..-die-sprache" class="slide level2">
+<h2>Over Time.. die Sprache</h2>
+<ul>
+<li>JavaScript -&gt; ECMAScript</li>
+<li>Standardized (ECMAScript5, ES5, 2009)</li>
+<li>Klassen, Modules (ES6, 2015)</li>
+<li>Async/Await (ES7, 2017)</li>
+<li>Modules with “import” (2020)</li>
+<li>Future: more static typing, e.g., TypeScript or flow</li>
+</ul>
+</section>
+<section id="over-time..-die-integration" class="slide level2">
+<h2>Over Time.. die Integration</h2>
+<ul>
+<li>immer mehr Funktionalität kann per JavaScript angesprochen werden</li>
+<li>klassische “pull architektur” -&gt; “pseudo-push”-Ansätze</li>
+<li>Natürlicher Wunsch: Zugriff auf Web-Services/Operationen</li>
+</ul>
+</section>
+<section id="same-origin-policy-ns-2.02" class="slide level2">
+<h2>Same-Origin Policy (NS 2.02)</h2>
+<p>Zugriff von Javascript auf eine Resource wird nur erlaubt, wenn das Javascript und die Resource die gleiche Origin verwenden.</p>
+</section>
+<section id="spa-lets-build-rich-clients-2003" class="slide level2">
+<h2>SPA: Let’s build rich-clients ~ 2003</h2>
+<img data-src="0x02_bravo_03.jpg" title="fig:" class="stretch" alt="Picture" />
+</section>
+<section id="single-page-applications-spa" class="slide level2">
+<h2>Single-Page Applications (SPA)</h2>
+<ul>
+<li>nur eine statische HTML-Seite</li>
+<li>alle weiteren Elemente werden mittels JavaScript geladen</li>
+<li>thick-client im Webbrowser</li>
+</ul>
+</section>
+<section id="mittlerweile" class="slide level2">
+<h2>Mittlerweile:</h2>
+<ul>
+<li>im Hintergrund gerne API-Server, code re-use</li>
+<li>warum mittlerweile?</li>
+</ul>
+</section>
+<section id="pwa-one-more-thing..-2007" class="slide level2">
+<h2>PWA: one more thing.. ~ 2007</h2>
+<img data-src="0x02_bravo_07.jpg" title="fig:" class="stretch" alt="Picture" />
+</section>
+<section id="html5-etc.-mehr-fähigkeiten" class="slide level2">
+<h2>HTML5, etc.: mehr Fähigkeiten</h2>
+<ul>
+<li>HTML5-Storage</li>
+<li>WebWorker, WebAssembly</li>
+<li>Neue Kommunikationswege
+<ul>
+<li>WebSockets</li>
+<li>WebRTC</li>
+<li>postMessage</li>
+</ul></li>
+<li>Zugriff auf Sensoren (WebNFC, WebBluetooth)</li>
+<li>WebVR -&gt; WebXR</li>
+</ul>
+</section>
+<section id="thats-the-story-so-far.." class="slide level2">
+<h2>That’s the story so far..</h2>
+</section></section>
+<section>
+<section id="innerer-aufbau-einer-web-applikaton" class="title-slide slide level1">
+<h1>Innerer Aufbau einer Web-Applikaton</h1>
+
+</section>
+<section id="klassisch-serverseitig" class="slide level2">
+<h2>Klassisch Serverseitig</h2>
+<ul>
+<li>gesamte Business-Logik ist am Server</li>
+<li>Client (Webbrowser) dient nur zur Darstellung</li>
+<li>Projekt-Struktur: MVC-Pattern?</li>
+<li>Woher weiss der Server welche Operationen angeboten werden?
+<ul>
+<li>Routing</li>
+</ul></li>
+</ul>
+</section>
+<section id="mvc-pattern-in-theory" class="slide level2">
+<h2>MVC-Pattern (in theory)</h2>
+<img data-src="0x02_mvc_1.png" title="fig:" class="stretch" alt="Image" />
+</section>
+<section id="mvc-pattern-more-often" class="slide level2">
+<h2>MVC-Pattern (more often)</h2>
+<img data-src="0x02_mvc_2.png" title="fig:" class="stretch" alt="Image" />
+</section>
+<section id="on-filesystem" class="slide level2">
+<h2>On Filesystem</h2>
+<pre class="text"><code>application
+ + app
+   + controller
+     - notes_controller.rb
+   + models
+     - notes.rb
+     - users.rb
+   + views
+     + notes
+       - show.html.erb
+       - edit.html.erb
+       - create.html.erb
+       - index.html.erb
++ config
+  - routes.conf</code></pre>
+</section>
+<section id="implizites-routing" class="slide level2">
+<h2>Implizites Routing</h2>
+<p>Matching über Dateinamen</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode zsh"><code class="sourceCode zsh"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a>$ <span class="kw">ls</span> /var/www/app</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true"></a>upload.php</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true"></a>list.php</span></code></pre></div>
+<p>Problem:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode zsh"><code class="sourceCode zsh"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true"></a>$ <span class="kw">ls</span> /var/www/app</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true"></a>upload.php</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true"></a>list.php</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true"></a>exploit.php</span></code></pre></div>
+</section>
+<section id="explizites-routing" class="slide level2">
+<h2>Explizites Routing</h2>
+<p>Im Source-Code werden genau die verfügbaren Operationen definiert:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode php"><code class="sourceCode php"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true"></a><span class="co"># Larabel BASIC Get Route</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true"></a>Route::get<span class="ot">(</span><span class="st">&#39;/&#39;</span><span class="ot">,</span> <span class="kw">function</span><span class="ot">()</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true"></a>{</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true"></a>    <span class="kw">return</span> <span class="st">&#39;Hello World&#39;</span><span class="ot">;</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true"></a>}<span class="ot">);</span></span></code></pre></div>
+</section>
+<section id="rest" class="slide level2">
+<h2>REST</h2>
+<p>Standard für CRUD-Functionality</p>
+<table>
+<thead>
+<tr class="header">
+<th>URL</th>
+<th>Method</th>
+<th>Operation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>/notes/</td>
+<td>GET</td>
+<td>list notes</td>
+</tr>
+<tr class="even">
+<td>/notes/</td>
+<td>POST</td>
+<td>create note</td>
+</tr>
+<tr class="odd">
+<td>/notes/123</td>
+<td>GET</td>
+<td>show note</td>
+</tr>
+<tr class="even">
+<td>/notes/123</td>
+<td>DELETE</td>
+<td>remove note</td>
+</tr>
+<tr class="odd">
+<td>/notes/123</td>
+<td>PUT</td>
+<td>update note</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="restful-routing-in-ror" class="slide level2">
+<h2>RESTful Routing in RoR</h2>
+<div class="sourceCode" id="cb9"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true"></a><span class="dt">Rails</span>.application.routes.draw <span class="kw">do</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true"></a>  <span class="co"># automatically maps CRUD to controller</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true"></a>  resources <span class="st">:notes</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true"></a><span class="kw">end</span></span></code></pre></div>
+</section>
+<section id="client-side" class="slide level2">
+<h2>Client-Side</h2>
+<ul>
+<li>JavaScript</li>
+<li>By now: Frameworks</li>
+</ul>
+</section></section>
+<section>
+<section id="integration-mit-anderen" class="title-slide slide level1">
+<h1>Integration mit Anderen</h1>
+
+</section>
+<section id="eine-web-applikation-allein-meist-etwas-wenig" class="slide level2">
+<h2>Eine Web-Applikation allein meist etwas wenig</h2>
+<ul>
+<li>ist quasi nur der Applikationscode</li>
+<li>Daten müssen gespeichert werden</li>
+</ul>
+</section>
+<section id="minimales-setup" class="slide level2">
+<h2>Minimales Setup</h2>
+<img data-src="0x02_simple_webapp.jpg" title="fig:" class="stretch" alt="Image" />
+</section>
+<section id="but-then-customer-happens.." class="slide level2">
+<h2>But then, customer happens..</h2>
+<img data-src="0x02_shit_happens.png" title="fig:" class="stretch" alt="Image" />
+</section>
+<section id="problem-1-attack-surface" class="slide level2">
+<h2>Problem 1: Attack Surface</h2>
+</section>
+<section id="problem-2-admin-verantwortlichkeiten" class="slide level2">
+<h2>Problem 2: Admin-Verantwortlichkeiten</h2>
+<p>Admin, Dev, Betreiber</p>
+<img data-src="0x02_xaas.png" title="fig:" class="stretch" alt="Picture" />
+</section></section>
+<section>
+<section id="company-architekturen" class="title-slide slide level1">
+<h1>Company-Architekturen</h1>
+
+</section>
+<section id="moat-and-castle-perimeter-security" class="slide level2">
+<h2>Moat-and-Castle / Perimeter-Security</h2>
+<img data-src="0x02_caerlaverock_castle.jpeg" title="fig:" class="stretch" alt="Image" />
+</section>
+<section id="defense-in-depth" class="slide level2">
+<h2>Defense-in-Depth</h2>
+<img data-src="0x02_krak_de_chevaliers.jpg" title="fig:" class="stretch" alt="Image" />
+</section>
+<section id="beyondcorp-zerotrust" class="slide level2">
+<h2>BeyondCorp / Zerotrust</h2>
+<ul>
+<li>instead of trusting the network you connect from</li>
+<li>access to services is granted based on what we know about you and your devices</li>
+<li>all access to services must be authenticated, authorized and encrypted</li>
+</ul>
+</section>
+<section id="impact-für-uns" class="slide level2">
+<h2>Impact für uns?</h2>
+<ul>
+<li><p>zumeist sind Services als Webapplikationen implementiert</p></li>
+<li><p>Single-SignOn, MFA</p></li>
+<li><p>Authentication/Authorization</p></li>
+</ul>
+</section>
+<section id="fin" class="slide level2">
+<h2>FIN</h2>
+</section></section>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/reveal.js@3.9.2//js/reveal.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        // Push each slide change to the browser history
+        history: true,
+
+        // Optional reveal.js plugins
+        dependencies: [
+          { src: 'https://unpkg.com/reveal.js@3.9.2//lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'https://unpkg.com/reveal.js@3.9.2//plugin/zoom-js/zoom.js', async: true },
+          { src: 'https://unpkg.com/reveal.js@3.9.2//plugin/notes/notes.js', async: true }
+        ]
+      });
+    </script>
+    </body>
+</html>
