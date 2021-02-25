@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="Andreas Happe">
+  <title>Web Application Security</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@3.9.2//css/reset.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@3.9.2//css/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@3.9.2//css/theme/solarized.css" id="theme">
+  <link rel="stylesheet" href="custom.css"/>
+  <!-- Printing and PDF exports -->
+  <script>
+    var link = document.createElement( 'link' );
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = window.location.search.match( /print-pdf/gi ) ? 'https://unpkg.com/reveal.js@3.9.2//css/print/pdf.css' : 'https://unpkg.com/reveal.js@3.9.2//css/print/paper.css';
+    document.getElementsByTagName( 'head' )[0].appendChild( link );
+  </script>
+  <!--[if lt IE 9]>
+  <script src="https://unpkg.com/reveal.js@3.9.2//lib/js/html5shiv.js"></script>
+  <![endif]-->
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide">
+  <h1 class="title">Web Application Security</h1>
+  <p class="author">Andreas Happe</p>
+</section>
+
+<section id="meta-stuff" class="title-slide slide level1">
+<h1>Meta-Stuff</h1>
+
+</section>
+
+<section>
+<section id="der-vortragende-andreas-happe" class="title-slide slide level1">
+<h1>Der Vortragende: Andreas Happe</h1>
+
+</section>
+<section id="andreas-happe-how-to" class="slide level2">
+<h2>Andreas Happe: How To?</h2>
+<ul>
+<li>per-Du, per-Sie?</li>
+<li>Erinnerung, falls ich zu leise werde</li>
+<li>Don’t trust me, be sceptical</li>
+<li>Gerne auch direkt fragen</li>
+<li>Feedback so früh wie möglich: <a href="mailto:andreashappe@snikt.net">andreashappe@snikt.net</a></li>
+</ul>
+</section>
+<section id="when-in-doubt-ask-or-tell" class="slide level2">
+<h2>When in doubt, ask or tell</h2>
+<blockquote>
+<p>I think there should be more than one voice in a healthy society.</p>
+</blockquote>
+<p>Li Wenliang</p>
+<p>12.10.1986-7.2.2020</p>
+</section>
+<section id="education-and-work" class="slide level2">
+<h2>Education and Work</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Jahr</th>
+<th>Was</th>
+<th>Skills</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1996-2001</td>
+<td>HTL Villach</td>
+<td>Für EDV und Organisation</td>
+</tr>
+<tr class="even">
+<td>2001-2002</td>
+<td>Zivildienst</td>
+<td>Access Programmieren..</td>
+</tr>
+<tr class="odd">
+<td>2002-2009</td>
+<td>TU Wien</td>
+<td>Software Engineering</td>
+</tr>
+<tr class="even">
+<td>2008-2009</td>
+<td>BlackWhale</td>
+<td>CTO, RoR</td>
+</tr>
+<tr class="odd">
+<td>2006-2018</td>
+<td>AIT</td>
+<td>Software Engineering, C, Scala, Java, Kotlin</td>
+</tr>
+<tr class="even">
+<td>since 2013</td>
+<td>CoreTec</td>
+<td>Pen-Tester Web/Android/Whatever</td>
+</tr>
+<tr class="odd">
+<td>2016?</td>
+<td>Offensive Security</td>
+<td>OSCP</td>
+</tr>
+<tr class="even">
+<td>since 2019</td>
+<td>FH/Technikum Wien</td>
+<td>Lektor WebSec, SecOps (nicht mehr)</td>
+</tr>
+<tr class="odd">
+<td>since 2020</td>
+<td>FH/Technikum Wien</td>
+<td>Lektor WebAppSec</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="other-fun-security-stuff" class="slide level2">
+<h2>Other Fun Security Stuff</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Jahr</th>
+<th>Was</th>
+<th>Skills</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>since 2017</td>
+<td>ÖNORM</td>
+<td>A77.00 Sichere Webapplikationen</td>
+</tr>
+<tr class="even">
+<td>since 2019</td>
+<td>OWASP</td>
+<td>Leader Vienna Chapter</td>
+</tr>
+<tr class="odd">
+<td>2018</td>
+<td>OWASP</td>
+<td>Top Contributer MSTG</td>
+</tr>
+<tr class="even">
+<td>2019</td>
+<td>NATO Locked Shields</td>
+<td>Teamlead Linux + Teamlead Web</td>
+</tr>
+<tr class="odd">
+<td>2019</td>
+<td>We Are Developers</td>
+<td>Sounding Board Security</td>
+</tr>
+<tr class="even">
+<td>2020</td>
+<td>NIS-Richtlinie</td>
+<td>Auditor Kritische Infrastruktur</td>
+</tr>
+</tbody>
+</table>
+</section></section>
+<section>
+<section id="but-why" class="title-slide slide level1">
+<h1>But Why?</h1>
+
+</section>
+<section id="status-quo" class="slide level2">
+<h2>Status Quo</h2>
+<ul>
+<li>eher mau</li>
+<li>häufig eher einfachere Fehler</li>
+<li>fehlendes Bewusstsein der Grundprobleme</li>
+<li>teilweise peinliches Schweigen bei Besprechungen</li>
+</ul>
+</section>
+<section id="meine-ziele-der-vorlesung" class="slide level2">
+<h2>Meine Ziele der Vorlesung</h2>
+<ul>
+<li>Awareness schaffen
+<ul>
+<li>Sicherheitslücken und Gegenmaßnahmen</li>
+<li>Fähigkeit einen Pen-Test Bericht zu lesen</li>
+</ul></li>
+<li>Grundlegende/Zeitlose Konzepte
+<ul>
+<li>Anwendbarkeit für eigene Web-Applikationen</li>
+</ul></li>
+</ul>
+</section>
+<section id="why-are-we-doing-this" class="slide level2">
+<h2>Why are we doing this?</h2>
+<ul>
+<li>The money feels good</li>
+<li>Fehler sind immer etwas peinlich</li>
+<li>Auswirkungen werden katastrophaler</li>
+</ul>
+</section></section>
+<section>
+<section id="die-vorlesung" class="title-slide slide level1">
+<h1>Die Vorlesung</h1>
+
+</section>
+<section id="scope-der-vorlesung" class="slide level2">
+<h2>Scope der Vorlesung</h2>
+<ul>
+<li>builder vs <em>breaker</em> vs defender</li>
+<li>Attack first, Defense later</li>
+<li>generell: top-down approach</li>
+</ul>
+</section>
+<section id="bereiche-der-vorlesung" class="slide level2">
+<h2>Bereiche der Vorlesung</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Einheit</th>
+<th>Thema</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>Allgemein</td>
+<td>Security Principles</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>Allgemein</td>
+<td>Web-Applikationen: Komponenten und Architektur</td>
+</tr>
+<tr class="odd">
+<td>3-4</td>
+<td>High-Level</td>
+<td>Authentication und Authorization</td>
+</tr>
+<tr class="even">
+<td>4-6</td>
+<td>Low-Level</td>
+<td>Injection Attacks and Hardening</td>
+</tr>
+<tr class="odd">
+<td>7-8</td>
+<td>Unknown</td>
+<td>Buffer, CTFs, Praxis</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="skript" class="slide level2">
+<h2>Skript</h2>
+<ul>
+<li>Skript unter <a href="https://snikt.net/websec">https://snikt.net/websec</a></li>
+<li>Knapp 200 Seiten, nicht 100% Deckungsgleich zur Vorlesung</li>
+<li>Papierversion via Amazon falls wer sowas will</li>
+</ul>
+</section></section>
+<section>
+<section id="benotung" class="title-slide slide level1">
+<h1>Benotung</h1>
+
+</section>
+<section id="seminararbeit" class="slide level2">
+<h2>Seminararbeit</h2>
+<ul>
+<li>Umfang 15-20 Seiten</li>
+<li>“Penetration-Test” einer Web-Applikation</li>
+</ul>
+</section>
+<section id="ziel-des-penetration-tests" class="slide level2">
+<h2>Ziel des Penetration-Tests</h2>
+<ol type="1">
+<li>Berufsbegleitend: gibt es eine Homepage des Arbeitgebers?</li>
+<li>Bug-Bounty Programme (z. B. Stadt Wien über Hacker One)</li>
+<li>Ich habe im Freundeskreis auch einige “Opfer” ausgemacht</li>
+<li>Access Points / Router im eigenen Besitz</li>
+</ol>
+</section>
+<section id="typische-kapitel" class="slide level2">
+<h2>Typische Kapitel</h2>
+<ul>
+<li>TLS/HTTPS Security (Verbindungssicherheit)</li>
+<li>Verwendete HTTP-Header</li>
+<li>Verwendete Sessionkonfiguration</li>
+<li>Login/Logout Funktion</li>
+<li>Authentication/Authorization</li>
+<li>Injection-Angriffe</li>
+</ul>
+</section>
+<section id="other-stuff" class="slide level2">
+<h2>Other Stuff</h2>
+<ul>
+<li>Optional: Open-Source Intelligence, darf das andere nicht ersetzen</li>
+<li>Achtung! Social-Engineering ist verboten</li>
+</ul>
+</section>
+<section id="tooling-art-des-tests" class="slide level2">
+<h2>Tooling: Art des Tests</h2>
+<ul>
+<li>passiv: wenn keine Permission-to-Attack vorhanden ist</li>
+<li>aktiv: wenn z.B. eine Testinstanz vorhanden ist (bug-bounty)</li>
+</ul>
+</section>
+<section id="tooling-das-verwendet-werden-kann-passiv" class="slide level2">
+<h2>Tooling das verwendet werden kann (passiv)</h2>
+<ul>
+<li>HTTPS/TLS Checks wie z. B. <a href="https://www.ssllabs.com/ssltest/">Qualys SSLTest</a></li>
+<li>HTTP Header checks wie <a href="https://observatory.mozilla.org/">Observatory</a> oder <a href="https://securityheaders.com/">SecurityHeaders.io</a></li>
+<li>passiv Bewertung mittels HTTP Proxy (z. B. Burp, Fiddler, ZAP)
+<ul>
+<li>“read-only” Analyse der Session (Cookie-Flags)</li>
+<li>Login/Logout-Verhalen</li>
+<li>Authentcation-Checks</li>
+</ul></li>
+</ul>
+</section>
+<section id="tooling-das-verwendet-werden-kann-aktiv" class="slide level2">
+<h2>Tooling das verwendet werden kann (aktiv)</h2>
+<ul>
+<li>Achtung: immer nur nach Bestätigung durch das Opfer (PtA)</li>
+<li>Scanner wie w3af, nikto, etc.</li>
+<li>SQLMap für Datenbank-Injections</li>
+<li>NMAP für Portscans</li>
+</ul>
+</section>
+<section id="benotung-1" class="slide level2">
+<h2>Benotung</h2>
+<ul>
+<li>Startwert die Punkteanzahl für Note zwischen 2 und 3</li>
+<li>Abzugpunkte für unterlassene Punkte</li>
+<li>Bonuspunkte für besonders gute Ausarbeitungen</li>
+<li>Bei verspäteter Abgabe (bis zu 2 Wochen): Referenzpunkt wandert pro Woche um eine Note</li>
+</ul>
+</section>
+<section id="vorschläge" class="slide level2">
+<h2>Vorschläge</h2>
+<ul>
+<li>Bereits während der Vorlesung Gedanken machen</li>
+<li>Vorgeschlagene Kapitel der Penetration-Tests</li>
+<li>Fragen/Feedback immer möglich (fair-use)</li>
+</ul>
+</section>
+<section id="next-step" class="slide level2">
+<h2>Next-Step</h2>
+<ul>
+<li>bis nächste Woche klären ob Bedarf an Testseiten vorhanden ist</li>
+</ul>
+</section>
+<section id="weitere-informationen" class="slide level2">
+<h2>Weitere Informationen</h2>
+<ul>
+<li><a href="https://snikt.net/websec">Skriptum</a></li>
+<li><a href="https://owasp.org/www-pdf-archive/OWASP_Top_10-2017_%28en%29.pdf.pdf">OWASP Top 10</a></li>
+<li><a href="https://www.owasp.org/images/1/19/OTGv4.pdf">OWASP OTGv4</a></li>
+<li><a href="https://pentesterlab.com/">Pentester Lab</a>
+<ul>
+<li><a href="https://pentesterlab.com/exercises/web_for_pentester/course">Web for Pentester 1</a></li>
+<li><a href="https://pentesterlab.com/exercises/web_for_pentester_II/course">Web for Pentester 2</a></li>
+</ul></li>
+</ul>
+</section></section>
+<section id="fin" class="title-slide slide level1">
+<h1>Fin</h1>
+
+</section>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/reveal.js@3.9.2//js/reveal.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        // Push each slide change to the browser history
+        history: true,
+
+        // Optional reveal.js plugins
+        dependencies: [
+          { src: 'https://unpkg.com/reveal.js@3.9.2//lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'https://unpkg.com/reveal.js@3.9.2//plugin/zoom-js/zoom.js', async: true },
+          { src: 'https://unpkg.com/reveal.js@3.9.2//plugin/notes/notes.js', async: true }
+        ]
+      });
+    </script>
+    </body>
+</html>

@@ -29,3 +29,4 @@ book/ebook.ncx
 book/ebook.tmp
 book/ebook.xref
 book/graphs/*-.png
+presentation/build/*.md.html
