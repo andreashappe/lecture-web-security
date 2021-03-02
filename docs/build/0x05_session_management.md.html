@@ -123,6 +123,27 @@
 <li>Bei jedem Folge-Zugriff wird über dieses Token an den Server übertragen</li>
 <li>Die Benutzeridentität wird geprüft</li>
 <li>Beim Logout wird das Token im Browser gelöscht und am Server als inaktiv vermerkt</li>
+<li>Logout aller Sessions sollte möglich sein</li>
+</ul>
+</section>
+<section id="client-vs.-server-side-session" class="slide level2">
+<h2>Client vs. Server-Side Session</h2>
+</section>
+<section id="client-seitig" class="slide level2">
+<h2>Client-Seitig</h2>
+<ul>
+<li>Direktes Speichern der Daten im Cookie</li>
+<li>Integrität und Confidentiality muss durch Applikation sichergestellt werden</li>
+<li>Serverseitiges Invalidieren von Sessions schwer möglich</li>
+</ul>
+</section>
+<section id="server-seitig" class="slide level2">
+<h2>Server-Seitig</h2>
+<ul>
+<li>server-seitig: Random Key (Session ID) im Cookie</li>
+<li>Server-Datenbank über die der Random-Key einem Benutzer zugeordnet wird</li>
+<li>Möglichkeit der Session-Invalidation</li>
+<li>Keine sensiblen Daten innerhalb der Client-Cookies</li>
 </ul>
 </section></section>
 <section>
@@ -136,25 +157,6 @@
 <li>Cookie wird durch den Server gesetzt</li>
 <li>Cookie wird bei jedem Request automatisch durch den Browser mit übertragen</li>
 <li>Möglichkeit des Session-Timeouts und optionale Security-Flags</li>
-</ul>
-</section>
-<section id="cookies-client-vs.-server-side-session" class="slide level2">
-<h2>Cookies: Client vs. Server-Side Session</h2>
-</section>
-<section id="cookie-client-seitig" class="slide level2">
-<h2>Cookie: Client-Seitig</h2>
-<ul>
-<li>Direktes Speichern der Daten im Cookie</li>
-<li>Integrität und Confidentiality muss durch Applikation sichergestellt werden</li>
-</ul>
-</section>
-<section id="cookie-server-seitig" class="slide level2">
-<h2>Cookie: Server-Seitig</h2>
-<ul>
-<li>server-seitig: Random Key (Session ID) im Cookie</li>
-<li>Server-Datenbank über die der Random-Key einem Benutzer zugeordnet wird</li>
-<li>Möglichkeit der Session-Invalidation</li>
-<li>Keine sensiblen Daten innerhalb der Client-Cookies</li>
 </ul>
 </section>
 <section id="client-side-jwt" class="slide level2">

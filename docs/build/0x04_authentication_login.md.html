@@ -42,8 +42,8 @@
 </section>
 
 <section>
-<section id="authentication-login" class="title-slide slide level1">
-<h1>Authentication: Login</h1>
+<section id="authentication-sessions" class="title-slide slide level1">
+<h1>Authentication &amp; Sessions</h1>
 
 </section>
 <section id="owasp-top-10" class="slide level2">
@@ -59,11 +59,10 @@
 <h2>Identification</h2>
 <ul>
 <li>Benutzer “claims” seine Identität</li>
-<li>Verschiedene Möglichkeiten</li>
-<li>Meistens über Benutzername oder Email
+<li>Verschiedene Möglichkeiten
 <ul>
+<li>Benutzername und/oder Email</li>
 <li>SmartCards</li>
-<li>biometrische Methoden wie z. B. Fingerprint</li>
 <li>postIdent, videoIdent, bildIdent</li>
 </ul></li>
 <li>Häufig mit Authentication in einer Operation</li>
@@ -92,8 +91,8 @@
 </ul></li>
 <li>Bitte nicht mehr SMS verwenden
 <ul>
-<li>SS7, Sniffer, etc.</li>
-<li>Lieber Mobile-Application</li>
+<li>SS7, Sniffer (Nokia 3210), etc.</li>
+<li>Alternative: Mobile-Application</li>
 </ul></li>
 </ul>
 </section></section>
@@ -114,16 +113,19 @@
 <ul>
 <li>getrennte Benutzernamen- und passwort Masken</li>
 <li>Authentication through Email (u.a. long-term problems)</li>
-<li>HTTP BASIC basierte Authentication</li>
+<li>HTTP BASIC basierte Authentication (cis..)</li>
 <li>Flash/Silverlight/Java-Applets</li>
 </ul>
 </section>
 <section id="angriff-user-enumeration" class="slide level2">
-<h2>Angriff: User-Enumeration</h2>
+<h2>Angriff: User Enumeration</h2>
 <ul>
-<li>Angreifer kann Informationen über Vorhandensein eines Benutzers erraten &gt; “Username nicht bekannt”</li>
-<li>Im Login Form einfach: generische Fehlermeldungen verwenden</li>
-<li>Problem: was bei User-Anlegen und Passwort-Vergessen Funktionen?</li>
+<li><p>Angreifer kann Informationen über Vorhandensein eines Benutzers erraten</p>
+<blockquote>
+<p>“Username nicht bekannt”</p>
+</blockquote></li>
+<li><p>Im Login Form einfach: generische Fehlermeldungen verwenden</p></li>
+<li><p>Problem: was bei User-Anlegen und Passwort-Vergessen Funktionen?</p></li>
 </ul>
 </section>
 <section id="angriff-brute-force" class="slide level2">
@@ -171,6 +173,7 @@
 <li>Hashes</li>
 <li>Salt+Hashes</li>
 <li>Key-Derivation Functions</li>
+<li>Single-Sign On (?)</li>
 </ol>
 </section>
 <section id="falls-passwörter-gespeichert-werden.." class="slide level2">
@@ -178,8 +181,9 @@
 <ul>
 <li>niemals plain-text speichern (inkl. Logs, etc.)</li>
 <li>immer eine Key-Derivation Function verwenden (bcrypt, scrypt, pdkdf2)</li>
-<li>Salt/Key-Strechting verwenden</li>
+<li>Key-Stretching verwenden</li>
 <li>immer in der Applikation verschlüsseln (nicht erst durch DB)</li>
+<li>Gilt auch für Passwort-ähnliche Daten</li>
 </ul>
 </section>
 <section id="passwort-cracking" class="slide level2">
@@ -191,10 +195,10 @@
 </section>
 <section id="frage-zur-performance" class="slide level2">
 <h2>Frage zur Performance</h2>
-<p>Hashcat mit 10x Geforce 2080 GTX</p>
+<p>Hashcat mit einer <a href="https://gist.github.com/Chick3nman/bb22b28ec4ddec0cb5f59df97c994db4">Geforce GTX 3080</a></p>
 <ul>
 <li>bei MD5?</li>
-<li>bei PDKDF2?</li>
+<li>bei bcrypt?</li>
 </ul>
 </section>
 <section id="passwort-richtlinien" class="slide level2">

@@ -17,6 +17,23 @@ title: Web Application Security
 * Bei jedem Folge-Zugriff wird über dieses Token an den Server übertragen
 * Die Benutzeridentität wird geprüft
 * Beim Logout wird das Token im Browser gelöscht und am Server als inaktiv vermerkt
+* Logout aller Sessions sollte möglich sein
+
+## Client vs. Server-Side Session
+
+## Client-Seitig
+
+* Direktes Speichern der Daten im Cookie
+* Integrität und Confidentiality muss durch Applikation sichergestellt werden
+* Serverseitiges Invalidieren von Sessions schwer möglich
+
+## Server-Seitig
+
+* server-seitig: Random Key (Session ID) im Cookie
+* Server-Datenbank über die der Random-Key einem Benutzer zugeordnet wird
+* Möglichkeit der Session-Invalidation
+* Keine sensiblen Daten innerhalb der Client-Cookies
+
 
 # Session Möglichkeiten 
 
@@ -25,20 +42,6 @@ title: Web Application Security
 * Cookie wird durch den Server gesetzt
 * Cookie wird bei jedem Request automatisch durch den Browser mit übertragen
 * Möglichkeit des Session-Timeouts und optionale Security-Flags
-
-## Cookies: Client vs. Server-Side Session
-
-## Cookie: Client-Seitig
-
-* Direktes Speichern der Daten im Cookie
-* Integrität und Confidentiality muss durch Applikation sichergestellt werden
-
-## Cookie: Server-Seitig
-
-* server-seitig: Random Key (Session ID) im Cookie
-* Server-Datenbank über die der Random-Key einem Benutzer zugeordnet wird
-* Möglichkeit der Session-Invalidation
-* Keine sensiblen Daten innerhalb der Client-Cookies
 
 ## Client-Side: JWT
 
