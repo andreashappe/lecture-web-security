@@ -3,7 +3,7 @@ author: Andreas Happe
 title: Web Application Security
 --- 
 
-# Authentication: Login
+# Authentication & Sessions
 
 ## OWASP Top 10
 
@@ -15,9 +15,8 @@ title: Web Application Security
 
 * Benutzer “claims” seine Identität
 * Verschiedene Möglichkeiten
-* Meistens über Benutzername oder Email
+  * Benutzername und/oder Email
   * SmartCards
-  * biometrische Methoden wie z. B. Fingerprint
   * postIdent, videoIdent, bildIdent
 * Häufig mit Authentication in einer Operation
 
@@ -36,8 +35,8 @@ title: Web Application Security
 * Unterschiedliche Faktoren kombinieren
   * Beispiel: Bankomatkarte
 * Bitte nicht mehr SMS verwenden
-  * SS7, Sniffer, etc.
-  * Lieber Mobile-Application
+  * SS7, Sniffer (Nokia 3210), etc.
+  * Alternative: Mobile-Application
 
 # Login-Dialog
 
@@ -51,13 +50,15 @@ title: Web Application Security
 
 * getrennte Benutzernamen- und passwort Masken
 * Authentication through Email (u.a. long-term problems)
-* HTTP BASIC basierte Authentication
+* HTTP BASIC basierte Authentication (cis..)
 * Flash/Silverlight/Java-Applets
 
-## Angriff: User-Enumeration
+## Angriff: User Enumeration
 
 * Angreifer kann Informationen über Vorhandensein eines Benutzers erraten
+
   > “Username nicht bekannt”
+
 * Im Login Form einfach: generische Fehlermeldungen verwenden
 * Problem: was bei User-Anlegen und Passwort-Vergessen Funktionen?
 
@@ -94,13 +95,15 @@ title: Web Application Security
 2. Hashes
 3. Salt+Hashes
 4. Key-Derivation Functions
+5. Single-Sign On (?)
 
 ## Falls Passwörter gespeichert werden..
 
 * niemals plain-text speichern (inkl. Logs, etc.)
 * immer eine Key-Derivation Function verwenden (bcrypt, scrypt, pdkdf2)
-* Salt/Key-Strechting verwenden 
+* Key-Stretching verwenden 
 * immer in der Applikation verschlüsseln (nicht erst durch DB)
+* Gilt auch für Passwort-ähnliche Daten
 
 ## Passwort Cracking
 
@@ -109,10 +112,10 @@ title: Web Application Security
 
 ## Frage zur Performance
 
-Hashcat mit 10x Geforce 2080 GTX
+Hashcat mit einer [Geforce GTX 3080](https://gist.github.com/Chick3nman/bb22b28ec4ddec0cb5f59df97c994db4)
 
 * bei MD5?
-* bei PDKDF2?
+* bei bcrypt?
 
 ## Passwort-Richtlinien
 
