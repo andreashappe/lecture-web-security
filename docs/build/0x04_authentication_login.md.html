@@ -173,6 +173,16 @@
 <section id="sso-social-login" class="slide level2">
 <h2>SSO? Social Login?</h2>
 </section>
+<section id="falls-passwörter-gespeichert-werden.." class="slide level2">
+<h2>Falls Passwörter gespeichert werden..</h2>
+<ul>
+<li>niemals plain-text speichern (inkl. Logs, etc.)</li>
+<li>immer eine Key-Derivation Function verwenden (bcrypt, scrypt, pdkdf2)</li>
+<li>Key-Stretching verwenden</li>
+<li>immer in der Applikation hashen (nicht erst durch DB)</li>
+<li>Gilt auch für Passwort-ähnliche Daten</li>
+</ul>
+</section>
 <section id="evolution-der-passwort-hashes" class="slide level2">
 <h2>Evolution der Passwort-Hashes</h2>
 <ol type="1">
@@ -182,16 +192,6 @@
 <li>Key-Derivation Functions</li>
 <li>Single-Sign On (?)</li>
 </ol>
-</section>
-<section id="falls-passwörter-gespeichert-werden.." class="slide level2">
-<h2>Falls Passwörter gespeichert werden..</h2>
-<ul>
-<li>niemals plain-text speichern (inkl. Logs, etc.)</li>
-<li>immer eine Key-Derivation Function verwenden (bcrypt, scrypt, pdkdf2)</li>
-<li>Key-Stretching verwenden</li>
-<li>immer in der Applikation verschlüsseln (nicht erst durch DB)</li>
-<li>Gilt auch für Passwort-ähnliche Daten</li>
-</ul>
 </section>
 <section id="passwort-cracking" class="slide level2">
 <h2>Passwort Cracking</h2>

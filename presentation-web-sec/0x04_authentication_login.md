@@ -93,6 +93,14 @@ title: Web Application Security
 
 ## SSO? Social Login?
 
+## Falls Passwörter gespeichert werden..
+
+* niemals plain-text speichern (inkl. Logs, etc.)
+* immer eine Key-Derivation Function verwenden (bcrypt, scrypt, pdkdf2)
+* Key-Stretching verwenden 
+* immer in der Applikation hashen (nicht erst durch DB)
+* Gilt auch für Passwort-ähnliche Daten
+
 ## Evolution der Passwort-Hashes
 
 1. Nothing
@@ -100,14 +108,6 @@ title: Web Application Security
 3. Salt+Hashes
 4. Key-Derivation Functions
 5. Single-Sign On (?)
-
-## Falls Passwörter gespeichert werden..
-
-* niemals plain-text speichern (inkl. Logs, etc.)
-* immer eine Key-Derivation Function verwenden (bcrypt, scrypt, pdkdf2)
-* Key-Stretching verwenden 
-* immer in der Applikation verschlüsseln (nicht erst durch DB)
-* Gilt auch für Passwort-ähnliche Daten
 
 ## Passwort Cracking
 
