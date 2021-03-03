@@ -3,7 +3,7 @@ author: Andreas Happe
 title: Web Application Security
 --- 
 
-# Authentication & Sessions
+# Authentication & Logins
 
 ## OWASP Top 10
 
@@ -60,7 +60,9 @@ title: Web Application Security
   > “Username nicht bekannt”
 
 * Im Login Form einfach: generische Fehlermeldungen verwenden
-* Problem: was bei User-Anlegen und Passwort-Vergessen Funktionen?
+* Problem:
+  * was bei User-Anlegen und Passwort-Vergessen Funktionen?
+  * Timing
 
 ## Angriff: Brute-Force
 
@@ -88,6 +90,8 @@ title: Web Application Security
 * User sollte die Möglichkeit besitzen, alle Sessions zu beenden
 
 # Passwörter
+
+## SSO? Social Login?
 
 ## Evolution der Passwort-Hashes
 
