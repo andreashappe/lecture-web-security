@@ -50,13 +50,13 @@ Set-Cookie: sessionid4=0xbadc0ffee;Path=/
 Set-Cookie: sessionid4=0xbadc0ffee;Path=/;Domain=snikt.net
 ```
 
-## Client-Side: JWT
+## Client-Side: Tokens
 
-* [JSON Web Token](https://jwt.io): Token-Format inkl. Integritätsschutz
 * Server überträgt signiertes Token an Client
-* Das Token enthält Zugriffsberechtigungen
-* Sollte Datenbankabfragen am Server beim Zugriff vermeiden
 * Analog zu Kerberos
+* Das Token enthält Zugriffsberechtigungen und wird (hoffentlich) signiert
+* Sollte Datenbankabfragen am Server beim Zugriff vermeiden
+* Häufig verwendet: [JSON Web Token](https://jwt.io)
 
 ## JWT: für Sessions?
 

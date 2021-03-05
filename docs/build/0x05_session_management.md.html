@@ -164,14 +164,14 @@ Set-Cookie: sessionid3=0xbadc0ffee;Secure;HttpOnly;SameSite=Lax
 Set-Cookie: sessionid4=0xbadc0ffee;Path=/
 Set-Cookie: sessionid4=0xbadc0ffee;Path=/;Domain=snikt.net</code></pre>
 </section>
-<section id="client-side-jwt" class="slide level2">
-<h2>Client-Side: JWT</h2>
+<section id="client-side-tokens" class="slide level2">
+<h2>Client-Side: Tokens</h2>
 <ul>
-<li><a href="https://jwt.io">JSON Web Token</a>: Token-Format inkl. Integritätsschutz</li>
 <li>Server überträgt signiertes Token an Client</li>
-<li>Das Token enthält Zugriffsberechtigungen</li>
-<li>Sollte Datenbankabfragen am Server beim Zugriff vermeiden</li>
 <li>Analog zu Kerberos</li>
+<li>Das Token enthält Zugriffsberechtigungen und wird (hoffentlich) signiert</li>
+<li>Sollte Datenbankabfragen am Server beim Zugriff vermeiden</li>
+<li>Häufig verwendet: <a href="https://jwt.io">JSON Web Token</a></li>
 </ul>
 </section>
 <section id="jwt-für-sessions" class="slide level2">
