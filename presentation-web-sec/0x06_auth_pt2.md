@@ -7,14 +7,18 @@ title: Web Security
 
 ## Basic Idea
 
-Überprüfung der Benutzerberechtigung
-
+* Überprüfung der Benutzerberechtigung
 * Zugriffskontrolle = Authentication + Authorization
+
+## Simple Facts
+
 * muss vor der Operation ausgeführt werden
 * muss immer serverseitig implementiert werden
 * zum Zeitpunkt des Zugriffs
 
-Fehlende Authentication ist problematischer als fehlende Authorization.
+## Authentication / Authorization
+
+* Fehlende Authentication ist problematischer als fehlende Authorization.
 
 ## Zusätzliche Probleme bei fehlender Authentication
 
