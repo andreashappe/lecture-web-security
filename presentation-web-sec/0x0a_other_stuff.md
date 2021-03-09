@@ -1,6 +1,6 @@
 ---
 author: Andreas Happe
-title: Web Application Security
+title: Web Security
 --- 
 
 # Other Stuff..

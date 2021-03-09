@@ -1,6 +1,6 @@
 ---
 author: Andreas Happe
-title: Web Application Security
+title: Web Security
 --- 
 
 # Session Management
@@ -17,7 +17,7 @@ title: Web Application Security
 
 ## Client vs. Server-Side Session
 
-* Mit Cookies können unterschiedliche Systeme gebaut werden
+* unterschiedlichen Arten Sessions zu bilden
 
 ## Client-Seitig
 
@@ -47,7 +47,7 @@ Set-Cookie: sessionid1=0xbadc0ffee;
 Set-Cookie: sessionid2=0xbadc0ffee;Max-Age=42;
 Set-Cookie: sessionid3=0xbadc0ffee;Secure;HttpOnly;SameSite=Lax
 Set-Cookie: sessionid4=0xbadc0ffee;Path=/
-Set-Cookie: sessionid4=0xbadc0ffee;Path=/;Domain=snikt.net
+Set-Cookie: sessionid5=0xbadc0ffee;Domain=snikt.net
 ```
 
 ## Client-Side: Tokens
@@ -55,8 +55,8 @@ Set-Cookie: sessionid4=0xbadc0ffee;Path=/;Domain=snikt.net
 * Server überträgt signiertes Token an Client
 * Analog zu Kerberos
 * Das Token enthält Zugriffsberechtigungen und wird (hoffentlich) signiert
-* Sollte Datenbankabfragen am Server beim Zugriff vermeiden
 * Häufig verwendet: [JSON Web Token](https://jwt.io)
+* Gut für Clients, suboptimal für interaktive Browser-Sessions
 
 ## JWT: für Sessions?
 
@@ -127,7 +127,7 @@ Set-Cookie: CookieName=Wert; path=/; secure
 * Immer einen guten Zufallszahlengenerator verwenden
 * Entropie-Check der Session-Id
 
-## XSS Lücke
+## Problem: XSS
 
 * Annahme: die Webapplikation hat eine XSS-Lücke
 
@@ -163,12 +163,17 @@ Set-Cookie: CookieName=Wert; path=/; HttpOnly
 * Operation mit Session als HTTP GET Parameter
 * Social Engineering
 
-## Problem: Session-Fixation
+## Angriff inkl. Social Engineering
 
 ![Picture](0x05_session_fixation.jpg){.stretch}
 
 * Lösung: Session-ID während Login neu generieren
 * Hint: Session bei Logout löschen ist optional
+
+## "Abgeschwächte" Variante
+
+* ohne HTTP GET Parameter mit Session-Id
+* Session-Id wird bei Login/Logout nicht gelöscht
 
 # Recap
 
@@ -181,4 +186,4 @@ Set-Cookie: CookieName=Wert; path=/; HttpOnly
 * Session-Timeouts und Security-Flags verwenden
 * SessionId mit kryptographischen Zufallsgenerator erstellen
 
-## Fin
+# Fin

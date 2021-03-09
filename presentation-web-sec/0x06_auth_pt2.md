@@ -1,6 +1,6 @@
 ---
 author: Andreas Happe
-title: Web Application Security
+title: Web Security
 --- 
 
 # Authentication & Authorization
@@ -29,21 +29,32 @@ Fehlende Authentication ist problematischer als fehlende Authorization.
 
 * Zugriffsrechte werden nur am Client überprüft
 * es wird davon ausgegangen, dass die dahinterliegenden Server-Operationen nicht auffindbar sind (Security by Obscurity)
+
+## Beispiel: Rich-Client Apps im Browser
+
 * häufig: Java Applets, Flash, Silverlight
 
-## No-Go: Authorization through GUI
+## Beispiel: Forceful Browsing
 
 Es werden in Abhängigkeit von der aktuellen Benutzerrolle nur bestimmte Bereiche der Webseite angezeigt.
 
-Operationen im Hintergrund überprüfen keine Authorization.
+Operationen im Hintergrund überprüfen keine Authorization
 
-## Nicht homogene Applikationen
 
-* Authentication ist häufig Teil des verwendeten Frameworks
+## Beispiel: Direct-Object References
+
+* /invoice/420
+* /user/1
+
+Immer ohne Authentication und Authorization testen!
+
+## Nicht-homogene Applikationen
+
+* Authentication/Authorization ist häufig Teil des verwendeten Frameworks
 * Problem bei gewachsenen Applikationen:
   * mehrere Programmiersprachen/Frameworks, teilweise auch Portale
   * Brennpunkt: Plattformübergreifende Integration der Authentication
-* Hint: wenn implementiert, dann häufig als GET Parameter negativ
+* Hint: Session wird häufig als GET-Parameter übergeben
 
 ## Selbst-geschriebene Komponenten
 

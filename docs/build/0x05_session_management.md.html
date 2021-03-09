@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="generator" content="pandoc">
   <meta name="author" content="Andreas Happe">
-  <title>Web Application Security</title>
+  <title>Web Security</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -99,7 +99,7 @@
     <div class="slides">
 
 <section id="title-slide">
-  <h1 class="title">Web Application Security</h1>
+  <h1 class="title">Web Security</h1>
   <p class="author">Andreas Happe</p>
 </section>
 
@@ -123,7 +123,7 @@
 <section id="client-vs.-server-side-session" class="slide level2">
 <h2>Client vs. Server-Side Session</h2>
 <ul>
-<li>Mit Cookies können unterschiedliche Systeme gebaut werden</li>
+<li>unterschiedlichen Arten Sessions zu bilden</li>
 </ul>
 </section>
 <section id="client-seitig" class="slide level2">
@@ -162,7 +162,7 @@
 Set-Cookie: sessionid2=0xbadc0ffee;Max-Age=42;
 Set-Cookie: sessionid3=0xbadc0ffee;Secure;HttpOnly;SameSite=Lax
 Set-Cookie: sessionid4=0xbadc0ffee;Path=/
-Set-Cookie: sessionid4=0xbadc0ffee;Path=/;Domain=snikt.net</code></pre>
+Set-Cookie: sessionid5=0xbadc0ffee;Domain=snikt.net</code></pre>
 </section>
 <section id="client-side-tokens" class="slide level2">
 <h2>Client-Side: Tokens</h2>
@@ -170,8 +170,8 @@ Set-Cookie: sessionid4=0xbadc0ffee;Path=/;Domain=snikt.net</code></pre>
 <li>Server überträgt signiertes Token an Client</li>
 <li>Analog zu Kerberos</li>
 <li>Das Token enthält Zugriffsberechtigungen und wird (hoffentlich) signiert</li>
-<li>Sollte Datenbankabfragen am Server beim Zugriff vermeiden</li>
 <li>Häufig verwendet: <a href="https://jwt.io">JSON Web Token</a></li>
+<li>Gut für Clients, suboptimal für interaktive Browser-Sessions</li>
 </ul>
 </section>
 <section id="jwt-für-sessions" class="slide level2">
@@ -264,8 +264,8 @@ Set-Cookie: CookieName=Wert; path=/; secure</code></pre>
 <li>Entropie-Check der Session-Id</li>
 </ul>
 </section>
-<section id="xss-lücke" class="slide level2">
-<h2>XSS Lücke</h2>
+<section id="problem-xss" class="slide level2">
+<h2>Problem: XSS</h2>
 <ul>
 <li>Annahme: die Webapplikation hat eine XSS-Lücke</li>
 </ul>
@@ -302,12 +302,19 @@ Set-Cookie: CookieName=Wert; path=/; secure</code></pre>
 <li>Social Engineering</li>
 </ul>
 </section>
-<section id="problem-session-fixation-1" class="slide level2">
-<h2>Problem: Session-Fixation</h2>
+<section id="angriff-inkl.-social-engineering" class="slide level2">
+<h2>Angriff inkl. Social Engineering</h2>
 <img data-src="0x05_session_fixation.jpg" title="fig:" class="stretch" alt="Picture" />
 <ul>
 <li>Lösung: Session-ID während Login neu generieren</li>
 <li>Hint: Session bei Logout löschen ist optional</li>
+</ul>
+</section>
+<section id="abgeschwächte-variante" class="slide level2">
+<h2>“Abgeschwächte” Variante</h2>
+<ul>
+<li>ohne HTTP GET Parameter mit Session-Id</li>
+<li>Session-Id wird bei Login/Logout nicht gelöscht</li>
 </ul>
 </section></section>
 <section>
@@ -325,10 +332,11 @@ Set-Cookie: CookieName=Wert; path=/; secure</code></pre>
 <li>Session-Timeouts und Security-Flags verwenden</li>
 <li>SessionId mit kryptographischen Zufallsgenerator erstellen</li>
 </ul>
-</section>
-<section id="fin" class="slide level2">
-<h2>Fin</h2>
 </section></section>
+<section id="fin" class="title-slide slide level1">
+<h1>Fin</h1>
+
+</section>
     </div>
   </div>
 

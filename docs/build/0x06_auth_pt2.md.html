@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="generator" content="pandoc">
   <meta name="author" content="Andreas Happe">
-  <title>Web Application Security</title>
+  <title>Web Security</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -99,7 +99,7 @@
     <div class="slides">
 
 <section id="title-slide">
-  <h1 class="title">Web Application Security</h1>
+  <h1 class="title">Web Security</h1>
   <p class="author">Andreas Happe</p>
 </section>
 
@@ -138,24 +138,37 @@
 <ul>
 <li>Zugriffsrechte werden nur am Client überprüft</li>
 <li>es wird davon ausgegangen, dass die dahinterliegenden Server-Operationen nicht auffindbar sind (Security by Obscurity)</li>
+</ul>
+</section>
+<section id="beispiel-rich-client-apps-im-browser" class="slide level2">
+<h2>Beispiel: Rich-Client Apps im Browser</h2>
+<ul>
 <li>häufig: Java Applets, Flash, Silverlight</li>
 </ul>
 </section>
-<section id="no-go-authorization-through-gui" class="slide level2">
-<h2>No-Go: Authorization through GUI</h2>
+<section id="beispiel-forceful-browsing" class="slide level2">
+<h2>Beispiel: Forceful Browsing</h2>
 <p>Es werden in Abhängigkeit von der aktuellen Benutzerrolle nur bestimmte Bereiche der Webseite angezeigt.</p>
-<p>Operationen im Hintergrund überprüfen keine Authorization.</p>
+<p>Operationen im Hintergrund überprüfen keine Authorization</p>
+</section>
+<section id="beispiel-direct-object-references" class="slide level2">
+<h2>Beispiel: Direct-Object References</h2>
+<ul>
+<li>/invoice/420</li>
+<li>/user/1</li>
+</ul>
+<p>Immer ohne Authentication und Authorization testen!</p>
 </section>
 <section id="nicht-homogene-applikationen" class="slide level2">
-<h2>Nicht homogene Applikationen</h2>
+<h2>Nicht-homogene Applikationen</h2>
 <ul>
-<li>Authentication ist häufig Teil des verwendeten Frameworks</li>
+<li>Authentication/Authorization ist häufig Teil des verwendeten Frameworks</li>
 <li>Problem bei gewachsenen Applikationen:
 <ul>
 <li>mehrere Programmiersprachen/Frameworks, teilweise auch Portale</li>
 <li>Brennpunkt: Plattformübergreifende Integration der Authentication</li>
 </ul></li>
-<li>Hint: wenn implementiert, dann häufig als GET Parameter negativ</li>
+<li>Hint: Session wird häufig als GET-Parameter übergeben</li>
 </ul>
 </section>
 <section id="selbst-geschriebene-komponenten" class="slide level2">
