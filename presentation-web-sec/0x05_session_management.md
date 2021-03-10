@@ -64,10 +64,11 @@ Set-Cookie: sessionid5=0xbadc0ffee;Domain=snikt.net
 
 ## ViewState
 
-* ViewState beschreibt die Sicht des Client
+* ViewState beschreibt den State einer Webseite
   * beinhaltet z. B. noch nicht am Server gespeicherte Daten
-  * Teilweise als State-Model (welche Aktionen kann der User durchführen)
+  * Teilweise inkl. State-Model (welche Aktionen kann der User durchführen)
 * Client schickt den ViewState bei jeder Operation mit (HTML hidden form)
+* Server verwendet den ViewState um den Status zu rekonstruieren (d'oh)
 * Bei jeder Operation vergleicht der Server ob der ViewState passt
 
 ## Viewstate: Security

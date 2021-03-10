@@ -181,12 +181,13 @@ Set-Cookie: sessionid5=0xbadc0ffee;Domain=snikt.net</code></pre>
 <section id="viewstate" class="slide level2">
 <h2>ViewState</h2>
 <ul>
-<li>ViewState beschreibt die Sicht des Client
+<li>ViewState beschreibt den State einer Webseite
 <ul>
 <li>beinhaltet z. B. noch nicht am Server gespeicherte Daten</li>
-<li>Teilweise als State-Model (welche Aktionen kann der User durchführen)</li>
+<li>Teilweise inkl. State-Model (welche Aktionen kann der User durchführen)</li>
 </ul></li>
 <li>Client schickt den ViewState bei jeder Operation mit (HTML hidden form)</li>
+<li>Server verwendet den ViewState um den Status zu rekonstruieren (d’oh)</li>
 <li>Bei jeder Operation vergleicht der Server ob der ViewState passt</li>
 </ul>
 </section>
