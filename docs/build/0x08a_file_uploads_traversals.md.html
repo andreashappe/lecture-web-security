@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="Andreas Happe">
+  <title>Web Security</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@3.9.2//css/reset.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@3.9.2//css/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@3.9.2//css/theme/solarized.css" id="theme">
+  <link rel="stylesheet" href="custom.css"/>
+  <!-- Printing and PDF exports -->
+  <script>
+    var link = document.createElement( 'link' );
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = window.location.search.match( /print-pdf/gi ) ? 'https://unpkg.com/reveal.js@3.9.2//css/print/pdf.css' : 'https://unpkg.com/reveal.js@3.9.2//css/print/paper.css';
+    document.getElementsByTagName( 'head' )[0].appendChild( link );
+  </script>
+  <!--[if lt IE 9]>
+  <script src="https://unpkg.com/reveal.js@3.9.2//lib/js/html5shiv.js"></script>
+  <![endif]-->
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide">
+  <h1 class="title">Web Security</h1>
+  <p class="author">Andreas Happe</p>
+</section>
+
+<section>
+<section id="file-uploads" class="title-slide slide level1">
+<h1>File Uploads</h1>
+
+</section>
+<section id="umfeld" class="slide level2">
+<h2>Umfeld</h2>
+<ul>
+<li>Benutzer kann Dateien hochladen</li>
+<li>Benutzer kann Dateien wieder herunterladen bzw. auf Dateien zugreifen</li>
+<li>(Dateien werden server-seitig gelesen)</li>
+</ul>
+</section>
+<section id="das-upload-verzeichnis-public" class="slide level2">
+<h2>Das upload-Verzeichnis: public</h2>
+<ul>
+<li>in diesem Verzeichnis werden Dateien abgelegt</li>
+<li>schlechtes Beispiel: /var/www/upload</li>
+<li>Problem: web-server vs app-server (authentication/authorization)</li>
+<li>Problem: Uploads werden dadurch Teil der Applikation</li>
+<li>Dateitypen begrenzen (keine HTML-Files)</li>
+<li>Niemals Dateinamen durch User bestimmen lassen</li>
+</ul>
+</section>
+<section id="bessere-lösung" class="slide level2">
+<h2>Bessere Lösung</h2>
+<ul>
+<li>Lösung: getrenntes Download-Verzeichnis (oder BLOBS)</li>
+<li>Ausserhalb des Webroots</li>
+<li>Download-Operation download.php?id=123 mit auth</li>
+</ul>
+</section>
+<section id="upload-von-malicious-files" class="slide level2">
+<h2>Upload von malicious files</h2>
+<ul>
+<li>Backdoors, z. B. als PHP Dateien</li>
+<li>Integration von Virenscanner? Auf Filesystem-Ebene problematisch für Applikation</li>
+</ul>
+</section>
+<section id="upload-von-html-files" class="slide level2">
+<h2>Upload von HTML Files</h2>
+<ul>
+<li>Wenn ein HTML-File hochgeladen und danach betrachtet wird, hat inkludierter JavaScript Code Zugriff auf Cookies, etc.</li>
+<li>Content-Disposition (download-only)</li>
+<li>X-Content-Type-Options Header</li>
+</ul>
+</section>
+<section id="best-practises" class="slide level2">
+<h2>Best Practises</h2>
+<ul>
+<li>Dateitypen begrenzen</li>
+<li>Getrenntes Upload-Verzeichnis, ausserhalb vom Webroot</li>
+<li>Don’t use user-supplied filenames</li>
+<li>Overwrite nicht erlauben</li>
+<li>Verwendung eines Malware/Viren-Scanners</li>
+<li>Bei download Zugriffsberechtigungen beachten!</li>
+</ul>
+</section>
+<section id="architecure-sandboxing" class="slide level2">
+<h2>Architecure: Sandboxing</h2>
+<ul>
+<li>Wenn man unbedingt user-supplied Daten bearbeiten muss, z. B. Bildbearbeitung</li>
+<li>Separation of Duties: Bearbeitung in eigener Komponente</li>
+<li>Diese Komponente läuft gesandboxed oder auf einer eigenen VM</li>
+<li>Microservices?</li>
+</ul>
+</section></section>
+<section>
+<section id="path-traversals" class="title-slide slide level1">
+<h1>Path Traversals</h1>
+
+</section>
+<section id="path-traversals-grundsituation" class="slide level2">
+<h2>Path Traversals: Grundsituation</h2>
+<ul>
+<li>Annahme Operation: /var/www/GetImage.jsp</li>
+<li>https://opfer.local/GetImage.jsp?file=diagram.jpg</li>
+<li>Zugriff auf Datei /var/www/diagram.jpg</li>
+</ul>
+</section>
+<section id="trying-to-get-out-of-webroot" class="slide level2">
+<h2>Trying to get out of WebRoot</h2>
+<pre><code>Parameter: ./../../../../etc/passwd
+/var/www/./../../../../etc/passwd
+-&gt; /etc/passwd</code></pre>
+</section>
+<section id="path-traversals-gegenmaßnahmen" class="slide level2">
+<h2>Path Traversals: Gegenmaßnahmen</h2>
+<ul>
+<li>Nicht benutzer-übergebene Dateinamen beim Zugriff verwenden</li>
+<li>immer den kanonischen Pfad berechnen und verwenden</li>
+<li>whitelisten von Download-Verzeichnis (Achtung bei NULL-Characters, etc.)</li>
+<li>Einsatz von Sandboxes und Chroots</li>
+</ul>
+</section></section>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/reveal.js@3.9.2//js/reveal.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        // Push each slide change to the browser history
+        history: true,
+
+        // Optional reveal.js plugins
+        dependencies: [
+          { src: 'https://unpkg.com/reveal.js@3.9.2//lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'https://unpkg.com/reveal.js@3.9.2//plugin/zoom-js/zoom.js', async: true },
+          { src: 'https://unpkg.com/reveal.js@3.9.2//plugin/notes/notes.js', async: true }
+        ]
+      });
+    </script>
+    </body>
+</html>

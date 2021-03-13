@@ -57,6 +57,16 @@ Strict-Transport-Security: max-age=31536000, includeSubdomain, preload
 * Credentials im Dateisystem oder in Repositories
 * Backups
 
+## Configuration Management
+
+- nicht hard-coded
+- Beispiel: .env Files
+
+## Special Case: Credential Management
+
+- potentiell im Framework integriert
+- Dezidierte Credential-Services
+
 ## Frameworks: Credential Storage
 
 Frameworks bieten zumeist Möglichkeiten zum Speichern sensitiver Keys/Credentials/etc.
@@ -78,8 +88,8 @@ Ruby on Rails 5.2:
 
 ## Wie kann dies automatisiert überprüft werden
 
-* retire.js
-* OWASP DependencyCheck
+* OWASP dependency-check, retire.js
+* OWASP dependency-track
 
 # Logging / Monitoring
 
@@ -96,12 +106,5 @@ Ruby on Rails 5.2:
 * Zentralisiert (weil mehrere app server, db server, etc.)
 * Secure
 * Auswertbar
-
-# DevOps
-
-## TODO
-
-- configuration management
-- .env
 
 # FIN

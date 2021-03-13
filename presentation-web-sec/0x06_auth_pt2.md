@@ -27,9 +27,9 @@ title: Web Security
 * große Gefährdung durch Crawler, etc.
 * Verhalten im Angriffsfall?
 
-# Probleme
+# Problem: Fehlende serverseitige Überprüfung
 
-## Keine serverseitige Überprüfung
+## Grundproblem
 
 * Zugriffsrechte werden nur am Client überprüft
 * es wird davon ausgegangen, dass die dahinterliegenden Server-Operationen nicht auffindbar sind (Security by Obscurity)
@@ -38,12 +38,13 @@ title: Web Security
 
 * häufig: Java Applets, Flash, Silverlight
 
-## Beispiel: Forceful Browsing
+## Forceful Browsing
 
 Es werden in Abhängigkeit von der aktuellen Benutzerrolle nur bestimmte Bereiche der Webseite angezeigt.
 
 Operationen im Hintergrund überprüfen keine Authorization
 
+Beispiel: Direktzugriff auf /admin
 
 ## Beispiel: Direct-Object References
 
@@ -51,6 +52,40 @@ Operationen im Hintergrund überprüfen keine Authorization
 * /user/1
 
 Immer ohne Authentication und Authorization testen!
+
+## Scoping von Daten
+
+Innerhalb der Applikation läuft die Applikationslogik immer im Auftrag eines Benutzers
+
+Die bearbeitenden Daten sollten so früh wie möglich auf den aktuellen Benutzer gebunden werden
+
+## Scoping von Daten
+
+```
+GET /invoices/42
+```
+
+Negativ:
+``` ruby
+Invoices.all.find(id)
+# select * from invoices where id = :id;
+```
+
+Positiv:
+
+``` ruby
+current_user.invoices.find(id)
+# select * from invoices where user_id = :current_user.id and id = :id
+```
+
+## Gegenbeispiel: Usability
+
+* ÖBB Tickets
+* Download des Tickets ohne Authentication
+* Ticket-Id/Download-Id ist zufällig gewählt
+
+
+# Problem: Fehlende Konsistenz
 
 ## Nicht-homogene Applikationen
 
@@ -81,65 +116,7 @@ Beispiel: Dokumenten-Export
 /documents/1.pdf
 ```
 
-## Gegenbeispiel: Usability
-
-* ÖBB Tickets
-* Download des Tickets ohne Authentication
-* Ticket-Id/Download-Id ist zufällig gewählt
-
-# CSRF-Angriffe
-
-## CSRF-Angriffe
-
-* Nutzen ein bestehendes Vertrauensverhältnis zwischen (Opfer) Web-Browser und einem Webserver aus
-* Grundproblem: Browser verschickt automatisch Session-Cookies beim Zugriff auf entfernte Server
-* Durch ein verstecktes Formular auf einer fremden Webseite wird eine Operation mit den Rechten des Opfers auf einer anderen Webseite ausgeführt
-
-## Flow
-
-![Picture](0x06_csrf.png){.stretch}
-
-## Gegenmaßname: Synchronizer Token
-
-* Server setzt (zufälliges) Token bei jedem Formular und vergleicht ob dieses mit dem serverseitigen Token übereinstimmt
-* Token sollte regelmässig neu generiert werden
-* Was passiert wenn kein CSRF-Token Feld mit übergeben wird?
-
-## Gegenmaßnahme: sameSite-Flag
-
-* Same-Site Flag bei Cookies
-* Strict: Cookie wird nie Cross-Site übertragen
-* Lax: Safe HTTP Method und Top-Level-Navigation
-* Default ab Chrome 80
-
-# Authorization in Alternate Channels
-
-## Grundproblem
-
-Die Zugriffsrechte müssen zwischen diesen gesamten Schnittstellen abgeglichen werden.
-
-Beispiel:
-
-* eine Webseite
-* als WebServices für mobile Clients
-* eine REST-API
-* WebSocket-Schnittstelle
-
-## Authentication bei WebSockets
-
-* Basics:
-  * Immer das wss Protokoll verwenden
-  * Nicht Websockets zum Tunneln verwenden
-* Implicit Authentication (Cookie oder HTTP BASIC)
-* Authorization und Authentication pro Nachricht kontrollieren
-
-## WebSockets: Authentication
-
-* Duplicate Authentication (token based)
-* Manuelle Authentication/Authorization
-* quasi: duplizierte Session-Struktur
-
-# Implementierungs-Hinweise
+# Problem: Welche Felder werden überprüft?
 
 ## Beispiel: Update Operation
 
@@ -156,7 +133,10 @@ POST /user/42/update HTTP 1/1
 * HTTP GET oder PATCH statt POST?
 * Zusätzliches Feld “admin”: “1” im Datensatz?
 
-## Probleme bei Mass Assignments
+
+# Problem: Mass Assignments
+
+## Mass-Assignment als Automatisierung
 
 Parameter werden automatisch zugeordnet
 
@@ -193,33 +173,60 @@ def user_params
 end
 ```
 
-## Scoping von Daten
+# Problem: CSRF-Angriffe
 
-Innerhalb der Applikation läuft die Applikationslogik immer im Auftrag eines Benutzers
+## Eigentlich Cross-Origin-Request-Forgery
 
-Die bearbeitenden Daten sollten so früh wie möglich auf den aktuellen Benutzer gebunden werden
+- Site vs. Origin
+
+## CSRF-Angriffe
+
+* Nutzen ein bestehendes Vertrauensverhältnis zwischen (Opfer) Web-Browser und einem Webserver aus
+* Grundproblem: Browser verschickt automatisch Session-Cookies beim Zugriff auf entfernte Server
+* Durch ein verstecktes Formular auf einer fremden Webseite wird eine Operation mit den Rechten des Opfers auf einer anderen Webseite ausgeführt
+
+## Flow
+
+![Picture](0x06_csrf.png){.stretch}
+
+## Gegenmaßname: Synchronizer Token
+
+* Server setzt (zufälliges) Token bei jedem Formular und vergleicht ob dieses mit dem serverseitigen Token übereinstimmt
+* Token sollte regelmässig neu generiert werden
+* Was passiert wenn kein CSRF-Token Feld mit übergeben wird?
+
+## Gegenmaßnahme: sameSite-Flag
+
+* Same-Site Flag bei Cookies
+* Strict: Cookie wird nie Cross-Site übertragen
+* Lax: Safe HTTP Method und Top-Level-Navigation
+* Default ab Chrome 80
+
+# Problem: Authorization in Alternate Channels
+
+## Grundproblem
+
+Die Zugriffsrechte müssen zwischen diesen gesamten Schnittstellen abgeglichen werden.
 
 Beispiel:
 
-```
-GET /invoices/id
-```
+* eine Webseite
+* als WebServices für mobile Clients
+* eine REST-API
+* WebSocket-Schnittstelle
 
-## Scoping von Daten
+## Authentication bei WebSockets
 
-```
-GET /invoices/42
-```
+* Basics:
+  * Immer das wss Protokoll verwenden
+  * Nicht Websockets zum Tunneln verwenden
+* Implicit Authentication (Cookie oder HTTP BASIC)
+* Authorization und Authentication pro Nachricht kontrollieren
 
-Negativ:
-``` ruby
-Invoices.all.find(id)
-```
+## WebSockets: Authentication
 
-Positiv:
-
-``` ruby
-current_user.invoices.find(id)
-```
+* Duplicate Authentication (token based)
+* Manuelle Authentication/Authorization
+* quasi: duplizierte Session-Struktur
 
 # FIN
