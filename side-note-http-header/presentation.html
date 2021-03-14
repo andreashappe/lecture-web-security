@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="Andreas Happe">
+  <title>HTTP Header Security</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@3.9.2//css/reset.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@3.9.2//css/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@3.9.2//css/theme/beige.css" id="theme">
+  <link rel="stylesheet" href="custom.css"/>
+  <!-- Printing and PDF exports -->
+  <script>
+    var link = document.createElement( 'link' );
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = window.location.search.match( /print-pdf/gi ) ? 'https://unpkg.com/reveal.js@3.9.2//css/print/pdf.css' : 'https://unpkg.com/reveal.js@3.9.2//css/print/paper.css';
+    document.getElementsByTagName( 'head' )[0].appendChild( link );
+  </script>
+  <!--[if lt IE 9]>
+  <script src="https://unpkg.com/reveal.js@3.9.2//lib/js/html5shiv.js"></script>
+  <![endif]-->
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide">
+  <h1 class="title">HTTP Header Security</h1>
+  <p class="author">Andreas Happe</p>
+</section>
+
+<section id="agenda" class="title-slide slide level1">
+<h1>Agenda</h1>
+<ul>
+<li>Allgemeines</li>
+<li>HSTS</li>
+<li>Security-Header</li>
+<li>Cookie-Flags</li>
+<li>SOP &amp; CORS</li>
+<li>CSP</li>
+</ul>
+</section>
+
+<section>
+<section id="allgemeines" class="title-slide slide level1">
+<h1>Allgemeines</h1>
+
+</section>
+<section id="http-header-e.g.-generali.at" class="slide level2">
+<h2>HTTP Header (e.g. generali.at)</h2>
+<pre class="http"><code>HTTP/1.1 200 OK
+Date: Sun, 14 Mar 2021 09:20:21 GMT
+Server: Apache
+Content-Language: de
+Strict-Transport-Security: max-age=10886400
+Cache-Control: max-age=1
+Expires: Sun, 14 Mar 2021 09:20:22 GMT
+Vary: Accept-Encoding,User-Agent
+Content-Encoding: gzip
+X-UA-Compatible: IE=Edge,chrome=1
+Keep-Alive: timeout=20, max=86
+Connection: Keep-Alive
+Transfer-Encoding: chunked
+Content-Type: text/html; charset=utf-8</code></pre>
+</section>
+<section id="warum-security-header" class="slide level2">
+<h2>Warum Security Header?</h2>
+<p>Um den Browser Informationen mitzuteilen:</p>
+<ol type="1">
+<li>Erwartungshaltung für meine Seite</li>
+<li>Erwartungshaltung bei der Interaktion mit anderen Seiten</li>
+</ol>
+<p>HTTP Header sind immer best-effort/hardening</p>
+</section>
+<section id="site-vs.-origin" class="slide level2">
+<h2>Site vs. Origin</h2>
+<ul>
+<li>Origin: Protokoll + Name + Port</li>
+<li>Site: eTLD+1</li>
+</ul>
+<pre><code>Beispiel: a.site.at
+Origin: https://a.site.at:443
+Site: site.at</code></pre>
+</section>
+<section id="site-vs.-origin-beispiele" class="slide level2">
+<h2>Site vs. Origin: Beispiele</h2>
+<p>Same Site, different Origin:</p>
+<pre><code>a.generali.at
+b.generali.at</code></pre>
+</section>
+<section id="kompatibilität" class="slide level2">
+<h2>Kompatibilität</h2>
+<ul>
+<li>Immer von der Browserversion abhängig</li>
+<li><a href="https://caniuse.com/">caniuse.com</a></li>
+</ul>
+</section></section>
+<section>
+<section id="hsts" class="title-slide slide level1">
+<h1>HSTS</h1>
+
+</section>
+<section id="http-strict-transport-security" class="slide level2">
+<h2>HTTP Strict Transport Security</h2>
+<p>Folgekommunikation zwischen Browser und Server muss sicher verschlüsselt (HTTPS) erfolgen</p>
+</section>
+<section id="beispiel" class="slide level2">
+<h2>Beispiel</h2>
+<pre class="http"><code>Strict-Transport-Security: max-age=31536000; includeSubDomains
+Strict-Transport-Security: max-age=63072000; includeSubDomains; preload</code></pre>
+</section>
+<section id="expect-ct" class="slide level2">
+<h2>Expect-CT</h2>
+<ul>
+<li><a href="https://developer.mozilla.org/de/docs/Web/HTTP/Headers/Expect-CT">Certificate Transparency</a></li>
+<li>Schutz vor doppelt vergebenen Zertifikaten</li>
+<li>Obsolete in 2021</li>
+</ul>
+<pre class="http"><code>Expect-CT: max-age=86400, enforce, report-uri=&quot;https://foo.example/report&quot;</code></pre>
+</section></section>
+<section>
+<section id="security-header-f.-schwachstellen" class="title-slide slide level1">
+<h1>Security-Header f. Schwachstellen</h1>
+
+</section>
+<section id="clickjacking-x-frame-options" class="slide level2">
+<h2>Clickjacking / X-Frame-Options</h2>
+<ul>
+<li><a href="https://portswigger.net/web-security/clickjacking">Clickjacking / UI-Redress Attacks</a></li>
+</ul>
+<p><img data-src="./0x09_clickjacking.jpg" /></p>
+</section>
+<section id="x-frame-options" class="slide level2">
+<h2>X-Frame-Options</h2>
+<pre class="http"><code>X-Frame-Options: deny
+X-Frame-Options: sameorigin
+X-Frame-Options: allow-from https://example.com/</code></pre>
+</section>
+<section id="x-frame-options-nachteile" class="slide level2">
+<h2>X-Frame-Options: Nachteile</h2>
+<ul>
+<li>Header nur einmal erlaubt</li>
+<li>mit allow-from kann nur eine Origin angegeben werden</li>
+<li>Double-Framing ist möglich</li>
+<li>Alternative: CSP</li>
+</ul>
+</section>
+<section id="content-sniffing-x-content-type-options" class="slide level2">
+<h2>Content-Sniffing / X-Content-Type-Options</h2>
+<ul>
+<li>Schwachstelle bei Verwendung des Internet Explorer</li>
+</ul>
+<pre class="http"><code>X-Content-Type-Options: nosniff</code></pre>
+</section>
+<section id="xss-x-xss-protection" class="slide level2">
+<h2>XSS / X-XSS-Protection</h2>
+<ul>
+<li>obsolete (Chrome, Firefox, Edge)</li>
+<li>zur Kontrolle des XSS-Schutzes von Browsern gedacht</li>
+</ul>
+<pre class="http"><code>X-XSS-Protection: 0
+X-XSS-Protection: 1
+X-XSS-Protection: 1; mode=block
+X-XSS-Protection: 1; report=&lt;reporting-uri&gt;</code></pre>
+</section>
+<section id="referrer-policy" class="slide level2">
+<h2>Referrer-Policy</h2>
+<ul>
+<li>Kontrolliert den Inhalt des Referer-Headers</li>
+<li>Viele veschiedene <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy">Optionen</a>
+<ul>
+<li>full-url vs origin vs. none</li>
+<li>same-origin vs. cross-origin</li>
+<li>http vs. https</li>
+</ul></li>
+</ul>
+</section>
+<section id="referrer-policy-beispiele" class="slide level2">
+<h2>Referrer-Policy: Beispiele</h2>
+<pre class="http"><code>Referrer-Policy: no-referrer
+Referrer-Policy: no-referrer-when-downgrade
+Referrer-Policy: origin
+Referrer-Policy: origin-when-cross-origin
+Referrer-Policy: same-origin
+Referrer-Policy: strict-origin
+Referrer-Policy: strict-origin-when-cross-origin
+Referrer-Policy: unsafe-url</code></pre>
+<ul>
+<li>new default: strict-origin-when-cross-origin</li>
+<li>old default: no-referrer-when-downgrade</li>
+</ul>
+</section>
+<section id="permissions-policy" class="slide level2">
+<h2>Permissions-Policy</h2>
+<ul>
+<li>ehemalige Feature-Policy</li>
+<li>noch nicht von Firefox und Safari supported</li>
+<li>Konfiguriert <a href="https://www.w3.org/TR/permissions-policy-1/">Browser Features</a></li>
+</ul>
+<pre class="http"><code>Permissions-Policy: geolocation=(self &quot;https://example.com&quot;)</code></pre>
+</section></section>
+<section>
+<section id="cookie-flags" class="title-slide slide level1">
+<h1>Cookie-Flags</h1>
+
+</section>
+<section id="allgemein" class="slide level2">
+<h2>Allgemein</h2>
+<ul>
+<li>werden beim Setzen des Cookies angegeben</li>
+<li>Setzen passiert per HTTP-Header</li>
+</ul>
+<pre class="http"><code>Set-Cookie: &lt;cookie-name&gt;=&lt;cookie-value&gt;</code></pre>
+</section>
+<section id="secure-flag" class="slide level2">
+<h2>Secure-Flag</h2>
+<ul>
+<li>Verwendung des Cookies nur via HTTPS</li>
+</ul>
+<pre class="http"><code>Set-Cookie: &lt;cookie-name&gt;=&lt;cookie-value&gt;; Secure</code></pre>
+</section>
+<section id="httponly-flag" class="slide level2">
+<h2>HttpOnly-Flag</h2>
+<ul>
+<li>Zugriff mittels JavaScript wird unterbunden</li>
+<li>Achtung falls HTTP TRACE erlaubt ist</li>
+</ul>
+<pre class="http"><code>Set-Cookie: &lt;cookie-name&gt;=&lt;cookie-value&gt;; HttpOnly</code></pre>
+</section>
+<section id="samesite-flag" class="slide level2">
+<h2>sameSite-Flag</h2>
+<ul>
+<li>Kontrolle, wann ein Cookie übertragen wird</li>
+<li>Gegenmassnahme zu CSRF-Angriffen</li>
+</ul>
+</section>
+<section id="csrf-angriffe" class="slide level2">
+<h2>CSRF-Angriffe</h2>
+<p><img data-src="./0x06_csrf.png" /></p>
+</section>
+<section id="möglichkeiten" class="slide level2">
+<h2>Möglichkeiten</h2>
+<ul>
+<li>strict: nur bei same-site requestes</li>
+<li>lax (default): bei same-site requests, cross-site wenn navigation von externer Seite</li>
+<li>none: same-site und cross-site, secure muss gesetzt werden</li>
+</ul>
+<pre class="http"><code>Set-Cookie: &lt;cookie-name&gt;=&lt;cookie-value&gt;; SameSite=Strict</code></pre>
+</section></section>
+<section>
+<section id="sopcors" class="title-slide slide level1">
+<h1>SOP/CORS</h1>
+
+</section>
+<section id="same-origin-policy" class="slide level2">
+<h2>Same-Origin-Policy</h2>
+<p>Javascript darf nur auf Resourcen/Operationen zugreifen, wenn der Origin der Resource und der Origin des JavaScripts ident ist.</p>
+<p>Grundidee: Isolation zwischen Seiten</p>
+</section>
+<section id="cross-origin-resource-sharing" class="slide level2">
+<h2>Cross-Origin-Resource Sharing</h2>
+<ul>
+<li>Wird durch den Webserver auf den JavaScript zugreifen will gesetzt</li>
+<li>Webserver kann explizit Zugriff von externen Origins erlauben</li>
+</ul>
+</section>
+<section id="cors-lese-zugriff" class="slide level2">
+<h2>CORS: Lese-Zugriff</h2>
+<p>Bei der Antwort wird ein Header gesetzt</p>
+<pre class="http"><code>Access-Control-Allow-Origin: http://foo.example</code></pre>
+</section>
+<section id="cors-schreibzugriff" class="slide level2">
+<h2>CORS: Schreibzugriff</h2>
+<ul>
+<li>Bei der Antwort die Erlaubnis mitzuteilen wäre zu spät.</li>
+<li>HTTP OPTIONS vor eigentlichem Zugriff.</li>
+</ul>
+</section>
+<section id="cors-zusammenfassung" class="slide level2">
+<h2>CORS: Zusammenfassung</h2>
+<p><img data-src="./0x09_cors.png" /></p>
+</section></section>
+<section>
+<section id="content-security-policy-csp" class="title-slide slide level1">
+<h1>Content-Security-Policy (CSP)</h1>
+
+</section>
+<section id="entstehungsgeschichte" class="slide level2">
+<h2>Entstehungsgeschichte</h2>
+<ul>
+<li>“logische” Erweiterung aus SOP</li>
+<li>SOP: Schützt die eigene Seite vor fremden Zugriffen</li>
+<li>CSP: Definiert wo in der eigenen Seite JavaScript vorkommen darf</li>
+</ul>
+</section>
+<section id="basic-form" class="slide level2">
+<h2>Basic-Form</h2>
+<pre class="http"><code>Content-Security-Policy: &lt;policy-directive&gt;; &lt;policy-directive&gt;</code></pre>
+<p>Report-Only:</p>
+<pre class="http"><code>Content-Security-Policy-Report-Only: &lt;policy-directive&gt;; &lt;policy-directive&gt;</code></pre>
+</section>
+<section id="verhalten-bei-mehreren-headern" class="slide level2">
+<h2>Verhalten bei mehreren Headern</h2>
+<ul>
+<li>nachfolgende Header können zuvorige nur verschärfen</li>
+</ul>
+</section>
+<section id="direktiven-auszug" class="slide level2">
+<h2>Direktiven (Auszug)</h2>
+<ul>
+<li>script-src, style-src, font-src, media-src, img-src, ..</li>
+<li>frame-src, frame-ancestors</li>
+<li>form-action</li>
+<li>upgrade-insecure-requests, block-all-mixed-content</li>
+<li>report-uri</li>
+<li>default-src</li>
+</ul>
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy">Genauere Informationen online</a></p>
+</section>
+<section id="sources-werte-für-direktiven" class="slide level2">
+<h2>Sources (Werte für Direktiven)</h2>
+<ul>
+<li>‘none’</li>
+<li>‘self’</li>
+<li>‘unsafe-inline’, ‘unsafe-eval’</li>
+<li>scheme (http:, https:)</li>
+<li>hostname (e.g., https://generali.at)</li>
+</ul>
+</section>
+<section id="beispiele" class="slide level2">
+<h2>Beispiele</h2>
+<pre><code># resourcen nür über https
+Content-Security-Policy: default-src https:
+
+# Javascript darf nur in getrennten JS-Files am eigenen Server vorkommen:
+Content-Security-Policy: script-src &#39;self&#39;;
+
+# limit fonts und grafiken
+Content-Security-Policy: font-src: https://google-fonts.com; img-src &#39;self&#39; https://img.generali.at;
+
+# limit javascript to script.generali.at
+Content-Security-Policy: script-src https://script.generali.at;</code></pre>
+</section>
+<section id="xss-protection" class="slide level2">
+<h2>XSS-Protection</h2>
+<pre><code># limit javascript to scripts from scripts.generali.at
+Content-Security-Policy: script-src https://scripts.generali.at;</code></pre>
+<p>Auch wenn der Angreifer im HTML-Code Javascript hinterlegen kann, wird es nicht ausgeführt:</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true"></a><span class="kw">&lt;html&gt;</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true"></a>  <span class="kw">&lt;body&gt;</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true"></a>    <span class="kw">&lt;script&gt;</span><span class="fu">alert</span>(<span class="dv">1</span>)<span class="op">;</span><span class="kw">&lt;/script&gt;</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true"></a>    <span class="kw">&lt;/body&gt;</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true"></a><span class="kw">&lt;/html&gt;</span></span></code></pre></div>
+</section>
+<section id="verwendung-von-javascript" class="slide level2">
+<h2>Verwendung von Javascript</h2>
+<p>Funktioniert nicht mehr:</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true"></a><span class="kw">&lt;button</span><span class="ot"> class=</span><span class="st">&#39;my-javascript-button&#39;</span><span class="ot"> onclick=</span><span class="st">&quot;alert(&#39;hello&#39;);&quot;</span><span class="kw">&gt;</span></span></code></pre></div>
+<p>Stattdessen: in eigenem Javascript-File:</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true"></a><span class="kw">&lt;script</span><span class="ot"> src=</span><span class="st">&quot;https://script.generali.at/somescript.js&quot;</span><span class="kw">&gt;&lt;/script&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true"></a><span class="fu">$</span>(<span class="bu">document</span>)<span class="op">.</span><span class="fu">ready</span>(<span class="kw">function</span> () {</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true"></a>  <span class="fu">$</span>(<span class="st">&#39;.my-javascript-button&#39;</span>)<span class="op">.</span><span class="fu">on</span>(<span class="st">&#39;click&#39;</span><span class="op">,</span> <span class="kw">function</span>() {</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true"></a>        <span class="fu">alert</span>(<span class="st">&#39;hello&#39;</span>)<span class="op">;</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true"></a>    })<span class="op">;</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true"></a>})<span class="op">;</span></span></code></pre></div>
+</section>
+<section id="negative-shortcuts" class="slide level2">
+<h2>Negative Shortcuts</h2>
+<p>‘unsafe-inline’ und ‘unsafe-eval’ entfernen viel von der Schutzwirkung..</p>
+<pre class="http"><code>Content-Security-Policy: script-src &#39;self&#39; &#39;unsafe-inline&#39; &#39;unsafe-eval&#39;;</code></pre>
+</section>
+<section id="csp-is-hard" class="slide level2">
+<h2>CSP is hard</h2>
+<p><a href="https://www.youtube.com/watch?v=jeTGBSL4eQs">Restricting The Scripts, You’re To Blame, You Give CSP a Bad name</a></p>
+</section>
+<section id="reporting-12" class="slide level2">
+<h2>Reporting 1/2</h2>
+<pre class="http"><code>Content-Security-Policy-Report-Only: default-src &#39;none&#39;; style-src cdn.example.com; report-uri: /csp-reports</code></pre>
+<div class="sourceCode" id="cb26"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true"></a><span class="dt">&lt;!DOCTYPE </span>html<span class="dt">&gt;</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true"></a><span class="kw">&lt;html&gt;</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true"></a>    <span class="kw">&lt;head&gt;</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true"></a>        <span class="kw">&lt;title&gt;</span>Sign Up<span class="kw">&lt;/title&gt;</span></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true"></a>        <span class="kw">&lt;link</span><span class="ot"> rel=</span><span class="st">&quot;stylesheet&quot;</span><span class="ot"> href=</span><span class="st">&quot;css/style.css&quot;</span><span class="kw">&gt;</span></span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true"></a>    <span class="kw">&lt;/head&gt;</span></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true"></a>    <span class="kw">&lt;body&gt;</span></span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true"></a>        ... Content ...</span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true"></a>    <span class="kw">&lt;/body&gt;</span></span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true"></a><span class="kw">&lt;/html&gt;</span></span></code></pre></div>
+</section>
+<section id="reporting-22" class="slide level2">
+<h2>Reporting 2/2</h2>
+<div class="sourceCode" id="cb27"><pre class="sourceCode json"><code class="sourceCode json"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true"></a><span class="fu">{</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true"></a>  <span class="dt">&quot;csp-report&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true"></a>        <span class="dt">&quot;document-uri&quot;</span><span class="fu">:</span> <span class="st">&quot;http://example.com/signup.html&quot;</span><span class="fu">,</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true"></a>            <span class="dt">&quot;referrer&quot;</span><span class="fu">:</span> <span class="st">&quot;&quot;</span><span class="fu">,</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true"></a>            <span class="dt">&quot;blocked-uri&quot;</span><span class="fu">:</span> <span class="st">&quot;http://example.com/css/style.css&quot;</span><span class="fu">,</span></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true"></a>            <span class="dt">&quot;violated-directive&quot;</span><span class="fu">:</span> <span class="st">&quot;style-src cdn.example.com&quot;</span><span class="fu">,</span></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true"></a>            <span class="dt">&quot;original-policy&quot;</span><span class="fu">:</span> <span class="st">&quot;default-src &#39;none&#39;; style-src cdn.example.com; report-uri /_/csp-reports&quot;</span><span class="fu">,</span></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true"></a>            <span class="dt">&quot;disposition&quot;</span><span class="fu">:</span> <span class="st">&quot;report&quot;</span></span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true"></a>    <span class="fu">}</span></span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true"></a><span class="fu">}</span></span></code></pre></div>
+</section>
+<section id="tooling" class="slide level2">
+<h2>Tooling</h2>
+<ul>
+<li>Viele Scanner analysieren bereits CSP Direktiven</li>
+<li><a href="https://cspscanner.com/">CSPScanner</a></li>
+</ul>
+</section>
+<section id="csp-with-google" class="slide level2">
+<h2><a href="https://csp.withgoogle.com">CSP with Google</a></h2>
+<ul>
+<li>basieren stark auf nonces</li>
+</ul>
+</section>
+<section id="csp-with-google-nonces-since-2015" class="slide level2">
+<h2>CSP with Google: Nonces (since 2015)</h2>
+<p>Nonce: zufälliger nicht-erratenbarer Wert, wird per CSP definiert</p>
+<pre class="http"><code>Content-Security-Policy: script-src &#39;nonce-r@nd0m&#39;;</code></pre>
+<p>Script-Tags werden ausgeführt, wenn sie den korrekten Nonce verwenden:</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true"></a><span class="kw">&lt;script</span><span class="ot"> nonce=</span><span class="st">&quot;r@nd0m&quot;</span><span class="kw">&gt;</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true"></a>    <span class="fu">doWhatever</span>()<span class="op">;</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true"></a><span class="kw">&lt;/script&gt;</span></span></code></pre></div>
+</section>
+<section id="csp-with-google-1" class="slide level2">
+<h2>CSP-with-Google</h2>
+<pre class="http"><code>Content-Security-Policy: default-src https:; script-src &#39;nonce-{random}&#39;; object-src &#39;none&#39;</code></pre>
+<blockquote>
+<p>This policy will require all resources to be loaded over HTTPS, allow only script elements with the correct nonce attribute, and prevent loading any plugins.</p>
+</blockquote>
+</section>
+<section id="csp-with-google-strict-csp" class="slide level2">
+<h2><a href="https://csp.withgoogle.com/docs/strict-csp.html#example">CSP-with-Google</a>: strict-CSP</h2>
+<pre class="http"><code>Content-Security-Policy:
+  object-src &#39;none&#39;;
+    script-src &#39;nonce-{random}&#39; &#39;unsafe-inline&#39; &#39;unsafe-eval&#39; &#39;strict-dynamic&#39; https: http:;
+    base-uri &#39;none&#39;;
+    report-uri https://your-report-collector.example.com/</code></pre>
+<ul>
+<li>unsafe-inline wird von neueren Browsern deaktiviert, falls nonce gesetzt</li>
+<li>strict-dynamic erlaubt das indirekte Laden von javascript, disabled http: und https:</li>
+<li>ganz alte browser fallen also auf http: und https: zurück</li>
+<li>unsafe-eval um Adaption zu erleichtern (sollte entfernt werden)</li>
+</ul>
+</section></section>
+<section>
+<section id="praxisbeispiele" class="title-slide slide level1">
+<h1>Praxisbeispiele</h1>
+
+</section>
+<section id="online-scanner" class="slide level2">
+<h2>Online Scanner</h2>
+<ul>
+<li><a href="https://securityheaders.com/?q=generali.at&amp;followRedirects=on">securityheaders.com</a></li>
+<li><a href="https://observatory.mozilla.org/analyze/generali.at">Mozilla Observatory</a></li>
+</ul>
+</section></section>
+<section id="fin" class="title-slide slide level1">
+<h1>FIN</h1>
+
+</section>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/reveal.js@3.9.2//js/reveal.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        // Push each slide change to the browser history
+        history: true,
+
+        // Optional reveal.js plugins
+        dependencies: [
+          { src: 'https://unpkg.com/reveal.js@3.9.2//lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'https://unpkg.com/reveal.js@3.9.2//plugin/zoom-js/zoom.js', async: true },
+          { src: 'https://unpkg.com/reveal.js@3.9.2//plugin/notes/notes.js', async: true }
+        ]
+      });
+    </script>
+    </body>
+</html>
