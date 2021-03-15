@@ -58,19 +58,39 @@
 <h2>Das upload-Verzeichnis: public</h2>
 <ul>
 <li>in diesem Verzeichnis werden Dateien abgelegt</li>
-<li>schlechtes Beispiel: /var/www/upload</li>
-<li>Problem: web-server vs app-server (authentication/authorization)</li>
-<li>Problem: Uploads werden dadurch Teil der Applikation</li>
+<li>schlechtes Beispiel:
+<ul>
+<li>web-root: /var/www
+<ul>
+<li>upload-dir: /var/www/upload</li>
+</ul></li>
+</ul></li>
+<li>Problem: web-server vs app-server</li>
+<li>Problem: Uploads werden Teil der Applikation</li>
+</ul>
+</section>
+<section id="minimale-absicherungen" class="slide level2">
+<h2>Minimale Absicherungen</h2>
+<ul>
 <li>Dateitypen begrenzen (keine HTML-Files)</li>
+<li>Bei impliziten Routing: exekutierbare Dateiendungen nicht erlauben</li>
 <li>Niemals Dateinamen durch User bestimmen lassen</li>
 </ul>
 </section>
 <section id="bessere-lösung" class="slide level2">
 <h2>Bessere Lösung</h2>
 <ul>
-<li>Lösung: getrenntes Download-Verzeichnis (oder BLOBS)</li>
-<li>Ausserhalb des Webroots</li>
-<li>Download-Operation download.php?id=123 mit auth</li>
+<li>Downloads von APplikation trennen
+<ul>
+<li>Download-Verzeichnis ausserhalb des Webroots</li>
+<li>oder BLOBs in der Datenbank</li>
+</ul></li>
+<li>Eigene Download-Operation
+<ul>
+<li>Mit Random-Id</li>
+<li>Mit Authentication/Authorization</li>
+<li>z.B. download.php?id=123</li>
+</ul></li>
 </ul>
 </section>
 <section id="upload-von-malicious-files" class="slide level2">
@@ -88,17 +108,6 @@
 <li>X-Content-Type-Options Header</li>
 </ul>
 </section>
-<section id="best-practises" class="slide level2">
-<h2>Best Practises</h2>
-<ul>
-<li>Dateitypen begrenzen</li>
-<li>Getrenntes Upload-Verzeichnis, ausserhalb vom Webroot</li>
-<li>Don’t use user-supplied filenames</li>
-<li>Overwrite nicht erlauben</li>
-<li>Verwendung eines Malware/Viren-Scanners</li>
-<li>Bei download Zugriffsberechtigungen beachten!</li>
-</ul>
-</section>
 <section id="architecure-sandboxing" class="slide level2">
 <h2>Architecure: Sandboxing</h2>
 <ul>
@@ -106,6 +115,17 @@
 <li>Separation of Duties: Bearbeitung in eigener Komponente</li>
 <li>Diese Komponente läuft gesandboxed oder auf einer eigenen VM</li>
 <li>Microservices?</li>
+</ul>
+</section>
+<section id="recap" class="slide level2">
+<h2>Recap</h2>
+<ul>
+<li>Dateitypen begrenzen</li>
+<li>Getrenntes Upload-Verzeichnis, ausserhalb vom Webroot</li>
+<li>Don’t use user-supplied filenames</li>
+<li>Overwrite nicht erlauben</li>
+<li>Verwendung eines Malware/Viren-Scanners</li>
+<li>Bei download Zugriffsberechtigungen beachten!</li>
 </ul>
 </section></section>
 <section>
@@ -127,6 +147,13 @@
 /var/www/./../../../../etc/passwd
 -&gt; /etc/passwd</code></pre>
 </section>
+<section id="secondary-context-nicht-vergessen" class="slide level2">
+<h2>Secondary Context nicht vergessen</h2>
+<ul>
+<li>teilweise werden Anfragen an weitere Server weitegeleitet</li>
+<li>weitere Angriffsfläche für Path Traversals, etc.</li>
+</ul>
+</section>
 <section id="path-traversals-gegenmaßnahmen" class="slide level2">
 <h2>Path Traversals: Gegenmaßnahmen</h2>
 <ul>
@@ -136,6 +163,10 @@
 <li>Einsatz von Sandboxes und Chroots</li>
 </ul>
 </section></section>
+<section id="fin" class="title-slide slide level1">
+<h1>FIN</h1>
+
+</section>
     </div>
   </div>
 

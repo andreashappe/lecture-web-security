@@ -38,20 +38,21 @@ title: Web Security
 
 * häufig: Java Applets, Flash, Silverlight
 
+![](./0x06_silverlight.png)
+
 ## Forceful Browsing
 
-Es werden in Abhängigkeit von der aktuellen Benutzerrolle nur bestimmte Bereiche der Webseite angezeigt.
-
-Operationen im Hintergrund überprüfen keine Authorization
-
-Beispiel: Direktzugriff auf /admin
+* Abhängig von der Userrolle werden unterschiedliche Bereiche angezeigt
+* Operationen im Hintergrund überprüfen keine Authorization
+* Beispiel: Direktzugriff auf /admin
 
 ## Beispiel: Direct-Object References
 
-* /invoice/420
-* /user/1
+* links mit erratbaren Ids ohne Zugriffscheck
+* z.B. /invoice/420 oder /user/1
+* Aktuelles Bespiel: [Corona Schnelltests](https://www.heise.de/news/Corona-Selbsttests-bei-Aldi-Negativ-Zertifikate-von-Aesku-faktisch-wertlos-5987246.html)
 
-Immer ohne Authentication und Authorization testen!
+Also immer Authentication und Authorization testen!
 
 ## Scoping von Daten
 
@@ -175,10 +176,6 @@ end
 
 # Problem: CSRF-Angriffe
 
-## Eigentlich Cross-Origin-Request-Forgery
-
-- Site vs. Origin
-
 ## CSRF-Angriffe
 
 * Nutzen ein bestehendes Vertrauensverhältnis zwischen (Opfer) Web-Browser und einem Webserver aus
@@ -199,8 +196,9 @@ end
 
 * Same-Site Flag bei Cookies
 * Strict: Cookie wird nie Cross-Site übertragen
-* Lax: Safe HTTP Method und Top-Level-Navigation
+* Lax: Nur Cross-Site wenn Navigation
 * Default ab Chrome 80
+* Achtung: Site != Origin
 
 # Problem: Authorization in Alternate Channels
 
@@ -217,16 +215,15 @@ Beispiel:
 
 ## Authentication bei WebSockets
 
-* Basics:
-  * Immer das wss Protokoll verwenden
-  * Nicht Websockets zum Tunneln verwenden
-* Implicit Authentication (Cookie oder HTTP BASIC)
+* Immer das wss Protokoll verwenden
+* Nicht Websockets zum Tunneln verwenden, sondern Message-Based Protokoll darüber aufspannen
+* Implicit Authentication (Cookie oder HTTP BASIC) beim Öffnen des Socket
 * Authorization und Authentication pro Nachricht kontrollieren
 
-## WebSockets: Authentication
+## Problem: Was ist, wenn der Login erst später passiert?
 
-* Duplicate Authentication (token based)
-* Manuelle Authentication/Authorization
+* Duplicate Authentication
 * quasi: duplizierte Session-Struktur
+* Logout beachten
 
 # FIN

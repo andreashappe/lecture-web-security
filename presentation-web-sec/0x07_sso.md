@@ -28,7 +28,7 @@ title: Web Security
 |-|--------|-------|
 | Getränkestand | Resource Server | Service Provider |
 | Bandausgabe   | Authorization Server | Identity Provider |
-| Band          | (JWT) Token | (XML) Token |
+| Band          | (JWT) Token | Token in XML Dokument |
 
 ## OAuth2 vs SAML2 vs JWT
 
@@ -63,6 +63,8 @@ title: Web Security
 ## OpenID-Connect
 
 * Implementierung einer Authentication auf Basis von OAUTH2
+* Verschiedene Flows
+* Typischerweise sind zwei Endpunkte definiert (Token, User-Daten)
 
 # JSON Web Tokens
 
