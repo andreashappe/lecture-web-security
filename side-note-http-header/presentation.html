@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="generator" content="pandoc">
-  <meta name="author" content="Andreas Happe">
+  <meta name="author" content="Andreas Happe (ah@coretec.at)">
   <title>HTTP Header Security</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -100,7 +100,7 @@
 
 <section id="title-slide">
   <h1 class="title">HTTP Header Security</h1>
-  <p class="author">Andreas Happe</p>
+  <p class="author">Andreas Happe (ah@coretec.at)</p>
 </section>
 
 <section id="agenda" class="title-slide slide level1">
@@ -385,6 +385,7 @@ Referrer-Policy: unsafe-url</code></pre>
 <li>script-src, style-src, font-src, media-src, img-src, ..</li>
 <li>frame-src, frame-ancestors</li>
 <li>form-action</li>
+<li>base-uri</li>
 <li>upgrade-insecure-requests, block-all-mixed-content</li>
 <li>report-uri</li>
 <li>default-src</li>
@@ -396,7 +397,7 @@ Referrer-Policy: unsafe-url</code></pre>
 <ul>
 <li>‘none’</li>
 <li>‘self’</li>
-<li>‘unsafe-inline’, ‘unsafe-eval’</li>
+<li>‘unsafe-inline’, ‘unsafe-eval’, ‘strict-dynamic’</li>
 <li>scheme (http:, https:)</li>
 <li>hostname (e.g., https://generali.at)</li>
 </ul>
@@ -516,6 +517,13 @@ Content-Security-Policy: script-src https://scripts.generali.at;</code></pre>
 <li>ganz alte browser fallen also auf http: und https: zurück</li>
 <li>unsafe-eval um Adaption zu erleichtern (sollte entfernt werden)</li>
 </ul>
+</section>
+<section id="csp-scanner" class="slide level2">
+<h2>CSP-Scanner</h2>
+<ul>
+<li><a href="https://csp-evaluator.withgoogle.com/">Google CSP Evaluator</a></li>
+<li><a href="https://cspscanner.com/">CSP Scanner</a></li>
+</ul>
 </section></section>
 <section>
 <section id="praxisbeispiele" class="title-slide slide level1">
@@ -527,6 +535,7 @@ Content-Security-Policy: script-src https://scripts.generali.at;</code></pre>
 <ul>
 <li><a href="https://securityheaders.com/?q=generali.at&amp;followRedirects=on">securityheaders.com</a></li>
 <li><a href="https://observatory.mozilla.org/analyze/generali.at">Mozilla Observatory</a></li>
+<li><a href="https://github.com/koenbuyens/securityheaders">offline python script</a></li>
 </ul>
 </section></section>
 <section id="fin" class="title-slide slide level1">

@@ -1,5 +1,5 @@
 ---
-author: Andreas Happe
+author: Andreas Happe (ah@coretec.at)
 title: HTTP Header Security
 --- 
 
@@ -437,11 +437,17 @@ Content-Security-Policy:
 - ganz alte browser fallen also auf http: und https: zurück
 - unsafe-eval um Adaption zu erleichtern (sollte entfernt werden)
 
+## CSP-Scanner
+
+- [Google CSP Evaluator](https://csp-evaluator.withgoogle.com/)
+- [CSP Scanner](https://cspscanner.com/)
+
 # Praxisbeispiele
 
 ## Online Scanner
 
 - [securityheaders.com](https://securityheaders.com/?q=generali.at&followRedirects=on)
 - [Mozilla Observatory](https://observatory.mozilla.org/analyze/generali.at)
+- [offline python script](https://github.com/koenbuyens/securityheaders)
 
 # FIN
