@@ -161,8 +161,10 @@ Source Code:
 Angreifer:
 
 ``` 
-name=happe&role=admin
+user[id]=1&user[name]=happe&user[role]=admin
 ```
+
+## Mass Assignments: Lösung
 
 Lösung: dezidiert zum Update erlaubte Felder definieren
 

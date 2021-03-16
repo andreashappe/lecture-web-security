@@ -67,8 +67,8 @@
 <li>Der Besitzer des Bands (Token) darf die Operation ausführen, auch wenn er einfach ein Band entwendet hat</li>
 </ul>
 </section>
-<section id="fetival-beispiel" class="slide level2">
-<h2>Fetival-Beispiel</h2>
+<section id="festival-beispiel-1" class="slide level2">
+<h2>Festival-Beispiel</h2>
 <table>
 <thead>
 <tr class="header">
@@ -138,16 +138,21 @@
 </tbody>
 </table>
 </section>
-<section id="oauth2-1" class="slide level2">
-<h2>OAuth2</h2>
+<section id="oauth2-authorization-grant-request" class="slide level2">
+<h2>OAuth2: Authorization Grant Request</h2>
 <ul>
-<li>Authorization Grant Request kann den Zugriffsbereich einschränken</li>
 <li>Scope der Authorization
 <ul>
 <li>read/write</li>
 <li>github: include private repositories</li>
 <li>dropbox: grants auf folder Ebene</li>
 </ul></li>
+</ul>
+</section>
+<section id="oauth2-token-basiertes-zugriffssystem" class="slide level2">
+<h2>OAuth2: token-basiertes Zugriffssystem</h2>
+<ul>
+<li>User-Identität ist eigentlich egal..</li>
 <li>Keine dezidierte Logout Operation</li>
 </ul>
 </section>
@@ -238,6 +243,12 @@
 <h2>Resultat</h2>
 <p>die Bibliothek glaubt aufgrund des Tokens (alg) dass ein MAC gebaut werden sollte und berechnet mac(public-key, content).. und akzeptiert deswegen das übergebene Token!</p>
 <p>Immer Algorithmus am Server prüfen und fixieren</p>
+</section>
+<section id="problem-rng" class="slide level2">
+<h2>Problem: RNG</h2>
+<ul>
+<li>offline-cracking</li>
+</ul>
 </section></section>
 <section>
 <section id="saml2" class="title-slide slide level1">

@@ -269,7 +269,10 @@ user[name]=happe&amp;user[email]=ah@mybloodtypeis.coffee</code></pre>
 <section id="probleme-bei-mass-assignments" class="slide level2">
 <h2>Probleme bei Mass Assignments</h2>
 <p>Angreifer:</p>
-<pre><code>name=happe&amp;role=admin</code></pre>
+<pre><code>user[id]=1&amp;user[name]=happe&amp;user[role]=admin</code></pre>
+</section>
+<section id="mass-assignments-lösung" class="slide level2">
+<h2>Mass Assignments: Lösung</h2>
 <p>Lösung: dezidiert zum Update erlaubte Felder definieren</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true"></a><span class="ot">@user</span>.update(user_params)</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true"></a></span>

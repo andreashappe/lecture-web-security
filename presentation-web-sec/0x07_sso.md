@@ -22,7 +22,7 @@ title: Web Security
 * Band (Token) ist für die Dauer des Festivals gültig
 * Der Besitzer des Bands (Token) darf die Operation ausführen, auch wenn er einfach ein Band entwendet hat
 
-## Fetival-Beispiel
+## Festival-Beispiel
 
 | | OAuth2 | SAML2 |
 |-|--------|-------|
@@ -47,13 +47,16 @@ title: Web Security
 | Client  | will auf die Daten eines Resource Owners am Server zugreifen |
 | Authorization Server | erstellt die Zugriffsberichtigung |
 
-## OAuth2
+## OAuth2: Authorization Grant Request
 
-* Authorization Grant Request kann den Zugriffsbereich einschränken
 * Scope der Authorization
   * read/write
   * github: include private repositories
   * dropbox: grants auf folder Ebene
+
+## OAuth2: token-basiertes Zugriffssystem
+
+* User-Identität ist eigentlich egal..
 * Keine dezidierte Logout Operation
 
 ## OAuth2: verschiedene Flows
@@ -142,6 +145,10 @@ der Anwendungscode am Server erwartet eigentlich public-keys und ruft folgendes 
 die Bibliothek glaubt aufgrund des Tokens (alg) dass ein MAC gebaut werden sollte und berechnet mac(public-key, content).. und akzeptiert deswegen das übergebene Token!
 
 Immer Algorithmus am Server prüfen und fixieren
+
+## Problem: Key-for-Signing is constant
+
+- offline-cracking
 
 # SAML2
 
