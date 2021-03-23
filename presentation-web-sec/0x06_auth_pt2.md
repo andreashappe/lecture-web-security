@@ -194,13 +194,25 @@ end
 * Token sollte regelmässig neu generiert werden
 * Was passiert wenn kein CSRF-Token Feld mit übergeben wird?
 
-## Gegenmaßnahme: sameSite-Flag
+## Gegenmaßnahme: SameSite-Flag
 
 * Same-Site Flag bei Cookies
 * Strict: Cookie wird nie Cross-Site übertragen
 * Lax: Nur Cross-Site wenn Navigation
 * Default ab Chrome 80
-* Achtung: Site != Origin
+
+## Achtung: Site != Origin
+
+* Site: eTld+1
+* Origin: Schema + Domainname + Port
+
+| | Origin | Site |
+|-|--------|-------|
+| https://a.snikt.net | https://a.snikt.net:443 | snikt.net |
+| https://b.snikt.net | https://b.snikt.net:443 | snikt.net |
+| https://a.tw.ac.at | https://a.tw.ac.at:443 | tw.ac.at |
+| https://b.tw.ac.at | https://b.tw.ac.at:443 | tw.ac.at |
+| a.github.io        | https://a.github.io:443 | a.github.io |
 
 # Problem: Authorization in Alternate Channels
 

