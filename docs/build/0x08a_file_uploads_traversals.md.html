@@ -87,6 +87,10 @@
 <td>/var/www/upload/1.html</td>
 <td>http://snikt.net/upload/1.html</td>
 </tr>
+<tr class="even">
+<td>/var/www/upload/1.php</td>
+<td>http://snikt.net/upload/1.php</td>
+</tr>
 </tbody>
 </table>
 </section>
@@ -115,16 +119,6 @@
 </ul></li>
 </ul>
 </section>
-<section id="upload-von-malicious-files" class="slide level2">
-<h2>Upload von malicious files</h2>
-<ul>
-<li>Backdoors, z. B. als PHP Dateien</li>
-<li>Integration von Virenscanner?
-<ul>
-<li>Auf Filesystem-Ebene problematisch für Applikation</li>
-</ul></li>
-</ul>
-</section>
 <section id="upload-von-html-files" class="slide level2">
 <h2>Upload von HTML Files</h2>
 <ul>
@@ -136,6 +130,16 @@
 </ul>
 <pre><code>Content-Disposition: attachment
 X-Content-Type-Options: nosniff</code></pre>
+</section>
+<section id="upload-von-indirekt-malicious-files" class="slide level2">
+<h2>Upload von indirekt malicious files</h2>
+<ul>
+<li>Backdoors, z. B. als PDF Dateien</li>
+<li>Integration von Virenscanner?
+<ul>
+<li>Auf Filesystem-Ebene problematisch für Applikation</li>
+</ul></li>
+</ul>
 </section>
 <section id="architecure-sandboxing" class="slide level2">
 <h2>Architecure: Sandboxing</h2>
@@ -180,8 +184,7 @@ X-Content-Type-Options: nosniff</code></pre>
 <h2>Path Traversals: Gegenmaßnahmen</h2>
 <ul>
 <li>Nicht benutzer-übergebene Dateinamen beim Zugriff verwenden</li>
-<li>immer den kanonischen Pfad berechnen und verwenden</li>
-<li>whitelisten von Download-Verzeichnis (Achtung bei NULL-Characters, etc.)</li>
+<li>immer den kanonischen Pfad berechnen und gegen eine whitelist testen</li>
 <li>Einsatz von Sandboxes und Chroots</li>
 </ul>
 </section></section>

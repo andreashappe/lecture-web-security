@@ -115,8 +115,8 @@
 <li>Never trust user (input)</li>
 <li>Switch von Daten-Context auf Befehls-Context
 <ul>
-<li>Ausführung mit Web-App oder Datenbank-Rechten</li>
-<li>kann auch auf nicht-Webservern passieren</li>
+<li>Ausführung am Web-, App- oder Datenbank-Server</li>
+<li>mit (hoffentlich) den entsprechenden Rechten</li>
 </ul></li>
 </ul>
 </section>
@@ -130,8 +130,8 @@
 </ul></li>
 </ul>
 </section>
-<section id="lösung" class="slide level2">
-<h2>Lösung</h2>
+<section id="gegenmassnahmen" class="slide level2">
+<h2>Gegenmassnahmen</h2>
 <ul>
 <li>Überprüfung aller Eingaben
 <ul>
@@ -141,20 +141,18 @@
 <ul>
 <li>teilweise automatisch durch Frameworks</li>
 </ul></li>
-<li>Sandboxing
+<li>Minimize Impact
 <ul>
-<li>to minimize impact</li>
+<li>Sandboxes</li>
+<li>CSP</li>
 </ul></li>
 </ul>
-</section>
-<section id="problem-große-angriffsfläche" class="slide level2">
-<h2>Problem: große Angriffsfläche</h2>
-<ul>
-<li>Computer Game Maps (CS, SC)</li>
-<li>Flickr-Javascript Injection</li>
-<li>QR-Codes / Nummerntaffeln</li>
-</ul>
 </section></section>
+<section id="problem-große-angriffsfläche" class="title-slide slide level1">
+<h1>Problem: Große Angriffsfläche</h1>
+
+</section>
+
 <section>
 <section id="command-injections" class="title-slide slide level1">
 <h1>Command Injections</h1>
@@ -163,7 +161,7 @@
 <section id="allgemein" class="slide level2">
 <h2>Allgemein</h2>
 <ul>
-<li>Eine Web-Operation bietet eine Operation an</li>
+<li>Webapplikation mit dynamischer Web-Operation</li>
 <li>diese wird über ein Systemkommando breitgestellt</li>
 <li>Angreifer versucht das Kommando zu “überladen”..</li>
 <li>.. und kann dadurch “eigene” Kommandos ausführen</li>
@@ -172,10 +170,13 @@
 </section>
 <section id="beispiel-router-mit-ping" class="slide level2">
 <h2>Beispiel: Router mit Ping</h2>
-<p>http://192.168.1.1/test_connectivity?domain=www.snikt.net</p>
+<p>http://192.168.1.1/test_connectivity?domain=snikt.net</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="im">import</span> os</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a>domain <span class="op">=</span> user_input()</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a>os.system(<span class="st">&#39;ping &#39;</span> <span class="op">+</span> domain)</span></code></pre></div>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a>os.system(<span class="st">&#39;ping &#39;</span> <span class="op">+</span> domain)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a><span class="co"># führt zu</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a>ping snikt.net</span></code></pre></div>
 <pre><code># Versuche mit:
 ;ls
 $(ls)
@@ -207,8 +208,8 @@ ping www.snikt.net;ls</code></pre>
 </ul></li>
 </ul>
 </section>
-<section id="lösung-1" class="slide level2">
-<h2>Lösung</h2>
+<section id="gegenmassnahme" class="slide level2">
+<h2>Gegenmassnahme</h2>
 <ul>
 <li>Bibliotheken statt Kommandozeilenaufrufe verwenden</li>
 <li>z.B. Netzwerkbibliotheken statt ping aufrufen</li>
@@ -281,18 +282,21 @@ ping www.snikt.net;ls</code></pre>
 <h2>Union-Based SQLi</h2>
 <ul>
 <li>Weboberfläche</li>
+<li>https://snikt.net/addressbook_search?user_id=1</li>
 <li>Ergebnis wird in einer Tabelle angezeigt</li>
 </ul>
 <pre><code># Datenquelle:
 select Name, Phone, Address FROM users where user_id=1</code></pre>
 </section>
-<section id="versuch-weitere-daten-zu-extrahieren" class="slide level2">
-<h2>Versuch, weitere Daten zu extrahieren</h2>
+<section id="union-based-sql-kommando" class="slide level2">
+<h2>Union-Based-SQL Kommando</h2>
 <ul>
-<li><p>Spaltenanzahl erraten</p></li>
-<li><p>Folgende Eingabe fuer id:</p></li>
+<li>Folgende Eingabe fuer id:</li>
 </ul>
 <pre><code>  1 UNION ALL SELECT creditCardNumber,1,1 FROM CreditCardTable</code></pre>
+<ul>
+<li>Spaltenanzahl erraten</li>
+</ul>
 </section>
 <section id="union-based-sqli-ergebnis" class="slide level2">
 <h2>Union-Based SQLi: Ergebnis:</h2>
@@ -324,10 +328,10 @@ select Name, Phone, Address FROM users where user_id=1</code></pre>
 </ul></li>
 </ul>
 </section>
-<section id="oracle-wird-festgestellt" class="slide level2">
-<h2>Oracle wird festgestellt:</h2>
-<div class="sourceCode" id="cb14"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true"></a># <span class="kw">id</span>: <span class="ot">&quot;1 or 1=0&quot;</span> <span class="op">-&gt;</span> <span class="fu">user</span> wird angezeigt</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true"></a><span class="kw">select</span> <span class="op">*</span> <span class="kw">from</span> users <span class="kw">where</span> <span class="kw">id</span><span class="op">=</span><span class="dv">1</span> <span class="kw">or</span> <span class="dv">1</span><span class="op">=</span><span class="dv">0</span>;</span>
+<section id="code-kann-angehängt-werden.." class="slide level2">
+<h2>Code kann angehängt werden..</h2>
+<div class="sourceCode" id="cb14"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true"></a># <span class="kw">id</span>: <span class="ot">&quot;1 and 1=1&quot;</span> <span class="op">-&gt;</span> <span class="fu">user</span> wird angezeigt</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true"></a><span class="kw">select</span> <span class="op">*</span> <span class="kw">from</span> users <span class="kw">where</span> <span class="kw">id</span><span class="op">=</span><span class="dv">1</span> <span class="kw">and</span> <span class="dv">1</span><span class="op">=</span><span class="dv">1</span>;</span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true"></a></span>
 <span id="cb14-4"><a href="#cb14-4" aria-hidden="true"></a># <span class="kw">id</span>: <span class="ot">&quot;1 and 1=0&quot;</span> <span class="op">-&gt;</span> Kein Produkt wird angezeigt</span>
 <span id="cb14-5"><a href="#cb14-5" aria-hidden="true"></a><span class="kw">select</span> <span class="op">*</span> <span class="kw">from</span> users <span class="kw">where</span> <span class="kw">id</span><span class="op">=</span><span class="dv">1</span> <span class="kw">and</span> <span class="dv">1</span><span class="op">=</span><span class="dv">0</span>;</span></code></pre></div>
@@ -338,8 +342,8 @@ select Name, Phone, Address FROM users where user_id=1</code></pre>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true"></a><span class="kw">FROM</span> Users</span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true"></a><span class="kw">WHERE</span> <span class="kw">Id</span><span class="op">=</span><span class="dv">1</span> <span class="kw">AND</span> <span class="fu">ASCII</span>(SUBSTRING(username,<span class="dv">1</span>,<span class="dv">1</span>))<span class="op">=</span><span class="dv">97</span></span></code></pre></div>
 </section>
-<section id="bespiel-time-based-sqli" class="slide level2">
-<h2>Bespiel: time-based SQLi</h2>
+<section id="bespiel-time-based-blind-sqli" class="slide level2">
+<h2>Bespiel: time-based blind SQLi</h2>
 <ul>
 <li>Kein Antwortkanal verfügbar</li>
 <li>Eigentlich ein Side-Channel Attack über Timing</li>
@@ -391,7 +395,7 @@ select Name, Phone, Address FROM users where user_id=1</code></pre>
 <section id="gegenmaßnahme-prepared-statements-1" class="slide level2">
 <h2>Gegenmaßnahme: prepared statements</h2>
 <ul>
-<li>Achtung: einige Felder können nicht mittels Stored Procedures abgebildet werden:
+<li>Achtung: einige Felder können nicht mittels Prepared Statements abgebildet werden:
 <ul>
 <li>Tabellennamen</li>
 <li>Spaltennamen</li>
@@ -521,7 +525,7 @@ select Name, Phone, Address FROM users where user_id=1</code></pre>
 <h2>Gegenmaßnahmen</h2>
 <ul>
 <li>JSON/CSV sind keine “wirklichen” Alternativen</li>
-<li>Im Parser External Entities deaktivieren</li>
+<li>Im Parser External Entities <a href="https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html#java">deaktivieren</a></li>
 <li>Wissen, wie der Parser funktioniert..</li>
 </ul>
 </section>

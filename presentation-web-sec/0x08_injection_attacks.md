@@ -10,8 +10,8 @@ title: Web Security
 * Garbage In/Garbage Out
 * Never trust user (input)
 * Switch von Daten-Context auf Befehls-Context
-  * Ausführung mit Web-App oder Datenbank-Rechten
-  * kann auch auf nicht-Webservern passieren
+  * Ausführung am Web-, App- oder Datenbank-Server
+  * mit (hoffentlich) den entsprechenden Rechten
 
 ## Wie zu testen?
 
@@ -19,7 +19,7 @@ title: Web Security
   * Web Application Security Scanner
   * Tools für Spezialbereiche wie SQLi
  
-## Lösung
+## Gegenmassnahmen
 
 * Überprüfung aller Eingaben
   * immer mit Bibliotheken da zu viele Möglichkeiten
@@ -27,21 +27,17 @@ title: Web Security
 * Quoting der Ausgaben/bei der Verwendung
   + teilweise automatisch durch Frameworks
 
-* Sandboxing
-  * to minimize impact
+* Minimize Impact
+  * Sandboxes
+  * CSP
 
-## Problem: große Angriffsfläche
-
-* Computer Game Maps (CS, SC)
-* Flickr-Javascript Injection
-* QR-Codes / Nummerntaffeln
-
+# Problem: Große Angriffsfläche
 
 # Command Injections
 
 ## Allgemein
 
-* Eine Web-Operation bietet eine Operation an
+* Webapplikation mit dynamischer Web-Operation 
 * diese wird über ein Systemkommando breitgestellt
 * Angreifer versucht das Kommando zu "überladen"..
 * .. und kann dadurch "eigene" Kommandos ausführen
@@ -49,12 +45,15 @@ title: Web Security
 
 ## Beispiel: Router mit Ping
 
-http://192.168.1.1/test_connectivity?domain=www.snikt.net
+http://192.168.1.1/test_connectivity?domain=snikt.net
 
 ``` python
 import os
 domain = user_input()
 os.system('ping ' + domain)
+
+# führt zu
+ping snikt.net
 ```
 
 ```
@@ -80,7 +79,7 @@ ping www.snikt.net;ls
 * Python
   * exec, eval, os.system, os.popen, subprocess.popen, subprocess.call
 
-## Lösung
+## Gegenmassnahme
 
 * Bibliotheken statt Kommandozeilenaufrufe verwenden
 * z.B. Netzwerkbibliotheken statt ping aufrufen
@@ -165,6 +164,7 @@ select * from articles where id=1;drop table users;--
 ## Union-Based SQLi
 
 * Weboberfläche
+* https://snikt.net/addressbook_search?user_id=1
 * Ergebnis wird in einer Tabelle angezeigt
 
 ```
@@ -172,15 +172,15 @@ select * from articles where id=1;drop table users;--
 select Name, Phone, Address FROM users where user_id=1
 ```
 
-## Versuch, weitere Daten zu extrahieren
-
-* Spaltenanzahl erraten
+## Union-Based-SQL Kommando
 
 * Folgende Eingabe fuer id:
 
 ```
   1 UNION ALL SELECT creditCardNumber,1,1 FROM CreditCardTable
 ```
+
+* Spaltenanzahl erraten
 
 ## Union-Based SQLi: Ergebnis:
 
@@ -213,11 +213,11 @@ Cannot compare id (integer) with ["root", "password"]
   * id besitzt Injection-Lücke
   * Aber kein Ausgabekanal in der Seite
 
-## Oracle wird festgestellt:
+## Code kann angehängt werden..
 
 ``` sql
-# id: "1 or 1=0" -> user wird angezeigt
-select * from users where id=1 or 1=0;
+# id: "1 and 1=1" -> user wird angezeigt
+select * from users where id=1 and 1=1;
 
 # id: "1 and 1=0" -> Kein Produkt wird angezeigt
 select * from users where id=1 and 1=0;
@@ -231,7 +231,7 @@ FROM Users
 WHERE Id=1 AND ASCII(SUBSTRING(username,1,1))=97
 ```
 
-## Bespiel: time-based SQLi
+## Bespiel: time-based blind SQLi
 
 * Kein Antwortkanal verfügbar
 * Eigentlich ein Side-Channel Attack über Timing
@@ -287,7 +287,7 @@ $STH->execute();
 
 ## Gegenmaßnahme: prepared statements
 
-* Achtung: einige Felder können nicht mittels Stored Procedures abgebildet werden:
+* Achtung: einige Felder können nicht mittels Prepared Statements abgebildet werden:
   * Tabellennamen
   * Spaltennamen
   * ASC/DESC
@@ -423,7 +423,7 @@ Es werden die Token des aktuellen Benutzers verwendet.
 ## Gegenmaßnahmen
 
 * JSON/CSV sind keine "wirklichen" Alternativen
-* Im Parser External Entities deaktivieren
+* Im Parser External Entities [deaktivieren](https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html#java)
 * Wissen, wie der Parser funktioniert..
 
 ## Million Laughter Attacks

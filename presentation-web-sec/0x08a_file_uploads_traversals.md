@@ -22,6 +22,7 @@ title: Web Security
 | /var/www/upload | http://snikt.net/upload |
 | /var/www/upload/1.jpg | http://snikt.net/upload/1.jpg |
 | /var/www/upload/1.html | http://snikt.net/upload/1.html |
+| /var/www/upload/1.php | http://snikt.net/upload/1.php|
 
 ## Minimale Absicherungen
 
@@ -40,12 +41,6 @@ title: Web Security
   * Mit Authentication/Authorization
   * z.B. download.php?id=123
 
-## Upload von malicious files
-
-* Backdoors, z. B. als PHP Dateien
-* Integration von Virenscanner?
-  * Auf Filesystem-Ebene problematisch für Applikation
-
 ## Upload von HTML Files
 
 * Wenn ein HTML-File hochgeladen und danach betrachtet wird
@@ -56,6 +51,13 @@ title: Web Security
 Content-Disposition: attachment
 X-Content-Type-Options: nosniff
 ~~~
+
+## Upload von indirekt malicious files
+
+* Backdoors, z. B. als PDF Dateien
+* Integration von Virenscanner?
+  * Auf Filesystem-Ebene problematisch für Applikation
+
 
 ## Architecure: Sandboxing
 
@@ -94,8 +96,7 @@ Parameter: ./../../../../etc/passwd
 ## Path Traversals: Gegenmaßnahmen
 
 * Nicht benutzer-übergebene Dateinamen beim Zugriff verwenden
-* immer den kanonischen Pfad berechnen und verwenden
-* whitelisten von Download-Verzeichnis (Achtung bei NULL-Characters, etc.)
+* immer den kanonischen Pfad berechnen und gegen eine whitelist testen
 * Einsatz von Sandboxes und Chroots
 
 # FIN
