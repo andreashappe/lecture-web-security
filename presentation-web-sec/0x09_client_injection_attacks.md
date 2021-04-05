@@ -3,7 +3,7 @@ author: Andreas Happe
 title: Web Security
 --- 
 
-# Client-Side Attacks / HTTP-Header Hardening
+# Client-Side Attacks
 
 ## Angriffe gegen den Browser
 
@@ -16,18 +16,6 @@ title: Web Security
 * HTTP-Header wie Cookie-Header oder HSTS
 * teilweise HTML-Directives
 * Immer Browser-Versions abhängig, siehe auch [caniuse](https://caniuse.com/)
-
-## Redux: Cookie Header
-
-``` http
-Set-Cookies: cookie=wert; Path=/app; Secure; HttpOnly; SameSite=Lax;
-```
-
-* Secure, HttpOnly und SameSite=Lax verwenden
-* Path verwenden, vor allem wenn mehrere Applikationen am Server
-
-* Ohne Expires/Max-Age: Session-Cookie wird beim Schließen des Browsers gelöscht
-* Ohne Domain: nur aktueller Origin gültig
 
 # Javascript-Injectons (XSS)
 
@@ -346,7 +334,7 @@ Content-Security-Policy-Report-Only: <policy-directive>; <policy-directive>
 - 'self'
 - 'unsafe-inline', 'unsafe-eval', 'strict-dynamic'
 - scheme (http:, https:)
-- hostname (e.g., https://generali.at)
+- hostname (e.g., https://snikt.net)
 
 ## Beispiele
 
@@ -358,17 +346,17 @@ Content-Security-Policy: default-src https:
 Content-Security-Policy: script-src 'self';
 
 # limit fonts und grafiken
-Content-Security-Policy: font-src: https://google-fonts.com; img-src 'self' https://img.generali.at;
+Content-Security-Policy: font-src: https://google-fonts.com; img-src 'self' https://img.snikt.net;
 
-# limit javascript to script.generali.at
-Content-Security-Policy: script-src https://script.generali.at;
+# limit javascript to script.snikt.net.
+Content-Security-Policy: script-src https://script.snikt.net;
 ~~~
 
 ## XSS-Protection
 
 ~~~
-# limit javascript to scripts from scripts.generali.at
-Content-Security-Policy: script-src https://scripts.generali.at;
+# limit javascript to scripts from scripts.snikt.net
+Content-Security-Policy: script-src https://scripts.snikt.net;
 ~~~
 
 Auch wenn der Angreifer im HTML-Code Javascript hinterlegen kann, wird es nicht ausgeführt:
@@ -392,7 +380,7 @@ Funktioniert nicht mehr:
 Stattdessen: in eigenem Javascript-File:
 
 ~~~html
-<script src="https://script.generali.at/somescript.js"></script>
+<script src="https://script.snikt.net/somescript.js"></script>
 ~~~
 
 ~~~ javascript
@@ -453,11 +441,6 @@ Content-Security-Policy-Report-Only: default-src 'none'; style-src cdn.example.c
 }
 ~~~
 
-## Tooling
-
-- Viele Scanner analysieren bereits CSP Direktiven
-- [CSPScanner](https://cspscanner.com/)
-
 ## [CSP with Google](https://csp.withgoogle.com): Nonces (since 2015)
 
 Nonce: zufälliger nicht-erratenbarer Wert, wird per CSP definiert
@@ -499,7 +482,84 @@ Content-Security-Policy:
 
 ## CSP-Scanner
 
+- Viele Scanner analysieren bereits CSP Direktiven
+- [CSPScanner](https://cspscanner.com/)
 - [Google CSP Evaluator](https://csp-evaluator.withgoogle.com/)
-- [CSP Scanner](https://cspscanner.com/)
+
+# Unverified Redirects and Forwards
+
+## Basics
+
+* Redirect Target wird über eine Benutzereingabe kontrolliert
+* http://example.com/example.php?url=http://malicious.com
+* Besonders gefährlich, wenn die übergebene Seite mittels iframe eingebunden wird
+* Gegenmaßnahme: Whitelist verwenden
+
+
+# HTML-Directives
+
+## IFrame-Option: sandbox
+
+* all forms and scripts are disabled
+* all links are not allowed to target other browser contexts
+* all plugins are disabled
+* all features that trigger automatically are disabled
+
+## Subresource Integrity
+
+* Dient um indirekte Angriffe z. B. über CDNs abzuwehren
+* Hash-Summe wird bei script/css includes angegeben,
+* Verwendung kann mittels CSP enforced werden
+
+```html
+<script src="https://example.com/example-framework.js"
+      integrity="sha384-oqVuAfXRKap7fdgcCY5uykM6+R9GqQ8K/uxy9rx7HNQlGYl1kPzQho1wx4JwY8wC"></script>
+```
+
+## SRI: Probleme
+
+* nicht transitiv
+* dynamische Inhalte wie Google Fonts
+* keine "gratis" Updates von Libraries
+
+# HTML5 Stuff
+
+## WebStorage
+
+* niemals sensitive Informationen speichern
+* SessionStorage vs. LocalStorage
+* Verwundbar gegenüber XSS (verglichen mit Cookies)
+  * es gibt kein httpOnly
+  * man kann es nicht auf sub-Pfade limitieren
+
+## WebWorkers
+
+* Achtung wenn User-Eingaben verwendet werden
+* können XMLHttpRequests abschicken, aber getrennter Origin
+* CPU DoS!
+
+## WebAsm
+
+* Potential für Bitcoin-Miners
+* Potential für Obfuscation
+
+## WebRTC
+
+* Peer-to-Peer Communication
+* Access to Camera/Mic through Browser Controls
+* Eher Privacy Impact
+
+## WebBluetooth
+
+* Browser soll mit verbundenen Bluetooth LE devices Daten austauschen können.
+* Webseite kann nicht nach devices suchen
+* JS requested device, Browser übernimmt das Pairing
+* Effektiv sehr vergleichbar mit Security Model mobiler Applikationen
+
+## WebBluetooh: Privacy Impact
+
+* Only possible from Secure Context (HTTPS)
+* Eher Privacy Impact
+* "rssi", "txPower"
 
 # FIN

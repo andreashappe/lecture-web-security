@@ -103,115 +103,25 @@
   <p class="author">Andreas Happe</p>
 </section>
 
+<section>
 <section id="other-stuff.." class="title-slide slide level1">
 <h1>Other Stuff..</h1>
 
 </section>
-
-<section>
-<section id="unverified-redirects-and-forwards" class="title-slide slide level1">
-<h1>Unverified Redirects and Forwards</h1>
-
-</section>
-<section id="basics" class="slide level2">
-<h2>Basics</h2>
+<section id="redux-cookie-header" class="slide level2">
+<h2>Redux: Cookie Header</h2>
+<pre class="http"><code>Set-Cookies: cookie=wert; Path=/app; Secure; HttpOnly; SameSite=Lax;</code></pre>
 <ul>
-<li>Redirect Target wird über eine Benutzereingabe kontrolliert</li>
-<li>http://example.com/example.php?url=http://malicious.com</li>
-<li>Besonders gefährlich, wenn die übergebene Seite mittels iframe eingebunden wird</li>
-<li>Gegenmaßnahme: Whitelist verwenden</li>
+<li><p>Secure, HttpOnly und SameSite=Lax verwenden</p></li>
+<li><p>Path verwenden, vor allem wenn mehrere Applikationen am Server</p></li>
+<li><p>Ohne Expires/Max-Age: Session-Cookie wird beim Schließen des Browsers gelöscht</p></li>
+<li><p>Ohne Domain: nur aktueller Origin gültig</p></li>
 </ul>
 </section></section>
 <section>
-<section id="html-directives" class="title-slide slide level1">
-<h1>HTML-Directives</h1>
+<section id="httpstls" class="title-slide slide level1">
+<h1>HTTPS/TLS</h1>
 
-</section>
-<section id="iframe-option-sandbox" class="slide level2">
-<h2>IFrame-Option: sandbox</h2>
-<ul>
-<li>all forms and scripts are disabled</li>
-<li>all links are not allowed to target other browser contexts</li>
-<li>all plugins are disabled</li>
-<li>all features that trigger automatically are disabled</li>
-</ul>
-</section>
-<section id="subresource-integrity" class="slide level2">
-<h2>Subresource Integrity</h2>
-<ul>
-<li>Dient um indirekte Angriffe z. B. über CDNs abzuwehren</li>
-<li>Hash-Summe wird bei script/css includes angegeben,</li>
-<li>Verwendung kann mittels CSP enforced werden</li>
-</ul>
-<div class="sourceCode" id="cb1"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="kw">&lt;script</span><span class="ot"> src=</span><span class="st">&quot;https://example.com/example-framework.js&quot;</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a><span class="ot">      integrity=</span><span class="st">&quot;sha384-oqVuAfXRKap7fdgcCY5uykM6+R9GqQ8K/uxy9rx7HNQlGYl1kPzQho1wx4JwY8wC&quot;</span><span class="kw">&gt;&lt;/script&gt;</span></span></code></pre></div>
-</section>
-<section id="sri-probleme" class="slide level2">
-<h2>SRI: Probleme</h2>
-<ul>
-<li>nicht transitiv</li>
-<li>dynamische Inhalte wie Google Fonts</li>
-<li>keine “gratis” Updates von Libraries</li>
-</ul>
-</section></section>
-<section>
-<section id="html5-stuff" class="title-slide slide level1">
-<h1>HTML5 Stuff</h1>
-
-</section>
-<section id="webstorage" class="slide level2">
-<h2>WebStorage</h2>
-<ul>
-<li>niemals sensitive Informationen speichern</li>
-<li>SessionStorage vs. LocalStorage</li>
-<li>Verwundbar gegenüber XSS (verglichen mit Cookies)
-<ul>
-<li>es gibt kein httpOnly</li>
-<li>man kann es nicht auf sub-Pfade limitieren</li>
-</ul></li>
-</ul>
-</section>
-<section id="webworkers" class="slide level2">
-<h2>WebWorkers</h2>
-<ul>
-<li>Achtung wenn User-Eingaben verwendet werden</li>
-<li>können XMLHttpRequests abschicken, aber getrennter Origin</li>
-<li>CPU DoS!</li>
-</ul>
-</section>
-<section id="webasm" class="slide level2">
-<h2>WebAsm</h2>
-<ul>
-<li>Potential für Bitcoin-Miners</li>
-<li>Potential für Obfuscation</li>
-</ul>
-</section>
-<section id="webrtc" class="slide level2">
-<h2>WebRTC</h2>
-<ul>
-<li>Peer-to-Peer Communication</li>
-<li>Access to Camera/Mic through Browser Controls</li>
-<li>Eher Privacy Impact</li>
-</ul>
-</section>
-<section id="webbluetooth" class="slide level2">
-<h2>WebBluetooth</h2>
-<ul>
-<li>Browser soll mit verbundenen Bluetooth LE devices Daten austauschen können.</li>
-<li>Webseite kann nicht nach devices suchen</li>
-<li>JS requested device, Browser übernimmt das Pairing</li>
-<li>Effektiv sehr vergleichbar mit Security Model mobiler Applikationen</li>
-</ul>
-</section>
-<section id="webbluetooh-privacy-impact" class="slide level2">
-<h2>WebBluetooh: Privacy Impact</h2>
-<ul>
-<li>Only possible from Secure Context (HTTPS)</li>
-<li>Eher Privacy Impact
-<ul>
-<li>“rssi”, “txPower” # HTTPS/TLS</li>
-</ul></li>
-</ul>
 </section>
 <section id="httpstls-guidelines" class="slide level2">
 <h2>HTTPS/TLS: Guidelines</h2>
@@ -283,14 +193,12 @@
 <h2>Configuration Management</h2>
 <ul>
 <li>nicht hard-coded</li>
-<li>Beispiel: .env Files</li>
-</ul>
-</section>
-<section id="special-case-credential-management" class="slide level2">
-<h2>Special Case: Credential Management</h2>
+<li>Alternativen:
 <ul>
-<li>potentiell im Framework integriert</li>
-<li>Dezidierte Credential-Services</li>
+<li>.env Files</li>
+<li>Framework-Features</li>
+</ul></li>
+<li>Spezialfall: Credential-Managmenet</li>
 </ul>
 </section>
 <section id="frameworks-credential-storage" class="slide level2">
@@ -309,7 +217,7 @@
 <h1>Using Components with known Vulnerabilities</h1>
 
 </section>
-<section id="basics-1" class="slide level2">
+<section id="basics" class="slide level2">
 <h2>Basics</h2>
 <ul>
 <li>Komponenten müssen regelmäßig getestet werden</li>
@@ -329,7 +237,7 @@
 <h1>Logging / Monitoring</h1>
 
 </section>
-<section id="basics-2" class="slide level2">
+<section id="basics-1" class="slide level2">
 <h2>Basics</h2>
 <ul>
 <li>Kontroverse bei OWASP Top 10 2017</li>
@@ -347,6 +255,11 @@
 <li>Auswertbar</li>
 </ul>
 </section></section>
+<section id="further-attacks" class="title-slide slide level1">
+<h1>Further Attacks!</h1>
+
+</section>
+
 <section>
 <section id="http-request-smuggling" class="title-slide slide level1">
 <h1>HTTP Request Smuggling</h1>
