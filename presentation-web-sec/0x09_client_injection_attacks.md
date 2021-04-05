@@ -3,18 +3,19 @@ author: Andreas Happe
 title: Web Security
 --- 
 
-# Client-Side Attacks
+# Client-Side Attacks / HTTP-Header Hardening
 
 ## Angriffe gegen den Browser
 
 * häufig als Teil von Social Engingeering
 * Water-Hole Attacks
 
-## Grundsätzlich: Gegenmassnahme
+## Gegenmassnahme: HTTP-Header
 
 * Server teilen dem Browser erwartetes Verhalten mit
 * HTTP-Header wie Cookie-Header oder HSTS
-* HTML-Directives
+* teilweise HTML-Directives
+* Immer Browser-Versions abhängig, siehe auch [caniuse](https://caniuse.com/)
 
 ## Redux: Cookie Header
 
@@ -26,7 +27,7 @@ Set-Cookies: cookie=wert; Path=/app; Secure; HttpOnly; SameSite=Lax;
 * Path verwenden, vor allem wenn mehrere Applikationen am Server
 
 * Ohne Expires/Max-Age: Session-Cookie wird beim Schließen des Browsers gelöscht
-* Ohne Domain: nur aktuelle Domain gültig, wird mit Domain= eine Domain angegeben werden subdomains automatisch inkludiert
+* Ohne Domain: nur aktueller Origin gültig
 
 # Javascript-Injectons (XSS)
 
@@ -75,6 +76,11 @@ document.write("<OPTION value=2>English</OPTION>");
 http://www.some.site/page.html?default=<script>alert(document.cookie)</script>
 ```
 
+## DOM-based: warum interessant?
+
+- Documentation am Server?
+- http://snikt.net/app/javascript/docs/something.html
+
 ## uXSS
 
 Angriffe gegen den Browser..
@@ -107,7 +113,8 @@ Browser modifizieren übertragenen Code und "erzeugen" auf diese Weise XSS-verse
 * Session Stealing
 * Virtual Defacement
 * Crypto-Mining
-* DoS-Angriffe
+* [DDoS-Angriffe](https://de.wikipedia.org/wiki/Low_Orbit_Ion_Cannon)
+* [Further Social Engineering](https://beefproject.com/)
 
 ## Gegenmaßnahme: Input Filtering/Sanitation
 
@@ -121,7 +128,7 @@ Browser modifizieren übertragenen Code und "erzeugen" auf diese Weise XSS-verse
 * “nicht so einfach..”: verschiedene scopes
 * [XSS Prevention Cheat Sheet](https://github.com/OWASP/CheatSheetSeries/blob/master/cheatsheets/DOM_based_XSS_Prevention_Cheat_Sheet.md)
 
-## DOM-based XSS
+## Quoting kann komplex werden
 
 * Context ist wichtig, folgendes Code-Fragment am Server
 * taintedVar muss sowohl js- als auch html-encoded sein
@@ -146,41 +153,26 @@ Browser modifizieren übertragenen Code und "erzeugen" auf diese Weise XSS-verse
 * Achtung bei on* Handlern und Quoting
 * [Weiterführende Hints](https://www.owasp.org/images/0/07/Xenotix_XSS_Protection_CheatSheet_For_Developers.pdf)
 
-## Hardening: CSP
+## Hardening: X-XSS-Protection
 
-Good:
+* Aktiviert die XSS Protection des Browsers
+* Sollte vor Reflected-XSS schützen
+* Werte:
+  * 0: disabled
+  * 1: enabled, input wird sanitized
+  * 1; mode=block: enabled, die page wird nicht gerendert
+* Anti-XSS Heuristic wird nur noch von IE unterstützt..
 
-```
-script-src 'self' cdnjs.cloudflare.com;
-```
 
-Bad:
+## Hardening: Content Security Policy
 
-```
-script-src 'self' 'unsafe-inline' 'unsafe-eval'
-```
+- waren primär also Anti-XSS Schutz gedacht
+- script-src Direktiven
+- kommen gleich..
 
-## Polyglot Files
-
-* Dateien die gleichzeitig zwei Dateitypen erfüllen
-* Können CSP aushebeln
-
-## Zusammenfassung
+## Zusammenspiel der Absicherungen
 
 ![Zusammenfassung](0x08_xss_summary.png){.stretch}
-
-## Zum Abschluss
-
-![Picture](0x04_owasp_top_10.png){.stretch}
-
-# Unverified Redirects and Forwards
-
-## Basics
-
-* Redirect Target wird über eine Benutzereingabe kontrolliert
-* http://example.com/example.php?url=http://malicious.com
-* Besonders gefährlich, wenn die übergebene Seite mittels iframe eingebunden wird
-* Gegenmaßnahme: Whitelist verwenden
 
 # Reverse Tab-Nabbing
 
@@ -240,7 +232,7 @@ Wird ein externer Link in einem neuen Browserfenster/tab aufgemacht, kann die au
 | origin-when-cross-origin | |
 | same-origin | referrer nur wenn same-origin |
 | strict-origin | only set origin, no https->http |
-| strict-origin-when-cross-origin | |
+| strict-origin-when-cross-origin | new-default (2021) |
 | unsafe-url | Referrer immer gesetzt |
 
 # Clickjacking
@@ -255,7 +247,6 @@ Wird ein externer Link in einem neuen Browserfenster/tab aufgemacht, kann die au
   * DENY
   * SAMEORIGIN
   * ALLOW-FROM $origin
-  * ALLOWALL (non-standard)
 
 ## Not-Perfect
 
@@ -263,17 +254,6 @@ Wird ein externer Link in einem neuen Browserfenster/tab aufgemacht, kann die au
 * Mehrere Origins können nicht angegeben werden
 * Handhabung wenn X-Frame-Options Header [mehrfach vorkommt](https://blog.qualys.com/securitylabs/2015/10/20/clickjacking-a-common-implementation-mistake-that-can-put-your-websites-in-danger)
 * CSP verbessert den Schutz
-
-# Reflected-XSS Schutz
-
-## Reflected-XSS Schutz (X-XSS-Protection)
-
-* Aktiviert die XSS Protection des Browsers
-* Werte:
-  * 0: disabled
-  * 1: enabled, input wird sanitized
-  * 1; mode=block: enabled, die page wird nicht gerendert
-* Anti-XSS Heuristic wird nur noch von IE unterstützt..
 
 # SOP/CORS
 
@@ -323,176 +303,203 @@ Access-Control-Allow-Methods: PUT, DELETE
 
 ![Picture](0x09_cors.png){.stretch}
 
-# Content-Security-Policy
 
-## Historische Entwicklung
+# Content-Security-Policy (CSP)
 
-* SOP schützt nicht vor bösartigem JavaScript-Code auf dem eigenen Server
-* CSP: limitiert wo JavaScript-Code vorkommen darf
-* Mittlerweile umfasst CSP weitaus mehr als nur XSS-Protection
-* Wird weiterentwicklet, Problem [Verfügbarkeit](https://caniuse.com/#search=csp)
+## Entstehungsgeschichte
 
-## Allgemein
+- "logische" Erweiterung aus SOP
+- SOP: Schützt die eigene Seite vor fremden Zugriffen
+- CSP: Definiert wo in der eigenen Seite JavaScript vorkommen darf
 
-* Content Security Policy
-* Sehr mächtiges Framework um Browsern Policies zu übermitteln
-* Entweder als HTML-Tag oder HTTP-Header
-* Grundidee: Trennung von JavaScript und HTML
+## Basic-Form
 
-## Trennung von JavaScript und HTML
+~~~ http
+Content-Security-Policy: <policy-directive>; <policy-directive>
+~~~
 
-Nach Aktivierung von CSP ist JavaScript nur in getrennten JavaScript-Dateien erlaubt:
+Report-Only:
 
-``` html
-<script src="externalfile.js"></script>
-```
+~~~ http
+Content-Security-Policy-Report-Only: <policy-directive>; <policy-directive>
+~~~
 
-Wie können Events gebunden werden:
+## Verhalten bei mehreren Headern
 
-``` javascript
-$(document).ready(function()  {
-  document.getElementById("btn").addEventListener('click', doSomething);     
+- nachfolgende Header können zuvorige nur verschärfen
+
+## Direktiven (Auszug)
+
+- script-src, style-src, font-src, media-src, img-src, ..
+- frame-src, frame-ancestors
+- form-action
+- base-uri
+- upgrade-insecure-requests, block-all-mixed-content
+- report-uri
+- default-src
+
+[Genauere Informationen online](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy)
+
+## Sources (Werte für Direktiven)
+
+- 'none'
+- 'self'
+- 'unsafe-inline', 'unsafe-eval', 'strict-dynamic'
+- scheme (http:, https:)
+- hostname (e.g., https://generali.at)
+
+## Beispiele
+
+~~~
+# resourcen nür über https
+Content-Security-Policy: default-src https:
+
+# Javascript darf nur in getrennten JS-Files am eigenen Server vorkommen:
+Content-Security-Policy: script-src 'self';
+
+# limit fonts und grafiken
+Content-Security-Policy: font-src: https://google-fonts.com; img-src 'self' https://img.generali.at;
+
+# limit javascript to script.generali.at
+Content-Security-Policy: script-src https://script.generali.at;
+~~~
+
+## XSS-Protection
+
+~~~
+# limit javascript to scripts from scripts.generali.at
+Content-Security-Policy: script-src https://scripts.generali.at;
+~~~
+
+Auch wenn der Angreifer im HTML-Code Javascript hinterlegen kann, wird es nicht ausgeführt:
+
+~~~ html
+<html>
+  <body>
+    <script>alert(1);</script>
+	</body>
+</html>
+~~~
+
+## Verwendung von Javascript
+
+Funktioniert nicht mehr:
+
+~~~ html
+<button class='my-javascript-button' onclick="alert('hello');">
+~~~
+
+Stattdessen: in eigenem Javascript-File:
+
+~~~html
+<script src="https://script.generali.at/somescript.js"></script>
+~~~
+
+~~~ javascript
+$(document).ready(function () {
+  $('.my-javascript-button').on('click', function() {
+	    alert('hello');
+	});
 });
-```
+~~~
 
-## CSP: Feature Creep
+## Problem: Polyglot Files
 
-## CSP: Was darf eingebunden werden?
+- [Bypassing CSP using polyglot files](https://portswigger.net/research/bypassing-csp-using-polyglot-jpegs)
 
-| Direktive | Einsatzbereich |
-|-----------|------------------|
-| script-src| wo darf Javascript vorkommen?|
-| object-src| von wo dürfen plugins geladen werden?|
-| img-src, media-src, font-src, style-src|
-| frame-src, frame-ancestor, child-src| von wo aus darf eine Seite als iframe inkludiert werden?|
-| connect-src| JSONP, WebSockets, etc.|
-| default-src| default policy für die meisten Elemente|
+## Negative Shortcuts
 
-## CSP: Beispiel script-src <source>
+'unsafe-inline' und 'unsafe-eval' entfernen viel von der Schutzwirkung..
 
-| Direktive | Einsatzbereich |
-|-----------|------------------|
-| host| z.b. snikt.net|
-| scheme-source| z.B.: https://|
-| ‘self’| eigene Webseite|
-| ‘none’||
-| ‘unsafe-inline’| just don't |
-| ‘unsafe-eval’| erlaut Eval, für z.B. setTimeout notwendig|
-| ‘nonce’-base64(nonce)||
-| 'hash-alg-base64(hash)' | Berechnung eines Hashes über alle JS|
-| 'strict-dynamic' | hash-alg und nonce dürfen weiter Scripts laden|
+~~~ http
+Content-Security-Policy: script-src 'self' 'unsafe-inline' 'unsafe-eval';
+~~~
 
+## CSP is hard
 
-## CSP: Steuerung vom Browser
+[Restricting The Scripts, You're To Blame, You Give CSP a Bad name](https://www.youtube.com/watch?v=jeTGBSL4eQs)
 
-| Direktive | Einsatzbereich |
-|-----------|------------------|
-| form-action| welche URIs dürfen als Ziel eines formulars dienen|
-| sandbox| kontrolliert embedded iframes|
-| plugin-types| welche plugins werden erlaubt|
-| reflected-xss| entspricht X-XSS-Protection|
-| referrer| ähnlich wie Referrer-Policy|
-| report-uri| report Browser Violations to server|
-| block-all-mixed-content| disallow mixed content |
-| upgrade-insecure-requests| convert http into https requests |
+## Reporting 1/2
 
-## CSP: Beispiele
+~~~ http
+Content-Security-Policy-Report-Only: default-src 'none'; style-src cdn.example.com; report-uri: /csp-reports
+~~~
 
-``` http
-Content-Security-Policy: script-src 'self' www.google-analytics.com ajax.googleapis.com;
-```
+~~~ html
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Sign Up</title>
+		<link rel="stylesheet" href="css/style.css">
+	</head>
+	<body>
+		... Content ...
+	</body>
+</html>
+~~~
 
-``` http
-Content-Security-Policy: script-src 'self'; style-src *
-```
+## Reporting 2/2
 
-``` http
-Content-Security-Policy: default-src 'none'; script-src 'self'; connect-src 'self'; img-src 'self'; style-src 'self';
-```
+~~~ json
+{
+  "csp-report": {
+	    "document-uri": "http://example.com/signup.html",
+			"referrer": "",
+			"blocked-uri": "http://example.com/css/style.css",
+			"violated-directive": "style-src cdn.example.com",
+			"original-policy": "default-src 'none'; style-src cdn.example.com; report-uri /_/csp-reports",
+			"disposition": "report"
+	}
+}
+~~~
 
-## CSP: Beispiel Nonce
+## Tooling
 
-``` http
-Content-Security-Policy: script-src 'nonce-2726c7f26c'
-``` 
+- Viele Scanner analysieren bereits CSP Direktiven
+- [CSPScanner](https://cspscanner.com/)
 
-``` html
-<script nonce="2726c7f26c">
-  var inline = 1;
+## [CSP with Google](https://csp.withgoogle.com): Nonces (since 2015)
+
+Nonce: zufälliger nicht-erratenbarer Wert, wird per CSP definiert
+
+~~~ http
+Content-Security-Policy: script-src 'nonce-r@nd0m';
+~~~
+
+Script-Tags werden ausgeführt, wenn sie den korrekten Nonce verwenden:
+
+~~~ html
+<script nonce="r@nd0m">
+	doWhatever();
 </script>
-``` 
+~~~
 
-## Hinweise zu nonce:
+## CSP-with-Google
 
-* nonce muss natürlich dynamisch generiert werden!
-* Angreifer darf keine Eingabemöglichkeit in die Skript-Tags besitzen
-* Einsatz wird von Google empfohlen
+~~~ http
+Content-Security-Policy: default-src https:; script-src 'nonce-{random}'; object-src 'none'
+~~~
 
-# HTML-Directives
+  > This policy will require all resources to be loaded over HTTPS, allow only script elements with the correct nonce attribute, and prevent loading any plugins.
 
-## IFrame-Option: sandbox
+## [CSP-with-Google](https://csp.withgoogle.com/docs/strict-csp.html#example): strict-CSP
 
-* all forms and scripts are disabled
-* all links are not allowed to target other browser contexts
-* all plugins are disabled
-* all features that trigger automatically are disabled
+~~~ http
+Content-Security-Policy:
+  object-src 'none';
+	script-src 'nonce-{random}' 'unsafe-inline' 'unsafe-eval' 'strict-dynamic' https: http:;
+	base-uri 'none';
+	report-uri https://your-report-collector.example.com/
+~~~
 
-## Subresource Integrity
+- unsafe-inline wird von neueren Browsern deaktiviert, falls nonce gesetzt
+- strict-dynamic erlaubt das indirekte Laden von javascript, disabled http: und https:
+- ganz alte browser fallen also auf http: und https: zurück
+- unsafe-eval um Adaption zu erleichtern (sollte entfernt werden)
 
-* Dient um indirekte Angriffe z. B. über CDNs abzuwehren
-* Hash-Summe wird bei script/css includes angegeben,
-* Verwendung kann mittels CSP enforced werden
+## CSP-Scanner
 
-```html
-<script src="https://example.com/example-framework.js"
-      integrity="sha384-oqVuAfXRKap7fdgcCY5uykM6+R9GqQ8K/uxy9rx7HNQlGYl1kPzQho1wx4JwY8wC"></script>
-```
-
-## SRI: Probleme
-
-* nicht transitiv
-* dynamische Inhalte wie Google Fonts
-* keine "gratis" Updates von Libraries
-
-
-# HTML5 Stuff
-
-## WebStorage
-
-* niemals sensitive Informationen speichern
-* SessionStorage vs. LocalStorage
-* Verwundbar gegenüber XSS (verglichen mit Cookies)
-  * es gibt kein httpOnly
-  * man kann es nicht auf sub-Pfade limitieren
-
-## WebWorkers
-
-* Achtung wenn User-Eingaben verwendet werden
-* können XMLHttpRequests abschicken, aber getrennter Origin
-* CPU DoS!
-
-## WebAsm
-
-* Potential für Bitcoin-Miners
-* Potential für Obfuscation
-
-## WebRTC
-
-* Peer-to-Peer Communication
-* Access to Camera/Mic through Browser Controls
-* Eher Privacy Impact
-
-## WebBluetooth
-
-* Browser soll mit verbundenen Bluetooth LE devices Daten austauschen können.
-* Webseite kann nicht nach devices suchen
-* JS requested device, Browser übernimmt das Pairing
-* Effektiv sehr vergleichbar mit Security Model mobiler Applikationen
-
-## WebBluetooh: Privacy Impact
-
-* Only possible from Secure Context (HTTPS)
-* Eher Privacy Impact
-  * "rssi", "txPower"
+- [Google CSP Evaluator](https://csp-evaluator.withgoogle.com/)
+- [CSP Scanner](https://cspscanner.com/)
 
 # FIN

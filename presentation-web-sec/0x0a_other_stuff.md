@@ -5,6 +5,81 @@ title: Web Security
 
 # Other Stuff..
 
+# Unverified Redirects and Forwards
+
+## Basics
+
+* Redirect Target wird über eine Benutzereingabe kontrolliert
+* http://example.com/example.php?url=http://malicious.com
+* Besonders gefährlich, wenn die übergebene Seite mittels iframe eingebunden wird
+* Gegenmaßnahme: Whitelist verwenden
+
+
+# HTML-Directives
+
+## IFrame-Option: sandbox
+
+* all forms and scripts are disabled
+* all links are not allowed to target other browser contexts
+* all plugins are disabled
+* all features that trigger automatically are disabled
+
+## Subresource Integrity
+
+* Dient um indirekte Angriffe z. B. über CDNs abzuwehren
+* Hash-Summe wird bei script/css includes angegeben,
+* Verwendung kann mittels CSP enforced werden
+
+```html
+<script src="https://example.com/example-framework.js"
+      integrity="sha384-oqVuAfXRKap7fdgcCY5uykM6+R9GqQ8K/uxy9rx7HNQlGYl1kPzQho1wx4JwY8wC"></script>
+```
+
+## SRI: Probleme
+
+* nicht transitiv
+* dynamische Inhalte wie Google Fonts
+* keine "gratis" Updates von Libraries
+
+# HTML5 Stuff
+
+## WebStorage
+
+* niemals sensitive Informationen speichern
+* SessionStorage vs. LocalStorage
+* Verwundbar gegenüber XSS (verglichen mit Cookies)
+  * es gibt kein httpOnly
+  * man kann es nicht auf sub-Pfade limitieren
+
+## WebWorkers
+
+* Achtung wenn User-Eingaben verwendet werden
+* können XMLHttpRequests abschicken, aber getrennter Origin
+* CPU DoS!
+
+## WebAsm
+
+* Potential für Bitcoin-Miners
+* Potential für Obfuscation
+
+## WebRTC
+
+* Peer-to-Peer Communication
+* Access to Camera/Mic through Browser Controls
+* Eher Privacy Impact
+
+## WebBluetooth
+
+* Browser soll mit verbundenen Bluetooth LE devices Daten austauschen können.
+* Webseite kann nicht nach devices suchen
+* JS requested device, Browser übernimmt das Pairing
+* Effektiv sehr vergleichbar mit Security Model mobiler Applikationen
+
+## WebBluetooh: Privacy Impact
+
+* Only possible from Secure Context (HTTPS)
+* Eher Privacy Impact
+  * "rssi", "txPower"
 # HTTPS/TLS
 
 ## HTTPS/TLS: Guidelines
