@@ -41,19 +41,78 @@
   <p class="author">Andreas Happe</p>
 </section>
 
-<section>
 <section id="other-stuff.." class="title-slide slide level1">
 <h1>Other Stuff..</h1>
 
 </section>
-<section id="redux-cookie-header" class="slide level2">
-<h2>Redux: Cookie Header</h2>
+
+<section id="redux-cookie-header" class="title-slide slide level1">
+<h1>Redux: Cookie Header</h1>
 <pre class="http"><code>Set-Cookies: cookie=wert; Path=/app; Secure; HttpOnly; SameSite=Lax;</code></pre>
 <ul>
 <li><p>Secure, HttpOnly und SameSite=Lax verwenden</p></li>
 <li><p>Path verwenden, vor allem wenn mehrere Applikationen am Server</p></li>
 <li><p>Ohne Expires/Max-Age: Session-Cookie wird beim Schließen des Browsers gelöscht</p></li>
 <li><p>Ohne Domain: nur aktueller Origin gültig</p></li>
+</ul>
+</section>
+
+<section>
+<section id="html5-stuff" class="title-slide slide level1">
+<h1>HTML5 Stuff</h1>
+
+</section>
+<section id="webstorage" class="slide level2">
+<h2>WebStorage</h2>
+<ul>
+<li>SessionStorage vs. LocalStorage</li>
+<li>Verwundbar gegenüber XSS (verglichen mit Cookies)
+<ul>
+<li>no-na-net</li>
+<li>es gibt kein httpOnly</li>
+<li>man kann es nicht auf sub-Pfade limitieren</li>
+</ul></li>
+<li>niemals sensitive Informationen speichern</li>
+</ul>
+</section>
+<section id="webworkers" class="slide level2">
+<h2>WebWorkers</h2>
+<ul>
+<li>Achtung wenn User-Eingaben verwendet werden</li>
+<li>können XMLHttpRequests abschicken, aber getrennter Origin</li>
+<li>CPU DoS!</li>
+</ul>
+</section>
+<section id="webasm" class="slide level2">
+<h2>WebAsm</h2>
+<ul>
+<li>Potential für Bitcoin-Miners</li>
+<li>Potential für Obfuscation</li>
+</ul>
+</section>
+<section id="webrtc" class="slide level2">
+<h2>WebRTC</h2>
+<ul>
+<li>Peer-to-Peer Communication</li>
+<li>Access to Camera/Mic through Browser Controls</li>
+<li>Eher Privacy Impact</li>
+</ul>
+</section>
+<section id="webbluetooth" class="slide level2">
+<h2>WebBluetooth</h2>
+<ul>
+<li>Browser soll mit verbundenen Bluetooth LE devices Daten austauschen können.</li>
+<li>Webseite kann nicht nach devices suchen</li>
+<li>JS requested device, Browser übernimmt das Pairing</li>
+<li>Effektiv sehr vergleichbar mit Security Model mobiler Applikationen</li>
+</ul>
+</section>
+<section id="webbluetooh-privacy-impact" class="slide level2">
+<h2>WebBluetooh: Privacy Impact</h2>
+<ul>
+<li>Only possible from Secure Context (HTTPS)</li>
+<li>Eher Privacy Impact</li>
+<li>“rssi”, “txPower”</li>
 </ul>
 </section></section>
 <section>

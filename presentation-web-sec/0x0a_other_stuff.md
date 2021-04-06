@@ -5,7 +5,7 @@ title: Web Security
 
 # Other Stuff..
 
-## Redux: Cookie Header
+# Redux: Cookie Header
 
 ``` http
 Set-Cookies: cookie=wert; Path=/app; Secure; HttpOnly; SameSite=Lax;
@@ -16,6 +16,49 @@ Set-Cookies: cookie=wert; Path=/app; Secure; HttpOnly; SameSite=Lax;
 
 * Ohne Expires/Max-Age: Session-Cookie wird beim Schließen des Browsers gelöscht
 * Ohne Domain: nur aktueller Origin gültig
+
+
+# HTML5 Stuff
+
+## WebStorage
+
+* SessionStorage vs. LocalStorage
+* Verwundbar gegenüber XSS (verglichen mit Cookies)
+  * no-na-net
+  * es gibt kein httpOnly
+  * man kann es nicht auf sub-Pfade limitieren
+* niemals sensitive Informationen speichern
+
+## WebWorkers
+
+* Achtung wenn User-Eingaben verwendet werden
+* können XMLHttpRequests abschicken, aber getrennter Origin
+* CPU DoS!
+
+## WebAsm
+
+* Potential für Bitcoin-Miners
+* Potential für Obfuscation
+
+## WebRTC
+
+* Peer-to-Peer Communication
+* Access to Camera/Mic through Browser Controls
+* Eher Privacy Impact
+
+## WebBluetooth
+
+* Browser soll mit verbundenen Bluetooth LE devices Daten austauschen können.
+* Webseite kann nicht nach devices suchen
+* JS requested device, Browser übernimmt das Pairing
+* Effektiv sehr vergleichbar mit Security Model mobiler Applikationen
+
+## WebBluetooh: Privacy Impact
+
+* Only possible from Secure Context (HTTPS)
+* Eher Privacy Impact
+* "rssi", "txPower"
+
 
 
 # HTTPS/TLS

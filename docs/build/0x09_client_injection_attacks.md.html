@@ -666,64 +666,6 @@ Content-Security-Policy: script-src https://scripts.snikt.net;</code></pre>
 <li>keine “gratis” Updates von Libraries</li>
 </ul>
 </section></section>
-<section>
-<section id="html5-stuff" class="title-slide slide level1">
-<h1>HTML5 Stuff</h1>
-
-</section>
-<section id="webstorage" class="slide level2">
-<h2>WebStorage</h2>
-<ul>
-<li>SessionStorage vs. LocalStorage</li>
-<li>Verwundbar gegenüber XSS (verglichen mit Cookies)
-<ul>
-<li>no-na-net</li>
-<li>es gibt kein httpOnly</li>
-<li>man kann es nicht auf sub-Pfade limitieren</li>
-</ul></li>
-<li>niemals sensitive Informationen speichern</li>
-</ul>
-</section>
-<section id="webworkers" class="slide level2">
-<h2>WebWorkers</h2>
-<ul>
-<li>Achtung wenn User-Eingaben verwendet werden</li>
-<li>können XMLHttpRequests abschicken, aber getrennter Origin</li>
-<li>CPU DoS!</li>
-</ul>
-</section>
-<section id="webasm" class="slide level2">
-<h2>WebAsm</h2>
-<ul>
-<li>Potential für Bitcoin-Miners</li>
-<li>Potential für Obfuscation</li>
-</ul>
-</section>
-<section id="webrtc" class="slide level2">
-<h2>WebRTC</h2>
-<ul>
-<li>Peer-to-Peer Communication</li>
-<li>Access to Camera/Mic through Browser Controls</li>
-<li>Eher Privacy Impact</li>
-</ul>
-</section>
-<section id="webbluetooth" class="slide level2">
-<h2>WebBluetooth</h2>
-<ul>
-<li>Browser soll mit verbundenen Bluetooth LE devices Daten austauschen können.</li>
-<li>Webseite kann nicht nach devices suchen</li>
-<li>JS requested device, Browser übernimmt das Pairing</li>
-<li>Effektiv sehr vergleichbar mit Security Model mobiler Applikationen</li>
-</ul>
-</section>
-<section id="webbluetooh-privacy-impact" class="slide level2">
-<h2>WebBluetooh: Privacy Impact</h2>
-<ul>
-<li>Only possible from Secure Context (HTTPS)</li>
-<li>Eher Privacy Impact</li>
-<li>“rssi”, “txPower”</li>
-</ul>
-</section></section>
 <section id="fin" class="title-slide slide level1">
 <h1>FIN</h1>
 
