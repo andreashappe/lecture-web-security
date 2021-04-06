@@ -67,7 +67,7 @@ http://www.some.site/page.html?default=<script>alert(document.cookie)</script>
 ## DOM-based: warum interessant?
 
 - Documentation am Server?
-- http://snikt.net/app/javascript/docs/something.html
+- http://snikt.net/app/libs/jquery/docs/search.html
 
 ## uXSS
 
@@ -154,7 +154,7 @@ Browser modifizieren übertragenen Code und "erzeugen" auf diese Weise XSS-verse
 
 ## Hardening: Content Security Policy
 
-- waren primär also Anti-XSS Schutz gedacht
+- war primär als XSS Schutz gedacht
 - script-src Direktiven
 - kommen gleich..
 
@@ -238,10 +238,10 @@ Wird ein externer Link in einem neuen Browserfenster/tab aufgemacht, kann die au
 
 ## Not-Perfect
 
-* Probleme bei double-framing
 * Mehrere Origins können nicht angegeben werden
-* Handhabung wenn X-Frame-Options Header [mehrfach vorkommt](https://blog.qualys.com/securitylabs/2015/10/20/clickjacking-a-common-implementation-mistake-that-can-put-your-websites-in-danger)
-* CSP verbessert den Schutz
+  * [Mehrfachverwendung von X-Frame-Options](https://blog.qualys.com/securitylabs/2015/10/20/clickjacking-a-common-implementation-mistake-that-can-put-your-websites-in-danger)
+  * Verbesserung: CSP
+* Probleme bei double-framing
 
 # SOP/CORS
 
@@ -251,7 +251,7 @@ Aufweichen der SOP
 
 Beispiel: Browser lädt eine Webseite (web.snikt.net), diese will mittels Javascript auf service.snikt.net zugreifen
 
-## Simple Case: Request
+## Simple Case: Read-Request
 
 * Browser befindet sich auf web.snikt.net
 * Will auf service.snikt.net zugreifen
@@ -346,10 +346,7 @@ Content-Security-Policy: default-src https:
 Content-Security-Policy: script-src 'self';
 
 # limit fonts und grafiken
-Content-Security-Policy: font-src: https://google-fonts.com; img-src 'self' https://img.snikt.net;
-
-# limit javascript to script.snikt.net.
-Content-Security-Policy: script-src https://script.snikt.net;
+Content-Security-Policy: font-src https://google-fonts.com; img-src 'self' https://img.snikt.net;
 ~~~
 
 ## XSS-Protection
@@ -374,25 +371,31 @@ Auch wenn der Angreifer im HTML-Code Javascript hinterlegen kann, wird es nicht 
 Funktioniert nicht mehr:
 
 ~~~ html
-<button class='my-javascript-button' onclick="alert('hello');">
+<button id='my-javascript-button' onclick="alert('hello');">
 ~~~
+
+## Verwendung von Javascript
 
 Stattdessen: in eigenem Javascript-File:
 
 ~~~html
+<button id='my-javascript-button'>
 <script src="https://script.snikt.net/somescript.js"></script>
 ~~~
 
+somescript.js:
+
 ~~~ javascript
 $(document).ready(function () {
-  $('.my-javascript-button').on('click', function() {
+  $('#my-javascript-button').on('click', function() {
 	    alert('hello');
 	});
 });
 ~~~
 
-## Problem: Polyglot Files
+## Problem: User sollte nicht JS-File hochladen können
 
+- File-Uploads?
 - [Bypassing CSP using polyglot files](https://portswigger.net/research/bypassing-csp-using-polyglot-jpegs)
 
 ## Negative Shortcuts
@@ -470,15 +473,12 @@ Content-Security-Policy: default-src https:; script-src 'nonce-{random}'; object
 ~~~ http
 Content-Security-Policy:
   object-src 'none';
-	script-src 'nonce-{random}' 'unsafe-inline' 'unsafe-eval' 'strict-dynamic' https: http:;
-	base-uri 'none';
-	report-uri https://your-report-collector.example.com/
+	script-src 'nonce-{random}' 'unsafe-inline' 'strict-dynamic' https: http:;
 ~~~
 
 - unsafe-inline wird von neueren Browsern deaktiviert, falls nonce gesetzt
 - strict-dynamic erlaubt das indirekte Laden von javascript, disabled http: und https:
 - ganz alte browser fallen also auf http: und https: zurück
-- unsafe-eval um Adaption zu erleichtern (sollte entfernt werden)
 
 ## CSP-Scanner
 
@@ -526,11 +526,12 @@ Content-Security-Policy:
 
 ## WebStorage
 
-* niemals sensitive Informationen speichern
 * SessionStorage vs. LocalStorage
 * Verwundbar gegenüber XSS (verglichen mit Cookies)
+  * no-na-net
   * es gibt kein httpOnly
   * man kann es nicht auf sub-Pfade limitieren
+* niemals sensitive Informationen speichern
 
 ## WebWorkers
 

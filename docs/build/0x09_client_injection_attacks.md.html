@@ -174,7 +174,7 @@
 <h2>DOM-based: warum interessant?</h2>
 <ul>
 <li>Documentation am Server?</li>
-<li>http://snikt.net/app/javascript/docs/something.html</li>
+<li>http://snikt.net/app/libs/jquery/docs/search.html</li>
 </ul>
 </section>
 <section id="uxss" class="slide level2">
@@ -274,7 +274,7 @@
 <section id="hardening-content-security-policy" class="slide level2">
 <h2>Hardening: Content Security Policy</h2>
 <ul>
-<li>waren primär also Anti-XSS Schutz gedacht</li>
+<li>war primär als XSS Schutz gedacht</li>
 <li>script-src Direktiven</li>
 <li>kommen gleich..</li>
 </ul>
@@ -400,10 +400,12 @@
 <section id="not-perfect" class="slide level2">
 <h2>Not-Perfect</h2>
 <ul>
+<li>Mehrere Origins können nicht angegeben werden
+<ul>
+<li><a href="https://blog.qualys.com/securitylabs/2015/10/20/clickjacking-a-common-implementation-mistake-that-can-put-your-websites-in-danger">Mehrfachverwendung von X-Frame-Options</a></li>
+<li>Verbesserung: CSP</li>
+</ul></li>
 <li>Probleme bei double-framing</li>
-<li>Mehrere Origins können nicht angegeben werden</li>
-<li>Handhabung wenn X-Frame-Options Header <a href="https://blog.qualys.com/securitylabs/2015/10/20/clickjacking-a-common-implementation-mistake-that-can-put-your-websites-in-danger">mehrfach vorkommt</a></li>
-<li>CSP verbessert den Schutz</li>
 </ul>
 </section></section>
 <section>
@@ -416,8 +418,8 @@
 <p>Aufweichen der SOP</p>
 <p>Beispiel: Browser lädt eine Webseite (web.snikt.net), diese will mittels Javascript auf service.snikt.net zugreifen</p>
 </section>
-<section id="simple-case-request" class="slide level2">
-<h2>Simple Case: Request</h2>
+<section id="simple-case-read-request" class="slide level2">
+<h2>Simple Case: Read-Request</h2>
 <ul>
 <li>Browser befindet sich auf web.snikt.net</li>
 <li>Will auf service.snikt.net zugreifen</li>
@@ -510,10 +512,7 @@ Content-Security-Policy: default-src https:
 Content-Security-Policy: script-src &#39;self&#39;;
 
 # limit fonts und grafiken
-Content-Security-Policy: font-src: https://google-fonts.com; img-src &#39;self&#39; https://img.snikt.net;
-
-# limit javascript to script.snikt.net.
-Content-Security-Policy: script-src https://script.snikt.net;</code></pre>
+Content-Security-Policy: font-src https://google-fonts.com; img-src &#39;self&#39; https://img.snikt.net;</code></pre>
 </section>
 <section id="xss-protection" class="slide level2">
 <h2>XSS-Protection</h2>
@@ -529,18 +528,24 @@ Content-Security-Policy: script-src https://scripts.snikt.net;</code></pre>
 <section id="verwendung-von-javascript" class="slide level2">
 <h2>Verwendung von Javascript</h2>
 <p>Funktioniert nicht mehr:</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true"></a><span class="kw">&lt;button</span><span class="ot"> class=</span><span class="st">&#39;my-javascript-button&#39;</span><span class="ot"> onclick=</span><span class="st">&quot;alert(&#39;hello&#39;);&quot;</span><span class="kw">&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true"></a><span class="kw">&lt;button</span><span class="ot"> id=</span><span class="st">&#39;my-javascript-button&#39;</span><span class="ot"> onclick=</span><span class="st">&quot;alert(&#39;hello&#39;);&quot;</span><span class="kw">&gt;</span></span></code></pre></div>
+</section>
+<section id="verwendung-von-javascript-1" class="slide level2">
+<h2>Verwendung von Javascript</h2>
 <p>Stattdessen: in eigenem Javascript-File:</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true"></a><span class="kw">&lt;script</span><span class="ot"> src=</span><span class="st">&quot;https://script.snikt.net/somescript.js&quot;</span><span class="kw">&gt;&lt;/script&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true"></a><span class="kw">&lt;button</span><span class="ot"> id=</span><span class="st">&#39;my-javascript-button&#39;</span><span class="kw">&gt;</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true"></a><span class="kw">&lt;script</span><span class="ot"> src=</span><span class="st">&quot;https://script.snikt.net/somescript.js&quot;</span><span class="kw">&gt;&lt;/script&gt;</span></span></code></pre></div>
+<p>somescript.js:</p>
 <div class="sourceCode" id="cb19"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true"></a><span class="fu">$</span>(<span class="bu">document</span>)<span class="op">.</span><span class="fu">ready</span>(<span class="kw">function</span> () {</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true"></a>  <span class="fu">$</span>(<span class="st">&#39;.my-javascript-button&#39;</span>)<span class="op">.</span><span class="fu">on</span>(<span class="st">&#39;click&#39;</span><span class="op">,</span> <span class="kw">function</span>() {</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true"></a>  <span class="fu">$</span>(<span class="st">&#39;#my-javascript-button&#39;</span>)<span class="op">.</span><span class="fu">on</span>(<span class="st">&#39;click&#39;</span><span class="op">,</span> <span class="kw">function</span>() {</span>
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true"></a>        <span class="fu">alert</span>(<span class="st">&#39;hello&#39;</span>)<span class="op">;</span></span>
 <span id="cb19-4"><a href="#cb19-4" aria-hidden="true"></a>    })<span class="op">;</span></span>
 <span id="cb19-5"><a href="#cb19-5" aria-hidden="true"></a>})<span class="op">;</span></span></code></pre></div>
 </section>
-<section id="problem-polyglot-files" class="slide level2">
-<h2>Problem: Polyglot Files</h2>
+<section id="problem-user-sollte-nicht-js-file-hochladen-können" class="slide level2">
+<h2>Problem: User sollte nicht JS-File hochladen können</h2>
 <ul>
+<li>File-Uploads?</li>
 <li><a href="https://portswigger.net/research/bypassing-csp-using-polyglot-jpegs">Bypassing CSP using polyglot files</a></li>
 </ul>
 </section>
@@ -600,14 +605,11 @@ Content-Security-Policy: script-src https://scripts.snikt.net;</code></pre>
 <h2><a href="https://csp.withgoogle.com/docs/strict-csp.html#example">CSP-with-Google</a>: strict-CSP</h2>
 <pre class="http"><code>Content-Security-Policy:
   object-src &#39;none&#39;;
-    script-src &#39;nonce-{random}&#39; &#39;unsafe-inline&#39; &#39;unsafe-eval&#39; &#39;strict-dynamic&#39; https: http:;
-    base-uri &#39;none&#39;;
-    report-uri https://your-report-collector.example.com/</code></pre>
+    script-src &#39;nonce-{random}&#39; &#39;unsafe-inline&#39; &#39;strict-dynamic&#39; https: http:;</code></pre>
 <ul>
 <li>unsafe-inline wird von neueren Browsern deaktiviert, falls nonce gesetzt</li>
 <li>strict-dynamic erlaubt das indirekte Laden von javascript, disabled http: und https:</li>
 <li>ganz alte browser fallen also auf http: und https: zurück</li>
-<li>unsafe-eval um Adaption zu erleichtern (sollte entfernt werden)</li>
 </ul>
 </section>
 <section id="csp-scanner" class="slide level2">
@@ -672,13 +674,14 @@ Content-Security-Policy: script-src https://scripts.snikt.net;</code></pre>
 <section id="webstorage" class="slide level2">
 <h2>WebStorage</h2>
 <ul>
-<li>niemals sensitive Informationen speichern</li>
 <li>SessionStorage vs. LocalStorage</li>
 <li>Verwundbar gegenüber XSS (verglichen mit Cookies)
 <ul>
+<li>no-na-net</li>
 <li>es gibt kein httpOnly</li>
 <li>man kann es nicht auf sub-Pfade limitieren</li>
 </ul></li>
+<li>niemals sensitive Informationen speichern</li>
 </ul>
 </section>
 <section id="webworkers" class="slide level2">

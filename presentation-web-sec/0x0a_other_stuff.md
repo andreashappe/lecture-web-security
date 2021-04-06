@@ -23,6 +23,7 @@ Set-Cookies: cookie=wert; Path=/app; Secure; HttpOnly; SameSite=Lax;
 ## HTTPS/TLS: Guidelines
 
 * TLSv1.2 (oder TLSv1.3) mit AES-GCM
+  * [RFC8996](https://datatracker.ietf.org/doc/rfc8996/?include_text=1)
   * Ältere Verfahren verwenden unsichere Krypto
   * aktuelle Browser bieten nur TLSv1.2 an
 * Vorzugsweise HTTP/2
