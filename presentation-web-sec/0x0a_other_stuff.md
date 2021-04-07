@@ -17,6 +17,41 @@ Set-Cookies: cookie=wert; Path=/app; Secure; HttpOnly; SameSite=Lax;
 * Ohne Expires/Max-Age: Session-Cookie wird beim Schließen des Browsers gelöscht
 * Ohne Domain: nur aktueller Origin gültig
 
+# Unverified Redirects and Forwards
+
+## Basics
+
+* Redirect Target wird über eine Benutzereingabe kontrolliert
+* http://example.com/example.php?url=http://malicious.com
+* Besonders gefährlich, wenn die übergebene Seite mittels iframe eingebunden wird
+* Gegenmaßnahme: Whitelist verwenden
+
+# HTML-Directives
+
+## IFrame-Option: sandbox
+
+* all forms and scripts are disabled
+* all links are not allowed to target other browser contexts
+* all plugins are disabled
+* all features that trigger automatically are disabled
+
+## Subresource Integrity
+
+* Dient um indirekte Angriffe z. B. über CDNs abzuwehren
+* Hash-Summe wird bei script/css includes angegeben,
+* Verwendung kann mittels CSP enforced werden
+
+```html
+<script src="https://example.com/example-framework.js"
+      integrity="sha384-oqVuAfXRKap7fdgcCY5uykM6+R9GqQ8K/uxy9rx7HNQlGYl1kPzQho1wx4JwY8wC"></script>
+```
+
+## SRI: Probleme
+
+* nicht transitiv
+* dynamische Inhalte wie Google Fonts
+* keine "gratis" Updates von Libraries
+
 
 # HTML5 Stuff
 
@@ -58,8 +93,6 @@ Set-Cookies: cookie=wert; Path=/app; Secure; HttpOnly; SameSite=Lax;
 * Only possible from Secure Context (HTTPS)
 * Eher Privacy Impact
 * "rssi", "txPower"
-
-
 
 # HTTPS/TLS
 

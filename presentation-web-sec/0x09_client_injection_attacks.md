@@ -91,6 +91,7 @@ Browser modifizieren übertragenen Code und "erzeugen" auf diese Weise XSS-verse
 <IMG SRC=javascript:alert(String.fromCharCode(88,83,83))>
 
 <IMG SRC= onmouseover="alert('xxs')">
+<IMG SRC="non-existant" onerror="alert('xxs')">
 <IMG SRC="jav    ascript:alert('XSS');">
 <BGSOUND SRC="javascript:alert('XSS');">
 <IMG STYLE="xss:expr/*XSS*/ession(alert('XSS'))">
@@ -241,7 +242,7 @@ Wird ein externer Link in einem neuen Browserfenster/tab aufgemacht, kann die au
 * Mehrere Origins können nicht angegeben werden
   * [Mehrfachverwendung von X-Frame-Options](https://blog.qualys.com/securitylabs/2015/10/20/clickjacking-a-common-implementation-mistake-that-can-put-your-websites-in-danger)
   * Verbesserung: CSP
-* Probleme bei double-framing
+* Probleme bei [double-framing](https://cheatsheetseries.owasp.org/cheatsheets/Clickjacking_Defense_Cheat_Sheet.html)
 
 # SOP/CORS
 
@@ -485,41 +486,6 @@ Content-Security-Policy:
 - Viele Scanner analysieren bereits CSP Direktiven
 - [CSPScanner](https://cspscanner.com/)
 - [Google CSP Evaluator](https://csp-evaluator.withgoogle.com/)
-
-# Unverified Redirects and Forwards
-
-## Basics
-
-* Redirect Target wird über eine Benutzereingabe kontrolliert
-* http://example.com/example.php?url=http://malicious.com
-* Besonders gefährlich, wenn die übergebene Seite mittels iframe eingebunden wird
-* Gegenmaßnahme: Whitelist verwenden
-
-
-# HTML-Directives
-
-## IFrame-Option: sandbox
-
-* all forms and scripts are disabled
-* all links are not allowed to target other browser contexts
-* all plugins are disabled
-* all features that trigger automatically are disabled
-
-## Subresource Integrity
-
-* Dient um indirekte Angriffe z. B. über CDNs abzuwehren
-* Hash-Summe wird bei script/css includes angegeben,
-* Verwendung kann mittels CSP enforced werden
-
-```html
-<script src="https://example.com/example-framework.js"
-      integrity="sha384-oqVuAfXRKap7fdgcCY5uykM6+R9GqQ8K/uxy9rx7HNQlGYl1kPzQho1wx4JwY8wC"></script>
-```
-
-## SRI: Probleme
-
-* nicht transitiv
-* dynamische Inhalte wie Google Fonts
-* keine "gratis" Updates von Libraries
+- [CSP Generator](https://report-uri.com/home/generate)
 
 # FIN

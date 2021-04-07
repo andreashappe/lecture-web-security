@@ -199,9 +199,10 @@
 <span id="cb4-7"><a href="#cb4-7" aria-hidden="true"></a><span class="kw">&lt;IMG</span><span class="ot"> SRC=</span><span class="st">javascript:alert(String.fromCharCode(88,83,83))</span><span class="kw">&gt;</span></span>
 <span id="cb4-8"><a href="#cb4-8" aria-hidden="true"></a></span>
 <span id="cb4-9"><a href="#cb4-9" aria-hidden="true"></a><span class="kw">&lt;IMG</span><span class="ot"> SRC=</span> <span class="st">onmouseover=</span><span class="er">&quot;alert(&#39;xxs&#39;)&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true"></a><span class="kw">&lt;IMG</span><span class="ot"> SRC=</span><span class="st">&quot;jav    ascript:alert(&#39;XSS&#39;);&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true"></a><span class="kw">&lt;BGSOUND</span><span class="ot"> SRC=</span><span class="st">&quot;javascript:alert(&#39;XSS&#39;);&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true"></a><span class="kw">&lt;IMG</span><span class="ot"> STYLE=</span><span class="st">&quot;xss:expr/*XSS*/ession(alert(&#39;XSS&#39;))&quot;</span><span class="kw">&gt;</span></span></code></pre></div>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true"></a><span class="kw">&lt;IMG</span><span class="ot"> SRC=</span><span class="st">&quot;non-existant&quot;</span><span class="ot"> onerror=</span><span class="st">&quot;alert(&#39;xxs&#39;)&quot;</span><span class="kw">&gt;</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true"></a><span class="kw">&lt;IMG</span><span class="ot"> SRC=</span><span class="st">&quot;jav    ascript:alert(&#39;XSS&#39;);&quot;</span><span class="kw">&gt;</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true"></a><span class="kw">&lt;BGSOUND</span><span class="ot"> SRC=</span><span class="st">&quot;javascript:alert(&#39;XSS&#39;);&quot;</span><span class="kw">&gt;</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true"></a><span class="kw">&lt;IMG</span><span class="ot"> STYLE=</span><span class="st">&quot;xss:expr/*XSS*/ession(alert(&#39;XSS&#39;))&quot;</span><span class="kw">&gt;</span></span></code></pre></div>
 </section>
 <section id="payloads" class="slide level2">
 <h2>Payloads</h2>
@@ -405,7 +406,7 @@
 <li><a href="https://blog.qualys.com/securitylabs/2015/10/20/clickjacking-a-common-implementation-mistake-that-can-put-your-websites-in-danger">Mehrfachverwendung von X-Frame-Options</a></li>
 <li>Verbesserung: CSP</li>
 </ul></li>
-<li>Probleme bei double-framing</li>
+<li>Probleme bei <a href="https://cheatsheetseries.owasp.org/cheatsheets/Clickjacking_Defense_Cheat_Sheet.html">double-framing</a></li>
 </ul>
 </section></section>
 <section>
@@ -618,52 +619,7 @@ Content-Security-Policy: script-src https://scripts.snikt.net;</code></pre>
 <li>Viele Scanner analysieren bereits CSP Direktiven</li>
 <li><a href="https://cspscanner.com/">CSPScanner</a></li>
 <li><a href="https://csp-evaluator.withgoogle.com/">Google CSP Evaluator</a></li>
-</ul>
-</section></section>
-<section>
-<section id="unverified-redirects-and-forwards" class="title-slide slide level1">
-<h1>Unverified Redirects and Forwards</h1>
-
-</section>
-<section id="basics" class="slide level2">
-<h2>Basics</h2>
-<ul>
-<li>Redirect Target wird über eine Benutzereingabe kontrolliert</li>
-<li>http://example.com/example.php?url=http://malicious.com</li>
-<li>Besonders gefährlich, wenn die übergebene Seite mittels iframe eingebunden wird</li>
-<li>Gegenmaßnahme: Whitelist verwenden</li>
-</ul>
-</section></section>
-<section>
-<section id="html-directives" class="title-slide slide level1">
-<h1>HTML-Directives</h1>
-
-</section>
-<section id="iframe-option-sandbox" class="slide level2">
-<h2>IFrame-Option: sandbox</h2>
-<ul>
-<li>all forms and scripts are disabled</li>
-<li>all links are not allowed to target other browser contexts</li>
-<li>all plugins are disabled</li>
-<li>all features that trigger automatically are disabled</li>
-</ul>
-</section>
-<section id="subresource-integrity" class="slide level2">
-<h2>Subresource Integrity</h2>
-<ul>
-<li>Dient um indirekte Angriffe z. B. über CDNs abzuwehren</li>
-<li>Hash-Summe wird bei script/css includes angegeben,</li>
-<li>Verwendung kann mittels CSP enforced werden</li>
-</ul>
-<div class="sourceCode" id="cb28"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true"></a><span class="kw">&lt;script</span><span class="ot"> src=</span><span class="st">&quot;https://example.com/example-framework.js&quot;</span></span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true"></a><span class="ot">      integrity=</span><span class="st">&quot;sha384-oqVuAfXRKap7fdgcCY5uykM6+R9GqQ8K/uxy9rx7HNQlGYl1kPzQho1wx4JwY8wC&quot;</span><span class="kw">&gt;&lt;/script&gt;</span></span></code></pre></div>
-</section>
-<section id="sri-probleme" class="slide level2">
-<h2>SRI: Probleme</h2>
-<ul>
-<li>nicht transitiv</li>
-<li>dynamische Inhalte wie Google Fonts</li>
-<li>keine “gratis” Updates von Libraries</li>
+<li><a href="https://report-uri.com/home/generate">CSP Generator</a></li>
 </ul>
 </section></section>
 <section id="fin" class="title-slide slide level1">

@@ -331,5 +331,4 @@ payload = <<-PAYLOAD.strip.gsub("\n", "&#10;")
 * Serialiserungsoperationen müssen authenticated und authorized sein
 * Serialisierte Objekte müssen integritätsgeschützt werden
 
-
 # FIN
