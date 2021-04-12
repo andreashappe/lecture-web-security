@@ -8,13 +8,11 @@ title: Web Security
 # Redux: Cookie Header
 
 ``` http
-Set-Cookies: cookie=wert; Path=/app; Secure; HttpOnly; SameSite=Lax;
+Set-Cookie: cookie=wert; Path=/app; Secure; HttpOnly; SameSite=Lax;
 ```
 
 * Secure, HttpOnly und SameSite=Lax verwenden
 * Path verwenden, vor allem wenn mehrere Applikationen am Server
-
-* Ohne Expires/Max-Age: Session-Cookie wird beim Schließen des Browsers gelöscht
 * Ohne Domain: nur aktueller Origin gültig
 
 # Unverified Redirects and Forwards
@@ -133,8 +131,7 @@ Strict-Transport-Security: max-age=31536000, includeSubdomain, preload
 ## Beispiel von Software, die man nicht am Server haben will:
 
 * Entwicklungstools wie phpmyadmin
-* Debug Mode bei verwendeten Frameworks
-* Debug Toolbars bei Verwendung von Frameworks
+* Debug Mode/Toolbars bei verwendeten Frameworks
 * Stacktraces mit Detailinformationen
 * phpinfo.php
 * Beispielscode (/example Directory)
@@ -147,13 +144,13 @@ Strict-Transport-Security: max-age=31536000, includeSubdomain, preload
 * Credentials im Dateisystem oder in Repositories
 * Backups
 
-## Configuration Management
+## Configuration and Credential Management
 
 - nicht hard-coded
 - Alternativen:
   - .env Files
   - Framework-Features
-- Spezialfall: Credential-Managmenet
+  - Vault
 
 ## Frameworks: Credential Storage
 
@@ -168,16 +165,20 @@ Ruby on Rails 5.2:
 
 # Using Components with known Vulnerabilities
 
-## Basics
+## Components with Vulnerabilities
 
 * Komponenten müssen regelmäßig getestet werden
-* nur offizielle Source Server verwenden
-* Wann werden die Schwachstellen überprüft?
+* ..und dann auch ausgebessert
 
 ## Wie kann dies automatisiert überprüft werden
 
 * OWASP dependency-check, retire.js
 * OWASP dependency-track
+
+## Supply-Chain Attacks
+
+* Typo-Squatting
+* Dependency-Confusion
 
 # Logging / Monitoring
 
@@ -187,12 +188,11 @@ Ruby on Rails 5.2:
 * Es sollte möglich sein automatisierte Angriffe zu erkennen
 * Spätere Auswertung sollte möglich sein
 * Betrifft im Webserver Umfeld vor allem Webserver- und Applikationslogs
-* Problem: Dev vs Admins
 
 ##  Anforderungen
 
 * Zentralisiert (weil mehrere app server, db server, etc.)
-* Secure
+* Secure (Integrität, Vertraulichkeit, Verfügbarkeit)
 * Auswertbar
 
 # FIN

@@ -110,12 +110,11 @@
 
 <section id="redux-cookie-header" class="title-slide slide level1">
 <h1>Redux: Cookie Header</h1>
-<pre class="http"><code>Set-Cookies: cookie=wert; Path=/app; Secure; HttpOnly; SameSite=Lax;</code></pre>
+<pre class="http"><code>Set-Cookie: cookie=wert; Path=/app; Secure; HttpOnly; SameSite=Lax;</code></pre>
 <ul>
-<li><p>Secure, HttpOnly und SameSite=Lax verwenden</p></li>
-<li><p>Path verwenden, vor allem wenn mehrere Applikationen am Server</p></li>
-<li><p>Ohne Expires/Max-Age: Session-Cookie wird beim Schließen des Browsers gelöscht</p></li>
-<li><p>Ohne Domain: nur aktueller Origin gültig</p></li>
+<li>Secure, HttpOnly und SameSite=Lax verwenden</li>
+<li>Path verwenden, vor allem wenn mehrere Applikationen am Server</li>
+<li>Ohne Domain: nur aktueller Origin gültig</li>
 </ul>
 </section>
 
@@ -278,8 +277,7 @@
 <h2>Beispiel von Software, die man nicht am Server haben will:</h2>
 <ul>
 <li>Entwicklungstools wie phpmyadmin</li>
-<li>Debug Mode bei verwendeten Frameworks</li>
-<li>Debug Toolbars bei Verwendung von Frameworks</li>
+<li>Debug Mode/Toolbars bei verwendeten Frameworks</li>
 <li>Stacktraces mit Detailinformationen</li>
 <li>phpinfo.php</li>
 <li>Beispielscode (/example Directory)</li>
@@ -295,16 +293,16 @@
 <li>Backups</li>
 </ul>
 </section>
-<section id="configuration-management" class="slide level2">
-<h2>Configuration Management</h2>
+<section id="configuration-and-credential-management" class="slide level2">
+<h2>Configuration and Credential Management</h2>
 <ul>
 <li>nicht hard-coded</li>
 <li>Alternativen:
 <ul>
 <li>.env Files</li>
 <li>Framework-Features</li>
+<li>Vault</li>
 </ul></li>
-<li>Spezialfall: Credential-Managmenet</li>
 </ul>
 </section>
 <section id="frameworks-credential-storage" class="slide level2">
@@ -323,12 +321,11 @@
 <h1>Using Components with known Vulnerabilities</h1>
 
 </section>
-<section id="basics-1" class="slide level2">
-<h2>Basics</h2>
+<section id="components-with-vulnerabilities" class="slide level2">
+<h2>Components with Vulnerabilities</h2>
 <ul>
 <li>Komponenten müssen regelmäßig getestet werden</li>
-<li>nur offizielle Source Server verwenden</li>
-<li>Wann werden die Schwachstellen überprüft?</li>
+<li>..und dann auch ausgebessert</li>
 </ul>
 </section>
 <section id="wie-kann-dies-automatisiert-überprüft-werden" class="slide level2">
@@ -337,27 +334,33 @@
 <li>OWASP dependency-check, retire.js</li>
 <li>OWASP dependency-track</li>
 </ul>
+</section>
+<section id="supply-chain-attacks" class="slide level2">
+<h2>Supply-Chain Attacks</h2>
+<ul>
+<li>Typo-Squatting</li>
+<li>Dependency-Confusion</li>
+</ul>
 </section></section>
 <section>
 <section id="logging-monitoring" class="title-slide slide level1">
 <h1>Logging / Monitoring</h1>
 
 </section>
-<section id="basics-2" class="slide level2">
+<section id="basics-1" class="slide level2">
 <h2>Basics</h2>
 <ul>
 <li>Kontroverse bei OWASP Top 10 2017</li>
 <li>Es sollte möglich sein automatisierte Angriffe zu erkennen</li>
 <li>Spätere Auswertung sollte möglich sein</li>
 <li>Betrifft im Webserver Umfeld vor allem Webserver- und Applikationslogs</li>
-<li>Problem: Dev vs Admins</li>
 </ul>
 </section>
 <section id="anforderungen" class="slide level2">
 <h2>Anforderungen</h2>
 <ul>
 <li>Zentralisiert (weil mehrere app server, db server, etc.)</li>
-<li>Secure</li>
+<li>Secure (Integrität, Vertraulichkeit, Verfügbarkeit)</li>
 <li>Auswertbar</li>
 </ul>
 </section></section>
