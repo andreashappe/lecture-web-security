@@ -21,11 +21,15 @@ title: Web Security
   - Session testen (fixation, cookie-flags, etc.)
   - Authorization testen
 
+## Weitere Backgroundinfos
+
+- [Skript](https://snikt.net/websec)
+- [OWASP Web Security Testing Guide](https://github.com/OWASP/wstg/releases/download/v4.2/wstg-v4.2.pdf)
+
 # Tooling
 
 ## HTTPS/TLS Konfiguration
 
-- Testen der SSL-Konfiguration
 - [Qualys SSLTest](https://www.ssllabs.com/ssltest/)
 - [testssl.sh](https://testssl.sh/)
 
@@ -40,9 +44,8 @@ title: Web Security
 
 ## Allgemein: MitM-HTTP-Proxy
 
-- BURP / ZAP / mitmproxy
 - Gut zum nachvollziehen der Kommunikation
-- [ZAP](https://www.zaproxy.org/download/)
+- BURP / [ZAP](https://www.zaproxy.org/download/) / mitmproxy
 
 ## Database Injections
 
@@ -53,16 +56,36 @@ $ sqlmap --level=5 url
 $ sqlmap -r file-with-request.txt
 ~~~
 
+## Port Enumeration
+
+- nmap
+
+~~~ shell
+$ nmap -A -p- -oA output_text <url>
+~~~
+
+- [Erweiterungsscripts testen](https://github.com/vulnersCom/nmap-vulners)
+
+## Brute-Forcers
+
+- in ZAP und BURP integriert
+- online: hydra
+- offine: hashcat, john-the-ripper
+
 ## Verzeichnisse finden
 
 - [gobuster](https://github.com/OJ/gobuster)
+- [snallygaster](https://github.com/hannob/snallygaster)
 - [wordlists](https://github.com/danielmiessler/SecLists)
+- [fuff](https://github.com/ffuf/ffuf)
 
 ## Full Scans
 
 - ZAP hat einen Active Scan
-- [w3af](https://w3af.org/)
+- [w3af](https://w3af.org/) und Nikto
 - [Nuclei](https://nuclei.projectdiscovery.io/)
+- Rapid7 Metasploit
+- Kommerziell: Acunetix, NetSparker
 
 ## Feedback
 

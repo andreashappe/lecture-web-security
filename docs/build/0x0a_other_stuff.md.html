@@ -305,6 +305,15 @@
 </ul></li>
 </ul>
 </section>
+<section id="env" class="slide level2">
+<h2>.env</h2>
+<ul>
+<li>Im Sourcecode wird Konfiguration über Umgebungsvariablen mitgeteilt</li>
+<li>ENV wird vor dem Aufruf gesetzt (z. B. auch via openShift)</li>
+<li>Wird eine Umgebungsvariable nicht gefunden, wird in .env nachgesehen</li>
+<li>.env ist nicht eingecheckt</li>
+</ul>
+</section>
 <section id="frameworks-credential-storage" class="slide level2">
 <h2>Frameworks: Credential Storage</h2>
 <p>Frameworks bieten zumeist Möglichkeiten zum Speichern sensitiver Keys/Credentials/etc.</p>
@@ -331,8 +340,8 @@
 <section id="wie-kann-dies-automatisiert-überprüft-werden" class="slide level2">
 <h2>Wie kann dies automatisiert überprüft werden</h2>
 <ul>
-<li>OWASP dependency-check, retire.js</li>
-<li>OWASP dependency-track</li>
+<li><a href="https://owasp.org/www-project-dependency-check/">OWASP dependency-check</a>, <a href="https://retirejs.github.io/retire.js/">retire.js</a></li>
+<li><a href="https://dependencytrack.org/">OWASP dependency-track</a></li>
 </ul>
 </section>
 <section id="supply-chain-attacks" class="slide level2">

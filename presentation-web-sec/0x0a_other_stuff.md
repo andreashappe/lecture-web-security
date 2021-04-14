@@ -152,6 +152,13 @@ Strict-Transport-Security: max-age=31536000, includeSubdomain, preload
   - Framework-Features
   - Vault
 
+## .env
+
+- Im Sourcecode wird Konfiguration über Umgebungsvariablen mitgeteilt
+- ENV wird vor dem Aufruf gesetzt (z. B. auch via openShift)
+- Wird eine Umgebungsvariable nicht gefunden, wird in .env nachgesehen
+- .env ist nicht eingecheckt
+
 ## Frameworks: Credential Storage
 
 Frameworks bieten zumeist Möglichkeiten zum Speichern sensitiver Keys/Credentials/etc.
@@ -172,8 +179,8 @@ Ruby on Rails 5.2:
 
 ## Wie kann dies automatisiert überprüft werden
 
-* OWASP dependency-check, retire.js
-* OWASP dependency-track
+* [OWASP dependency-check](https://owasp.org/www-project-dependency-check/), [retire.js](https://retirejs.github.io/retire.js/)
+* [OWASP dependency-track](https://dependencytrack.org/)
 
 ## Supply-Chain Attacks
 

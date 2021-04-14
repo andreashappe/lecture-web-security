@@ -131,6 +131,13 @@
 <li>Authorization testen</li>
 </ul></li>
 </ul>
+</section>
+<section id="weitere-backgroundinfos" class="slide level2">
+<h2>Weitere Backgroundinfos</h2>
+<ul>
+<li><a href="https://snikt.net/websec">Skript</a></li>
+<li><a href="https://github.com/OWASP/wstg/releases/download/v4.2/wstg-v4.2.pdf">OWASP Web Security Testing Guide</a></li>
+</ul>
 </section></section>
 <section>
 <section id="tooling" class="title-slide slide level1">
@@ -140,7 +147,6 @@
 <section id="httpstls-konfiguration" class="slide level2">
 <h2>HTTPS/TLS Konfiguration</h2>
 <ul>
-<li>Testen der SSL-Konfiguration</li>
 <li><a href="https://www.ssllabs.com/ssltest/">Qualys SSLTest</a></li>
 <li><a href="https://testssl.sh/">testssl.sh</a></li>
 </ul>
@@ -161,9 +167,8 @@
 <section id="allgemein-mitm-http-proxy" class="slide level2">
 <h2>Allgemein: MitM-HTTP-Proxy</h2>
 <ul>
-<li>BURP / ZAP / mitmproxy</li>
 <li>Gut zum nachvollziehen der Kommunikation</li>
-<li><a href="https://www.zaproxy.org/download/">ZAP</a></li>
+<li>BURP / <a href="https://www.zaproxy.org/download/">ZAP</a> / mitmproxy</li>
 </ul>
 </section>
 <section id="database-injections" class="slide level2">
@@ -174,19 +179,41 @@
 <div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a>$ <span class="ex">sqlmap</span> --level=5 url</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a>$ <span class="ex">sqlmap</span> -r file-with-request.txt</span></code></pre></div>
 </section>
+<section id="port-enumeration" class="slide level2">
+<h2>Port Enumeration</h2>
+<ul>
+<li>nmap</li>
+</ul>
+<pre class="shell"><code>$ nmap -A -p- -oA output_text &lt;url&gt;</code></pre>
+<ul>
+<li><a href="https://github.com/vulnersCom/nmap-vulners">Erweiterungsscripts testen</a></li>
+</ul>
+</section>
+<section id="brute-forcers" class="slide level2">
+<h2>Brute-Forcers</h2>
+<ul>
+<li>in ZAP und BURP integriert</li>
+<li>online: hydra</li>
+<li>offine: hashcat, john-the-ripper</li>
+</ul>
+</section>
 <section id="verzeichnisse-finden" class="slide level2">
 <h2>Verzeichnisse finden</h2>
 <ul>
 <li><a href="https://github.com/OJ/gobuster">gobuster</a></li>
+<li><a href="https://github.com/hannob/snallygaster">snallygaster</a></li>
 <li><a href="https://github.com/danielmiessler/SecLists">wordlists</a></li>
+<li><a href="https://github.com/ffuf/ffuf">fuff</a></li>
 </ul>
 </section>
 <section id="full-scans" class="slide level2">
 <h2>Full Scans</h2>
 <ul>
 <li>ZAP hat einen Active Scan</li>
-<li><a href="https://w3af.org/">w3af</a></li>
+<li><a href="https://w3af.org/">w3af</a> und Nikto</li>
 <li><a href="https://nuclei.projectdiscovery.io/">Nuclei</a></li>
+<li>Rapid7 Metasploit</li>
+<li>Kommerziell: Acunetix, NetSparker</li>
 </ul>
 </section>
 <section id="feedback" class="slide level2">
