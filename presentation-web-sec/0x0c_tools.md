@@ -70,7 +70,7 @@ $ nmap -A -p- -oA output_text <url>
 
 - in ZAP und BURP integriert
 - online: hydra
-- offine: hashcat, john-the-ripper
+- offline: hashcat, john-the-ripper
 
 ## Verzeichnisse finden
 
