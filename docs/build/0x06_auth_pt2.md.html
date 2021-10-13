@@ -155,24 +155,20 @@
 <ul>
 <li>häufig: Java Applets, Flash, Silverlight</li>
 </ul>
-<p><img data-src="./0x06_silverlight.png" /></p>
 </section>
 <section id="forceful-browsing" class="slide level2">
 <h2>Forceful Browsing</h2>
-<ul>
-<li>Abhängig von der Userrolle werden unterschiedliche Bereiche angezeigt</li>
-<li>Operationen im Hintergrund überprüfen keine Authorization</li>
-<li>Beispiel: Direktzugriff auf /admin</li>
-</ul>
+<p>Es werden in Abhängigkeit von der aktuellen Benutzerrolle nur bestimmte Bereiche der Webseite angezeigt.</p>
+<p>Operationen im Hintergrund überprüfen keine Authorization</p>
+<p>Beispiel: Direktzugriff auf /admin</p>
 </section>
 <section id="beispiel-direct-object-references" class="slide level2">
 <h2>Beispiel: Direct-Object References</h2>
 <ul>
-<li>links mit erratbaren Ids ohne Zugriffscheck</li>
-<li>z.B. /invoice/420 oder /user/1</li>
-<li>Aktuelles Bespiel: <a href="https://www.heise.de/news/Corona-Selbsttests-bei-Aldi-Negativ-Zertifikate-von-Aesku-faktisch-wertlos-5987246.html">Corona Schnelltests</a></li>
+<li>/invoice/420</li>
+<li>/user/1</li>
 </ul>
-<p>Also immer Authentication und Authorization testen!</p>
+<p>Immer ohne Authentication und Authorization testen!</p>
 </section>
 <section id="scoping-von-daten" class="slide level2">
 <h2>Scoping von Daten</h2>
@@ -269,10 +265,7 @@ user[name]=happe&amp;user[email]=ah@mybloodtypeis.coffee</code></pre>
 <section id="probleme-bei-mass-assignments" class="slide level2">
 <h2>Probleme bei Mass Assignments</h2>
 <p>Angreifer:</p>
-<pre><code>user[id]=1&amp;user[name]=happe&amp;user[role]=admin</code></pre>
-</section>
-<section id="mass-assignments-lösung" class="slide level2">
-<h2>Mass Assignments: Lösung</h2>
+<pre><code>name=happe&amp;role=admin</code></pre>
 <p>Lösung: dezidiert zum Update erlaubte Felder definieren</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true"></a><span class="ot">@user</span>.update(user_params)</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true"></a></span>
@@ -284,6 +277,12 @@ user[name]=happe&amp;user[email]=ah@mybloodtypeis.coffee</code></pre>
 <section id="problem-csrf-angriffe" class="title-slide slide level1">
 <h1>Problem: CSRF-Angriffe</h1>
 
+</section>
+<section id="eigentlich-cross-origin-request-forgery" class="slide level2">
+<h2>Eigentlich Cross-Origin-Request-Forgery</h2>
+<ul>
+<li>Site vs. Origin</li>
+</ul>
 </section>
 <section id="csrf-angriffe" class="slide level2">
 <h2>CSRF-Angriffe</h2>
@@ -306,56 +305,13 @@ user[name]=happe&amp;user[email]=ah@mybloodtypeis.coffee</code></pre>
 </ul>
 </section>
 <section id="gegenmaßnahme-samesite-flag" class="slide level2">
-<h2>Gegenmaßnahme: SameSite-Flag</h2>
+<h2>Gegenmaßnahme: sameSite-Flag</h2>
 <ul>
 <li>Same-Site Flag bei Cookies</li>
 <li>Strict: Cookie wird nie Cross-Site übertragen</li>
-<li>Lax: Nur Cross-Site wenn Navigation</li>
+<li>Lax: Safe HTTP Method und Top-Level-Navigation</li>
 <li>Default ab Chrome 80</li>
 </ul>
-</section>
-<section id="achtung-site-origin" class="slide level2">
-<h2>Achtung: Site != Origin</h2>
-<ul>
-<li>Site: eTld+1</li>
-<li>Origin: Schema + Domainname + Port</li>
-</ul>
-<table>
-<thead>
-<tr class="header">
-<th></th>
-<th>Origin</th>
-<th>Site</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>https://a.snikt.net</td>
-<td>https://a.snikt.net:443</td>
-<td>snikt.net</td>
-</tr>
-<tr class="even">
-<td>https://b.snikt.net</td>
-<td>https://b.snikt.net:443</td>
-<td>snikt.net</td>
-</tr>
-<tr class="odd">
-<td>https://a.tw.ac.at</td>
-<td>https://a.tw.ac.at:443</td>
-<td>tw.ac.at</td>
-</tr>
-<tr class="even">
-<td>https://b.tw.ac.at</td>
-<td>https://b.tw.ac.at:443</td>
-<td>tw.ac.at</td>
-</tr>
-<tr class="odd">
-<td>a.github.io</td>
-<td>https://a.github.io:443</td>
-<td>a.github.io</td>
-</tr>
-</tbody>
-</table>
 </section></section>
 <section>
 <section id="problem-authorization-in-alternate-channels" class="title-slide slide level1">
@@ -376,18 +332,21 @@ user[name]=happe&amp;user[email]=ah@mybloodtypeis.coffee</code></pre>
 <section id="authentication-bei-websockets" class="slide level2">
 <h2>Authentication bei WebSockets</h2>
 <ul>
+<li>Basics:
+<ul>
 <li>Immer das wss Protokoll verwenden</li>
-<li>Nicht Websockets zum Tunneln verwenden, sondern Message-Based Protokoll darüber aufspannen</li>
-<li>Implicit Authentication (Cookie oder HTTP BASIC) beim Öffnen des Socket</li>
+<li>Nicht Websockets zum Tunneln verwenden</li>
+</ul></li>
+<li>Implicit Authentication (Cookie oder HTTP BASIC)</li>
 <li>Authorization und Authentication pro Nachricht kontrollieren</li>
 </ul>
 </section>
-<section id="problem-was-ist-wenn-der-login-erst-später-passiert" class="slide level2">
-<h2>Problem: Was ist, wenn der Login erst später passiert?</h2>
+<section id="websockets-authentication" class="slide level2">
+<h2>WebSockets: Authentication</h2>
 <ul>
-<li>Duplicate Authentication</li>
+<li>Duplicate Authentication (token based)</li>
+<li>Manuelle Authentication/Authorization</li>
 <li>quasi: duplizierte Session-Struktur</li>
-<li>Logout beachten</li>
 </ul>
 </section></section>
 <section id="fin" class="title-slide slide level1">

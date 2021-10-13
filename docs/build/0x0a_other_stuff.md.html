@@ -17,68 +17,6 @@
     div.column{display: inline-block; vertical-align: top; width: 50%;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     ul.task-list{list-style: none;}
-    pre > code.sourceCode { white-space: pre; position: relative; }
-    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-    pre > code.sourceCode > span:empty { height: 1.2em; }
-    code.sourceCode > span { color: inherit; text-decoration: inherit; }
-    div.sourceCode { margin: 1em 0; }
-    pre.sourceCode { margin: 0; }
-    @media screen {
-    div.sourceCode { overflow: auto; }
-    }
-    @media print {
-    pre > code.sourceCode { white-space: pre-wrap; }
-    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-    }
-    pre.numberSource code
-      { counter-reset: source-line 0; }
-    pre.numberSource code > span
-      { position: relative; left: -4em; counter-increment: source-line; }
-    pre.numberSource code > span > a:first-child::before
-      { content: counter(source-line);
-        position: relative; left: -1em; text-align: right; vertical-align: baseline;
-        border: none; display: inline-block;
-        -webkit-touch-callout: none; -webkit-user-select: none;
-        -khtml-user-select: none; -moz-user-select: none;
-        -ms-user-select: none; user-select: none;
-        padding: 0 4px; width: 4em;
-        color: #aaaaaa;
-      }
-    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
-    div.sourceCode
-      {   }
-    @media screen {
-    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-    }
-    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-    code span.at { color: #7d9029; } /* Attribute */
-    code span.bn { color: #40a070; } /* BaseN */
-    code span.bu { } /* BuiltIn */
-    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-    code span.ch { color: #4070a0; } /* Char */
-    code span.cn { color: #880000; } /* Constant */
-    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-    code span.dt { color: #902000; } /* DataType */
-    code span.dv { color: #40a070; } /* DecVal */
-    code span.er { color: #ff0000; font-weight: bold; } /* Error */
-    code span.ex { } /* Extension */
-    code span.fl { color: #40a070; } /* Float */
-    code span.fu { color: #06287e; } /* Function */
-    code span.im { } /* Import */
-    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-    code span.op { color: #666666; } /* Operator */
-    code span.ot { color: #007020; } /* Other */
-    code span.pp { color: #bc7a00; } /* Preprocessor */
-    code span.sc { color: #4070a0; } /* SpecialChar */
-    code span.ss { color: #bb6688; } /* SpecialString */
-    code span.st { color: #4070a0; } /* String */
-    code span.va { color: #19177c; } /* Variable */
-    code span.vs { color: #4070a0; } /* VerbatimString */
-    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
   <link rel="stylesheet" href="https://unpkg.com/reveal.js@3.9.2//css/theme/solarized.css" id="theme">
   <link rel="stylesheet" href="custom.css"/>
@@ -108,120 +46,6 @@
 
 </section>
 
-<section id="redux-cookie-header" class="title-slide slide level1">
-<h1>Redux: Cookie Header</h1>
-<pre class="http"><code>Set-Cookie: cookie=wert; Path=/app; Secure; HttpOnly; SameSite=Lax;</code></pre>
-<ul>
-<li>Secure, HttpOnly und SameSite=Lax verwenden</li>
-<li>Path verwenden, vor allem wenn mehrere Applikationen am Server</li>
-<li>Ohne Domain: nur aktueller Origin gültig</li>
-</ul>
-</section>
-
-<section>
-<section id="unverified-redirects-and-forwards" class="title-slide slide level1">
-<h1>Unverified Redirects and Forwards</h1>
-
-</section>
-<section id="basics" class="slide level2">
-<h2>Basics</h2>
-<ul>
-<li>Redirect Target wird über eine Benutzereingabe kontrolliert</li>
-<li>http://example.com/example.php?url=http://malicious.com</li>
-<li>Besonders gefährlich, wenn die übergebene Seite mittels iframe eingebunden wird</li>
-<li>Gegenmaßnahme: Whitelist verwenden</li>
-</ul>
-</section></section>
-<section>
-<section id="html-directives" class="title-slide slide level1">
-<h1>HTML-Directives</h1>
-
-</section>
-<section id="iframe-option-sandbox" class="slide level2">
-<h2>IFrame-Option: sandbox</h2>
-<ul>
-<li>all forms and scripts are disabled</li>
-<li>all links are not allowed to target other browser contexts</li>
-<li>all plugins are disabled</li>
-<li>all features that trigger automatically are disabled</li>
-</ul>
-</section>
-<section id="subresource-integrity" class="slide level2">
-<h2>Subresource Integrity</h2>
-<ul>
-<li>Dient um indirekte Angriffe z. B. über CDNs abzuwehren</li>
-<li>Hash-Summe wird bei script/css includes angegeben,</li>
-<li>Verwendung kann mittels CSP enforced werden</li>
-</ul>
-<div class="sourceCode" id="cb2"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="kw">&lt;script</span><span class="ot"> src=</span><span class="st">&quot;https://example.com/example-framework.js&quot;</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a><span class="ot">      integrity=</span><span class="st">&quot;sha384-oqVuAfXRKap7fdgcCY5uykM6+R9GqQ8K/uxy9rx7HNQlGYl1kPzQho1wx4JwY8wC&quot;</span><span class="kw">&gt;&lt;/script&gt;</span></span></code></pre></div>
-</section>
-<section id="sri-probleme" class="slide level2">
-<h2>SRI: Probleme</h2>
-<ul>
-<li>nicht transitiv</li>
-<li>dynamische Inhalte wie Google Fonts</li>
-<li>keine “gratis” Updates von Libraries</li>
-</ul>
-</section></section>
-<section>
-<section id="html5-stuff" class="title-slide slide level1">
-<h1>HTML5 Stuff</h1>
-
-</section>
-<section id="webstorage" class="slide level2">
-<h2>WebStorage</h2>
-<ul>
-<li>SessionStorage vs. LocalStorage</li>
-<li>Verwundbar gegenüber XSS (verglichen mit Cookies)
-<ul>
-<li>no-na-net</li>
-<li>es gibt kein httpOnly</li>
-<li>man kann es nicht auf sub-Pfade limitieren</li>
-</ul></li>
-<li>niemals sensitive Informationen speichern</li>
-</ul>
-</section>
-<section id="webworkers" class="slide level2">
-<h2>WebWorkers</h2>
-<ul>
-<li>Achtung wenn User-Eingaben verwendet werden</li>
-<li>können XMLHttpRequests abschicken, aber getrennter Origin</li>
-<li>CPU DoS!</li>
-</ul>
-</section>
-<section id="webasm" class="slide level2">
-<h2>WebAsm</h2>
-<ul>
-<li>Potential für Bitcoin-Miners</li>
-<li>Potential für Obfuscation</li>
-</ul>
-</section>
-<section id="webrtc" class="slide level2">
-<h2>WebRTC</h2>
-<ul>
-<li>Peer-to-Peer Communication</li>
-<li>Access to Camera/Mic through Browser Controls</li>
-<li>Eher Privacy Impact</li>
-</ul>
-</section>
-<section id="webbluetooth" class="slide level2">
-<h2>WebBluetooth</h2>
-<ul>
-<li>Browser soll mit verbundenen Bluetooth LE devices Daten austauschen können.</li>
-<li>Webseite kann nicht nach devices suchen</li>
-<li>JS requested device, Browser übernimmt das Pairing</li>
-<li>Effektiv sehr vergleichbar mit Security Model mobiler Applikationen</li>
-</ul>
-</section>
-<section id="webbluetooh-privacy-impact" class="slide level2">
-<h2>WebBluetooh: Privacy Impact</h2>
-<ul>
-<li>Only possible from Secure Context (HTTPS)</li>
-<li>Eher Privacy Impact</li>
-<li>“rssi”, “txPower”</li>
-</ul>
-</section></section>
 <section>
 <section id="httpstls" class="title-slide slide level1">
 <h1>HTTPS/TLS</h1>
@@ -232,7 +56,6 @@
 <ul>
 <li>TLSv1.2 (oder TLSv1.3) mit AES-GCM
 <ul>
-<li><a href="https://datatracker.ietf.org/doc/rfc8996/?include_text=1">RFC8996</a></li>
 <li>Ältere Verfahren verwenden unsichere Krypto</li>
 <li>aktuelle Browser bieten nur TLSv1.2 an</li>
 </ul></li>
@@ -277,7 +100,8 @@
 <h2>Beispiel von Software, die man nicht am Server haben will:</h2>
 <ul>
 <li>Entwicklungstools wie phpmyadmin</li>
-<li>Debug Mode/Toolbars bei verwendeten Frameworks</li>
+<li>Debug Mode bei verwendeten Frameworks</li>
+<li>Debug Toolbars bei Verwendung von Frameworks</li>
 <li>Stacktraces mit Detailinformationen</li>
 <li>phpinfo.php</li>
 <li>Beispielscode (/example Directory)</li>
@@ -293,25 +117,18 @@
 <li>Backups</li>
 </ul>
 </section>
-<section id="configuration-and-credential-management" class="slide level2">
-<h2>Configuration and Credential Management</h2>
+<section id="configuration-management" class="slide level2">
+<h2>Configuration Management</h2>
 <ul>
 <li>nicht hard-coded</li>
-<li>Alternativen:
-<ul>
-<li>.env Files</li>
-<li>Framework-Features</li>
-<li>Vault</li>
-</ul></li>
+<li>Beispiel: .env Files</li>
 </ul>
 </section>
-<section id="env" class="slide level2">
-<h2>.env</h2>
+<section id="special-case-credential-management" class="slide level2">
+<h2>Special Case: Credential Management</h2>
 <ul>
-<li>Im Sourcecode wird Konfiguration über Umgebungsvariablen mitgeteilt</li>
-<li>ENV wird vor dem Aufruf gesetzt (z. B. auch via openShift)</li>
-<li>Wird eine Umgebungsvariable nicht gefunden, wird in .env nachgesehen</li>
-<li>.env ist nicht eingecheckt</li>
+<li>potentiell im Framework integriert</li>
+<li>Dezidierte Credential-Services</li>
 </ul>
 </section>
 <section id="frameworks-credential-storage" class="slide level2">
@@ -330,25 +147,19 @@
 <h1>Using Components with known Vulnerabilities</h1>
 
 </section>
-<section id="components-with-vulnerabilities" class="slide level2">
-<h2>Components with Vulnerabilities</h2>
+<section id="basics" class="slide level2">
+<h2>Basics</h2>
 <ul>
 <li>Komponenten müssen regelmäßig getestet werden</li>
-<li>..und dann auch ausgebessert</li>
+<li>nur offizielle Source Server verwenden</li>
+<li>Wann werden die Schwachstellen überprüft?</li>
 </ul>
 </section>
 <section id="wie-kann-dies-automatisiert-überprüft-werden" class="slide level2">
 <h2>Wie kann dies automatisiert überprüft werden</h2>
 <ul>
-<li><a href="https://owasp.org/www-project-dependency-check/">OWASP dependency-check</a>, <a href="https://retirejs.github.io/retire.js/">retire.js</a></li>
-<li><a href="https://dependencytrack.org/">OWASP dependency-track</a></li>
-</ul>
-</section>
-<section id="supply-chain-attacks" class="slide level2">
-<h2>Supply-Chain Attacks</h2>
-<ul>
-<li>Typo-Squatting</li>
-<li>Dependency-Confusion</li>
+<li>OWASP dependency-check, retire.js</li>
+<li>OWASP dependency-track</li>
 </ul>
 </section></section>
 <section>
@@ -363,13 +174,14 @@
 <li>Es sollte möglich sein automatisierte Angriffe zu erkennen</li>
 <li>Spätere Auswertung sollte möglich sein</li>
 <li>Betrifft im Webserver Umfeld vor allem Webserver- und Applikationslogs</li>
+<li>Problem: Dev vs Admins</li>
 </ul>
 </section>
 <section id="anforderungen" class="slide level2">
 <h2>Anforderungen</h2>
 <ul>
 <li>Zentralisiert (weil mehrere app server, db server, etc.)</li>
-<li>Secure (Integrität, Vertraulichkeit, Verfügbarkeit)</li>
+<li>Secure</li>
 <li>Auswertbar</li>
 </ul>
 </section></section>

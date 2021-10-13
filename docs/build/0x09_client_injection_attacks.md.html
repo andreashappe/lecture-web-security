@@ -115,13 +115,22 @@
 <li>Water-Hole Attacks</li>
 </ul>
 </section>
-<section id="gegenmassnahme-http-header" class="slide level2">
-<h2>Gegenmassnahme: HTTP-Header</h2>
+<section id="grundsätzlich-gegenmassnahme" class="slide level2">
+<h2>Grundsätzlich: Gegenmassnahme</h2>
 <ul>
 <li>Server teilen dem Browser erwartetes Verhalten mit</li>
 <li>HTTP-Header wie Cookie-Header oder HSTS</li>
-<li>teilweise HTML-Directives</li>
-<li>Immer Browser-Versions abhängig, siehe auch <a href="https://caniuse.com/">caniuse</a></li>
+<li>HTML-Directives</li>
+</ul>
+</section>
+<section id="redux-cookie-header" class="slide level2">
+<h2>Redux: Cookie Header</h2>
+<pre class="http"><code>Set-Cookies: cookie=wert; Path=/app; Secure; HttpOnly; SameSite=Lax;</code></pre>
+<ul>
+<li><p>Secure, HttpOnly und SameSite=Lax verwenden</p></li>
+<li><p>Path verwenden, vor allem wenn mehrere Applikationen am Server</p></li>
+<li><p>Ohne Expires/Max-Age: Session-Cookie wird beim Schließen des Browsers gelöscht</p></li>
+<li><p>Ohne Domain: nur aktuelle Domain gültig, wird mit Domain= eine Domain angegeben werden subdomains automatisch inkludiert</p></li>
 </ul>
 </section></section>
 <section>
@@ -151,7 +160,7 @@
 <h2>Stored/Persistent XSS</h2>
 <p>Javascript wird am Server gespeichert</p>
 <p>Z.b. folgendes als Chat-Nachricht:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="kw">&lt;script&gt;</span><span class="fu">alert</span>(<span class="dv">1</span>)<span class="op">;</span><span class="kw">&lt;/script&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="kw">&lt;script&gt;</span><span class="fu">alert</span>(<span class="dv">1</span>)<span class="op">;</span><span class="kw">&lt;/script&gt;</span></span></code></pre></div>
 </section>
 <section id="dom-based-xss" class="slide level2">
 <h2>DOM-based XSS</h2>
@@ -164,18 +173,11 @@
 <section id="beispiel" class="slide level2">
 <h2>Beispiel</h2>
 <p>http://www.some.site/page.html?default=French</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="kw">&lt;select&gt;&lt;script&gt;</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a><span class="bu">document</span><span class="op">.</span><span class="fu">write</span>(<span class="st">&quot;&lt;OPTION value=1&gt;&quot;</span><span class="op">+</span><span class="bu">document</span><span class="op">.</span><span class="at">location</span><span class="op">.</span><span class="at">href</span><span class="op">.</span><span class="fu">substring</span>(<span class="bu">document</span><span class="op">.</span><span class="at">location</span><span class="op">.</span><span class="at">href</span><span class="op">.</span><span class="fu">indexOf</span>(<span class="st">&quot;default=&quot;</span>)<span class="op">+</span><span class="dv">8</span>)<span class="op">+</span><span class="st">&quot;&lt;/OPTION&gt;&quot;</span>)<span class="op">;</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a><span class="bu">document</span><span class="op">.</span><span class="fu">write</span>(<span class="st">&quot;&lt;OPTION value=2&gt;English&lt;/OPTION&gt;&quot;</span>)<span class="op">;</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true"></a><span class="kw">&lt;/script&gt;&lt;/select&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="kw">&lt;select&gt;&lt;script&gt;</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a><span class="bu">document</span><span class="op">.</span><span class="fu">write</span>(<span class="st">&quot;&lt;OPTION value=1&gt;&quot;</span><span class="op">+</span><span class="bu">document</span><span class="op">.</span><span class="at">location</span><span class="op">.</span><span class="at">href</span><span class="op">.</span><span class="fu">substring</span>(<span class="bu">document</span><span class="op">.</span><span class="at">location</span><span class="op">.</span><span class="at">href</span><span class="op">.</span><span class="fu">indexOf</span>(<span class="st">&quot;default=&quot;</span>)<span class="op">+</span><span class="dv">8</span>)<span class="op">+</span><span class="st">&quot;&lt;/OPTION&gt;&quot;</span>)<span class="op">;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true"></a><span class="bu">document</span><span class="op">.</span><span class="fu">write</span>(<span class="st">&quot;&lt;OPTION value=2&gt;English&lt;/OPTION&gt;&quot;</span>)<span class="op">;</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true"></a><span class="kw">&lt;/script&gt;&lt;/select&gt;</span></span></code></pre></div>
 <pre class="url"><code>http://www.some.site/page.html?default=&lt;script&gt;alert(document.cookie)&lt;/script&gt;</code></pre>
-</section>
-<section id="dom-based-warum-interessant" class="slide level2">
-<h2>DOM-based: warum interessant?</h2>
-<ul>
-<li>Documentation am Server?</li>
-<li>http://snikt.net/app/libs/jquery/docs/search.html</li>
-</ul>
 </section>
 <section id="uxss" class="slide level2">
 <h2>uXSS</h2>
@@ -190,19 +192,18 @@
 </section>
 <section id="xss-kann-an-vielen-stellen-auftreten" class="slide level2">
 <h2>XSS kann an vielen Stellen auftreten</h2>
-<div class="sourceCode" id="cb4"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="kw">&lt;script&gt;</span><span class="fu">alert</span>(<span class="dv">1</span>)<span class="op">;</span><span class="kw">&lt;/script&gt;</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true"></a><span class="kw">&lt;SCRIPT</span><span class="ot"> SRC=</span><span class="st">http://xss.rocks/xss.js</span><span class="kw">&gt;&lt;/SCRIPT&gt;</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true"></a></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true"></a><span class="kw">&lt;IMG</span><span class="ot"> SRC=</span><span class="st">JaVaScRiPt:alert(</span><span class="er">&#39;XSS&#39;)</span><span class="kw">&gt;</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true"></a><span class="kw">&lt;IMG</span><span class="ot"> SRC=</span><span class="st">`javascript:alert(</span><span class="er">&quot;RSnake</span><span class="ot"> says</span><span class="er">,</span> <span class="er">&#39;XSS&#39;&quot;)`</span><span class="kw">&gt;</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true"></a></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true"></a><span class="kw">&lt;IMG</span><span class="ot"> SRC=</span><span class="st">javascript:alert(String.fromCharCode(88,83,83))</span><span class="kw">&gt;</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true"></a></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true"></a><span class="kw">&lt;IMG</span><span class="ot"> SRC=</span> <span class="st">onmouseover=</span><span class="er">&quot;alert(&#39;xxs&#39;)&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true"></a><span class="kw">&lt;IMG</span><span class="ot"> SRC=</span><span class="st">&quot;non-existant&quot;</span><span class="ot"> onerror=</span><span class="st">&quot;alert(&#39;xxs&#39;)&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true"></a><span class="kw">&lt;IMG</span><span class="ot"> SRC=</span><span class="st">&quot;jav    ascript:alert(&#39;XSS&#39;);&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true"></a><span class="kw">&lt;BGSOUND</span><span class="ot"> SRC=</span><span class="st">&quot;javascript:alert(&#39;XSS&#39;);&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true"></a><span class="kw">&lt;IMG</span><span class="ot"> STYLE=</span><span class="st">&quot;xss:expr/*XSS*/ession(alert(&#39;XSS&#39;))&quot;</span><span class="kw">&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a><span class="kw">&lt;script&gt;</span><span class="fu">alert</span>(<span class="dv">1</span>)<span class="op">;</span><span class="kw">&lt;/script&gt;</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true"></a><span class="kw">&lt;SCRIPT</span><span class="ot"> SRC=</span><span class="st">http://xss.rocks/xss.js</span><span class="kw">&gt;&lt;/SCRIPT&gt;</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true"></a><span class="kw">&lt;IMG</span><span class="ot"> SRC=</span><span class="st">JaVaScRiPt:alert(</span><span class="er">&#39;XSS&#39;)</span><span class="kw">&gt;</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true"></a><span class="kw">&lt;IMG</span><span class="ot"> SRC=</span><span class="st">`javascript:alert(</span><span class="er">&quot;RSnake</span><span class="ot"> says</span><span class="er">,</span> <span class="er">&#39;XSS&#39;&quot;)`</span><span class="kw">&gt;</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true"></a><span class="kw">&lt;IMG</span><span class="ot"> SRC=</span><span class="st">javascript:alert(String.fromCharCode(88,83,83))</span><span class="kw">&gt;</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true"></a></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true"></a><span class="kw">&lt;IMG</span><span class="ot"> SRC=</span> <span class="st">onmouseover=</span><span class="er">&quot;alert(&#39;xxs&#39;)&quot;</span><span class="kw">&gt;</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true"></a><span class="kw">&lt;IMG</span><span class="ot"> SRC=</span><span class="st">&quot;jav    ascript:alert(&#39;XSS&#39;);&quot;</span><span class="kw">&gt;</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true"></a><span class="kw">&lt;BGSOUND</span><span class="ot"> SRC=</span><span class="st">&quot;javascript:alert(&#39;XSS&#39;);&quot;</span><span class="kw">&gt;</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true"></a><span class="kw">&lt;IMG</span><span class="ot"> STYLE=</span><span class="st">&quot;xss:expr/*XSS*/ession(alert(&#39;XSS&#39;))&quot;</span><span class="kw">&gt;</span></span></code></pre></div>
 </section>
 <section id="payloads" class="slide level2">
 <h2>Payloads</h2>
@@ -210,8 +211,7 @@
 <li>Session Stealing</li>
 <li>Virtual Defacement</li>
 <li>Crypto-Mining</li>
-<li><a href="https://de.wikipedia.org/wiki/Low_Orbit_Ion_Cannon">DDoS-Angriffe</a></li>
-<li><a href="https://beefproject.com/">Further Social Engineering</a></li>
+<li>DoS-Angriffe</li>
 </ul>
 </section>
 <section id="gegenmaßnahme-input-filteringsanitation" class="slide level2">
@@ -230,18 +230,18 @@
 <li><a href="https://github.com/OWASP/CheatSheetSeries/blob/master/cheatsheets/DOM_based_XSS_Prevention_Cheat_Sheet.md">XSS Prevention Cheat Sheet</a></li>
 </ul>
 </section>
-<section id="quoting-kann-komplex-werden" class="slide level2">
-<h2>Quoting kann komplex werden</h2>
+<section id="dom-based-xss-1" class="slide level2">
+<h2>DOM-based XSS</h2>
 <ul>
 <li>Context ist wichtig, folgendes Code-Fragment am Server</li>
 <li>taintedVar muss sowohl js- als auch html-encoded sein</li>
 </ul>
-<div class="sourceCode" id="cb5"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a><span class="kw">&lt;script&gt;</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true"></a> <span class="kw">var</span> x <span class="op">=</span> <span class="st">&#39;&lt;%= taintedVar %&gt;&#39;</span><span class="op">;</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true"></a> <span class="kw">var</span> d <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">createElement</span>(<span class="st">&#39;div&#39;</span>)<span class="op">;</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true"></a>   d<span class="op">.</span><span class="at">innerHTML</span> <span class="op">=</span> x<span class="op">;</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true"></a>   <span class="bu">document</span><span class="op">.</span><span class="at">body</span><span class="op">.</span><span class="fu">appendChild</span>(d)<span class="op">;</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true"></a><span class="kw">&lt;/script&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a><span class="kw">&lt;script&gt;</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true"></a> <span class="kw">var</span> x <span class="op">=</span> <span class="st">&#39;&lt;%= taintedVar %&gt;&#39;</span><span class="op">;</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true"></a> <span class="kw">var</span> d <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">createElement</span>(<span class="st">&#39;div&#39;</span>)<span class="op">;</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true"></a>   d<span class="op">.</span><span class="at">innerHTML</span> <span class="op">=</span> x<span class="op">;</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true"></a>   <span class="bu">document</span><span class="op">.</span><span class="at">body</span><span class="op">.</span><span class="fu">appendChild</span>(d)<span class="op">;</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true"></a><span class="kw">&lt;/script&gt;</span></span></code></pre></div>
 </section>
 <section id="gegenmassnahme-quoting" class="slide level2">
 <h2>Gegenmassnahme Quoting</h2>
@@ -258,31 +258,41 @@
 <li><a href="https://www.owasp.org/images/0/07/Xenotix_XSS_Protection_CheatSheet_For_Developers.pdf">Weiterführende Hints</a></li>
 </ul>
 </section>
-<section id="hardening-x-xss-protection" class="slide level2">
-<h2>Hardening: X-XSS-Protection</h2>
+<section id="hardening-csp" class="slide level2">
+<h2>Hardening: CSP</h2>
+<p>Good:</p>
+<pre><code>script-src &#39;self&#39; cdnjs.cloudflare.com;</code></pre>
+<p>Bad:</p>
+<pre><code>script-src &#39;self&#39; &#39;unsafe-inline&#39; &#39;unsafe-eval&#39;</code></pre>
+</section>
+<section id="polyglot-files" class="slide level2">
+<h2>Polyglot Files</h2>
 <ul>
-<li>Aktiviert die XSS Protection des Browsers</li>
-<li>Sollte vor Reflected-XSS schützen</li>
-<li>Werte:
-<ul>
-<li>0: disabled</li>
-<li>1: enabled, input wird sanitized</li>
-<li>1; mode=block: enabled, die page wird nicht gerendert</li>
-</ul></li>
-<li>Anti-XSS Heuristic wird nur noch von IE unterstützt..</li>
+<li>Dateien die gleichzeitig zwei Dateitypen erfüllen</li>
+<li>Können CSP aushebeln</li>
 </ul>
 </section>
-<section id="hardening-content-security-policy" class="slide level2">
-<h2>Hardening: Content Security Policy</h2>
-<ul>
-<li>war primär als XSS Schutz gedacht</li>
-<li>script-src Direktiven</li>
-<li>kommen gleich..</li>
-</ul>
-</section>
-<section id="zusammenspiel-der-absicherungen" class="slide level2">
-<h2>Zusammenspiel der Absicherungen</h2>
+<section id="zusammenfassung" class="slide level2">
+<h2>Zusammenfassung</h2>
 <img data-src="0x08_xss_summary.png" title="fig:" class="stretch" alt="Zusammenfassung" />
+</section>
+<section id="zum-abschluss" class="slide level2">
+<h2>Zum Abschluss</h2>
+<img data-src="0x04_owasp_top_10.png" title="fig:" class="stretch" alt="Picture" />
+</section></section>
+<section>
+<section id="unverified-redirects-and-forwards" class="title-slide slide level1">
+<h1>Unverified Redirects and Forwards</h1>
+
+</section>
+<section id="basics" class="slide level2">
+<h2>Basics</h2>
+<ul>
+<li>Redirect Target wird über eine Benutzereingabe kontrolliert</li>
+<li>http://example.com/example.php?url=http://malicious.com</li>
+<li>Besonders gefährlich, wenn die übergebene Seite mittels iframe eingebunden wird</li>
+<li>Gegenmaßnahme: Whitelist verwenden</li>
+</ul>
 </section></section>
 <section>
 <section id="reverse-tab-nabbing" class="title-slide slide level1">
@@ -295,24 +305,24 @@
 </section>
 <section id="aufmachende-seite" class="slide level2">
 <h2>Aufmachende Seite</h2>
-<div class="sourceCode" id="cb6"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a><span class="kw">&lt;html&gt;</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true"></a> <span class="kw">&lt;body&gt;</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true"></a>   <span class="kw">&lt;li&gt;&lt;a</span><span class="ot"> href=</span><span class="st">&quot;bad-website.com&quot;</span><span class="ot"> target=</span><span class="st">&quot;_blank&quot;</span><span class="kw">&gt;</span>Vulnerable target using html link to open the new page<span class="kw">&lt;/a&gt;&lt;/li&gt;</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true"></a>     <span class="kw">&lt;button</span><span class="ot"> onclick=</span><span class="st">&quot;window.open(&#39;https://bad-website.com&#39;)&quot;</span><span class="kw">&gt;</span>Vulnerable target using javascript to open the new page<span class="kw">&lt;/button&gt;</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true"></a>  <span class="kw">&lt;/body&gt;</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true"></a><span class="kw">&lt;/html&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true"></a><span class="kw">&lt;html&gt;</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true"></a> <span class="kw">&lt;body&gt;</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true"></a>   <span class="kw">&lt;li&gt;&lt;a</span><span class="ot"> href=</span><span class="st">&quot;bad-website.com&quot;</span><span class="ot"> target=</span><span class="st">&quot;_blank&quot;</span><span class="kw">&gt;</span>Vulnerable target using html link to open the new page<span class="kw">&lt;/a&gt;&lt;/li&gt;</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true"></a>     <span class="kw">&lt;button</span><span class="ot"> onclick=</span><span class="st">&quot;window.open(&#39;https://bad-website.com&#39;)&quot;</span><span class="kw">&gt;</span>Vulnerable target using javascript to open the new page<span class="kw">&lt;/button&gt;</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true"></a>  <span class="kw">&lt;/body&gt;</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true"></a><span class="kw">&lt;/html&gt;</span></span></code></pre></div>
 </section>
 <section id="angriff-aufgemachte-seite" class="slide level2">
 <h2>Angriff: aufgemachte Seite</h2>
-<div class="sourceCode" id="cb7"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true"></a><span class="kw">&lt;html&gt;</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true"></a> <span class="kw">&lt;body&gt;</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true"></a>   <span class="kw">&lt;script&gt;</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true"></a>      <span class="cf">if</span> (<span class="bu">window</span><span class="op">.</span><span class="at">opener</span>) {</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true"></a>            <span class="bu">window</span><span class="op">.</span><span class="at">opener</span><span class="op">.</span><span class="at">location</span> <span class="op">=</span> <span class="st">&#39;https://phish.example.com&#39;</span><span class="op">;</span></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true"></a>      }</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true"></a>   <span class="kw">&lt;/script&gt;</span></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true"></a> <span class="kw">&lt;/body&gt;</span></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true"></a><span class="kw">&lt;/html&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true"></a><span class="kw">&lt;html&gt;</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true"></a> <span class="kw">&lt;body&gt;</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true"></a>   <span class="kw">&lt;script&gt;</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true"></a>      <span class="cf">if</span> (<span class="bu">window</span><span class="op">.</span><span class="at">opener</span>) {</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true"></a>            <span class="bu">window</span><span class="op">.</span><span class="at">opener</span><span class="op">.</span><span class="at">location</span> <span class="op">=</span> <span class="st">&#39;https://phish.example.com&#39;</span><span class="op">;</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true"></a>      }</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true"></a>   <span class="kw">&lt;/script&gt;</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true"></a> <span class="kw">&lt;/body&gt;</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true"></a><span class="kw">&lt;/html&gt;</span></span></code></pre></div>
 </section>
 <section id="gegenmaßnahmen" class="slide level2">
 <h2>Gegenmaßnahmen</h2>
@@ -320,8 +330,8 @@
 <li>keine externen Webseiten verlinken</li>
 <li>rel=”noopener noreferrer” bei Link verwenden</li>
 </ul>
-<div class="sourceCode" id="cb8"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true"></a><span class="kw">&lt;a</span><span class="ot"> href=</span><span class="st">&quot;bad-website.com&quot;</span><span class="ot"> rel=</span><span class="st">&quot;noopener noreferrer&quot;</span><span class="ot"> target=</span><span class="st">&quot;_blank&quot;</span><span class="kw">&gt;</span>Vulnerable target using html link to open the new page<span class="kw">&lt;/a&gt;</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true"></a><span class="kw">&lt;/html&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true"></a><span class="kw">&lt;a</span><span class="ot"> href=</span><span class="st">&quot;bad-website.com&quot;</span><span class="ot"> rel=</span><span class="st">&quot;noopener noreferrer&quot;</span><span class="ot"> target=</span><span class="st">&quot;_blank&quot;</span><span class="kw">&gt;</span>Vulnerable target using html link to open the new page<span class="kw">&lt;/a&gt;</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true"></a><span class="kw">&lt;/html&gt;</span></span></code></pre></div>
 <ul>
 <li>Referrer-Policy setzen (no-referrer)</li>
 </ul>
@@ -369,7 +379,7 @@
 </tr>
 <tr class="odd">
 <td>strict-origin-when-cross-origin</td>
-<td>new-default (2021)</td>
+<td></td>
 </tr>
 <tr class="even">
 <td>unsafe-url</td>
@@ -395,18 +405,35 @@
 <li>DENY</li>
 <li>SAMEORIGIN</li>
 <li>ALLOW-FROM $origin</li>
+<li>ALLOWALL (non-standard)</li>
 </ul></li>
 </ul>
 </section>
 <section id="not-perfect" class="slide level2">
 <h2>Not-Perfect</h2>
 <ul>
-<li>Mehrere Origins können nicht angegeben werden
+<li>Probleme bei double-framing</li>
+<li>Mehrere Origins können nicht angegeben werden</li>
+<li>Handhabung wenn X-Frame-Options Header <a href="https://blog.qualys.com/securitylabs/2015/10/20/clickjacking-a-common-implementation-mistake-that-can-put-your-websites-in-danger">mehrfach vorkommt</a></li>
+<li>CSP verbessert den Schutz</li>
+</ul>
+</section></section>
+<section>
+<section id="reflected-xss-schutz" class="title-slide slide level1">
+<h1>Reflected-XSS Schutz</h1>
+
+</section>
+<section id="reflected-xss-schutz-x-xss-protection" class="slide level2">
+<h2>Reflected-XSS Schutz (X-XSS-Protection)</h2>
 <ul>
-<li><a href="https://blog.qualys.com/securitylabs/2015/10/20/clickjacking-a-common-implementation-mistake-that-can-put-your-websites-in-danger">Mehrfachverwendung von X-Frame-Options</a></li>
-<li>Verbesserung: CSP</li>
+<li>Aktiviert die XSS Protection des Browsers</li>
+<li>Werte:
+<ul>
+<li>0: disabled</li>
+<li>1: enabled, input wird sanitized</li>
+<li>1; mode=block: enabled, die page wird nicht gerendert</li>
 </ul></li>
-<li>Probleme bei <a href="https://cheatsheetseries.owasp.org/cheatsheets/Clickjacking_Defense_Cheat_Sheet.html">double-framing</a></li>
+<li>Anti-XSS Heuristic wird nur noch von IE unterstützt..</li>
 </ul>
 </section></section>
 <section>
@@ -419,8 +446,8 @@
 <p>Aufweichen der SOP</p>
 <p>Beispiel: Browser lädt eine Webseite (web.snikt.net), diese will mittels Javascript auf service.snikt.net zugreifen</p>
 </section>
-<section id="simple-case-read-request" class="slide level2">
-<h2>Simple Case: Read-Request</h2>
+<section id="simple-case-request" class="slide level2">
+<h2>Simple Case: Request</h2>
 <ul>
 <li>Browser befindet sich auf web.snikt.net</li>
 <li>Will auf service.snikt.net zugreifen</li>
@@ -457,169 +484,285 @@ Access-Control-Allow-Methods: PUT, DELETE</code></pre>
 <img data-src="0x09_cors.png" title="fig:" class="stretch" alt="Picture" />
 </section></section>
 <section>
-<section id="content-security-policy-csp" class="title-slide slide level1">
-<h1>Content-Security-Policy (CSP)</h1>
+<section id="content-security-policy" class="title-slide slide level1">
+<h1>Content-Security-Policy</h1>
 
 </section>
-<section id="entstehungsgeschichte" class="slide level2">
-<h2>Entstehungsgeschichte</h2>
+<section id="historische-entwicklung" class="slide level2">
+<h2>Historische Entwicklung</h2>
 <ul>
-<li>“logische” Erweiterung aus SOP</li>
-<li>SOP: Schützt die eigene Seite vor fremden Zugriffen</li>
-<li>CSP: Definiert wo in der eigenen Seite JavaScript vorkommen darf</li>
+<li>SOP schützt nicht vor bösartigem JavaScript-Code auf dem eigenen Server</li>
+<li>CSP: limitiert wo JavaScript-Code vorkommen darf</li>
+<li>Mittlerweile umfasst CSP weitaus mehr als nur XSS-Protection</li>
+<li>Wird weiterentwicklet, Problem <a href="https://caniuse.com/#search=csp">Verfügbarkeit</a></li>
 </ul>
 </section>
-<section id="basic-form" class="slide level2">
-<h2>Basic-Form</h2>
-<pre class="http"><code>Content-Security-Policy: &lt;policy-directive&gt;; &lt;policy-directive&gt;</code></pre>
-<p>Report-Only:</p>
-<pre class="http"><code>Content-Security-Policy-Report-Only: &lt;policy-directive&gt;; &lt;policy-directive&gt;</code></pre>
-</section>
-<section id="verhalten-bei-mehreren-headern" class="slide level2">
-<h2>Verhalten bei mehreren Headern</h2>
+<section id="allgemein" class="slide level2">
+<h2>Allgemein</h2>
 <ul>
-<li>nachfolgende Header können zuvorige nur verschärfen</li>
+<li>Content Security Policy</li>
+<li>Sehr mächtiges Framework um Browsern Policies zu übermitteln</li>
+<li>Entweder als HTML-Tag oder HTTP-Header</li>
+<li>Grundidee: Trennung von JavaScript und HTML</li>
 </ul>
 </section>
-<section id="direktiven-auszug" class="slide level2">
-<h2>Direktiven (Auszug)</h2>
-<ul>
-<li>script-src, style-src, font-src, media-src, img-src, ..</li>
-<li>frame-src, frame-ancestors</li>
-<li>form-action</li>
-<li>base-uri</li>
-<li>upgrade-insecure-requests, block-all-mixed-content</li>
-<li>report-uri</li>
-<li>default-src</li>
-</ul>
-<p><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy">Genauere Informationen online</a></p>
+<section id="trennung-von-javascript-und-html" class="slide level2">
+<h2>Trennung von JavaScript und HTML</h2>
+<p>Nach Aktivierung von CSP ist JavaScript nur in getrennten JavaScript-Dateien erlaubt:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true"></a><span class="kw">&lt;script</span><span class="ot"> src=</span><span class="st">&quot;externalfile.js&quot;</span><span class="kw">&gt;&lt;/script&gt;</span></span></code></pre></div>
+<p>Wie können Events gebunden werden:</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true"></a><span class="fu">$</span>(<span class="bu">document</span>)<span class="op">.</span><span class="fu">ready</span>(<span class="kw">function</span>()  {</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true"></a>  <span class="bu">document</span><span class="op">.</span><span class="fu">getElementById</span>(<span class="st">&quot;btn&quot;</span>)<span class="op">.</span><span class="fu">addEventListener</span>(<span class="st">&#39;click&#39;</span><span class="op">,</span> doSomething)<span class="op">;</span>     </span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true"></a>})<span class="op">;</span></span></code></pre></div>
 </section>
-<section id="sources-werte-für-direktiven" class="slide level2">
-<h2>Sources (Werte für Direktiven)</h2>
-<ul>
-<li>‘none’</li>
-<li>‘self’</li>
-<li>‘unsafe-inline’, ‘unsafe-eval’, ‘strict-dynamic’</li>
-<li>scheme (http:, https:)</li>
-<li>hostname (e.g., https://snikt.net)</li>
-</ul>
+<section id="csp-feature-creep" class="slide level2">
+<h2>CSP: Feature Creep</h2>
 </section>
-<section id="beispiele" class="slide level2">
-<h2>Beispiele</h2>
-<pre><code># resourcen nür über https
-Content-Security-Policy: default-src https:
+<section id="csp-was-darf-eingebunden-werden" class="slide level2">
+<h2>CSP: Was darf eingebunden werden?</h2>
+<table>
+<colgroup>
+<col style="width: 37%" />
+<col style="width: 62%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Direktive</th>
+<th>Einsatzbereich</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>script-src</td>
+<td>wo darf Javascript vorkommen?</td>
+</tr>
+<tr class="even">
+<td>object-src</td>
+<td>von wo dürfen plugins geladen werden?</td>
+</tr>
+<tr class="odd">
+<td>img-src, media-src, font-src, style-src</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>frame-src, frame-ancestor, child-src</td>
+<td>von wo aus darf eine Seite als iframe inkludiert werden?</td>
+</tr>
+<tr class="odd">
+<td>connect-src</td>
+<td>JSONP, WebSockets, etc.</td>
+</tr>
+<tr class="even">
+<td>default-src</td>
+<td>default policy für die meisten Elemente</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="csp-beispiel-script-src" class="slide level2">
+<h2>CSP: Beispiel script-src <source></h2>
+<table>
+<thead>
+<tr class="header">
+<th>Direktive</th>
+<th>Einsatzbereich</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>host</td>
+<td>z.b. snikt.net</td>
+</tr>
+<tr class="even">
+<td>scheme-source</td>
+<td>z.B.: https://</td>
+</tr>
+<tr class="odd">
+<td>‘self’</td>
+<td>eigene Webseite</td>
+</tr>
+<tr class="even">
+<td>‘none’</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>‘unsafe-inline’</td>
+<td>just don’t</td>
+</tr>
+<tr class="even">
+<td>‘unsafe-eval’</td>
+<td>erlaut Eval, für z.B. setTimeout notwendig</td>
+</tr>
+<tr class="odd">
+<td>‘nonce’-base64(nonce)</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>‘hash-alg-base64(hash)’</td>
+<td>Berechnung eines Hashes über alle JS</td>
+</tr>
+<tr class="odd">
+<td>‘strict-dynamic’</td>
+<td>hash-alg und nonce dürfen weiter Scripts laden</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="csp-steuerung-vom-browser" class="slide level2">
+<h2>CSP: Steuerung vom Browser</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Direktive</th>
+<th>Einsatzbereich</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>form-action</td>
+<td>welche URIs dürfen als Ziel eines formulars dienen</td>
+</tr>
+<tr class="even">
+<td>sandbox</td>
+<td>kontrolliert embedded iframes</td>
+</tr>
+<tr class="odd">
+<td>plugin-types</td>
+<td>welche plugins werden erlaubt</td>
+</tr>
+<tr class="even">
+<td>reflected-xss</td>
+<td>entspricht X-XSS-Protection</td>
+</tr>
+<tr class="odd">
+<td>referrer</td>
+<td>ähnlich wie Referrer-Policy</td>
+</tr>
+<tr class="even">
+<td>report-uri</td>
+<td>report Browser Violations to server</td>
+</tr>
+<tr class="odd">
+<td>block-all-mixed-content</td>
+<td>disallow mixed content</td>
+</tr>
+<tr class="even">
+<td>upgrade-insecure-requests</td>
+<td>convert http into https requests</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="csp-beispiele" class="slide level2">
+<h2>CSP: Beispiele</h2>
+<pre class="http"><code>Content-Security-Policy: script-src &#39;self&#39; www.google-analytics.com ajax.googleapis.com;</code></pre>
+<pre class="http"><code>Content-Security-Policy: script-src &#39;self&#39;; style-src *</code></pre>
+<pre class="http"><code>Content-Security-Policy: default-src &#39;none&#39;; script-src &#39;self&#39;; connect-src &#39;self&#39;; img-src &#39;self&#39;; style-src &#39;self&#39;;</code></pre>
+</section>
+<section id="csp-beispiel-nonce" class="slide level2">
+<h2>CSP: Beispiel Nonce</h2>
+<pre class="http"><code>Content-Security-Policy: script-src &#39;nonce-2726c7f26c&#39;</code></pre>
+<div class="sourceCode" id="cb21"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true"></a><span class="kw">&lt;script</span><span class="ot"> nonce=</span><span class="st">&quot;2726c7f26c&quot;</span><span class="kw">&gt;</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true"></a>  <span class="kw">var</span> inline <span class="op">=</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true"></a><span class="kw">&lt;/script&gt;</span></span></code></pre></div>
+</section>
+<section id="hinweise-zu-nonce" class="slide level2">
+<h2>Hinweise zu nonce:</h2>
+<ul>
+<li>nonce muss natürlich dynamisch generiert werden!</li>
+<li>Angreifer darf keine Eingabemöglichkeit in die Skript-Tags besitzen</li>
+<li>Einsatz wird von Google empfohlen</li>
+</ul>
+</section></section>
+<section>
+<section id="html-directives" class="title-slide slide level1">
+<h1>HTML-Directives</h1>
 
-# Javascript darf nur in getrennten JS-Files am eigenen Server vorkommen:
-Content-Security-Policy: script-src &#39;self&#39;;
+</section>
+<section id="iframe-option-sandbox" class="slide level2">
+<h2>IFrame-Option: sandbox</h2>
+<ul>
+<li>all forms and scripts are disabled</li>
+<li>all links are not allowed to target other browser contexts</li>
+<li>all plugins are disabled</li>
+<li>all features that trigger automatically are disabled</li>
+</ul>
+</section>
+<section id="subresource-integrity" class="slide level2">
+<h2>Subresource Integrity</h2>
+<ul>
+<li>Dient um indirekte Angriffe z. B. über CDNs abzuwehren</li>
+<li>Hash-Summe wird bei script/css includes angegeben,</li>
+<li>Verwendung kann mittels CSP enforced werden</li>
+</ul>
+<div class="sourceCode" id="cb22"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true"></a><span class="kw">&lt;script</span><span class="ot"> src=</span><span class="st">&quot;https://example.com/example-framework.js&quot;</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true"></a><span class="ot">      integrity=</span><span class="st">&quot;sha384-oqVuAfXRKap7fdgcCY5uykM6+R9GqQ8K/uxy9rx7HNQlGYl1kPzQho1wx4JwY8wC&quot;</span><span class="kw">&gt;&lt;/script&gt;</span></span></code></pre></div>
+</section>
+<section id="sri-probleme" class="slide level2">
+<h2>SRI: Probleme</h2>
+<ul>
+<li>nicht transitiv</li>
+<li>dynamische Inhalte wie Google Fonts</li>
+<li>keine “gratis” Updates von Libraries</li>
+</ul>
+</section></section>
+<section>
+<section id="html5-stuff" class="title-slide slide level1">
+<h1>HTML5 Stuff</h1>
 
-# limit fonts und grafiken
-Content-Security-Policy: font-src https://google-fonts.com; img-src &#39;self&#39; https://img.snikt.net;</code></pre>
 </section>
-<section id="xss-protection" class="slide level2">
-<h2>XSS-Protection</h2>
-<pre><code># limit javascript to scripts from scripts.snikt.net
-Content-Security-Policy: script-src https://scripts.snikt.net;</code></pre>
-<p>Auch wenn der Angreifer im HTML-Code Javascript hinterlegen kann, wird es nicht ausgeführt:</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true"></a><span class="kw">&lt;html&gt;</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true"></a>  <span class="kw">&lt;body&gt;</span></span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true"></a>    <span class="kw">&lt;script&gt;</span><span class="fu">alert</span>(<span class="dv">1</span>)<span class="op">;</span><span class="kw">&lt;/script&gt;</span></span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true"></a>    <span class="kw">&lt;/body&gt;</span></span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true"></a><span class="kw">&lt;/html&gt;</span></span></code></pre></div>
-</section>
-<section id="verwendung-von-javascript" class="slide level2">
-<h2>Verwendung von Javascript</h2>
-<p>Funktioniert nicht mehr:</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true"></a><span class="kw">&lt;button</span><span class="ot"> id=</span><span class="st">&#39;my-javascript-button&#39;</span><span class="ot"> onclick=</span><span class="st">&quot;alert(&#39;hello&#39;);&quot;</span><span class="kw">&gt;</span></span></code></pre></div>
-</section>
-<section id="verwendung-von-javascript-1" class="slide level2">
-<h2>Verwendung von Javascript</h2>
-<p>Stattdessen: in eigenem Javascript-File:</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true"></a><span class="kw">&lt;button</span><span class="ot"> id=</span><span class="st">&#39;my-javascript-button&#39;</span><span class="kw">&gt;</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true"></a><span class="kw">&lt;script</span><span class="ot"> src=</span><span class="st">&quot;https://script.snikt.net/somescript.js&quot;</span><span class="kw">&gt;&lt;/script&gt;</span></span></code></pre></div>
-<p>somescript.js:</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true"></a><span class="fu">$</span>(<span class="bu">document</span>)<span class="op">.</span><span class="fu">ready</span>(<span class="kw">function</span> () {</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true"></a>  <span class="fu">$</span>(<span class="st">&#39;#my-javascript-button&#39;</span>)<span class="op">.</span><span class="fu">on</span>(<span class="st">&#39;click&#39;</span><span class="op">,</span> <span class="kw">function</span>() {</span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true"></a>        <span class="fu">alert</span>(<span class="st">&#39;hello&#39;</span>)<span class="op">;</span></span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true"></a>    })<span class="op">;</span></span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true"></a>})<span class="op">;</span></span></code></pre></div>
-</section>
-<section id="problem-user-sollte-nicht-js-file-hochladen-können" class="slide level2">
-<h2>Problem: User sollte nicht JS-File hochladen können</h2>
+<section id="webstorage" class="slide level2">
+<h2>WebStorage</h2>
 <ul>
-<li>File-Uploads?</li>
-<li><a href="https://portswigger.net/research/bypassing-csp-using-polyglot-jpegs">Bypassing CSP using polyglot files</a></li>
+<li>niemals sensitive Informationen speichern</li>
+<li>SessionStorage vs. LocalStorage</li>
+<li>Verwundbar gegenüber XSS (verglichen mit Cookies)
+<ul>
+<li>es gibt kein httpOnly</li>
+<li>man kann es nicht auf sub-Pfade limitieren</li>
+</ul></li>
 </ul>
 </section>
-<section id="negative-shortcuts" class="slide level2">
-<h2>Negative Shortcuts</h2>
-<p>‘unsafe-inline’ und ‘unsafe-eval’ entfernen viel von der Schutzwirkung..</p>
-<pre class="http"><code>Content-Security-Policy: script-src &#39;self&#39; &#39;unsafe-inline&#39; &#39;unsafe-eval&#39;;</code></pre>
-</section>
-<section id="csp-is-hard" class="slide level2">
-<h2>CSP is hard</h2>
-<p><a href="https://www.youtube.com/watch?v=jeTGBSL4eQs">Restricting The Scripts, You’re To Blame, You Give CSP a Bad name</a></p>
-</section>
-<section id="reporting-12" class="slide level2">
-<h2>Reporting 1/2</h2>
-<pre class="http"><code>Content-Security-Policy-Report-Only: default-src &#39;none&#39;; style-src cdn.example.com; report-uri: /csp-reports</code></pre>
-<div class="sourceCode" id="cb22"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true"></a><span class="dt">&lt;!DOCTYPE </span>html<span class="dt">&gt;</span></span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true"></a><span class="kw">&lt;html&gt;</span></span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true"></a>    <span class="kw">&lt;head&gt;</span></span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true"></a>        <span class="kw">&lt;title&gt;</span>Sign Up<span class="kw">&lt;/title&gt;</span></span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true"></a>        <span class="kw">&lt;link</span><span class="ot"> rel=</span><span class="st">&quot;stylesheet&quot;</span><span class="ot"> href=</span><span class="st">&quot;css/style.css&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb22-6"><a href="#cb22-6" aria-hidden="true"></a>    <span class="kw">&lt;/head&gt;</span></span>
-<span id="cb22-7"><a href="#cb22-7" aria-hidden="true"></a>    <span class="kw">&lt;body&gt;</span></span>
-<span id="cb22-8"><a href="#cb22-8" aria-hidden="true"></a>        ... Content ...</span>
-<span id="cb22-9"><a href="#cb22-9" aria-hidden="true"></a>    <span class="kw">&lt;/body&gt;</span></span>
-<span id="cb22-10"><a href="#cb22-10" aria-hidden="true"></a><span class="kw">&lt;/html&gt;</span></span></code></pre></div>
-</section>
-<section id="reporting-22" class="slide level2">
-<h2>Reporting 2/2</h2>
-<div class="sourceCode" id="cb23"><pre class="sourceCode json"><code class="sourceCode json"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true"></a><span class="fu">{</span></span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true"></a>  <span class="dt">&quot;csp-report&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true"></a>        <span class="dt">&quot;document-uri&quot;</span><span class="fu">:</span> <span class="st">&quot;http://example.com/signup.html&quot;</span><span class="fu">,</span></span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true"></a>            <span class="dt">&quot;referrer&quot;</span><span class="fu">:</span> <span class="st">&quot;&quot;</span><span class="fu">,</span></span>
-<span id="cb23-5"><a href="#cb23-5" aria-hidden="true"></a>            <span class="dt">&quot;blocked-uri&quot;</span><span class="fu">:</span> <span class="st">&quot;http://example.com/css/style.css&quot;</span><span class="fu">,</span></span>
-<span id="cb23-6"><a href="#cb23-6" aria-hidden="true"></a>            <span class="dt">&quot;violated-directive&quot;</span><span class="fu">:</span> <span class="st">&quot;style-src cdn.example.com&quot;</span><span class="fu">,</span></span>
-<span id="cb23-7"><a href="#cb23-7" aria-hidden="true"></a>            <span class="dt">&quot;original-policy&quot;</span><span class="fu">:</span> <span class="st">&quot;default-src &#39;none&#39;; style-src cdn.example.com; report-uri /_/csp-reports&quot;</span><span class="fu">,</span></span>
-<span id="cb23-8"><a href="#cb23-8" aria-hidden="true"></a>            <span class="dt">&quot;disposition&quot;</span><span class="fu">:</span> <span class="st">&quot;report&quot;</span></span>
-<span id="cb23-9"><a href="#cb23-9" aria-hidden="true"></a>    <span class="fu">}</span></span>
-<span id="cb23-10"><a href="#cb23-10" aria-hidden="true"></a><span class="fu">}</span></span></code></pre></div>
-</section>
-<section id="csp-with-google-nonces-since-2015" class="slide level2">
-<h2><a href="https://csp.withgoogle.com">CSP with Google</a>: Nonces (since 2015)</h2>
-<p>Nonce: zufälliger nicht-erratenbarer Wert, wird per CSP definiert</p>
-<pre class="http"><code>Content-Security-Policy: script-src &#39;nonce-r@nd0m&#39;;</code></pre>
-<p>Script-Tags werden ausgeführt, wenn sie den korrekten Nonce verwenden:</p>
-<div class="sourceCode" id="cb25"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true"></a><span class="kw">&lt;script</span><span class="ot"> nonce=</span><span class="st">&quot;r@nd0m&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true"></a>    <span class="fu">doWhatever</span>()<span class="op">;</span></span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true"></a><span class="kw">&lt;/script&gt;</span></span></code></pre></div>
-</section>
-<section id="csp-with-google" class="slide level2">
-<h2>CSP-with-Google</h2>
-<pre class="http"><code>Content-Security-Policy: default-src https:; script-src &#39;nonce-{random}&#39;; object-src &#39;none&#39;</code></pre>
-<blockquote>
-<p>This policy will require all resources to be loaded over HTTPS, allow only script elements with the correct nonce attribute, and prevent loading any plugins.</p>
-</blockquote>
-</section>
-<section id="csp-with-google-strict-csp" class="slide level2">
-<h2><a href="https://csp.withgoogle.com/docs/strict-csp.html#example">CSP-with-Google</a>: strict-CSP</h2>
-<pre class="http"><code>Content-Security-Policy:
-  object-src &#39;none&#39;;
-    script-src &#39;nonce-{random}&#39; &#39;unsafe-inline&#39; &#39;strict-dynamic&#39; https: http:;</code></pre>
+<section id="webworkers" class="slide level2">
+<h2>WebWorkers</h2>
 <ul>
-<li>unsafe-inline wird von neueren Browsern deaktiviert, falls nonce gesetzt</li>
-<li>strict-dynamic erlaubt das indirekte Laden von javascript, disabled http: und https:</li>
-<li>ganz alte browser fallen also auf http: und https: zurück</li>
+<li>Achtung wenn User-Eingaben verwendet werden</li>
+<li>können XMLHttpRequests abschicken, aber getrennter Origin</li>
+<li>CPU DoS!</li>
 </ul>
 </section>
-<section id="csp-scanner" class="slide level2">
-<h2>CSP-Scanner</h2>
+<section id="webasm" class="slide level2">
+<h2>WebAsm</h2>
 <ul>
-<li>Viele Scanner analysieren bereits CSP Direktiven</li>
-<li><a href="https://cspscanner.com/">CSPScanner</a></li>
-<li><a href="https://csp-evaluator.withgoogle.com/">Google CSP Evaluator</a></li>
-<li><a href="https://report-uri.com/home/generate">CSP Generator</a></li>
+<li>Potential für Bitcoin-Miners</li>
+<li>Potential für Obfuscation</li>
+</ul>
+</section>
+<section id="webrtc" class="slide level2">
+<h2>WebRTC</h2>
+<ul>
+<li>Peer-to-Peer Communication</li>
+<li>Access to Camera/Mic through Browser Controls</li>
+<li>Eher Privacy Impact</li>
+</ul>
+</section>
+<section id="webbluetooth" class="slide level2">
+<h2>WebBluetooth</h2>
+<ul>
+<li>Browser soll mit verbundenen Bluetooth LE devices Daten austauschen können.</li>
+<li>Webseite kann nicht nach devices suchen</li>
+<li>JS requested device, Browser übernimmt das Pairing</li>
+<li>Effektiv sehr vergleichbar mit Security Model mobiler Applikationen</li>
+</ul>
+</section>
+<section id="webbluetooh-privacy-impact" class="slide level2">
+<h2>WebBluetooh: Privacy Impact</h2>
+<ul>
+<li>Only possible from Secure Context (HTTPS)</li>
+<li>Eher Privacy Impact
+<ul>
+<li>“rssi”, “txPower”</li>
+</ul></li>
 </ul>
 </section></section>
 <section id="fin" class="title-slide slide level1">
