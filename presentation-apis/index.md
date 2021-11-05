@@ -13,6 +13,14 @@ title: Wohlgeformte APIs
 
 # HTTP
 
+## Basics
+
+- Client-Server basiertes Protokoll
+  - Client ist zumeist ein Browser
+  - Requests gehen vom Client aus
+- Ursprünglich zeilen-basiert (http/1.1)
+  - seit HTTP/2: eher key-value
+
 ## HTTP - Geschichte
 
 |Jahr|Version|Bemerkung|
@@ -24,6 +32,9 @@ title: Wohlgeformte APIs
 |2018| HTTP/3 | HTTP-over-QUIC, UDP |
 
 ## HTTP Request
+
+- wenige Pflicht-Elemente
+- Header sind großteils optional
 
 ```
 GET / HTTP/1.1
@@ -45,7 +56,44 @@ Accept-Language: en-US,en;q=0.5
 |POST | Erstellen von Objekten | | |
 |PATCH| Updaten eines Objektes | | |
 
+## Why HEAD?
+
+~~~ http
+HTTP/1.1 200
+x-amz-delete-marker: DeleteMarker
+accept-ranges: AcceptRanges
+x-amz-expiration: Expiration
+x-amz-restore: Restore
+x-amz-archive-status: ArchiveStatus
+Last-Modified: LastModified
+Content-Length: ContentLength
+ETag: ETag
+x-amz-missing-meta: MissingMeta
+x-amz-version-id: VersionId
+Cache-Control: CacheControl
+Content-Disposition: ContentDisposition
+Content-Encoding: ContentEncoding
+Content-Language: ContentLanguage
+Content-Type: ContentType
+Expires: Expires
+x-amz-website-redirect-location: WebsiteRedirectLocation
+x-amz-server-side-encryption: ServerSideEncryption
+x-amz-server-side-encryption-customer-algorithm: SSECustomerAlgorithm
+x-amz-server-side-encryption-customer-key-MD5: SSECustomerKeyMD5
+x-amz-server-side-encryption-aws-kms-key-id: SSEKMSKeyId
+x-amz-server-side-encryption-bucket-key-enabled: BucketKeyEnabled
+x-amz-storage-class: StorageClass
+x-amz-request-charged: RequestCharged
+x-amz-replication-status: ReplicationStatus
+x-amz-mp-parts-count: PartsCount
+x-amz-object-lock-mode: ObjectLockMode
+x-amz-object-lock-retain-until-date: ObjectLockRetainUntilDate
+x-amz-object-lock-legal-hold: ObjectLockLegalHoldStatus
+~~~
+
 ## HTTP Response
+
+- Antwort vom Server zum Client
 
 ```http
 HTTP/1.1 200 OK
@@ -74,9 +122,35 @@ Connection: close
 | 4xx | Client-Fehler (inkl.Authentication) |
 | 5xx | Server-Fehler |
 
+## Typische Antwortcodes (1/2)
+
+|Statuscode|Verwendung|
+|---|-------|
+| 200 | OK, Antwort im Body |
+| 201 | Created, Antwort im Body, URL als Location-Header |
+| 204 | No Content (aber Header) |
+| 301 | Moved Permanently |
+| 302 | Found (temporäre neue URL) |
+| 303 | See Other, e.g., für Status-Page nach POST |
+
+## Typische Antwortcodes (1/2)
+
+|Statuscode|Verwendung|
+|---|-------|
+| 400 | Bad Request (ungültige Syntax) |
+| 401 | Unauthorized (Authentication notwendig) |
+| 403 | Forbidden (Authorization notwendig) |
+| 404 | Not found |
+| 405 | Method nod allowed |
+| 429 | Too Many Requests (Rate-Limit) |
+| 500 | Internal Server Error |
+| 501 | Not Implemented (Method) |
+| 502/504 | Bad Gateway |
+| 503 | Service Unavailable |
+
 # Javascript: SOP/CORS
 
-## SOP
+## Same-Origin Policy
 
 - Same-Origin Policy für Javascript
 - Origin: Schema+FQDN+Port
@@ -95,6 +169,7 @@ Beispiel: Browser lädt eine Webseite (web.snikt.net), diese will mittels Javasc
 * Setzt dafür den Origin Header beim JS-Zugriff auf service.snikt.net
 
 ``` http
+GET /some-operation HTTP/1.1
 Origin: web.snikt.net
 ```
 
@@ -103,6 +178,8 @@ Origin: web.snikt.net
 Das Antwortdokument des Services beinhaltet einen zusätzlichen Header der anzeigt, wer diese Operation aufrufen darf:
 
 ``` http
+HTTP/1.1 200 OK
+..
 Access-Control-Allow-Origin: https://web.snikt.net
 ```
 
@@ -119,7 +196,7 @@ Access-Control-Allow-Origin: https://web.snikt.net
 
 ``` http
 Access-Control-Allow-Origin: https://web.snikt.net
-Access-Control-Allow-Methods: PUT, DELETE
+Access-Control-Allow-Methods: POST, PUT, DELETE
 ```
 
 * Danach sendet der Browser erst den Daten-verändernden Request
@@ -132,7 +209,7 @@ Access-Control-Allow-Methods: PUT, DELETE
 
 ## CRUD - Operationen
 
-- Typische Operationen die man für die Verwaltung für Resourcen benötigt
+- Typische Operationen die man für die Verwaltung von Resourcen benötigt
 - Create, Read, Update, Delete
 
 ## REST
@@ -178,7 +255,7 @@ Access-Control-Allow-Methods: PUT, DELETE
 - Identifier müssen ,,stable'' sein
   - z.B. /users/42 liefert immer den gleichen User
 - Benamung
-  - ebab-case für Pfade (alles Kleinbuchstaben)
+  - kebab-case für Pfade (alles Kleinbuchstaben)
 	- snake_case für Parameter
 
 ## Kein Actions in der URL
@@ -189,6 +266,7 @@ Access-Control-Allow-Methods: PUT, DELETE
 ## Datenformate
 
 - use JSON
+  - Standardisierte Zeitformate, etc.
 - im Fehlerfall: [problem JSON](https://opensource.zalando.com/restful-api-guidelines/#176)
 
 # OAuth2
@@ -262,45 +340,8 @@ Access-Control-Allow-Methods: PUT, DELETE
 * Beispiel: NULL alg
 * Beispiel: HS vs RS confusion
 
-## MAC/PubKey Confusion
-
-Entwickler verwendet eine Bibliothek, mit folgender Überprüfungsfunktion:
-
-```
-validate(token, key)
-
-# validate checkt den token-alg
-# und verwendet entweder MAC oder Signature
-# key: public-key bei Signature
-# key: shared-secret-key bei MAC
-```
-
-Entwickler geht davon aus, dass fix eine Siganture verwendet wird:
-
-```
-validate(token, public-key)
-```
-
-## MAC/PubKey Confusion
-
-Der Angreifer nimmt den public key und verwendet ihn um einen MAC-based token zu erstellen, setzt den Algorithmus auf MAC
-
-```
-token(alg: mac, content, mac(public-key, content))
-```
-
-der Anwendungscode am Server erwartet eigentlich public-keys und ruft folgendes auf:
-
-```
-  validate(mac-token, public-key)
-```
-
-## Resultat
-
-die Bibliothek glaubt aufgrund des Tokens (alg) dass ein MAC gebaut werden sollte und berechnet mac(public-key, content).. und akzeptiert deswegen das übergebene Token!
-
-Immer Algorithmus am Server prüfen und fixieren
-
 ## Problem: Key-for-Signing is constant
 
 - offline-cracking
+
+# FIN
