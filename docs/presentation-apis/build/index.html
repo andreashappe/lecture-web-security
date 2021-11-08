@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="Andreas Happe">
+  <title>Wohlgeformte APIs</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="reveal.js/css/reset.css">
+  <link rel="stylesheet" href="reveal.js/css/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+  </style>
+  <link rel="stylesheet" href="reveal.js/css/theme/solarized.css" id="theme">
+  <link rel="stylesheet" href="custom.css"/>
+  <!-- Printing and PDF exports -->
+  <script>
+    var link = document.createElement( 'link' );
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = window.location.search.match( /print-pdf/gi ) ? 'reveal.js/css/print/pdf.css' : 'reveal.js/css/print/paper.css';
+    document.getElementsByTagName( 'head' )[0].appendChild( link );
+  </script>
+  <!--[if lt IE 9]>
+  <script src="reveal.js/lib/js/html5shiv.js"></script>
+  <![endif]-->
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide">
+  <h1 class="title">Wohlgeformte APIs</h1>
+  <p class="author">Andreas Happe</p>
+</section>
+
+<section id="agenda" class="slide level2">
+<h2>Agenda</h2>
+<ul>
+<li>Review HTTP</li>
+<li>JavaScript: SOP/CORS</li>
+<li>CRUD und REST</li>
+<li>OAuth2</li>
+<li>JWT</li>
+</ul>
+</section>
+<section>
+<section id="http" class="title-slide slide level1">
+<h1>HTTP</h1>
+
+</section>
+<section id="http---geschichte" class="slide level2">
+<h2>HTTP - Geschichte</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Jahr</th>
+<th>Version</th>
+<th>Bemerkung</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1989</td>
+<td>-</td>
+<td>CERN</td>
+</tr>
+<tr class="even">
+<td>1991</td>
+<td>HTTP/0.9</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>1997</td>
+<td>HTTP/1.1</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>2015</td>
+<td>HTTP/2</td>
+<td>SPDY, semi-TLSv1.3, ~66%</td>
+</tr>
+<tr class="odd">
+<td>2018</td>
+<td>HTTP/3</td>
+<td>HTTP-over-QUIC, UDP</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="http-request" class="slide level2">
+<h2>HTTP Request</h2>
+<pre><code>GET / HTTP/1.1
+Host: www.example.com
+User-Agent: Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:73.0) Gecko/20100101 Firefox/73.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5</code></pre>
+</section>
+<section id="http-verben" class="slide level2">
+<h2>HTTP Verben</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Verb</th>
+<th>Verwendung</th>
+<th>Safe</th>
+<th>Idempotent</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>GET</td>
+<td>Abfrage von Informationen</td>
+<td>x</td>
+<td>x</td>
+</tr>
+<tr class="even">
+<td>HEAD</td>
+<td>Abfrage von Meta-Informationen</td>
+<td>x</td>
+<td>x</td>
+</tr>
+<tr class="odd">
+<td>OPTIONS</td>
+<td>Abfrage von Meta-Informationen</td>
+<td>x</td>
+<td>x</td>
+</tr>
+<tr class="even">
+<td>PUT</td>
+<td>Neues Objekt hochladen</td>
+<td></td>
+<td>x</td>
+</tr>
+<tr class="odd">
+<td>DELETE</td>
+<td>Löschen eines Objektes</td>
+<td></td>
+<td>x</td>
+</tr>
+<tr class="even">
+<td>POST</td>
+<td>Erstellen von Objekten</td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>PATCH</td>
+<td>Updaten eines Objektes</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="http-response" class="slide level2">
+<h2>HTTP Response</h2>
+<pre class="http"><code>HTTP/1.1 200 OK
+Date: Mon, 23 May 2005 22:38:34 GMT
+Content-Type: text/html; charset=UTF-8
+Content-Length: 138
+Last-Modified: Wed, 08 Jan 2003 23:11:55 GMT
+Server: Apache/1.3.3.7 (Unix) (Red-Hat/Linux)
+ETag: &quot;3f80f-1b6-3e1cb03b&quot;
+Accept-Ranges: bytes
+Connection: close
+
+&lt;html&gt;
+ &lt;head&gt;&lt;title&gt;Wohoo!&lt;/title&gt;&lt;/head&gt;
+ &lt;body&gt;&lt;p&gt;Hello World!!!1&lt;/p&gt;&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+</section>
+<section id="http-statuscode" class="slide level2">
+<h2>HTTP Statuscode</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Statuscode</th>
+<th>Verwendung</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1xx</td>
+<td>Information (continue, protocol switch)</td>
+</tr>
+<tr class="even">
+<td>2xx</td>
+<td>Erfolgreich</td>
+</tr>
+<tr class="odd">
+<td>3xx</td>
+<td>Umleitungen</td>
+</tr>
+<tr class="even">
+<td>4xx</td>
+<td>Client-Fehler (inkl.Authentication)</td>
+</tr>
+<tr class="odd">
+<td>5xx</td>
+<td>Server-Fehler</td>
+</tr>
+</tbody>
+</table>
+</section></section>
+<section>
+<section id="javascript-sopcors" class="title-slide slide level1">
+<h1>Javascript: SOP/CORS</h1>
+
+</section>
+<section id="sop" class="slide level2">
+<h2>SOP</h2>
+<ul>
+<li>Same-Origin Policy für Javascript</li>
+<li>Origin: Schema+FQDN+Port</li>
+<li>Javascript darf nur auf Resourcen mit der gleichen Origin zugreifen (wie die Origin, in welcher das JavaScript aufgerufen wurde)</li>
+</ul>
+</section>
+<section id="cross-origin-resource-sharing-cors" class="slide level2">
+<h2>Cross-Origin Resource Sharing (CORS)</h2>
+<p>Aufweichen der SOP</p>
+<p>Beispiel: Browser lädt eine Webseite (web.snikt.net), diese will mittels Javascript auf service.snikt.net zugreifen</p>
+</section>
+<section id="simple-case-read-request" class="slide level2">
+<h2>Simple Case: Read-Request</h2>
+<ul>
+<li>Browser befindet sich auf web.snikt.net</li>
+<li>Will auf service.snikt.net zugreifen</li>
+<li>Setzt dafür den Origin Header beim JS-Zugriff auf service.snikt.net</li>
+</ul>
+<pre class="http"><code>Origin: web.snikt.net</code></pre>
+</section>
+<section id="simple-case-response" class="slide level2">
+<h2>Simple Case: Response</h2>
+<p>Das Antwortdokument des Services beinhaltet einen zusätzlichen Header der anzeigt, wer diese Operation aufrufen darf:</p>
+<pre class="http"><code>Access-Control-Allow-Origin: https://web.snikt.net</code></pre>
+<ul>
+<li>Browser weiss nun, dass er diese Daten verarbeiten darf</li>
+<li>Da dies eine “safe” Operation ist, kann am service-Service nichts geschehen</li>
+<li>Bitte nicht: Access-Control-Allow-Origin: *</li>
+</ul>
+</section>
+<section id="was-bei-daten-verändernden-operationen" class="slide level2">
+<h2>Was bei Daten-Verändernden Operationen?</h2>
+<ul>
+<li>Preflight-Authorisation</li>
+<li>Browser sendet HTTP OPTIONS zum Service</li>
+<li>Origin-Header wird wieder auf web.snikt.net gesetzt</li>
+<li>Beispielsantwort</li>
+</ul>
+<pre class="http"><code>Access-Control-Allow-Origin: https://web.snikt.net
+Access-Control-Allow-Methods: PUT, DELETE</code></pre>
+<ul>
+<li>Danach sendet der Browser erst den Daten-verändernden Request</li>
+</ul>
+</section>
+<section id="zusammengefasst" class="slide level2">
+<h2>Zusammengefasst</h2>
+<img data-src="0x09_cors.png" title="fig:" class="stretch" alt="Picture" />
+</section></section>
+<section>
+<section id="crud-und-rest" class="title-slide slide level1">
+<h1>CRUD und REST</h1>
+
+</section>
+<section id="crud---operationen" class="slide level2">
+<h2>CRUD - Operationen</h2>
+<ul>
+<li>Typische Operationen die man für die Verwaltung für Resourcen benötigt</li>
+<li>Create, Read, Update, Delete</li>
+</ul>
+</section>
+<section id="rest" class="slide level2">
+<h2>REST</h2>
+<ul>
+<li>Representational State Transfer</li>
+<li>Alles sind Resourcen</li>
+<li>Zugriff über Standard-HTTP Methoden auf Resourcen</li>
+<li><a href="https://martinfowler.com/articles/richardsonMaturityModel.html#level2">REST Maturity Levels</a>, Ziel: Level 2</li>
+</ul>
+</section>
+<section id="restful-crud-functionality" class="slide level2">
+<h2>RESTful CRUD-Functionality</h2>
+<table>
+<thead>
+<tr class="header">
+<th>URL</th>
+<th>Method</th>
+<th>Operation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>/notes/</td>
+<td>GET</td>
+<td>list notes</td>
+</tr>
+<tr class="even">
+<td>/notes/</td>
+<td>POST</td>
+<td>create note</td>
+</tr>
+<tr class="odd">
+<td>/notes/123</td>
+<td>GET</td>
+<td>show note</td>
+</tr>
+<tr class="even">
+<td>/notes/123</td>
+<td>DELETE</td>
+<td>remove note</td>
+</tr>
+<tr class="odd">
+<td>/notes/123</td>
+<td>PUT</td>
+<td>update note</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="zalando-api-guidelines" class="slide level2">
+<h2>Zalando API Guidelines</h2>
+<ul>
+<li><a href="https://opensource.zalando.com/restful-api-guidelines/">Zalando API-Guidelines</a></li>
+</ul>
+</section>
+<section id="api-first" class="slide level2">
+<h2>API First</h2>
+<ul>
+<li>Zuerst das API definieren</li>
+<li>Danach erst implementieren</li>
+</ul>
+</section>
+<section id="grundlegend" class="slide level2">
+<h2>Grundlegend</h2>
+<ul>
+<li>Bei REST geht um Resourcen</li>
+<li>Verwendung der korrekten HTTP Verben und Status-Codes</li>
+<li>OpenAPI/Swagger-Definitionen bereitstellen</li>
+</ul>
+</section>
+<section id="typen-von-resourcen" class="slide level2">
+<h2>Typen von Resourcen</h2>
+<ul>
+<li>es gibt collection und singuläre Resourcen
+<ul>
+<li>Collection z.B. /users/123</li>
+<li>Singular z.B. /current-user</li>
+</ul></li>
+</ul>
+</section>
+<section id="urls" class="slide level2">
+<h2>URLs</h2>
+<ul>
+<li>Identifier müssen ,,stable’’ sein
+<ul>
+<li>z.B. /users/42 liefert immer den gleichen User</li>
+</ul></li>
+<li>Benamung
+<ul>
+<li>ebab-case für Pfade (alles Kleinbuchstaben)
+<ul>
+<li>snake_case für Parameter</li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+<section id="kein-actions-in-der-url" class="slide level2">
+<h2>Kein Actions in der URL</h2>
+<ul>
+<li>nicht “POST /users/login” sondern “POST /sessions/”</li>
+<li>URL sollten “verb-free” sein</li>
+</ul>
+</section>
+<section id="datenformate" class="slide level2">
+<h2>Datenformate</h2>
+<ul>
+<li>use JSON</li>
+<li>im Fehlerfall: <a href="https://opensource.zalando.com/restful-api-guidelines/#176">problem JSON</a></li>
+</ul>
+</section></section>
+<section>
+<section id="oauth2" class="title-slide slide level1">
+<h1>OAuth2</h1>
+
+</section>
+<section id="beteiligte-parteien" class="slide level2">
+<h2>Beteiligte Parteien</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Partei</th>
+<th>Rolle</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Resource Owner</td>
+<td>kann Berechtigungen authorisieren</td>
+</tr>
+<tr class="even">
+<td>Resource Server</td>
+<td>speichert Daten im Auftrag eines Resource Owners</td>
+</tr>
+<tr class="odd">
+<td>Client</td>
+<td>will auf die Daten eines Resource Owners am Server zugreifen</td>
+</tr>
+<tr class="even">
+<td>Authorization Server</td>
+<td>erstellt die Zugriffsberichtigung</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="oauth2-authorization-grant-request" class="slide level2">
+<h2>OAuth2: Authorization Grant Request</h2>
+<ul>
+<li>Scope der Authorization
+<ul>
+<li>read/write</li>
+<li>github: include private repositories</li>
+<li>dropbox: grants auf folder Ebene</li>
+</ul></li>
+</ul>
+</section>
+<section id="oauth2-token-basiertes-zugriffssystem" class="slide level2">
+<h2>OAuth2: token-basiertes Zugriffssystem</h2>
+<ul>
+<li>User-Identität ist eigentlich egal..</li>
+<li>Keine dezidierte Logout Operation</li>
+</ul>
+</section>
+<section id="oauth2-verschiedene-flows" class="slide level2">
+<h2>OAuth2: verschiedene Flows</h2>
+<img data-src="0x07_oauth2.png" title="fig:" class="stretch" alt="Picture" />
+</section>
+<section id="openid-connect" class="slide level2">
+<h2>OpenID-Connect</h2>
+<ul>
+<li>Implementierung einer Authentication auf Basis von OAUTH2</li>
+<li>Verschiedene Flows</li>
+<li>Typischerweise sind zwei Endpunkte definiert (Token, User-Daten)</li>
+</ul>
+</section></section>
+<section>
+<section id="json-web-tokens" class="title-slide slide level1">
+<h1>JSON Web Tokens</h1>
+
+</section>
+<section id="grundsätzlich" class="slide level2">
+<h2>Grundsätzlich</h2>
+<ul>
+<li>Token Format, RFC 7519</li>
+<li>Dienen zur Übertragung von Permissions</li>
+<li>Übertragung per
+<ul>
+<li>HTTP Parameter: please don’t</li>
+<li>Cookie: sameSite, httpOnly, Secure-Flags setzen</li>
+<li>HTTP Header als bearer token</li>
+</ul></li>
+</ul>
+</section>
+<section id="grundaufbau" class="slide level2">
+<h2>Grundaufbau</h2>
+<img data-src="0x07_jwt.jpeg" title="fig:" class="stretch" alt="Picture" />
+</section>
+<section id="grundaufbau-1" class="slide level2">
+<h2>Grundaufbau</h2>
+<img data-src="0x07_jwt_token.png" title="fig:" class="stretch" alt="Picture" />
+</section>
+<section id="json-web-tokens-1" class="slide level2">
+<h2>JSON Web Tokens</h2>
+<ul>
+<li>Header
+<ul>
+<li>alg: Verwendeter Algorithmus</li>
+<li>typ: “JWT”</li>
+</ul></li>
+<li>Beispiele für Content
+<ul>
+<li>iss: issuer</li>
+<li>sub: subject</li>
+<li>aud: audience</li>
+<li>exp und nbf, iat: Laufzeiten</li>
+<li>jti: json token id</li>
+</ul></li>
+</ul>
+</section>
+<section id="problem-header" class="slide level2">
+<h2>Problem: Header</h2>
+<ul>
+<li>Header nicht Integritätsgesichert</li>
+<li>Beispiel: NULL alg</li>
+<li>Beispiel: HS vs RS confusion</li>
+</ul>
+</section>
+<section id="macpubkey-confusion" class="slide level2">
+<h2>MAC/PubKey Confusion</h2>
+<p>Entwickler verwendet eine Bibliothek, mit folgender Überprüfungsfunktion:</p>
+<pre><code>validate(token, key)
+
+# validate checkt den token-alg
+# und verwendet entweder MAC oder Signature
+# key: public-key bei Signature
+# key: shared-secret-key bei MAC</code></pre>
+<p>Entwickler geht davon aus, dass fix eine Siganture verwendet wird:</p>
+<pre><code>validate(token, public-key)</code></pre>
+</section>
+<section id="macpubkey-confusion-1" class="slide level2">
+<h2>MAC/PubKey Confusion</h2>
+<p>Der Angreifer nimmt den public key und verwendet ihn um einen MAC-based token zu erstellen, setzt den Algorithmus auf MAC</p>
+<pre><code>token(alg: mac, content, mac(public-key, content))</code></pre>
+<p>der Anwendungscode am Server erwartet eigentlich public-keys und ruft folgendes auf:</p>
+<pre><code>  validate(mac-token, public-key)</code></pre>
+</section>
+<section id="resultat" class="slide level2">
+<h2>Resultat</h2>
+<p>die Bibliothek glaubt aufgrund des Tokens (alg) dass ein MAC gebaut werden sollte und berechnet mac(public-key, content).. und akzeptiert deswegen das übergebene Token!</p>
+<p>Immer Algorithmus am Server prüfen und fixieren</p>
+</section>
+<section id="problem-key-for-signing-is-constant" class="slide level2">
+<h2>Problem: Key-for-Signing is constant</h2>
+<ul>
+<li>offline-cracking</li>
+</ul>
+</section></section>
+    </div>
+  </div>
+
+  <script src="reveal.js/js/reveal.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        // Push each slide change to the browser history
+        history: true,
+
+        // Optional reveal.js plugins
+        dependencies: [
+          { src: 'reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'reveal.js/plugin/zoom-js/zoom.js', async: true },
+          { src: 'reveal.js/plugin/notes/notes.js', async: true }
+        ]
+      });
+    </script>
+    </body>
+</html>
