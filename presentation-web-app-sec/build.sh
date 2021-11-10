@@ -1,4 +1,6 @@
-#!/bin/sh
-pandoc -t revealjs --slide-level=2 -s presentation-src.md -o presentation.html -V revealjs-url=https://unpkg.com/reveal.js@4.1.3/ -V theme=beige --css=custom.css
+#!/bin/bash
 
-cp *.html *.png *.css *.jpg *.jpeg ./../docs/presentation-web-app-sec
+TARGET=./../docs/
+
+mkdir -p $TARGET
+pandoc -t revealjs -s -V theme=solarized --slide-level=2 --css custom.css -o $TARGET/web-appsec.html web-appsec.md;
