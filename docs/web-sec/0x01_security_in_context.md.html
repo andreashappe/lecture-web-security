@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="Andreas Happe">
+  <title>Web Security</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/reset.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/theme/solarized.css" id="theme">
+  <link rel="stylesheet" href="custom.css"/>
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide">
+  <h1 class="title">Web Security</h1>
+  <p class="author">Andreas Happe</p>
+</section>
+
+<section>
+<section id="security-im-kontext" class="title-slide slide level1">
+<h1>Security im Kontext</h1>
+
+</section>
+<section id="security-steht-nie-alleine" class="slide level2">
+<h2>Security steht nie alleine</h2>
+<ul>
+<li>Immer Security von “irgendwas”</li>
+<li>Nicht-funktionales Requirement</li>
+</ul>
+</section>
+<section id="problem-security-häufig-als-after-thought" class="slide level2">
+<h2>Problem: Security häufig als after-thought</h2>
+</section>
+<section id="beispiel" class="slide level2">
+<h2>Beispiel</h2>
+<ul>
+<li>Projektdesign: Wasserfallmodel</li>
+<li>Zeitraum: über mehrere Jahre hinweg</li>
+<li>Sicherheit wurde eingeplant, einen Monat vor Abschluss Pen-Test</li>
+<li>Natürlich ist das Projekt verspätet</li>
+<li>Natürlich wurden nicht-funktionale Dinge nach hinten verschoben</li>
+<li>Pen-Test kann erst nach erfolgter Implementierung stattfinden</li>
+<li>Im letzten Moment wird der Pen-Test gestartet</li>
+<li>Beim Pen-Test werden Mängel gefunden</li>
+<li>Launch kann nicht mehr verschoben werden (Werbung)</li>
+</ul>
+</section>
+<section id="meh." class="slide level2">
+<h2>meh.</h2>
+</section></section>
+<section>
+<section id="strukturierter-ansatz-wäre-vorteilhaft" class="title-slide slide level1">
+<h1>Strukturierter Ansatz wäre vorteilhaft</h1>
+
+</section>
+<section id="strukturierter-ansatz-wäre-vorteilhaft-1" class="slide level2">
+<h2>Strukturierter Ansatz wäre vorteilhaft</h2>
+<p>Suboptimal:</p>
+<blockquote>
+<p>Zwar keine Ahnung wohin, aber Hauptsache schnell!!!1</p>
+</blockquote>
+</section>
+<section id="wann-sollte-etwas-unternommen-werden" class="slide level2">
+<h2>Wann sollte etwas unternommen werden?</h2>
+<ul>
+<li>Während des gesamten SDLC</li>
+</ul>
+</section>
+<section id="wann-sollte-etwas-unternommen-werden-1" class="slide level2">
+<h2>Wann sollte etwas unternommen werden?</h2>
+<ul>
+<li>Training</li>
+<li>Requirementsanalyse</li>
+<li>Architektur/Design</li>
+<li>Implementierung und Testing</li>
+<li>Maintenance (Supply-Chain Attacks)</li>
+</ul>
+</section></section>
+<section>
+<section id="threat-model" class="title-slide slide level1">
+<h1>Threat Model</h1>
+
+</section>
+<section id="threat-model-1" class="slide level2">
+<h2>Threat Model</h2>
+<p>Formaliserte Herangehensweise an Sicherheitsbetrachtung</p>
+</section>
+<section id="grundlegende-fragen" class="slide level2">
+<h2>Grundlegende Fragen</h2>
+<ul>
+<li>Was muss geschützt werden?</li>
+<li>Vor wem/was habe ich Angst?</li>
+<li>Auf welche Bereiche kann ich Einfluss nehmen?</li>
+<li>Welche Schwachstellen können auftreten?</li>
+<li>Was wären potentielle Gegenmassnahmen?</li>
+</ul>
+</section>
+<section id="was-sollte-geschützt-werden" class="slide level2">
+<h2>Was sollte geschützt werden?</h2>
+<ul>
+<li>Schützenswertes Gut</li>
+<li>CIA-Triade
+<ul>
+<li>Confidenciality, Integrity, Availabilty</li>
+<li>Non-Repudiation, Auditing</li>
+</ul></li>
+<li>Aber schlußendlich immer Kundenspezifisch</li>
+</ul>
+</section>
+<section id="vor-wem-habe-ich-angst" class="slide level2">
+<h2>Vor wem habe ich Angst?</h2>
+<ul>
+<li>Threat-Actors</li>
+<li>Wichtig zur Einschätzung der Möglichkeiten, Hartnäckigkeit, Skills</li>
+<li>Beispiele:
+<ul>
+<li>Hacktivists</li>
+<li>Script-Kiddies</li>
+<li>Staaten</li>
+<li>organisiertes Verbrechen</li>
+</ul></li>
+</ul>
+</section>
+<section id="was-ist-mein-scope" class="slide level2">
+<h2>Was ist mein Scope?</h2>
+<ul>
+<li>Welche Systeme sind in-scope?</li>
+<li>Welche Systeme sind out-of-scope?</li>
+<li>Grundlegende Sicherheitsannahmen</li>
+</ul>
+</section>
+<section id="welche-schwachstellen-können-auftreten" class="slide level2">
+<h2>Welche Schwachstellen können auftreten?</h2>
+<ul>
+<li>Architektur- oder Datenfluss-Diagramme</li>
+<li>Brainstormen (Erfahrung) oder Kataloge</li>
+<li>STRIDE</li>
+</ul>
+</section>
+<section id="was-kann-ich-grundsätzlich-machen" class="slide level2">
+<h2>Was kann ich grundsätzlich machen?</h2>
+<ul>
+<li>Entfernen des Risikos</li>
+<li>Mitigieren</li>
+<li>Versichern/Delegieren</li>
+<li>Akzeptieren</li>
+<li>(Ignorieren)</li>
+</ul>
+</section>
+<section id="und-in-welcher-reihenfolge" class="slide level2">
+<h2>..und in welcher Reihenfolge?</h2>
+<ul>
+<li>Sortieren (z. B. mittels DREAD)</li>
+<li>Kataloge mit Absicherungsmassnahmen</li>
+</ul>
+</section>
+<section id="hoffnung" class="slide level2">
+<h2>Hoffnung</h2>
+<p>Auf diese Weise sollten die Schwachstellen überhaupt nicht im Softwareprodukt “aufschlagen”.</p>
+</section></section>
+<section id="fin" class="title-slide slide level1">
+<h1>Fin</h1>
+
+</section>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/reveal.js@^4//dist/reveal.js"></script>
+
+  <!-- reveal.js plugins -->
+  <script src="https://unpkg.com/reveal.js@^4//plugin/notes/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@^4//plugin/search/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@^4//plugin/zoom/zoom.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: true,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'bottom-right',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: false,
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: false,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: false,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: true,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'default',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: true,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // reveal.js plugins
+        plugins: [
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    </body>
+</html>

