@@ -8,8 +8,8 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
-  <link rel="stylesheet" href="reveal.js/css/reset.css">
-  <link rel="stylesheet" href="reveal.js/css/reveal.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/reset.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/reveal.css">
   <style>
     code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
@@ -17,20 +17,10 @@
     div.column{display: inline-block; vertical-align: top; width: 50%;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     ul.task-list{list-style: none;}
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
-  <link rel="stylesheet" href="reveal.js/css/theme/solarized.css" id="theme">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/theme/solarized.css" id="theme">
   <link rel="stylesheet" href="custom.css"/>
-  <!-- Printing and PDF exports -->
-  <script>
-    var link = document.createElement( 'link' );
-    link.rel = 'stylesheet';
-    link.type = 'text/css';
-    link.href = window.location.search.match( /print-pdf/gi ) ? 'reveal.js/css/print/pdf.css' : 'reveal.js/css/print/paper.css';
-    document.getElementsByTagName( 'head' )[0].appendChild( link );
-  </script>
-  <!--[if lt IE 9]>
-  <script src="reveal.js/lib/js/html5shiv.js"></script>
-  <![endif]-->
 </head>
 <body>
   <div class="reveal">
@@ -55,6 +45,20 @@
 <section id="http" class="title-slide slide level1">
 <h1>HTTP</h1>
 
+</section>
+<section id="basics" class="slide level2">
+<h2>Basics</h2>
+<ul>
+<li>Client-Server basiertes Protokoll
+<ul>
+<li>Client ist zumeist ein Browser</li>
+<li>Requests gehen vom Client aus</li>
+</ul></li>
+<li>Ursprünglich zeilen-basiert (http/1.1)
+<ul>
+<li>seit HTTP/2: eher key-value</li>
+</ul></li>
+</ul>
 </section>
 <section id="http---geschichte" class="slide level2">
 <h2>HTTP - Geschichte</h2>
@@ -97,6 +101,10 @@
 </section>
 <section id="http-request" class="slide level2">
 <h2>HTTP Request</h2>
+<ul>
+<li>wenige Pflicht-Elemente</li>
+<li>Header sind großteils optional</li>
+</ul>
 <pre><code>GET / HTTP/1.1
 Host: www.example.com
 User-Agent: Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:73.0) Gecko/20100101 Firefox/73.0
@@ -160,8 +168,44 @@ Accept-Language: en-US,en;q=0.5</code></pre>
 </tbody>
 </table>
 </section>
+<section id="why-head" class="slide level2">
+<h2>Why HEAD?</h2>
+<pre class="http"><code>HTTP/1.1 200
+x-amz-delete-marker: DeleteMarker
+accept-ranges: AcceptRanges
+x-amz-expiration: Expiration
+x-amz-restore: Restore
+x-amz-archive-status: ArchiveStatus
+Last-Modified: LastModified
+Content-Length: ContentLength
+ETag: ETag
+x-amz-missing-meta: MissingMeta
+x-amz-version-id: VersionId
+Cache-Control: CacheControl
+Content-Disposition: ContentDisposition
+Content-Encoding: ContentEncoding
+Content-Language: ContentLanguage
+Content-Type: ContentType
+Expires: Expires
+x-amz-website-redirect-location: WebsiteRedirectLocation
+x-amz-server-side-encryption: ServerSideEncryption
+x-amz-server-side-encryption-customer-algorithm: SSECustomerAlgorithm
+x-amz-server-side-encryption-customer-key-MD5: SSECustomerKeyMD5
+x-amz-server-side-encryption-aws-kms-key-id: SSEKMSKeyId
+x-amz-server-side-encryption-bucket-key-enabled: BucketKeyEnabled
+x-amz-storage-class: StorageClass
+x-amz-request-charged: RequestCharged
+x-amz-replication-status: ReplicationStatus
+x-amz-mp-parts-count: PartsCount
+x-amz-object-lock-mode: ObjectLockMode
+x-amz-object-lock-retain-until-date: ObjectLockRetainUntilDate
+x-amz-object-lock-legal-hold: ObjectLockLegalHoldStatus</code></pre>
+</section>
 <section id="http-response" class="slide level2">
 <h2>HTTP Response</h2>
+<ul>
+<li>Antwort vom Server zum Client</li>
+</ul>
 <pre class="http"><code>HTTP/1.1 200 OK
 Date: Mon, 23 May 2005 22:38:34 GMT
 Content-Type: text/html; charset=UTF-8
@@ -209,14 +253,104 @@ Connection: close
 </tr>
 </tbody>
 </table>
+</section>
+<section id="typische-antwortcodes-12" class="slide level2">
+<h2>Typische Antwortcodes (1/2)</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Statuscode</th>
+<th>Verwendung</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>200</td>
+<td>OK, Antwort im Body</td>
+</tr>
+<tr class="even">
+<td>201</td>
+<td>Created, Antwort im Body, URL als Location-Header</td>
+</tr>
+<tr class="odd">
+<td>204</td>
+<td>No Content (aber Header)</td>
+</tr>
+<tr class="even">
+<td>301</td>
+<td>Moved Permanently</td>
+</tr>
+<tr class="odd">
+<td>302</td>
+<td>Found (temporäre neue URL)</td>
+</tr>
+<tr class="even">
+<td>303</td>
+<td>See Other, e.g., für Status-Page nach POST</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="typische-antwortcodes-12-1" class="slide level2">
+<h2>Typische Antwortcodes (1/2)</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Statuscode</th>
+<th>Verwendung</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>400</td>
+<td>Bad Request (ungültige Syntax)</td>
+</tr>
+<tr class="even">
+<td>401</td>
+<td>Unauthorized (Authentication notwendig)</td>
+</tr>
+<tr class="odd">
+<td>403</td>
+<td>Forbidden (Authorization notwendig)</td>
+</tr>
+<tr class="even">
+<td>404</td>
+<td>Not found</td>
+</tr>
+<tr class="odd">
+<td>405</td>
+<td>Method nod allowed</td>
+</tr>
+<tr class="even">
+<td>429</td>
+<td>Too Many Requests (Rate-Limit)</td>
+</tr>
+<tr class="odd">
+<td>500</td>
+<td>Internal Server Error</td>
+</tr>
+<tr class="even">
+<td>501</td>
+<td>Not Implemented (Method)</td>
+</tr>
+<tr class="odd">
+<td>502/504</td>
+<td>Bad Gateway</td>
+</tr>
+<tr class="even">
+<td>503</td>
+<td>Service Unavailable</td>
+</tr>
+</tbody>
+</table>
 </section></section>
 <section>
 <section id="javascript-sopcors" class="title-slide slide level1">
 <h1>Javascript: SOP/CORS</h1>
 
 </section>
-<section id="sop" class="slide level2">
-<h2>SOP</h2>
+<section id="same-origin-policy" class="slide level2">
+<h2>Same-Origin Policy</h2>
 <ul>
 <li>Same-Origin Policy für Javascript</li>
 <li>Origin: Schema+FQDN+Port</li>
@@ -235,12 +369,15 @@ Connection: close
 <li>Will auf service.snikt.net zugreifen</li>
 <li>Setzt dafür den Origin Header beim JS-Zugriff auf service.snikt.net</li>
 </ul>
-<pre class="http"><code>Origin: web.snikt.net</code></pre>
+<pre class="http"><code>GET /some-operation HTTP/1.1
+Origin: web.snikt.net</code></pre>
 </section>
 <section id="simple-case-response" class="slide level2">
 <h2>Simple Case: Response</h2>
 <p>Das Antwortdokument des Services beinhaltet einen zusätzlichen Header der anzeigt, wer diese Operation aufrufen darf:</p>
-<pre class="http"><code>Access-Control-Allow-Origin: https://web.snikt.net</code></pre>
+<pre class="http"><code>HTTP/1.1 200 OK
+..
+Access-Control-Allow-Origin: https://web.snikt.net</code></pre>
 <ul>
 <li>Browser weiss nun, dass er diese Daten verarbeiten darf</li>
 <li>Da dies eine “safe” Operation ist, kann am service-Service nichts geschehen</li>
@@ -256,7 +393,7 @@ Connection: close
 <li>Beispielsantwort</li>
 </ul>
 <pre class="http"><code>Access-Control-Allow-Origin: https://web.snikt.net
-Access-Control-Allow-Methods: PUT, DELETE</code></pre>
+Access-Control-Allow-Methods: POST, PUT, DELETE</code></pre>
 <ul>
 <li>Danach sendet der Browser erst den Daten-verändernden Request</li>
 </ul>
@@ -273,7 +410,7 @@ Access-Control-Allow-Methods: PUT, DELETE</code></pre>
 <section id="crud---operationen" class="slide level2">
 <h2>CRUD - Operationen</h2>
 <ul>
-<li>Typische Operationen die man für die Verwaltung für Resourcen benötigt</li>
+<li>Typische Operationen die man für die Verwaltung von Resourcen benötigt</li>
 <li>Create, Read, Update, Delete</li>
 </ul>
 </section>
@@ -365,7 +502,7 @@ Access-Control-Allow-Methods: PUT, DELETE</code></pre>
 </ul></li>
 <li>Benamung
 <ul>
-<li>ebab-case für Pfade (alles Kleinbuchstaben)
+<li>kebab-case für Pfade (alles Kleinbuchstaben)
 <ul>
 <li>snake_case für Parameter</li>
 </ul></li>
@@ -382,7 +519,10 @@ Access-Control-Allow-Methods: PUT, DELETE</code></pre>
 <section id="datenformate" class="slide level2">
 <h2>Datenformate</h2>
 <ul>
-<li>use JSON</li>
+<li>use JSON
+<ul>
+<li>Standardisierte Zeitformate, etc.</li>
+</ul></li>
 <li>im Fehlerfall: <a href="https://opensource.zalando.com/restful-api-guidelines/#176">problem JSON</a></li>
 </ul>
 </section></section>
@@ -502,54 +642,176 @@ Access-Control-Allow-Methods: PUT, DELETE</code></pre>
 <li>Beispiel: HS vs RS confusion</li>
 </ul>
 </section>
-<section id="macpubkey-confusion" class="slide level2">
-<h2>MAC/PubKey Confusion</h2>
-<p>Entwickler verwendet eine Bibliothek, mit folgender Überprüfungsfunktion:</p>
-<pre><code>validate(token, key)
-
-# validate checkt den token-alg
-# und verwendet entweder MAC oder Signature
-# key: public-key bei Signature
-# key: shared-secret-key bei MAC</code></pre>
-<p>Entwickler geht davon aus, dass fix eine Siganture verwendet wird:</p>
-<pre><code>validate(token, public-key)</code></pre>
-</section>
-<section id="macpubkey-confusion-1" class="slide level2">
-<h2>MAC/PubKey Confusion</h2>
-<p>Der Angreifer nimmt den public key und verwendet ihn um einen MAC-based token zu erstellen, setzt den Algorithmus auf MAC</p>
-<pre><code>token(alg: mac, content, mac(public-key, content))</code></pre>
-<p>der Anwendungscode am Server erwartet eigentlich public-keys und ruft folgendes auf:</p>
-<pre><code>  validate(mac-token, public-key)</code></pre>
-</section>
-<section id="resultat" class="slide level2">
-<h2>Resultat</h2>
-<p>die Bibliothek glaubt aufgrund des Tokens (alg) dass ein MAC gebaut werden sollte und berechnet mac(public-key, content).. und akzeptiert deswegen das übergebene Token!</p>
-<p>Immer Algorithmus am Server prüfen und fixieren</p>
-</section>
 <section id="problem-key-for-signing-is-constant" class="slide level2">
 <h2>Problem: Key-for-Signing is constant</h2>
 <ul>
 <li>offline-cracking</li>
 </ul>
 </section></section>
+<section id="fin" class="title-slide slide level1">
+<h1>FIN</h1>
+
+</section>
     </div>
   </div>
 
-  <script src="reveal.js/js/reveal.js"></script>
+  <script src="https://unpkg.com/reveal.js@^4//dist/reveal.js"></script>
+
+  <!-- reveal.js plugins -->
+  <script src="https://unpkg.com/reveal.js@^4//plugin/notes/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@^4//plugin/search/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@^4//plugin/zoom/zoom.js"></script>
 
   <script>
 
       // Full list of configuration options available at:
-      // https://github.com/hakimel/reveal.js#configuration
+      // https://revealjs.com/config/
       Reveal.initialize({
-        // Push each slide change to the browser history
-        history: true,
+        // Display controls in the bottom right corner
+        controls: true,
 
-        // Optional reveal.js plugins
-        dependencies: [
-          { src: 'reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
-          { src: 'reveal.js/plugin/zoom-js/zoom.js', async: true },
-          { src: 'reveal.js/plugin/notes/notes.js', async: true }
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: true,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'bottom-right',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: false,
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: false,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: false,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: true,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'default',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: true,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // reveal.js plugins
+        plugins: [
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
         ]
       });
     </script>
