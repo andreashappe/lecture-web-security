@@ -1,0 +1,134 @@
+\documentclass[12pt,a4paper]{report}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{minted}
+\usepackage{xurl}
+\usepackage{geometry}
+
+\title{PenTest: \url{website.local}}
+\author{Andreas Happe}
+\date{}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\usemintedstyle{vim}
+
+\chapter{Executive Summary (max. eine Seite)}
+
+\textit{In ,,einfacher'' Sprache sollte der Inhalt des Berichts zusammengefasst werden. Ziel dieses Textes sind nicht Techniker, sondern z.B. Management. Nach Lesen des Executive Summaries sollte dieses den Umfang und die Ergebnisse bzw. die Auswirkungen des Penetration-Tests verstehen.}
+
+\begin{itemize}
+				\item Was wurde getestet?
+				\item Welche Ergebnisse konnten vorgefunden werden?
+				\item Was sind die potentiellen Auswirkungen? Welchen Einfluss hat das Ergebnis auf den Betrieb der Webseite?
+				\item Empfehlungen?
+\end{itemize}
+
+\chapter{Die getestete Applikation (ca. eine Seite)}
+
+\textit{Hier sollte die getestete Seite kurz beschrieben werden. Falls der Bericht nach mehreren Monaten wieder gelesen wird, ist das ursprüngliche Testziel eventuell nicht mehr nachvollziehbar (URLs können sich auch ändern) bzw. sollte auch die Testumgebung kurz erläutert werden.}
+
+\begin{enumerate}
+				\item Welche Applikation wurde getestet? Was ist deren Aufgabe?
+				\item Welche Gefährdungen werden gesehen? Vor was hat der Kunde Angst (eigene Annahmen)
+				\item Wer sind die potentielle Angreifer?
+				\item Beschreibung des Ablaufs. Gab es eine Produktiv- oder Test-Umgebung? Durfte destruktiv getestet werden? Gab es Bereiche die nicht getestet werden durften?
+\end{enumerate}
+
+\chapter{Schwachstellen und Verbesserungsmassnahmen}
+
+\textit{Hier sollten die vorgefundenen Schwachstellen zusammengefasst werden. Ebenso sollte hier eine Übersicht über die vorgeschlagenen Verbesserungsmassnahmen gegeben werden. Dies ist quasi das Gegenstück zur Executive Summary für ,,Techniker''}
+
+\begin{itemize}
+				\item Welche Schwachstellen wurden vorgefunden?
+				\item Welche Schwachstellen werden besonders kritisch befunden? Eventuell Sortierung der Schwachstellen nach Kritikalität? Tabellen, etc. können hier gerne verwendet werden
+				\item Wie können diese behoben werden?
+				\item Gibt es weitere empfohlene Absicherungsmassnahmen (Hardening)?
+\end{itemize}
+
+\chapter{Datensammlung}
+
+\textit{Dieses Kapitel sollte den Test nachvollziehbar machen. Ziel der Datensammlung ist der ,,Beweis'' für die vorgefundenen Schwachstellen. Aufgrund der Datensammlung sollte der Kunde fähig sein, die Schwachstellen selbst nachvollziehen zu können. Ebenso kann hier auf verschiedene Gegenmassnahmen eingegangen werden (von denen im Kapitel ,,Schwachstellen und Verbesserungsmassnahmen'' eine empfohlen werden sollte). Für die verschiedenen Bereiche der Datensammlung werden Subkapitel empfohlen.}
+
+\section{Verbindungssicherheit}
+
+\textit{Was kann zur Verbindungssicherheit gesagt werden?}
+
+\begin{itemize}
+				\item HTTPS/TLS Konfiguration
+				\item wurden Massnahmen zur automatischen Gewährleistung der Verbindungssicherheit (HSTS, CSP, etc.) gesetzt?
+				\item kann z.B. mittels \textit{testssl.sh} oder \textit{Qualys SSLTest} getestet werden
+\end{itemize}
+
+\section{Verwendete HTTP-Header}
+
+Am besten Ausgabe der verwendeten HTTP-Header (z.b. auf der Startseite oder innerhalb des eingeloggten Bereichs):
+
+\begin{minted}[bgcolor=black]{http}
+HTTP/2 200 OK
+date: Fri, 19 Feb 2021 15:05:19 GMT
+content-type: text/html
+last-modified: Tue, 16 Feb 2021 09:38:09 GMT
+vary: Accept-Encoding
+strict-transport-security: max-age=15552000; includeSubDomains
+x-content-type-options: nosniff
+server: cloudflare
+content-encoding: br
+\end{minted}
+
+\textit{Anschließend Diskussion der vorgefundenen HTTP-Header. Welche sicherheitsrelevanten Header wurden vorgefunden, welche haben gefehlt. Welche Empfehlungen gibt es? Siehe auch Mozilla Observatory oder \url{securityheaders.io}}
+
+\section{Software-Enumeration}
+
+\textit{Dieses Kapitel soll die vorgefundenen Softwarekomponenten erwähnen. Hier sollte überprüft werden, ob diese auf dem letzten sicherheitsrelevanten Patch-Level sind bzw. ob es bekannte Exploits für diese Softwarekomponenten bekannt sind.}
+
+\begin{itemize}
+	\item Welche Software wurde in welcher Version vorgefunden?
+	\item Gibt es bekannte Schwachstellen?
+	\item Wurden weitere Artefakte (\textit{.git}, Admin-Tools, Backup-Files) vorgefunden?
+\end{itemize}
+
+\section{Session, Login/Logout, Authentication}
+
+\textit{Dieses Kapitel sollte Fragen zum Thema Benutzerverwaltung bzw. Benutzersessions beleuchten.}
+
+\begin{itemize}
+				\item Wie werden Benutzersessions abgebildet? Wie wurden diese abgesichert? Schwachstellen und Verbesserungsmassnahmen?
+				\item Gibt es Auffälligkeiten bei Login/Logout?
+				\item Falls Tokens verwendet werden? Wie sind diese aufgebaut? Gibt es hier Probleme?
+				\item Kann man auf Ressourcen ohne Login zugreifen?
+\end{itemize}
+
+\section{Berechtigungskonzept}
+
+\textit{Dieses Kapitel sollte das vorgefundene Berechtigungskonzept genauer erläutern. Es sollte auch (stichprobenweise) getestet werden, ob das Zugriffskonzept auch implementiert wurde (ob Benutzer einer Gruppe wirklich nur auf die Daten und Operationen einer Gruppe zugreifen können. Falls es sich um ein ,,friendly'' Opfer handelt, kann hier auch um einen Administrator-Account gefragt werden. Dieser dient jetzt nicht für den Test direkt, sondern wird verwendet um mögliche Admin-Operationen zu identifizieren auf die dann, als normaler Benutzer, versucht wird zuzugreifen}.
+
+\begin{itemize}
+				\item Kann ich auf Daten anderer Benutzer zugreifen?
+				\item Kann ich das Profil eines anderen Benutzers modifizieren?
+\end{itemize}
+
+\section{Injection-Angriffe}
+
+\textit{Sammelkapitel für einzelne Injection-Angriffe. Initial sollte bestimmt werden, welche Angriffsvektoren für die getestete Applikation sinnvoll erschienen. So wird z.B. eine LDAP-Injection wahrscheinlich unrealistisch bei einem eCommerce-Shop sein, ebenso wird eine SQL-Injection primär bei einem System mit einem Datenbank-Backend vorkommen. Potentiell können die Angriffe weiters in Client- und Server-Seitige Angriffe aufgeteilt werden.}
+
+Typische Fragen:
+
+\begin{itemize}
+	\item Gibt es verwundbare Operationen?
+	\item Wie wurden diese getestet?
+	\item Falls Schwachstellen gefunden wurden, wie können diese ausgebessert werden?
+\end{itemize}
+
+\subsection{Serverseitig}
+
+\ldots
+
+\subsection{Clientseitig}
+
+\ldots
+
+\end{document}
