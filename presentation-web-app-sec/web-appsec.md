@@ -405,6 +405,7 @@ app.listen(3000);
 
 ## Security-Review
 
+- explicit routing (protection against file-upload attacks)
 - protection against supply-chain attacks (npm audit, github dependabot)
 - maybe talk about "npm audit" vs. [OWASP dependency-track](https://dependencytrack.org/)
 
@@ -421,39 +422,64 @@ app.listen(3000);
 ## Security-Review
 
 - keine secrets/magic numbers im source code (externalized configuration)
-- automated testing (allerdings noch nicht für security)
+- automated testing (business logic)
 - automated SAST testing
-- secure code workflow (github)
+- automated deployment (keine Schlampigkeitsfehler)
 
 # Vorlesungseinheit 2
 
 - added github code-check
+- talk about invisible backdoors..
 - renamed introduction.js to introduction_to_js.txt
    
 # Stage 3: Improve Rendering
 
-## TODO
+## TODO 1/4
 
 - add views + layouts (ejs)
 - talk about middleware
-- add variables into the view
-- add HTTP headers through helmet
-- re-check security scan results
 
-## Security Review
+## Security-Review
    
 - now we have our initial output escaping/quoting (at least for HTML)
+
+## TODO 2/4
+
+- add HTTP headers through helmet
+
+## Security-Review
+
 - we added some security-specific HTTP Headers
+
+## TODO 3/4
+
+- add integration tests
+- Tests that work on the "final" application
+
+## Security Review
+
+- Testen der Verfügbarkeit
+
+## TODO 4/4
+
+- add bootstrap for clientside 
+
+# Stage 4: Improve Test-Cases
+
+- used npm for this -> bootstrap version is included in "npm audit"
 
 # stage 4: add authentication
 
+## Preparation
+
+- add users
+- add units tests for users
+
 ## TODO
 
-- add users (here might be some more unit testing)
 - add sessions (and session controller)
 - create a sessions-controller
 - add express.urlencoded();
-- add rate-limits
 - add system-wide authentication
      
 ## Security-Review
@@ -461,8 +487,15 @@ app.listen(3000);
 - use pdkdf
 - set secure-ish session cookie flags
 - regenerate session on login
-- show rate-limit on login
 - add system-wide authentication
+
+## TODO
+
+- add rate-limits
+
+## Security-Review
+
+- added rate-limits
 
 # Stage 5: add admin area and write some abuse cases
 

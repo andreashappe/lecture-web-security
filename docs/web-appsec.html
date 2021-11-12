@@ -878,6 +878,7 @@
 <section id="security-review" class="slide level2">
 <h2>Security-Review</h2>
 <ul>
+<li>explicit routing (protection against file-upload attacks)</li>
 <li>protection against supply-chain attacks (npm audit, github dependabot)</li>
 <li>maybe talk about “npm audit” vs. <a href="https://dependencytrack.org/">OWASP dependency-track</a></li>
 </ul>
@@ -901,15 +902,16 @@
 <h2>Security-Review</h2>
 <ul>
 <li>keine secrets/magic numbers im source code (externalized configuration)</li>
-<li>automated testing (allerdings noch nicht für security)</li>
+<li>automated testing (business logic)</li>
 <li>automated SAST testing</li>
-<li>secure code workflow (github)</li>
+<li>automated deployment (keine Schlampigkeitsfehler)</li>
 </ul>
 </section></section>
 <section id="vorlesungseinheit-2" class="title-slide slide level1">
 <h1>Vorlesungseinheit 2</h1>
 <ul>
 <li>added github code-check</li>
+<li>talk about invisible backdoors..</li>
 <li>renamed introduction.js to introduction_to_js.txt</li>
 </ul>
 </section>
@@ -919,47 +921,97 @@
 <h1>Stage 3: Improve Rendering</h1>
 
 </section>
-<section id="todo-1" class="slide level2">
-<h2>TODO</h2>
+<section id="todo-14" class="slide level2">
+<h2>TODO 1/4</h2>
 <ul>
 <li>add views + layouts (ejs)</li>
 <li>talk about middleware</li>
-<li>add variables into the view</li>
-<li>add HTTP headers through helmet</li>
-<li>re-check security scan results</li>
 </ul>
 </section>
 <section id="security-review-2" class="slide level2">
-<h2>Security Review</h2>
+<h2>Security-Review</h2>
 <ul>
 <li>now we have our initial output escaping/quoting (at least for HTML)</li>
-<li>we added some security-specific HTTP Headers</li>
 </ul>
-</section></section>
-<section>
-<section id="stage-4-add-authentication" class="title-slide slide level1">
-<h1>stage 4: add authentication</h1>
-
 </section>
-<section id="todo-2" class="slide level2">
-<h2>TODO</h2>
+<section id="todo-24" class="slide level2">
+<h2>TODO 2/4</h2>
 <ul>
-<li>add users (here might be some more unit testing)</li>
-<li>add sessions (and session controller)</li>
-<li>create a sessions-controller</li>
-<li>add express.urlencoded();</li>
-<li>add rate-limits</li>
-<li>add system-wide authentication</li>
+<li>add HTTP headers through helmet</li>
 </ul>
 </section>
 <section id="security-review-3" class="slide level2">
 <h2>Security-Review</h2>
 <ul>
+<li>we added some security-specific HTTP Headers</li>
+</ul>
+</section>
+<section id="todo-34" class="slide level2">
+<h2>TODO 3/4</h2>
+<ul>
+<li>add integration tests</li>
+<li>Tests that work on the “final” application</li>
+</ul>
+</section>
+<section id="security-review-4" class="slide level2">
+<h2>Security Review</h2>
+<ul>
+<li>Testen der Verfügbarkeit</li>
+</ul>
+</section>
+<section id="todo-44" class="slide level2">
+<h2>TODO 4/4</h2>
+<ul>
+<li>add bootstrap for clientside</li>
+</ul>
+</section></section>
+<section id="stage-4-improve-test-cases" class="title-slide slide level1">
+<h1>Stage 4: Improve Test-Cases</h1>
+<ul>
+<li>used npm for this -&gt; bootstrap version is included in “npm audit”</li>
+</ul>
+</section>
+
+<section>
+<section id="stage-4-add-authentication" class="title-slide slide level1">
+<h1>stage 4: add authentication</h1>
+
+</section>
+<section id="preparation" class="slide level2">
+<h2>Preparation</h2>
+<ul>
+<li>add users</li>
+<li>add units tests for users</li>
+</ul>
+</section>
+<section id="todo-1" class="slide level2">
+<h2>TODO</h2>
+<ul>
+<li>add sessions (and session controller)</li>
+<li>create a sessions-controller</li>
+<li>add express.urlencoded();</li>
+<li>add system-wide authentication</li>
+</ul>
+</section>
+<section id="security-review-5" class="slide level2">
+<h2>Security-Review</h2>
+<ul>
 <li>use pdkdf</li>
 <li>set secure-ish session cookie flags</li>
 <li>regenerate session on login</li>
-<li>show rate-limit on login</li>
 <li>add system-wide authentication</li>
+</ul>
+</section>
+<section id="todo-2" class="slide level2">
+<h2>TODO</h2>
+<ul>
+<li>add rate-limits</li>
+</ul>
+</section>
+<section id="security-review-6" class="slide level2">
+<h2>Security-Review</h2>
+<ul>
+<li>added rate-limits</li>
 </ul>
 </section></section>
 <section>
@@ -977,7 +1029,7 @@
 <li>add a simple authentication test</li>
 </ul>
 </section>
-<section id="security-review-4" class="slide level2">
+<section id="security-review-7" class="slide level2">
 <h2>Security Review</h2>
 <ul>
 <li>add input validation</li>
