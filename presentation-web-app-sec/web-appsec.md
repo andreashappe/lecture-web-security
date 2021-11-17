@@ -438,7 +438,7 @@ app.listen(3000);
   - [Sails.js](https://sailsjs.com/)
   - Code Reviews
 
-  ## The Code
+## The Code
 
 - renamed introduction.js to introduction_to_js.txt
 - added github code-check
