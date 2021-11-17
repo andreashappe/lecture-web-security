@@ -907,15 +907,30 @@
 <li>automated deployment (keine Schlampigkeitsfehler)</li>
 </ul>
 </section></section>
+<section>
 <section id="vorlesungseinheit-2" class="title-slide slide level1">
 <h1>Vorlesungseinheit 2</h1>
-<ul>
-<li>added github code-check</li>
-<li>talk about invisible backdoors..</li>
-<li>renamed introduction.js to introduction_to_js.txt</li>
-</ul>
-</section>
 
+</section>
+<section id="starting-with.." class="slide level2">
+<h2>Starting with..</h2>
+<ul>
+<li>covid check</li>
+<li>talk about <a href="https://certitude.consulting/blog/en/invisible-backdoor/">invisible backdoors</a>..</li>
+<li>talk about recent NPM problems</li>
+<li>Future path
+<ul>
+<li>OAuth2 API</li>
+<li><a href="https://sailsjs.com/">Sails.js</a></li>
+<li>Code Reviews</li>
+</ul>
+<h2 id="the-code">The Code</h2></li>
+<li>renamed introduction.js to introduction_to_js.txt</li>
+<li>added github code-check</li>
+<li>Object.freeze vs. Object.seal</li>
+<li>kurzes Review was bis jetzt passierte</li>
+</ul>
+</section></section>
 <section>
 <section id="stage-3-improve-rendering" class="title-slide slide level1">
 <h1>Stage 3: Improve Rendering</h1>
@@ -925,7 +940,8 @@
 <h2>TODO 1/4</h2>
 <ul>
 <li>add views + layouts (ejs)</li>
-<li>talk about middleware</li>
+<li>talk about encoding</li>
+<li>mention middleware</li>
 </ul>
 </section>
 <section id="security-review-2" class="slide level2">
@@ -962,16 +978,15 @@
 <section id="todo-44" class="slide level2">
 <h2>TODO 4/4</h2>
 <ul>
-<li>add bootstrap for clientside</li>
+<li>add bootstrap</li>
 </ul>
-</section></section>
-<section id="stage-4-improve-test-cases" class="title-slide slide level1">
-<h1>Stage 4: Improve Test-Cases</h1>
+</section>
+<section id="security-review-5" class="slide level2">
+<h2>Security-Review</h2>
 <ul>
 <li>used npm for this -&gt; bootstrap version is included in “npm audit”</li>
 </ul>
-</section>
-
+</section></section>
 <section>
 <section id="stage-4-add-authentication" class="title-slide slide level1">
 <h1>stage 4: add authentication</h1>
@@ -993,7 +1008,7 @@
 <li>add system-wide authentication</li>
 </ul>
 </section>
-<section id="security-review-5" class="slide level2">
+<section id="security-review-6" class="slide level2">
 <h2>Security-Review</h2>
 <ul>
 <li>use pdkdf</li>
@@ -1008,54 +1023,82 @@
 <li>add rate-limits</li>
 </ul>
 </section>
-<section id="security-review-6" class="slide level2">
+<section id="security-review-7" class="slide level2">
 <h2>Security-Review</h2>
 <ul>
 <li>added rate-limits</li>
 </ul>
 </section></section>
 <section>
-<section id="stage-5-add-admin-area-and-write-some-abuse-cases" class="title-slide slide level1">
-<h1>Stage 5: add admin area and write some abuse cases</h1>
+<section id="stage-5-add-admin-area" class="title-slide slide level1">
+<h1>Stage 5: add admin area</h1>
 
+</section>
+<section id="preparation-1" class="slide level2">
+<h2>Preparation</h2>
+<ul>
+<li>add admin route</li>
+<li>remove authentication for /posts<br />
+</li>
+<li>cleanup: move controller logic into /controllers</li>
+</ul>
 </section>
 <section id="todo-3" class="slide level2">
 <h2>TODO</h2>
 <ul>
-<li>add admin routes</li>
-<li>remove authentication for /posts<br />
-</li>
-<li>add input validation through express-validator</li>
+<li>add some admin-features
+<ul>
+<li>allow creation of new posts</li>
+</ul></li>
+<li>add input validation</li>
+<li>add logout..</li>
+<li>add CSRF protection with csurf</li>
 <li>add a simple authentication test</li>
 </ul>
 </section>
-<section id="security-review-7" class="slide level2">
+<section id="security-review-8" class="slide level2">
 <h2>Security Review</h2>
 <ul>
-<li>add input validation</li>
+<li>CSRF validation</li>
+<li>input validation</li>
 <li>test-cases / abuse-cases</li>
+</ul>
+</section></section>
+<section>
+<section id="stage-6-switch-to-relational-database" class="title-slide slide level1">
+<h1>Stage 6: switch to relational database</h1>
+
+</section>
+<section id="preparation-2" class="slide level2">
+<h2>Preparation</h2>
+<ul>
+<li>introduce DataManager</li>
+</ul>
+</section>
+<section id="todo-4" class="slide level2">
+<h2>TODO</h2>
+<ul>
+<li>create a Sqlite DataManager</li>
+<li>create Testcases</li>
+</ul>
+</section>
+<section id="security-review-9" class="slide level2">
+<h2>Security-Review</h2>
+<ul>
+<li>prepared statements</li>
+<li>test with sqlmap</li>
 </ul>
 </section></section>
 <section id="the-future.." class="title-slide slide level1">
 <h1>The Future..</h1>
-<p>TODO - implement logout</p>
 <ul>
-<li><p>controller + router?</p></li>
-<li><p>switch to database? (sqlite-async?)</p>
-<ul>
-<li>test with sqlmap</li>
-</ul></li>
-<li><p>authorization</p>
-<ul>
-<li>write an abuser-case</li>
-</ul></li>
-<li><p>eventuell switch to sequilize?</p></li>
-<li><p>check API? Talk about DTOs</p></li>
-<li><p>create a separate API?</p>
+<li>check API? Talk about DTOs</li>
+<li>create a separate API?
 <ul>
 <li>OAuth2 (https://github.com/oauthjs/express-oauth-server/blob/master/examples/memory/model.js)</li>
 <li>react oder angular.js?</li>
 </ul></li>
+<li>do the same using passport</li>
 </ul>
 </section>
     </div>

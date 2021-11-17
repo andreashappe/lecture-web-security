@@ -428,16 +428,30 @@ app.listen(3000);
 
 # Vorlesungseinheit 2
 
-- added github code-check
-- talk about invisible backdoors..
+## Starting with..
+
+- covid check
+- talk about [invisible backdoors](https://certitude.consulting/blog/en/invisible-backdoor/)..
+- talk about recent NPM problems
+- Future path
+  - OAuth2 API
+  - [Sails.js](https://sailsjs.com/)
+  - Code Reviews
+
+  ## The Code
+
 - renamed introduction.js to introduction_to_js.txt
+- added github code-check
+- Object.freeze vs. Object.seal
+- kurzes Review was bis jetzt passierte
    
 # Stage 3: Improve Rendering
 
 ## TODO 1/4
 
 - add views + layouts (ejs)
-- talk about middleware
+- talk about encoding
+- mention middleware
 
 ## Security-Review
    
@@ -462,9 +476,9 @@ app.listen(3000);
 
 ## TODO 4/4
 
-- add bootstrap for clientside 
+- add bootstrap
 
-# Stage 4: Improve Test-Cases
+## Security-Review
 
 - used npm for this -> bootstrap version is included in "npm audit"
 
@@ -497,33 +511,49 @@ app.listen(3000);
 
 - added rate-limits
 
-# Stage 5: add admin area and write some abuse cases
+# Stage 5: add admin area
+
+## Preparation
+
+- add admin route
+- remove authentication for /posts   
+- cleanup: move controller logic into /controllers
 
 ## TODO
 
-- add admin routes
-- remove authentication for /posts   
-- add input validation through express-validator
+- add some admin-features
+  - allow creation of new posts
+- add input validation
+- add logout..
+- add CSRF protection with csurf
 - add a simple authentication test
    
 ## Security Review
 
-- add input validation
+- CSRF validation
+- input validation
 - test-cases / abuse-cases
-     
+
+# Stage 6: switch to relational database
+
+## Preparation
+
+- introduce DataManager
+
+## TODO
+
+- create a Sqlite DataManager
+- create Testcases
+
+## Security-Review
+
+- prepared statements
+- test with sqlmap
+
 # The Future..
      
-   TODO - implement logout
-
-   - controller + router?
-   - switch to database? (sqlite-async?)
-     - test with sqlmap
-   - authorization
-     - write an abuser-case
- 
- - eventuell switch to sequilize?
- 
  - check API? Talk about DTOs
  - create a separate API?
    - OAuth2 (https://github.com/oauthjs/express-oauth-server/blob/master/examples/memory/model.js)
    - react oder angular.js?
+- do the same using passport
