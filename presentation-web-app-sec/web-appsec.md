@@ -550,10 +550,20 @@ app.listen(3000);
 - prepared statements
 - test with sqlmap
 
-# The Future..
+# The Future: Vorlesung 3
+
+## Mögliche Themen
      
- - check API? Talk about DTOs
  - create a separate API?
    - OAuth2 (https://github.com/oauthjs/express-oauth-server/blob/master/examples/memory/model.js)
    - react oder angular.js?
 - do the same using passport
+- actuators einbauen
+- logging wäre auch noch interessant (winston)
+- Vergleich mit sails.js
+
+# The Future: Vorlesung 4
+
+## Mögliche Themen
+
+- Source Code Audits
