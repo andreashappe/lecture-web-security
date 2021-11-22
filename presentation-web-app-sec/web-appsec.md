@@ -503,6 +503,12 @@ app.listen(3000);
 - regenerate session on login
 - add system-wide authentication
 
+# The Future: Vorlesung 3
+
+## FIXME
+
+- add session regeneration
+
 ## TODO
 
 - add rate-limits
@@ -550,14 +556,17 @@ app.listen(3000);
 - prepared statements
 - test with sqlmap
 
-# The Future: Vorlesung 3
+# Stage 7: Switch to Passport
+
+## TODO
+
+- create new infrastructure
 
 ## Mögliche Themen
      
  - create a separate API?
    - OAuth2 (https://github.com/oauthjs/express-oauth-server/blob/master/examples/memory/model.js)
-   - react oder angular.js?
-- do the same using passport
+- react oder angular.js?
 - actuators einbauen
 - logging wäre auch noch interessant (winston)
 - Vergleich mit sails.js
