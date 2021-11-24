@@ -511,6 +511,10 @@ app.listen(3000);
 
 ## TODO
 
+- add flash
+
+## TODO
+
 - add rate-limits
 
 ## Security-Review
@@ -519,20 +523,21 @@ app.listen(3000);
 
 # Stage 5: add admin area
 
-## Preparation
+## Add Admin read-only features
 
 - add admin route
+
+## Move Authentication checks and refactor
+
 - remove authentication for /posts   
 - cleanup: move controller logic into /controllers
 
-## TODO
+## TODO: allow creation of posts
 
-- add some admin-features
-  - allow creation of new posts
 - add input validation
-- add logout..
 - add CSRF protection with csurf
 - add a simple authentication test
+- add logout..
    
 ## Security Review
 
@@ -561,6 +566,9 @@ app.listen(3000);
 ## TODO
 
 - create new infrastructure
+- show strategies
+
+## Stage 8: Add OAuth2 support
 
 ## Mögliche Themen
      
