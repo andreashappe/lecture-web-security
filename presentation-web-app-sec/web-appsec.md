@@ -426,25 +426,6 @@ app.listen(3000);
 - automated SAST testing
 - automated deployment (keine Schlampigkeitsfehler)
 
-# Vorlesungseinheit 2
-
-## Starting with..
-
-- covid check
-- talk about [invisible backdoors](https://certitude.consulting/blog/en/invisible-backdoor/)..
-- talk about recent NPM problems
-- Future path
-  - OAuth2 API
-  - [Sails.js](https://sailsjs.com/)
-  - Code Reviews
-
-## The Code
-
-- renamed introduction.js to introduction_to_js.txt
-- added github code-check
-- Object.freeze vs. Object.seal
-- kurzes Review was bis jetzt passierte
-   
 # Stage 3: Improve Rendering
 
 ## TODO 1/4
@@ -492,6 +473,7 @@ app.listen(3000);
 ## TODO
 
 - add sessions (and session controller)
+- add session regeneration
 - create a sessions-controller
 - add express.urlencoded();
 - add system-wide authentication
@@ -502,12 +484,6 @@ app.listen(3000);
 - set secure-ish session cookie flags
 - regenerate session on login
 - add system-wide authentication
-
-# The Future: Vorlesung 3
-
-## FIXME
-
-- add session regeneration
 
 ## TODO
 
