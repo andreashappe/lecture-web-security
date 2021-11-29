@@ -521,7 +521,7 @@ app.listen(3000);
 - input validation
 - test-cases / abuse-cases
 
-# Stage 6: switch to relational database
+# Stage 6: switch to relational database (Vorlesung 4)
 
 ## Preparation
 
@@ -532,10 +532,19 @@ app.listen(3000);
 - create a Sqlite DataManager
 - create Testcases
 
+## Notes
+
+- test with nodejs
+- refactor testcases
+
 ## Security-Review
 
 - prepared statements
 - test with sqlmap
+
+## Add a Logout-Link
+
+- don't forget CSRF Absicherung
 
 # Stage 7: Switch to Passport
 
@@ -544,19 +553,52 @@ app.listen(3000);
 - create new infrastructure
 - show strategies
 
-## Stage 8: Add OAuth2 support
+# Stage 8: Add JWT Support
 
-## Mögliche Themen
-     
- - create a separate API?
-   - OAuth2 (https://github.com/oauthjs/express-oauth-server/blob/master/examples/memory/model.js)
-- react oder angular.js?
-- actuators einbauen
-- logging wäre auch noch interessant (winston)
-- Vergleich mit sails.js
+## TODO
 
-# The Future: Vorlesung 4
+ - generate JWT
+ - create a separate API protected by passport
 
-## Mögliche Themen
+# Stage 9: authorization (if time allows)
 
-- Source Code Audits
+- allow editing of own posts
+
+# Source Code Audits
+
+## Tooling: patterns
+
+- find, grep (fd/find-fd, ripgrep)
+- semgrep
+- spot_bug und find-sec-bugs
+- mögliche workflows anhand eines [einfachen Beispielprojekts](https://github.com/martingratt/masterthesis_insecure)
+
+## Tooling: taint-flow
+
+- [semgrep](https://semgrep.dev/docs/writing-rules/data-flow/)
+
+## Tooling: SCA
+
+- "npm audit", github dependabot
+- OWASP dependency-check
+- OWASP dependency-track
+
+# Different Frameworks
+
+- show sails.js
+
+# Seminararbeit
+
+## Zeitplan
+
+- Vorschläge bitte bis 6.12. an mich, samt reviewer
+- Abgaben bis 31.12.2021
+- Reviews bis 10.1.2022
+- Endabgabe bis 17.1.2022
+
+## Themen-Vorschläge
+
+- source code reviews
+- selber eine web-applikation secure bauen (blog, note-taking app, etc.)
+  - angelehnt an die OWASP Top 10
+- peer review (1-2 Seiten Feedback)

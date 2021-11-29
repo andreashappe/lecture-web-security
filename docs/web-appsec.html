@@ -8,8 +8,8 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
-  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/reset.css">
-  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/reveal.css">
+  <link rel="stylesheet" href="reveal.js/css/reset.css">
+  <link rel="stylesheet" href="reveal.js/css/reveal.css">
   <style>
     code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
@@ -20,7 +20,6 @@
     pre > code.sourceCode { white-space: pre; position: relative; }
     pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
     pre > code.sourceCode > span:empty { height: 1.2em; }
-    .sourceCode { overflow: visible; }
     code.sourceCode > span { color: inherit; text-decoration: inherit; }
     div.sourceCode { margin: 1em 0; }
     pre.sourceCode { margin: 0; }
@@ -80,10 +79,20 @@
     code span.va { color: #19177c; } /* Variable */
     code span.vs { color: #4070a0; } /* VerbatimString */
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
-  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/theme/solarized.css" id="theme">
+  <link rel="stylesheet" href="reveal.js/css/theme/solarized.css" id="theme">
   <link rel="stylesheet" href="custom.css"/>
+  <!-- Printing and PDF exports -->
+  <script>
+    var link = document.createElement( 'link' );
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = window.location.search.match( /print-pdf/gi ) ? 'reveal.js/css/print/pdf.css' : 'reveal.js/css/print/paper.css';
+    document.getElementsByTagName( 'head' )[0].appendChild( link );
+  </script>
+  <!--[if lt IE 9]>
+  <script src="reveal.js/lib/js/html5shiv.js"></script>
+  <![endif]-->
 </head>
 <body>
   <div class="reveal">
@@ -276,18 +285,18 @@
 <section id="module" class="slide level2">
 <h2>module</h2>
 <p>Bibliothek, etc.:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// 📁 sayHi.js</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">export</span> <span class="kw">function</span> <span class="fu">sayHi</span>(user) {</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alert</span>(<span class="vs">`Hello, </span><span class="sc">${</span>user<span class="sc">}</span><span class="vs">!`</span>)<span class="op">;</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">not_exported</span>() {</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="co">// do something</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="co">// 📁 sayHi.js</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a><span class="im">export</span> <span class="kw">function</span> <span class="fu">sayHi</span>(user) {</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a>  <span class="fu">alert</span>(<span class="vs">`Hello, </span><span class="sc">${</span>user<span class="sc">}</span><span class="vs">!`</span>)<span class="op">;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a>}</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a><span class="kw">function</span> <span class="fu">not_exported</span>() {</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true"></a>    <span class="co">// do something</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true"></a>}</span></code></pre></div>
 <p>Aufrufer:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">// 📁 main.js</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> {sayHi} <span class="im">from</span> <span class="st">&#39;./sayHi.js&#39;</span><span class="op">;</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sayHi</span>(<span class="st">&#39;John&#39;</span>)<span class="op">;</span> <span class="co">// Hello, John!</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="co">// 📁 main.js</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a><span class="im">import</span> {sayHi} <span class="im">from</span> <span class="st">&#39;./sayHi.js&#39;</span><span class="op">;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a><span class="fu">sayHi</span>(<span class="st">&#39;John&#39;</span>)<span class="op">;</span> <span class="co">// Hello, John!</span></span></code></pre></div>
 </section>
 <section id="asyncawait" class="slide level2">
 <h2>async/await</h2>
@@ -310,9 +319,9 @@
 <ul>
 <li><a href="https://www.typescriptlang.org/docs/handbook/2/basic-types.html">Microsoft TypeScript</a></li>
 </ul>
-<div class="sourceCode" id="cb3"><pre class="sourceCode typescript"><code class="sourceCode typescript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">greet</span>(person<span class="op">:</span> <span class="dt">string</span><span class="op">,</span> date<span class="op">:</span> Date) {</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="vs">`Hello </span><span class="sc">${</span>person<span class="sc">}</span><span class="vs">, today is </span><span class="sc">${</span>date<span class="op">.</span><span class="fu">toDateString</span>()<span class="sc">}</span><span class="vs">!`</span>)<span class="op">;</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode typescript"><code class="sourceCode typescript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="kw">function</span> <span class="fu">greet</span>(person<span class="op">:</span> <span class="dt">string</span><span class="op">,</span> date<span class="op">:</span> Date) {</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a>  <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="vs">`Hello </span><span class="sc">${</span>person<span class="sc">}</span><span class="vs">, today is </span><span class="sc">${</span>date<span class="op">.</span><span class="fu">toDateString</span>()<span class="sc">}</span><span class="vs">!`</span>)<span class="op">;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true"></a>}</span></code></pre></div>
 </section></section>
 <section>
 <section id="api-design-restful" class="title-slide slide level1">
@@ -783,21 +792,21 @@
 </section>
 <section id="node.js-beispiel-mit-http-library" class="slide level2">
 <h2>node.js Beispiel (mit http-Library)</h2>
-<div class="sourceCode" id="cb4"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">// import http from &quot;http&quot;;</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> http <span class="op">=</span> <span class="pp">require</span>(<span class="st">&#39;http&#39;</span>)</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> hostname <span class="op">=</span> <span class="st">&#39;127.0.0.1&#39;</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> port <span class="op">=</span> <span class="dv">3000</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> server <span class="op">=</span> http<span class="op">.</span><span class="fu">createServer</span>((req<span class="op">,</span> res) <span class="kw">=&gt;</span> {</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  res<span class="op">.</span><span class="at">statusCode</span> <span class="op">=</span> <span class="dv">200</span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  res<span class="op">.</span><span class="fu">setHeader</span>(<span class="st">&#39;Content-Type&#39;</span><span class="op">,</span> <span class="st">&#39;text/plain&#39;</span>)</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  res<span class="op">.</span><span class="fu">end</span>(<span class="st">&#39;Hello World</span><span class="sc">\n</span><span class="st">&#39;</span>)</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>})</span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>server<span class="op">.</span><span class="fu">listen</span>(port<span class="op">,</span> hostname<span class="op">,</span> () <span class="kw">=&gt;</span> {</span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>  <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="vs">`Server running at http://</span><span class="sc">${</span>hostname<span class="sc">}</span><span class="vs">:</span><span class="sc">${</span>port<span class="sc">}</span><span class="vs">/`</span>)</span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="co">// import http from &quot;http&quot;;</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true"></a><span class="kw">const</span> http <span class="op">=</span> <span class="pp">require</span>(<span class="st">&#39;http&#39;</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true"></a><span class="kw">const</span> hostname <span class="op">=</span> <span class="st">&#39;127.0.0.1&#39;</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true"></a><span class="kw">const</span> port <span class="op">=</span> <span class="dv">3000</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true"></a><span class="kw">const</span> server <span class="op">=</span> http<span class="op">.</span><span class="fu">createServer</span>((req<span class="op">,</span> res) <span class="kw">=&gt;</span> {</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true"></a>  res<span class="op">.</span><span class="at">statusCode</span> <span class="op">=</span> <span class="dv">200</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true"></a>  res<span class="op">.</span><span class="fu">setHeader</span>(<span class="st">&#39;Content-Type&#39;</span><span class="op">,</span> <span class="st">&#39;text/plain&#39;</span>)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true"></a>  res<span class="op">.</span><span class="fu">end</span>(<span class="st">&#39;Hello World</span><span class="sc">\n</span><span class="st">&#39;</span>)</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true"></a>})</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true"></a></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true"></a>server<span class="op">.</span><span class="fu">listen</span>(port<span class="op">,</span> hostname<span class="op">,</span> () <span class="kw">=&gt;</span> {</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true"></a>  <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="vs">`Server running at http://</span><span class="sc">${</span>hostname<span class="sc">}</span><span class="vs">:</span><span class="sc">${</span>port<span class="sc">}</span><span class="vs">/`</span>)</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true"></a>})</span></code></pre></div>
 </section>
 <section id="express.js" class="slide level2">
 <h2>express.js</h2>
@@ -809,23 +818,23 @@
 </section>
 <section id="express.js-beispiel" class="slide level2">
 <h2>express.js Beispiel</h2>
-<div class="sourceCode" id="cb5"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">// import express from &quot;express&quot;</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> express <span class="op">=</span> <span class="pp">require</span>(<span class="st">&#39;express&#39;</span>)<span class="op">;</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> app <span class="op">=</span> <span class="fu">express</span>()<span class="op">;</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>app<span class="op">.</span><span class="fu">get</span>(<span class="st">&#39;/&#39;</span><span class="op">,</span> <span class="kw">function</span>(req<span class="op">,</span> res) {</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  res<span class="op">.</span><span class="fu">send</span>(<span class="st">&#39;Hello World!&#39;</span>)</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>app<span class="op">.</span><span class="fu">get</span>(<span class="st">&#39;/ports/:id&#39;</span><span class="op">,</span> (req<span class="op">,</span> res) <span class="kw">=&gt;</span> {</span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    re<span class="op">.</span><span class="fu">send</span>(<span class="st">&quot;Another Resource &quot;</span> <span class="op">+</span> req<span class="op">.</span><span class="at">params</span><span class="op">.</span><span class="at">id</span>)<span class="op">;</span></span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> port <span class="op">=</span> <span class="dv">3000</span><span class="op">;</span></span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>app<span class="op">.</span><span class="fu">listen</span>(port<span class="op">,</span> <span class="kw">function</span>() {</span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>  <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="vs">`Example app listening on port </span><span class="sc">${</span>port<span class="sc">}</span><span class="vs">!`</span>)</span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a><span class="co">// import express from &quot;express&quot;</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true"></a><span class="kw">const</span> express <span class="op">=</span> <span class="pp">require</span>(<span class="st">&#39;express&#39;</span>)<span class="op">;</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true"></a><span class="kw">const</span> app <span class="op">=</span> <span class="fu">express</span>()<span class="op">;</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true"></a>app<span class="op">.</span><span class="fu">get</span>(<span class="st">&#39;/&#39;</span><span class="op">,</span> <span class="kw">function</span>(req<span class="op">,</span> res) {</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true"></a>  res<span class="op">.</span><span class="fu">send</span>(<span class="st">&#39;Hello World!&#39;</span>)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true"></a>})<span class="op">;</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true"></a></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true"></a>app<span class="op">.</span><span class="fu">get</span>(<span class="st">&#39;/ports/:id&#39;</span><span class="op">,</span> (req<span class="op">,</span> res) <span class="kw">=&gt;</span> {</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true"></a>    re<span class="op">.</span><span class="fu">send</span>(<span class="st">&quot;Another Resource &quot;</span> <span class="op">+</span> req<span class="op">.</span><span class="at">params</span><span class="op">.</span><span class="at">id</span>)<span class="op">;</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true"></a>})<span class="op">;</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true"></a></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true"></a><span class="kw">const</span> port <span class="op">=</span> <span class="dv">3000</span><span class="op">;</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true"></a>app<span class="op">.</span><span class="fu">listen</span>(port<span class="op">,</span> <span class="kw">function</span>() {</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true"></a>  <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="vs">`Example app listening on port </span><span class="sc">${</span>port<span class="sc">}</span><span class="vs">!`</span>)</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true"></a>})<span class="op">;</span></span></code></pre></div>
 </section>
 <section id="express.js-1" class="slide level2">
 <h2>express.js</h2>
@@ -834,25 +843,25 @@
 <li>mit plugins erweiterbar</li>
 <li>middleware</li>
 </ul>
-<div class="sourceCode" id="cb6"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> express <span class="op">=</span> <span class="pp">require</span>(<span class="st">&#39;express&#39;</span>)<span class="op">;</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> app <span class="op">=</span> <span class="fu">express</span>()<span class="op">;</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co">// An example middleware function</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> a_middleware_function <span class="op">=</span> <span class="kw">function</span>(req<span class="op">,</span> res<span class="op">,</span> next) {</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="co">// ... perform some operations</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">next</span>()<span class="op">;</span> <span class="co">// Call next() so Express will call the next middleware function in the chain.</span></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="co">// Function added with use() for all routes and verbs</span></span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>app<span class="op">.</span><span class="fu">use</span>(a_middleware_function)<span class="op">;</span></span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="co">// Function added with use() for a specific route</span></span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>app<span class="op">.</span><span class="fu">use</span>(<span class="st">&#39;/someroute&#39;</span><span class="op">,</span> a_middleware_function)<span class="op">;</span></span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="co">// A middleware function added for a specific HTTP verb and route</span></span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>app<span class="op">.</span><span class="fu">get</span>(<span class="st">&#39;/&#39;</span><span class="op">,</span> a_middleware_function)<span class="op">;</span></span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a><span class="op">...</span></span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>app<span class="op">.</span><span class="fu">listen</span>(<span class="dv">3000</span>)<span class="op">;</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a><span class="kw">const</span> express <span class="op">=</span> <span class="pp">require</span>(<span class="st">&#39;express&#39;</span>)<span class="op">;</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true"></a><span class="kw">const</span> app <span class="op">=</span> <span class="fu">express</span>()<span class="op">;</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true"></a><span class="co">// An example middleware function</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true"></a><span class="kw">let</span> a_middleware_function <span class="op">=</span> <span class="kw">function</span>(req<span class="op">,</span> res<span class="op">,</span> next) {</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true"></a>  <span class="co">// ... perform some operations</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true"></a>  <span class="fu">next</span>()<span class="op">;</span> <span class="co">// Call next() so Express will call the next middleware function in the chain.</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true"></a>}</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true"></a></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true"></a><span class="co">// Function added with use() for all routes and verbs</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true"></a>app<span class="op">.</span><span class="fu">use</span>(a_middleware_function)<span class="op">;</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true"></a></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true"></a><span class="co">// Function added with use() for a specific route</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true"></a>app<span class="op">.</span><span class="fu">use</span>(<span class="st">&#39;/someroute&#39;</span><span class="op">,</span> a_middleware_function)<span class="op">;</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true"></a></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true"></a><span class="co">// A middleware function added for a specific HTTP verb and route</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true"></a>app<span class="op">.</span><span class="fu">get</span>(<span class="st">&#39;/&#39;</span><span class="op">,</span> a_middleware_function)<span class="op">;</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true"></a><span class="op">...</span></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true"></a>app<span class="op">.</span><span class="fu">listen</span>(<span class="dv">3000</span>)<span class="op">;</span></span></code></pre></div>
 </section></section>
 <section>
 <section id="stage-1-start-with-simple-blog-posts" class="title-slide slide level1">
@@ -1049,8 +1058,8 @@
 </ul>
 </section></section>
 <section>
-<section id="stage-6-switch-to-relational-database" class="title-slide slide level1">
-<h1>Stage 6: switch to relational database</h1>
+<section id="stage-6-switch-to-relational-database-vorlesung-4" class="title-slide slide level1">
+<h1>Stage 6: switch to relational database (Vorlesung 4)</h1>
 
 </section>
 <section id="preparation-1" class="slide level2">
@@ -1066,11 +1075,24 @@
 <li>create Testcases</li>
 </ul>
 </section>
+<section id="notes" class="slide level2">
+<h2>Notes</h2>
+<ul>
+<li>test with nodejs</li>
+<li>refactor testcases</li>
+</ul>
+</section>
 <section id="security-review-9" class="slide level2">
 <h2>Security-Review</h2>
 <ul>
 <li>prepared statements</li>
 <li>test with sqlmap</li>
+</ul>
+</section>
+<section id="add-a-logout-link" class="slide level2">
+<h2>Add a Logout-Link</h2>
+<ul>
+<li>don’t forget CSRF Absicherung</li>
 </ul>
 </section></section>
 <section>
@@ -1084,194 +1106,104 @@
 <li>create new infrastructure</li>
 <li>show strategies</li>
 </ul>
-</section>
-<section id="stage-8-add-oauth2-support" class="slide level2">
-<h2>Stage 8: Add OAuth2 support</h2>
-</section>
-<section id="mögliche-themen-1" class="slide level2">
-<h2>Mögliche Themen</h2>
-<ul>
-<li>create a separate API?
-<ul>
-<li>OAuth2 (https://github.com/oauthjs/express-oauth-server/blob/master/examples/memory/model.js)</li>
-</ul></li>
-<li>react oder angular.js?</li>
-<li>actuators einbauen</li>
-<li>logging wäre auch noch interessant (winston)</li>
-<li>Vergleich mit sails.js</li>
-</ul>
 </section></section>
 <section>
-<section id="the-future-vorlesung-4" class="title-slide slide level1">
-<h1>The Future: Vorlesung 4</h1>
+<section id="stage-8-add-jwt-support" class="title-slide slide level1">
+<h1>Stage 8: Add JWT Support</h1>
 
 </section>
-<section id="mögliche-themen-2" class="slide level2">
-<h2>Mögliche Themen</h2>
+<section id="todo-6" class="slide level2">
+<h2>TODO</h2>
 <ul>
-<li>Source Code Audits</li>
+<li>generate JWT</li>
+<li>create a separate API protected by passport</li>
+</ul>
+</section></section>
+<section id="stage-9-authorization-if-time-allows" class="title-slide slide level1">
+<h1>Stage 9: authorization (if time allows)</h1>
+<ul>
+<li>allow editing of own posts</li>
+</ul>
+</section>
+
+<section>
+<section id="source-code-audits" class="title-slide slide level1">
+<h1>Source Code Audits</h1>
+
+</section>
+<section id="tooling-patterns" class="slide level2">
+<h2>Tooling: patterns</h2>
+<ul>
+<li>find, grep (fd/find-fd, ripgrep)</li>
+<li>semgrep</li>
+<li>spot_bug und find-sec-bugs</li>
+<li>mögliche workflows anhand eines <a href="https://github.com/martingratt/masterthesis_insecure">einfachen Beispielprojekts</a></li>
+</ul>
+</section>
+<section id="tooling-taint-flow" class="slide level2">
+<h2>Tooling: taint-flow</h2>
+<ul>
+<li><a href="https://semgrep.dev/docs/writing-rules/data-flow/">semgrep</a></li>
+</ul>
+</section>
+<section id="tooling-sca" class="slide level2">
+<h2>Tooling: SCA</h2>
+<ul>
+<li>“npm audit”, github dependabot</li>
+<li>OWASP dependency-check</li>
+<li>OWASP dependency-track</li>
+</ul>
+</section></section>
+<section id="different-frameworks" class="title-slide slide level1">
+<h1>Different Frameworks</h1>
+<ul>
+<li>show sails.js</li>
+</ul>
+</section>
+
+<section>
+<section id="seminararbeit" class="title-slide slide level1">
+<h1>Seminararbeit</h1>
+
+</section>
+<section id="zeitplan" class="slide level2">
+<h2>Zeitplan</h2>
+<ul>
+<li>Vorschläge bitte bis 6.12. an mich, samt reviewer</li>
+<li>Abgaben bis 31.12.2021</li>
+<li>Reviews bis 10.1.2022</li>
+<li>Endabgabe bis 17.1.2022</li>
+</ul>
+</section>
+<section id="themen-vorschläge" class="slide level2">
+<h2>Themen-Vorschläge</h2>
+<ul>
+<li>source code reviews</li>
+<li>selber eine web-applikation secure bauen (blog, note-taking app, etc.)
+<ul>
+<li>angelehnt an die OWASP Top 10</li>
+</ul></li>
+<li>peer review (1-2 Seiten Feedback)</li>
 </ul>
 </section></section>
     </div>
   </div>
 
-  <script src="https://unpkg.com/reveal.js@^4//dist/reveal.js"></script>
-
-  <!-- reveal.js plugins -->
-  <script src="https://unpkg.com/reveal.js@^4//plugin/notes/notes.js"></script>
-  <script src="https://unpkg.com/reveal.js@^4//plugin/search/search.js"></script>
-  <script src="https://unpkg.com/reveal.js@^4//plugin/zoom/zoom.js"></script>
+  <script src="reveal.js/js/reveal.js"></script>
 
   <script>
 
       // Full list of configuration options available at:
-      // https://revealjs.com/config/
+      // https://github.com/hakimel/reveal.js#configuration
       Reveal.initialize({
-        // Display controls in the bottom right corner
-        controls: true,
-
-        // Help the user learn the controls by providing hints, for example by
-        // bouncing the down arrow when they first encounter a vertical slide
-        controlsTutorial: true,
-
-        // Determines where controls appear, "edges" or "bottom-right"
-        controlsLayout: 'bottom-right',
-
-        // Visibility rule for backwards navigation arrows; "faded", "hidden"
-        // or "visible"
-        controlsBackArrows: 'faded',
-
-        // Display a presentation progress bar
-        progress: true,
-
-        // Display the page number of the current slide
-        slideNumber: false,
-
-        // 'all', 'print', or 'speaker'
-        showSlideNumber: 'all',
-
-        // Add the current slide number to the URL hash so that reloading the
-        // page/copying the URL will return you to the same slide
-        hash: false,
-
-        // Start with 1 for the hash rather than 0
-        hashOneBasedIndex: false,
-
-        // Flags if we should monitor the hash and change slides accordingly
-        respondToHashChanges: true,
-
         // Push each slide change to the browser history
-        history: false,
+        history: true,
 
-        // Enable keyboard shortcuts for navigation
-        keyboard: true,
-
-        // Enable the slide overview mode
-        overview: true,
-
-        // Disables the default reveal.js slide layout (scaling and centering)
-        // so that you can use custom CSS layout
-        disableLayout: false,
-
-        // Vertical centering of slides
-        center: true,
-
-        // Enables touch navigation on devices with touch input
-        touch: true,
-
-        // Loop the presentation
-        loop: false,
-
-        // Change the presentation direction to be RTL
-        rtl: false,
-
-        // see https://revealjs.com/vertical-slides/#navigation-mode
-        navigationMode: 'default',
-
-        // Randomizes the order of slides each time the presentation loads
-        shuffle: false,
-
-        // Turns fragments on and off globally
-        fragments: true,
-
-        // Flags whether to include the current fragment in the URL,
-        // so that reloading brings you to the same fragment position
-        fragmentInURL: true,
-
-        // Flags if the presentation is running in an embedded mode,
-        // i.e. contained within a limited portion of the screen
-        embedded: false,
-
-        // Flags if we should show a help overlay when the questionmark
-        // key is pressed
-        help: true,
-
-        // Flags if it should be possible to pause the presentation (blackout)
-        pause: true,
-
-        // Flags if speaker notes should be visible to all viewers
-        showNotes: false,
-
-        // Global override for autoplaying embedded media (null/true/false)
-        autoPlayMedia: null,
-
-        // Global override for preloading lazy-loaded iframes (null/true/false)
-        preloadIframes: null,
-
-        // Number of milliseconds between automatically proceeding to the
-        // next slide, disabled when set to 0, this value can be overwritten
-        // by using a data-autoslide attribute on your slides
-        autoSlide: 0,
-
-        // Stop auto-sliding after user input
-        autoSlideStoppable: true,
-
-        // Use this method for navigation when auto-sliding
-        autoSlideMethod: null,
-
-        // Specify the average time in seconds that you think you will spend
-        // presenting each slide. This is used to show a pacing timer in the
-        // speaker view
-        defaultTiming: null,
-
-        // Enable slide navigation via mouse wheel
-        mouseWheel: false,
-
-        // The display mode that will be used to show slides
-        display: 'block',
-
-        // Hide cursor if inactive
-        hideInactiveCursor: true,
-
-        // Time before the cursor is hidden (in ms)
-        hideCursorTime: 5000,
-
-        // Opens links in an iframe preview overlay
-        previewLinks: false,
-
-        // Transition style (none/fade/slide/convex/concave/zoom)
-        transition: 'slide',
-
-        // Transition speed (default/fast/slow)
-        transitionSpeed: 'default',
-
-        // Transition style for full page slide backgrounds
-        // (none/fade/slide/convex/concave/zoom)
-        backgroundTransition: 'fade',
-
-        // Number of slides away from the current that are visible
-        viewDistance: 3,
-
-        // Number of slides away from the current that are visible on mobile
-        // devices. It is advisable to set this to a lower number than
-        // viewDistance in order to save resources.
-        mobileViewDistance: 2,
-
-        // reveal.js plugins
-        plugins: [
-          RevealNotes,
-          RevealSearch,
-          RevealZoom
+        // Optional reveal.js plugins
+        dependencies: [
+          { src: 'reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'reveal.js/plugin/zoom-js/zoom.js', async: true },
+          { src: 'reveal.js/plugin/notes/notes.js', async: true }
         ]
       });
     </script>
