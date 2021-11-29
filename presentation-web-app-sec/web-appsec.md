@@ -559,12 +559,25 @@ app.listen(3000);
 
  - generate JWT
  - create a separate API protected by passport
+ - talk about DTOs
 
-# Stage 9: authorization (if time allows)
+# Stage 9: authorization
 
-- allow editing of own posts
+- allow deletion of own posts
 
 # Source Code Audits
+
+## Arten von Tests
+
+- Pen-Test / Red-Teaming
+- Vulnerablity Assessment
+- Source Code Audits
+
+## Source Code Audits
+
+- pricey
+- Ansatz 1: jede Zeile Code lesen
+- Ansatz 2: gezielt nach verwundbaren Stellen suchen und den Fluss dahin analysieren
 
 ## Tooling: patterns
 
@@ -572,9 +585,12 @@ app.listen(3000);
 - semgrep
 - spot_bug und find-sec-bugs
 - mögliche workflows anhand eines [einfachen Beispielprojekts](https://github.com/martingratt/masterthesis_insecure)
+- mögliche Inspiration: [OWASP Cheat Sheet Series](https://cheatsheetseries.owasp.org/index.html)
 
 ## Tooling: taint-flow
 
+- Flussanalyse
+  - wie kann eine Usereingabe bis zu einer verwundbaren Operation fließen
 - [semgrep](https://semgrep.dev/docs/writing-rules/data-flow/)
 
 ## Tooling: SCA
@@ -582,10 +598,6 @@ app.listen(3000);
 - "npm audit", github dependabot
 - OWASP dependency-check
 - OWASP dependency-track
-
-# Different Frameworks
-
-- show sails.js
 
 # Seminararbeit
 
@@ -602,3 +614,8 @@ app.listen(3000);
 - selber eine web-applikation secure bauen (blog, note-taking app, etc.)
   - angelehnt an die OWASP Top 10
 - peer review (1-2 Seiten Feedback)
+
+# Bonus: different Frameworks
+
+- show sails.js
+
