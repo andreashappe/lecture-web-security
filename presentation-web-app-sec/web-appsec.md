@@ -582,10 +582,13 @@ app.listen(3000);
 ## Tooling: patterns
 
 - find, grep (fd/find-fd, ripgrep)
-- semgrep
-- spot_bug und find-sec-bugs
-- mögliche workflows anhand eines [einfachen Beispielprojekts](https://github.com/martingratt/masterthesis_insecure)
-- mögliche Inspiration: [OWASP Cheat Sheet Series](https://cheatsheetseries.owasp.org/index.html)
+  - mögliche Inspiration: [OWASP Cheat Sheet Series](https://cheatsheetseries.owasp.org/index.html)
+
+- Spezialtools:
+  - semgrep
+  - spot_bug und find-sec-bugs
+ 
+- mögliche workflows anhand eines [einfachen Express Beispielprojekts](https://github.com/martingratt/masterthesis_insecure) und [Java Projekt](https://github.com/ScaleSec/vulnado)
 
 ## Tooling: taint-flow
 
@@ -618,4 +621,4 @@ app.listen(3000);
 # Bonus: different Frameworks
 
 - show sails.js
-
+- [gutes Beispiel](https://medium.com/@josephdlawson21/intro-to-sails-js-99a2016bf37d)
