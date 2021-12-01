@@ -542,16 +542,20 @@ app.listen(3000);
 - prepared statements
 - test with sqlmap
 
-## Add a Logout-Link
+# Stage 7: Switch to Passport
+
+## Preparation before
 
 - don't forget CSRF Absicherung
-
-# Stage 7: Switch to Passport
 
 ## TODO
 
 - create new infrastructure
 - show strategies
+
+## Security Review
+
+- removed some of our code (maintainability)
 
 # Stage 8: Add JWT Support
 
@@ -560,8 +564,15 @@ app.listen(3000);
  - generate JWT
  - create a separate API protected by passport
  - talk about DTOs
+ 
+## Security Review
 
-# Stage 9: authorization
+- implemented API
+- added DTO to prevent information disclosure
+
+# Stage 9: Authorization
+
+## TODO
 
 - allow deletion of own posts
 
@@ -579,18 +590,30 @@ app.listen(3000);
 - Ansatz 1: jede Zeile Code lesen
 - Ansatz 2: gezielt nach verwundbaren Stellen suchen und den Fluss dahin analysieren
 
-## Tooling: patterns
+## Hinweis
 
-- find, grep (fd/find-fd, ripgrep)
-  - mögliche Inspiration: [OWASP Cheat Sheet Series](https://cheatsheetseries.owasp.org/index.html)
+- ein Source Code Audit ohne Programmierskills wird.. spannend
+- ich verwende zwei vulnerable Beispielprojekte
+  - node.js: [diplomarbeit](https://github.com/martingratt/masterthesis_insecure)
+  - java: [vulnerado](https://github.com/ScaleSec/vulnado)
 
-- Spezialtools:
-  - semgrep
-  - spot_bug und find-sec-bugs
- 
-- mögliche workflows anhand eines [einfachen Express Beispielprojekts](https://github.com/martingratt/masterthesis_insecure) und [Java Projekt](https://github.com/ScaleSec/vulnado)
+## Tooling: pattern matching
 
-## Tooling: taint-flow
+- find, grep ([fd](https://github.com/sharkdp/fd), [ripgrep](https://github.com/BurntSushi/ripgrep))
+- mögliche Inspiration: [OWASP Cheat Sheet Series](https://cheatsheetseries.owasp.org/index.html)
+
+## Tooling: programming-language aware grep
+
+- [semgrep](https://semgrep.dev/)
+
+## Tooling: Spezialtools
+
+- [spotbugs](https://spotbugs.github.io/) und [find-sec-bugs](https://find-sec-bugs.github.io/)
+- semgrep mit Bibliotheken
+- kommerzielle Angebote (SonarCube, etc.)
+  - potentiell relativ teuer (Fortify, 4-6 stellig pro Jahr)
+
+## Tooling: taint-flow analysis
 
 - Flussanalyse
   - wie kann eine Usereingabe bis zu einer verwundbaren Operation fließen
@@ -602,21 +625,44 @@ app.listen(3000);
 - OWASP dependency-check
 - OWASP dependency-track
 
+## Hinweis
+
+- ähnlich wie bei vollautomatisierten Web-Scannern:
+  - ein Source Code Audit ohne Programmierskills wird.. spannend
+- Source Code Audit ist nur ein Teil von App-Sec
+  - Schulungen, CI, CD, SCM-Management, etc.
+
 # Seminararbeit
 
 ## Zeitplan
 
-- Vorschläge bitte bis 6.12. an mich, samt reviewer
-- Abgaben bis 31.12.2021
-- Reviews bis 10.1.2022
-- Endabgabe bis 17.1.2022
+- Vorschläge bitte bis 6.12. an mich
+  - samt reviewer (anderer Student)
+  - jeder Student sollte einmal als Reviewer vorkommen
+- Arbeit an den Reviewer bis 10.12.2021
+- Reviews bis 17.1.2022 (intern)
+- Endabgabe bis 24.1.2022
 
 ## Themen-Vorschläge
 
-- source code reviews
+- source code reviews von OSS/kommerzieller Software
+  - angelehnt an die OWASP Top 10
 - selber eine web-applikation secure bauen (blog, note-taking app, etc.)
   - angelehnt an die OWASP Top 10
-- peer review (1-2 Seiten Feedback)
+  - siehe auch [Comparison of server-side web frameworks](https://en.wikipedia.org/wiki/Comparison_of_server-side_web_frameworks)
+
+## Aufgaben des Reviewers
+
+- Review sollte 1-2 Seiten haben
+- Vorschläge, wie die Seminarabeit besser werden könnte
+- Bereiche die gefehlt haben, Alternativen?
+- ich gebe natürlich auch gerne vor dem 17.1. mein Feedback ab
+
+## Benotung
+
+- 90% die eigene Arbeit
+- 10% das selbst-geschriebene Review
+
 
 # Bonus: different Frameworks
 

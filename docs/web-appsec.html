@@ -1088,23 +1088,29 @@
 <li>prepared statements</li>
 <li>test with sqlmap</li>
 </ul>
-</section>
-<section id="add-a-logout-link" class="slide level2">
-<h2>Add a Logout-Link</h2>
-<ul>
-<li>don’t forget CSRF Absicherung</li>
-</ul>
 </section></section>
 <section>
 <section id="stage-7-switch-to-passport" class="title-slide slide level1">
 <h1>Stage 7: Switch to Passport</h1>
 
 </section>
+<section id="preparation-before" class="slide level2">
+<h2>Preparation before</h2>
+<ul>
+<li>don’t forget CSRF Absicherung</li>
+</ul>
+</section>
 <section id="todo-5" class="slide level2">
 <h2>TODO</h2>
 <ul>
 <li>create new infrastructure</li>
 <li>show strategies</li>
+</ul>
+</section>
+<section id="security-review-10" class="slide level2">
+<h2>Security Review</h2>
+<ul>
+<li>removed some of our code (maintainability)</li>
 </ul>
 </section></section>
 <section>
@@ -1119,14 +1125,25 @@
 <li>create a separate API protected by passport</li>
 <li>talk about DTOs</li>
 </ul>
+</section>
+<section id="security-review-11" class="slide level2">
+<h2>Security Review</h2>
+<ul>
+<li>implemented API</li>
+<li>added DTO to prevent information disclosure</li>
+</ul>
 </section></section>
+<section>
 <section id="stage-9-authorization" class="title-slide slide level1">
-<h1>Stage 9: authorization</h1>
+<h1>Stage 9: Authorization</h1>
+
+</section>
+<section id="todo-7" class="slide level2">
+<h2>TODO</h2>
 <ul>
 <li>allow deletion of own posts</li>
 </ul>
-</section>
-
+</section></section>
 <section>
 <section id="source-code-audits" class="title-slide slide level1">
 <h1>Source Code Audits</h1>
@@ -1148,23 +1165,43 @@
 <li>Ansatz 2: gezielt nach verwundbaren Stellen suchen und den Fluss dahin analysieren</li>
 </ul>
 </section>
-<section id="tooling-patterns" class="slide level2">
-<h2>Tooling: patterns</h2>
+<section id="hinweis" class="slide level2">
+<h2>Hinweis</h2>
 <ul>
-<li>find, grep (fd/find-fd, ripgrep)
+<li>ein Source Code Audit ohne Programmierskills wird.. spannend</li>
+<li>ich verwende zwei vulnerable Beispielprojekte
 <ul>
-<li>mögliche Inspiration: <a href="https://cheatsheetseries.owasp.org/index.html">OWASP Cheat Sheet Series</a></li>
+<li>node.js: <a href="https://github.com/martingratt/masterthesis_insecure">diplomarbeit</a></li>
+<li>java: <a href="https://github.com/ScaleSec/vulnado">vulnerado</a></li>
 </ul></li>
-<li>Spezialtools:
-<ul>
-<li>semgrep</li>
-<li>spot_bug und find-sec-bugs</li>
-</ul></li>
-<li>mögliche workflows anhand eines <a href="https://github.com/martingratt/masterthesis_insecure">einfachen Express Beispielprojekts</a> und <a href="https://github.com/ScaleSec/vulnado">Java Projekt</a></li>
 </ul>
 </section>
-<section id="tooling-taint-flow" class="slide level2">
-<h2>Tooling: taint-flow</h2>
+<section id="tooling-pattern-matching" class="slide level2">
+<h2>Tooling: pattern matching</h2>
+<ul>
+<li>find, grep (<a href="https://github.com/sharkdp/fd">fd</a>, <a href="https://github.com/BurntSushi/ripgrep">ripgrep</a>)</li>
+<li>mögliche Inspiration: <a href="https://cheatsheetseries.owasp.org/index.html">OWASP Cheat Sheet Series</a></li>
+</ul>
+</section>
+<section id="tooling-programming-language-aware-grep" class="slide level2">
+<h2>Tooling: programming-language aware grep</h2>
+<ul>
+<li><a href="https://semgrep.dev/">semgrep</a></li>
+</ul>
+</section>
+<section id="tooling-spezialtools" class="slide level2">
+<h2>Tooling: Spezialtools</h2>
+<ul>
+<li><a href="https://spotbugs.github.io/">spotbugs</a> und <a href="https://find-sec-bugs.github.io/">find-sec-bugs</a></li>
+<li>semgrep mit Bibliotheken</li>
+<li>kommerzielle Angebote (SonarCube, etc.)
+<ul>
+<li>potentiell relativ teuer (Fortify, 4-6 stellig pro Jahr)</li>
+</ul></li>
+</ul>
+</section>
+<section id="tooling-taint-flow-analysis" class="slide level2">
+<h2>Tooling: taint-flow analysis</h2>
 <ul>
 <li>Flussanalyse
 <ul>
@@ -1180,6 +1217,19 @@
 <li>OWASP dependency-check</li>
 <li>OWASP dependency-track</li>
 </ul>
+</section>
+<section id="hinweis-1" class="slide level2">
+<h2>Hinweis</h2>
+<ul>
+<li>ähnlich wie bei vollautomatisierten Web-Scannern:
+<ul>
+<li>ein Source Code Audit ohne Programmierskills wird.. spannend</li>
+</ul></li>
+<li>Source Code Audit ist nur ein Teil von App-Sec
+<ul>
+<li>Schulungen, CI, CD, SCM-Management, etc.</li>
+</ul></li>
+</ul>
 </section></section>
 <section>
 <section id="seminararbeit" class="title-slide slide level1">
@@ -1189,21 +1239,44 @@
 <section id="zeitplan" class="slide level2">
 <h2>Zeitplan</h2>
 <ul>
-<li>Vorschläge bitte bis 6.12. an mich, samt reviewer</li>
-<li>Abgaben bis 31.12.2021</li>
-<li>Reviews bis 10.1.2022</li>
-<li>Endabgabe bis 17.1.2022</li>
+<li>Vorschläge bitte bis 6.12. an mich
+<ul>
+<li>samt reviewer (anderer Student)</li>
+<li>jeder Student sollte einmal als Reviewer vorkommen</li>
+</ul></li>
+<li>Arbeit an den Reviewer bis 10.12.2021</li>
+<li>Reviews bis 17.1.2022 (intern)</li>
+<li>Endabgabe bis 24.1.2022</li>
 </ul>
 </section>
 <section id="themen-vorschläge" class="slide level2">
 <h2>Themen-Vorschläge</h2>
 <ul>
-<li>source code reviews</li>
-<li>selber eine web-applikation secure bauen (blog, note-taking app, etc.)
+<li>source code reviews von OSS/kommerzieller Software
 <ul>
 <li>angelehnt an die OWASP Top 10</li>
 </ul></li>
-<li>peer review (1-2 Seiten Feedback)</li>
+<li>selber eine web-applikation secure bauen (blog, note-taking app, etc.)
+<ul>
+<li>angelehnt an die OWASP Top 10</li>
+<li>siehe auch <a href="https://en.wikipedia.org/wiki/Comparison_of_server-side_web_frameworks">Comparison of server-side web frameworks</a></li>
+</ul></li>
+</ul>
+</section>
+<section id="aufgaben-des-reviewers" class="slide level2">
+<h2>Aufgaben des Reviewers</h2>
+<ul>
+<li>Review sollte 1-2 Seiten haben</li>
+<li>Vorschläge, wie die Seminarabeit besser werden könnte</li>
+<li>Bereiche die gefehlt haben, Alternativen?</li>
+<li>ich gebe natürlich auch gerne vor dem 17.1. mein Feedback ab</li>
+</ul>
+</section>
+<section id="benotung" class="slide level2">
+<h2>Benotung</h2>
+<ul>
+<li>90% die eigene Arbeit</li>
+<li>10% das selbst-geschriebene Review</li>
 </ul>
 </section></section>
 <section id="bonus-different-frameworks" class="title-slide slide level1">
