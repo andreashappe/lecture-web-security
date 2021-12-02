@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="Andreas Happe">
+  <meta name="dcterms.date" content="2020-11-11">
+  <title>Web Application Security (Code-Review Python)</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@3.9.2//css/reset.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@3.9.2//css/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@3.9.2//css/theme/beige.css" id="theme">
+  <link rel="stylesheet" href="custom.css"/>
+  <!-- Printing and PDF exports -->
+  <script>
+    var link = document.createElement( 'link' );
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = window.location.search.match( /print-pdf/gi ) ? 'https://unpkg.com/reveal.js@3.9.2//css/print/pdf.css' : 'https://unpkg.com/reveal.js@3.9.2//css/print/paper.css';
+    document.getElementsByTagName( 'head' )[0].appendChild( link );
+  </script>
+  <!--[if lt IE 9]>
+  <script src="https://unpkg.com/reveal.js@3.9.2//lib/js/html5shiv.js"></script>
+  <![endif]-->
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide">
+  <h1 class="title">Web Application Security (Code-Review Python)</h1>
+  <p class="author">Andreas Happe</p>
+  <p class="date">November 11, 2020</p>
+</section>
+
+<section>
+<section id="black--grey--white-box-pen-tests" class="title-slide slide level1">
+<h1>Black-, Grey-, White-Box Pen-Tests</h1>
+
+</section>
+<section id="unterschied-zu-black-box" class="slide level2">
+<h2>Unterschied zu Black-Box</h2>
+<ul>
+<li>source code kann gelesen werden</li>
+<li>weniger “Detektivarbeit”</li>
+<li>keine “Verdachtsmomente”</li>
+<li>Standards/Normen wie z. B. ÖNORM A77.00</li>
+<li>Zeitaufwand weitaus höher</li>
+</ul>
+</section>
+<section id="typische-tools-old-school" class="slide level2">
+<h2>Typische Tools: Old-School</h2>
+<ul>
+<li>grep</li>
+<li>vim (or other editor)</li>
+<li>increase logging in virtual machine</li>
+</ul>
+</section>
+<section id="typische-tools-next-generation" class="slide level2">
+<h2>Typische Tools Next-Generation</h2>
+<ul>
+<li><a href="https://semgrep.dev">semgrep</a></li>
+<li>Visual Studio Code (for debugging)</li>
+<li>Automated Scanning / SAST (corporate)</li>
+</ul>
+</section></section>
+<section>
+<section id="example" class="title-slide slide level1">
+<h1>Example</h1>
+
+</section>
+<section id="vulnerable-software" class="slide level2">
+<h2>Vulnerable Software</h2>
+<ul>
+<li><a href="https://www.erpnext.com">ERPnext</a></li>
+<li><a href="https://github.com/frappe/erpnext">Open Source ERP</a></li>
+<li>based upon <a href="https://github.com/frappe/frappe">Frappe Framework</a></li>
+<li>uses <a href="https://github.com/frappe/bench">bench for orchestration</a></li>
+</ul>
+</section>
+<section id="grund-setup" class="slide level2">
+<h2>Grund-Setup</h2>
+<ul>
+<li>VM mit Source Code</li>
+<li>quasi eine Kopie der Software</li>
+<li>nicht mit Echtdaten (aber korrektem Schema)</li>
+<li>db logging ist aktiviert (<code>/etc/mysql/my.cnf</code>)</li>
+</ul>
+</section></section>
+<section>
+<section id="example-architecture" class="title-slide slide level1">
+<h1>Example: Architecture</h1>
+
+</section>
+<section id="mvc" class="slide level2">
+<h2>MVC</h2>
+<figure>
+<img data-src="mvc.jpg" alt="" /><figcaption>Model-View-Controller</figcaption>
+</figure>
+</section>
+<section id="metadata-based-programming" class="slide level2">
+<h2>Metadata-based Programming</h2>
+</section>
+<section id="quick-look-through-the-application-structure" class="slide level2">
+<h2>Quick Look through the Application Structure</h2>
+</section>
+<section id="first-read-through-the-code" class="slide level2">
+<h2>First read through the code</h2>
+<ul>
+<li>search for MVC-Patterns</li>
+<li>how is authorization handled?</li>
+</ul>
+</section></section>
+<section>
+<section id="try-to-exploit-sqli" class="title-slide slide level1">
+<h1>Try to exploit SQLi</h1>
+
+</section>
+<section id="find-vulnerable-operations" class="slide level2">
+<h2>Find vulnerable Operations</h2>
+<ul>
+<li>what would make for a vulnerable function?</li>
+</ul>
+</section>
+<section id="deja-vu-union-based-select" class="slide level2">
+<h2>Deja-Vu: UNION Based Select</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="kw">select</span> name, email <span class="kw">from</span> users</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a><span class="kw">union</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a><span class="kw">select</span> <span class="dv">1</span>, <span class="kw">password</span> <span class="kw">from</span> othertable;</span></code></pre></div>
+<ul>
+<li>Kommentar in MySQL: #</li>
+<li>Version in Mysql: @<span class="citation" data-cites="version">@version</span></li>
+</ul>
+</section>
+<section id="got-sqli-what-now" class="slide level2">
+<h2>Got SQLi, what now?</h2>
+<ul>
+<li>what can I do with what I found?</li>
+<li>collation</li>
+</ul>
+</section>
+<section id="got-sqli-hashes-seem-to-be-secure" class="slide level2">
+<h2>Got SQLi, Hashes seem to be secure</h2>
+<p>find another way..</p>
+</section></section>
+<section>
+<section id="try-to-exploit-sstirce" class="title-slide slide level1">
+<h1>Try to Exploit SSTI/RCE</h1>
+
+</section>
+<section id="what-now" class="slide level2">
+<h2>What now?</h2>
+<ul>
+<li>template injection to RCE..</li>
+<li>what are templates?</li>
+<li>what do I want to execute?</li>
+</ul>
+</section>
+<section id="jinja2-templates" class="slide level2">
+<h2>Jinja2 Templates?</h2>
+<div class="sourceCode" id="cb2"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a>{% for item in navigation %}</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a>    <span class="kw">&lt;li&gt;&lt;a</span><span class="ot"> href=</span><span class="st">&quot;{{ item.href }}&quot;</span><span class="kw">&gt;</span>{{ item.caption }}<span class="kw">&lt;/a&gt;&lt;/li&gt;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a>{% endfor %}</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true"></a>{# title(striptags(name)) #}</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true"></a>{{ name|striptags|title }}</span></code></pre></div>
+<ul>
+<li><a href="https://jinja.palletsprojects.com/en/2.11.x/templates/">More Information for Template Language</a></li>
+</ul>
+</section>
+<section id="python-inheritance" class="slide level2">
+<h2>Python: Inheritance</h2>
+<figure>
+<img data-src="python_classes_2.jpeg" alt="" /><figcaption>Python Class Hierarchy</figcaption>
+</figure>
+</section>
+<section id="python-inheritance-1" class="slide level2">
+<h2>Python: Inheritance</h2>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="co">&quot;fubar&quot;</span>.__class__.mro()[<span class="dv">1</span>].__subclasses__()[<span class="dv">40</span>](<span class="st">&quot;abc&quot;</span>).some_method()</span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Method/Attribute</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>__class__</code></td>
+<td style="text-align: left;">instance object’s class</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>mro()</code></td>
+<td style="text-align: left;">All parent classes of a class</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>__subclasses__</code></td>
+<td style="text-align: left;">All currently known subclasses of a class</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>class("abc")</code></td>
+<td style="text-align: left;">Create instance of class with Parameter abc</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="python-illegal-template" class="slide level2">
+<h2>Python: Illegal Template?</h2>
+<p><a href="https://www.onsecurity.io/blog/server-side-template-injection-with-jinja2/">List of bypasses</a></p>
+</section>
+<section id="exploit" class="slide level2">
+<h2>Exploit</h2>
+</section></section>
+<section id="comparision-to-black-box-testing-imho" class="title-slide slide level1">
+<h1>Comparision to Black-Box Testing (IMHO)?</h1>
+<ul>
+<li>zielgerichteter, weniger raten.</li>
+<li>tooling: OSS lacking, expensive</li>
+<li>more expensive?</li>
+</ul>
+</section>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/reveal.js@3.9.2//js/reveal.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        // Push each slide change to the browser history
+        history: true,
+
+        // Optional reveal.js plugins
+        dependencies: [
+          { src: 'https://unpkg.com/reveal.js@3.9.2//lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'https://unpkg.com/reveal.js@3.9.2//plugin/zoom-js/zoom.js', async: true },
+          { src: 'https://unpkg.com/reveal.js@3.9.2//plugin/notes/notes.js', async: true }
+        ]
+      });
+    </script>
+    </body>
+</html>
