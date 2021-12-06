@@ -639,7 +639,7 @@ app.listen(3000);
 - Vorschläge bitte bis 6.12. an mich
   - samt reviewer (anderer Student)
   - jeder Student sollte einmal als Reviewer vorkommen
-- Arbeit an den Reviewer bis 10.12.2021
+- Arbeit an den Reviewer bis 10.01.2022
 - Reviews bis 17.1.2022 (intern)
 - Endabgabe bis 24.1.2022
 
