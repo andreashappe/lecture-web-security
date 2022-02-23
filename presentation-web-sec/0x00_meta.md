@@ -113,7 +113,9 @@ Li Wenliang
 3. Ich habe im Freundeskreis auch einige "Opfer" ausgemacht
 4. Vulnerable Webseiten VMs (ungern)
 
-## Typische Kapitel (Template vorhanden)
+## Typische Kapitel
+
+- [Template](https://github.com/andreashappe/lecture-web-security/tree/release/report-template)
 
 - TLS/HTTPS Security (Verbindungssicherheit)
 - Verwendete HTTP-Header

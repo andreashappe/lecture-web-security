@@ -3,19 +3,6 @@ author: Andreas Happe
 title: Web Security
 --- 
 
-# Nachtrag:
-
-## Pen-Test ,,Vorlage''
-
-* per moodle verschickt
-* soll als erster Startpunkt helfen
-* Informationen zum Tooling während der Vorlesung (siehe auch "Meta-Informationen")
-
-## Targets
-
-* bug-bounties sollten freigeschalten sein
-* hint: out-of-scope für bug-bounties ist in-scope für Semniararbeit
-
 # Webapplikation?
 
 ## Definition?
@@ -192,6 +179,12 @@ Zugriff von Javascript auf eine Resource wird nur erlaubt, wenn das Javascript u
   * postMessage
 * Zugriff auf Sensoren (WebNFC, WebBluetooth)
 * WebVR -> WebXR
+
+## web3
+
+- "decentralized online ecosystem based on blockchain" (Gavin Wood)
+- Vaporware?
+- [Moxie: my first impressions of web3](https://moxie.org/2022/01/07/web3-first-impressions.html)
 
 ## That's the story so far..
 

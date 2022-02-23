@@ -60,7 +60,12 @@ Häufig im Bereich Crypto:
 
 # The World is grey
 
-## Cost of SEcurity
+## The perfect is the enemy of the good
+
+- Evolution, nicht Revolution
+- kleine Schritte, nicht Utopien
+
+## Cost of Security
 
 * Accepting a Risk
 * Beispiel: DDoS-Angriffe
