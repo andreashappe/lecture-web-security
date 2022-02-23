@@ -50,15 +50,23 @@ Suboptimal:
 
 ## Threat Model
 
-Formaliserte Herangehensweise an Sicherheitsbetrachtung
+Strukturierte Herangehensweise an Sicherheitsbetrachtung
 
-## Grundlegende Fragen
+- am besten ab der Design-Phase
+
+## Vorgehensweise
+
+- Schaffen einer "Gesprächsbasis"
+- Dekonstruieren der Applikation
+- Erkennen von Gefährdungen
+- Reihung der Gefährdungen
+- Selektion von Gegenmaßnahmen
+
+## Gesprächsbasis
 
 * Was muss geschützt werden?
 * Vor wem/was habe ich Angst?
 * Auf welche Bereiche kann ich Einfluss nehmen?
-* Welche Schwachstellen können auftreten?
-* Was wären potentielle Gegenmassnahmen?
 
 ## Was sollte geschützt werden?
 
@@ -80,18 +88,22 @@ Formaliserte Herangehensweise an Sicherheitsbetrachtung
 
 ## Was ist mein Scope?
 
+* Harte Business-Requirements/Deadlines
 * Welche Systeme sind in-scope?
 * Welche Systeme sind out-of-scope?
 * Grundlegende Sicherheitsannahmen
 
-
 ## Welche Schwachstellen können auftreten?
 
 * Architektur- oder Datenfluss-Diagramme
-* Brainstormen (Erfahrung) oder Kataloge
+* Brainstormen (Erfahrung), Kataloge oder "Kartenspiele"
 * STRIDE
 
-## Was kann ich grundsätzlich machen?
+## Threat Model Diagram
+
+![](./0x01_threat_model.png)
+
+## Wie gehe ich mit Gefährdungen um?
 
 * Entfernen des Risikos
 * Mitigieren
@@ -107,5 +119,9 @@ Formaliserte Herangehensweise an Sicherheitsbetrachtung
 ## Hoffnung
 
 Auf diese Weise sollten die Schwachstellen überhaupt nicht im Softwareprodukt "aufschlagen".
+
+## Buchempfehlung
+
+- [Loren Kohnfelder: Designing Secure Software](https://amzn.to/3p5nvKf)
 
 # Fin
