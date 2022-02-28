@@ -39,7 +39,7 @@ title: Web Security
 
 ## HTTP Request
 
-```
+``` http
 GET / HTTP/1.1
 Host: www.example.com
 User-Agent: Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:73.0) Gecko/20100101 Firefox/73.0
@@ -61,7 +61,7 @@ Accept-Language: en-US,en;q=0.5
 
 ## HTTP Response
 
-```http
+``` http
 HTTP/1.1 200 OK
 Date: Mon, 23 May 2005 22:38:34 GMT
 Content-Type: text/html; charset=UTF-8
@@ -131,24 +131,50 @@ Cookie: cookiename=somevalue
 * Gedacht für Benutzerinteraktionen
   * Single-Threaded Event-Based Response-Loop
 
-## Over Time.. die Sprache
+## Geschichte
 
-- JavaScript -> ECMAScript 
-- Standardized (ECMAScript5, ES5, 2009)
-- Klassen, Modules (ES6, 2015)
-- Async/Await (ES7, 2017)
-- Modules with “import” (2020)
-- Future: more static typing, e.g., TypeScript or flow
+| Datum | Event | Bemerkung |
+| -- | -- | -- |
+| 1995/1996 | Released als Teil von NS2 | mehr Scheme als Java |
+| 1996 | JScript im IE | |
+| 1997 | ECMAScript 1  | Versuch der Standardisierung |
+| 2004 | IE mit 95% Marktanteil | MS: kein Interesse an Standardisieurng |
+| 2009 | ECMAScript 5 | Warum? Chrome |
 
-## Over Time.. die Integration
+## Geschichte
+
+| Datum | Event | Bemerkung |
+| -- | -- | -- |
+| 2015 | ECMAScript 6 | Module, Klassen, Arrow-Funktionen, Promises, .. |
+| 2016 | ECMAScript 7 | async/await |
+| ..   | ~ eine jährliche Release | |
+
+## Parallel zur Sprachentwicklung
 
 * immer mehr Funktionalität kann per JavaScript angesprochen werden
-* klassische "pull architektur" -> "pseudo-push"-Ansätze
-* Natürlicher Wunsch: Zugriff auf Web-Services/Operationen
+* Initialer Wunsch: Zugriff auf Web-Services/Operationen
 
 ## Same-Origin Policy (NS 2.02)
 
-Zugriff von Javascript auf eine Resource wird nur erlaubt, wenn das Javascript und die Resource die gleiche Origin verwenden.
+Zugriff von Javascript auf eine Resource wird nur erlaubt, wenn die Seite welche Javascript inkludiert und die zugegriffene Resource die gleiche Origin verwenden.
+
+## Origin-vs-Site
+
+- Origin: Schema+FQDN+Port
+  - e.g., https://snikt.net:443
+- Site: public known suffix + 1
+  - [public known suffix list](https://publicsuffix.org/list/public_suffix_list.dat)
+
+
+## Beispiele
+
+| url1 | url2 | same-site | same-origin |
+| ---- | ---- | ---- | ------ |
+| https://snikt.net | https://mybloodtypeis.coffee | nein | nein |
+| https://snikt.net/a | https://snikt.net/b | ja | ja |
+| http://snikt.net | https://snikt.net | ja | nein |
+| https://a.snikt.net | https://b.snikt.net | ja | nein |
+| https://a.github.io | https://b.github.io | ja | ja |
 
 ## SPA: Let's build rich-clients ~ 2003
 
@@ -177,6 +203,7 @@ Zugriff von Javascript auf eine Resource wird nur erlaubt, wenn das Javascript u
   * WebSockets
   * WebRTC
   * postMessage
+* WebAuthn für 2FA
 * Zugriff auf Sensoren (WebNFC, WebBluetooth)
 * WebVR -> WebXR
 
@@ -279,8 +306,9 @@ end
 
 ## Client-Side
 
-* JavaScript
-* By now: Frameworks
+* eher zur Benutzerinteraktion gedacht
+* nur noch JavaScript
+* auch hier werden nun Frameworks eingesetzt (react, angular, vue)
 
 # Integration mit Anderen
 

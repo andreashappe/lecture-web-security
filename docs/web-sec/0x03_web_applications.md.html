@@ -169,7 +169,7 @@
 </section>
 <section id="http-request" class="slide level2">
 <h2>HTTP Request</h2>
-<pre><code>GET / HTTP/1.1
+<pre class="http"><code>GET / HTTP/1.1
 Host: www.example.com
 User-Agent: Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:73.0) Gecko/20100101 Firefox/73.0
 Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
@@ -326,28 +326,142 @@ Connection: close
 </ul></li>
 </ul>
 </section>
-<section id="over-time..-die-sprache" class="slide level2">
-<h2>Over Time.. die Sprache</h2>
-<ul>
-<li>JavaScript -&gt; ECMAScript</li>
-<li>Standardized (ECMAScript5, ES5, 2009)</li>
-<li>Klassen, Modules (ES6, 2015)</li>
-<li>Async/Await (ES7, 2017)</li>
-<li>Modules with “import” (2020)</li>
-<li>Future: more static typing, e.g., TypeScript or flow</li>
-</ul>
+<section id="geschichte" class="slide level2">
+<h2>Geschichte</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Datum</th>
+<th>Event</th>
+<th>Bemerkung</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1995/1996</td>
+<td>Released als Teil von NS2</td>
+<td>mehr Scheme als Java</td>
+</tr>
+<tr class="even">
+<td>1996</td>
+<td>JScript im IE</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>1997</td>
+<td>ECMAScript 1</td>
+<td>Versuch der Standardisierung</td>
+</tr>
+<tr class="even">
+<td>2004</td>
+<td>IE mit 95% Marktanteil</td>
+<td>MS: kein Interesse an Standardisieurng</td>
+</tr>
+<tr class="odd">
+<td>2009</td>
+<td>ECMAScript 5</td>
+<td>Warum? Chrome</td>
+</tr>
+</tbody>
+</table>
 </section>
-<section id="over-time..-die-integration" class="slide level2">
-<h2>Over Time.. die Integration</h2>
+<section id="geschichte-1" class="slide level2">
+<h2>Geschichte</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Datum</th>
+<th>Event</th>
+<th>Bemerkung</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>2015</td>
+<td>ECMAScript 6</td>
+<td>Module, Klassen, Arrow-Funktionen, Promises, ..</td>
+</tr>
+<tr class="even">
+<td>2016</td>
+<td>ECMAScript 7</td>
+<td>async/await</td>
+</tr>
+<tr class="odd">
+<td>..</td>
+<td>~ eine jährliche Release</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="parallel-zur-sprachentwicklung" class="slide level2">
+<h2>Parallel zur Sprachentwicklung</h2>
 <ul>
 <li>immer mehr Funktionalität kann per JavaScript angesprochen werden</li>
-<li>klassische “pull architektur” -&gt; “pseudo-push”-Ansätze</li>
-<li>Natürlicher Wunsch: Zugriff auf Web-Services/Operationen</li>
+<li>Initialer Wunsch: Zugriff auf Web-Services/Operationen</li>
 </ul>
 </section>
 <section id="same-origin-policy-ns-2.02" class="slide level2">
 <h2>Same-Origin Policy (NS 2.02)</h2>
-<p>Zugriff von Javascript auf eine Resource wird nur erlaubt, wenn das Javascript und die Resource die gleiche Origin verwenden.</p>
+<p>Zugriff von Javascript auf eine Resource wird nur erlaubt, wenn die Seite welche Javascript inkludiert und die zugegriffene Resource die gleiche Origin verwenden.</p>
+</section>
+<section id="origin-vs-site" class="slide level2">
+<h2>Origin-vs-Site</h2>
+<ul>
+<li>Origin: Schema+FQDN+Port
+<ul>
+<li>e.g., https://snikt.net:443</li>
+</ul></li>
+<li>Site: public known suffix + 1
+<ul>
+<li><a href="https://publicsuffix.org/list/public_suffix_list.dat">public known suffix list</a></li>
+</ul></li>
+</ul>
+</section>
+<section id="beispiele" class="slide level2">
+<h2>Beispiele</h2>
+<table>
+<thead>
+<tr class="header">
+<th>url1</th>
+<th>url2</th>
+<th>same-site</th>
+<th>same-origin</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>https://snikt.net</td>
+<td>https://mybloodtypeis.coffee</td>
+<td>nein</td>
+<td>nein</td>
+</tr>
+<tr class="even">
+<td>https://snikt.net/a</td>
+<td>https://snikt.net/b</td>
+<td>ja</td>
+<td>ja</td>
+</tr>
+<tr class="odd">
+<td>http://snikt.net</td>
+<td>https://snikt.net</td>
+<td>ja</td>
+<td>nein</td>
+</tr>
+<tr class="even">
+<td>https://a.snikt.net</td>
+<td>https://b.snikt.net</td>
+<td>ja</td>
+<td>nein</td>
+</tr>
+<tr class="odd">
+<td>https://a.github.io</td>
+<td>https://b.github.io</td>
+<td>ja</td>
+<td>ja</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="spa-lets-build-rich-clients-2003" class="slide level2">
 <h2>SPA: Let’s build rich-clients ~ 2003</h2>
@@ -383,6 +497,7 @@ Connection: close
 <li>WebRTC</li>
 <li>postMessage</li>
 </ul></li>
+<li>WebAuthn für 2FA</li>
 <li>Zugriff auf Sensoren (WebNFC, WebBluetooth)</li>
 <li>WebVR -&gt; WebXR</li>
 </ul>
@@ -512,8 +627,9 @@ Connection: close
 <section id="client-side" class="slide level2">
 <h2>Client-Side</h2>
 <ul>
-<li>JavaScript</li>
-<li>By now: Frameworks</li>
+<li>eher zur Benutzerinteraktion gedacht</li>
+<li>nur noch JavaScript</li>
+<li>auch hier werden nun Frameworks eingesetzt (react, angular, vue)</li>
 </ul>
 </section></section>
 <section>
