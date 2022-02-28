@@ -113,7 +113,7 @@ Li Wenliang
 3. Ich habe im Freundeskreis auch einige "Opfer" ausgemacht
 4. Vulnerable Webseiten VMs (ungern)
 
-## Typische Kapitel
+## Typische Inhalte eines Pen-Tests
 
 - [Template](https://github.com/andreashappe/lecture-web-security/tree/release/report-template)
 

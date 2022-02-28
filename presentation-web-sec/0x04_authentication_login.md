@@ -7,7 +7,7 @@ title: Web Security
 
 ## OWASP Top 10
 
-![Picture](0x04_owasp_top_10.png){.stretch}
+![Picture](0x04_owasp_top_10_2021.png){.stretch}
 
 # Identification / Authentication
 
