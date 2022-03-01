@@ -95,6 +95,29 @@
 </section>
 
 <section>
+<section id="nachtrag" class="title-slide slide level1">
+<h1>Nachtrag</h1>
+
+</section>
+<section id="auswahl-der-testhomepage" class="slide level2">
+<h2>Auswahl der Testhomepage</h2>
+<ul>
+<li>User-Registration/-Login wäre vorteilhaft</li>
+<li>Testen mit zwei Testusern
+<ul>
+<li>z.B. Zugriffsberechtigungen, etc.</li>
+</ul></li>
+</ul>
+</section>
+<section id="weitere-kandidaten" class="slide level2">
+<h2>Weitere Kandidaten</h2>
+<ul>
+<li>Teilnahme beim bug-bounty Programm der Stadt Wien ist möglich</li>
+<li>Hort Rysavy fragt Kunden</li>
+<li>Same here</li>
+</ul>
+</section></section>
+<section>
 <section id="webapplikation" class="title-slide slide level1">
 <h1>Webapplikation?</h1>
 
@@ -289,10 +312,16 @@ Connection: close
 </ul>
 <img data-src="0x02_bravo_94.jpg" title="fig:" class="stretch" alt="Picture" />
 </section>
-<section id="sessions" class="slide level2">
-<h2>Sessions</h2>
+<section id="http-an-sich" class="slide level2">
+<h2>HTTP-an-sich</h2>
 <ul>
 <li>HTTP: Zustandsloses Protokoll</li>
+<li>warum ist das problematisch?</li>
+</ul>
+</section>
+<section id="lösung-sessions" class="slide level2">
+<h2>Lösung? Sessions</h2>
+<ul>
 <li>Interaktive Sessions werden zumeist mittels Cookies gebaut</li>
 <li>Werden automatisch vom Browser zu Requests hinzugefügt</li>
 </ul>
@@ -518,16 +547,19 @@ Connection: close
 <h1>Innerer Aufbau einer Web-Applikaton</h1>
 
 </section>
-<section id="klassisch-serverseitig" class="slide level2">
-<h2>Klassisch Serverseitig</h2>
+<section id="klassiche-architektur" class="slide level2">
+<h2>Klassiche Architektur</h2>
+<ul>
+<li>Server: Geschäftslogik</li>
+<li>Client (Webbrowser) dient nur zur Darstellung</li>
+</ul>
+</section>
+<section id="server" class="slide level2">
+<h2>Server</h2>
 <ul>
 <li>gesamte Business-Logik ist am Server</li>
-<li>Client (Webbrowser) dient nur zur Darstellung</li>
-<li>Projekt-Struktur: MVC-Pattern?</li>
-<li>Woher weiss der Server welche Operationen angeboten werden?
-<ul>
-<li>Routing</li>
-</ul></li>
+<li>Projekt-Struktur: MVC-Pattern</li>
+<li>Routing (welche Operationen werden dargestellt)</li>
 </ul>
 </section>
 <section id="mvc-pattern-in-theory" class="slide level2">
@@ -559,9 +591,13 @@ Connection: close
 <section id="implizites-routing" class="slide level2">
 <h2>Implizites Routing</h2>
 <p>Matching über Dateinamen</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode zsh"><code class="sourceCode zsh"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>$ ls /var/www/app</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>upload.php</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>list.php</span></code></pre></div>
+<p>Webroot: Verzeichnis am Server, in dem eine Webapplikation sich befindet (z.B. /var/www/ unter Linux)</p>
+</section>
+<section id="implizites-routing-beispiel" class="slide level2">
+<h2>Implizites Routing: Beispiel</h2>
+<div class="sourceCode" id="cb6"><pre class="sourceCode zsh"><code class="sourceCode zsh"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>$ ls /var/www/app     # webroot für www.snikt.net</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>upload.php            # www.snikt.net/upload.php</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>list.php          # www.snikt.net/list.php</span></code></pre></div>
 <p>Problem:</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode zsh"><code class="sourceCode zsh"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>$ ls /var/www/app</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>upload.php</span>
@@ -660,6 +696,11 @@ Connection: close
 <p>Admin, Dev, Betreiber</p>
 <img data-src="0x02_xaas.png" title="fig:" class="stretch" alt="Picture" />
 </section></section>
+<section id="fin" class="title-slide slide level1">
+<h1>FIN</h1>
+
+</section>
+
 <section>
 <section id="company-architekturen" class="title-slide slide level1">
 <h1>Company-Architekturen</h1>
@@ -688,9 +729,6 @@ Connection: close
 <li><p>Single-SignOn, MFA</p></li>
 <li><p>Authentication/Authorization</p></li>
 </ul>
-</section>
-<section id="fin" class="slide level2">
-<h2>FIN</h2>
 </section></section>
     </div>
   </div>

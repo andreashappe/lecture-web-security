@@ -3,6 +3,20 @@ author: Andreas Happe
 title: Web Security
 --- 
 
+# Nachtrag
+
+## Auswahl der Testhomepage
+
+- User-Registration/-Login wäre vorteilhaft
+- Testen mit zwei Testusern
+  - z.B. Zugriffsberechtigungen, etc.
+
+## Weitere Kandidaten
+
+- Teilnahme beim bug-bounty Programm der Stadt Wien ist möglich
+- Hort Rysavy fragt Kunden
+- Same here
+
 # Webapplikation?
 
 ## Definition?
@@ -94,9 +108,13 @@ Connection: close
 
 ![Picture](0x02_bravo_94.jpg){.stretch}
 
-## Sessions
+## HTTP-an-sich
 
 * HTTP: Zustandsloses Protokoll
+- warum ist das problematisch?
+
+## Lösung? Sessions
+
 * Interaktive Sessions werden zumeist mittels Cookies gebaut
 * Werden automatisch vom Browser zu Requests hinzugefügt
 
@@ -217,13 +235,16 @@ Zugriff von Javascript auf eine Resource wird nur erlaubt, wenn die Seite welche
 
 # Innerer Aufbau einer Web-Applikaton
 
-## Klassisch Serverseitig
+## Klassiche Architektur
+
+- Server: Geschäftslogik
+- Client (Webbrowser) dient nur zur Darstellung
+
+## Server
 
 * gesamte Business-Logik ist am Server
-* Client (Webbrowser) dient nur zur Darstellung
-* Projekt-Struktur: MVC-Pattern?
-* Woher weiss der Server welche Operationen angeboten werden?
-  * Routing
+* Projekt-Struktur: MVC-Pattern
+* Routing (welche Operationen werden dargestellt)
 
 ## MVC-Pattern (in theory)
 
@@ -257,10 +278,14 @@ application
 
 Matching über Dateinamen
 
+Webroot: Verzeichnis am Server, in dem eine Webapplikation sich befindet (z.B. /var/www/ unter Linux)
+
+## Implizites Routing: Beispiel
+
 ```zsh
-$ ls /var/www/app
-upload.php
-list.php
+$ ls /var/www/app     # webroot für www.snikt.net
+upload.php            # www.snikt.net/upload.php
+list.php	      # www.snikt.net/list.php
 ```
 
 Problem:
@@ -333,6 +358,8 @@ Admin, Dev, Betreiber
 
 ![Picture](0x02_xaas.png){.stretch}
 
+# FIN
+
 # Company-Architekturen
 
 ## Moat-and-Castle / Perimeter-Security
@@ -355,5 +382,3 @@ Admin, Dev, Betreiber
 
  * Single-SignOn, MFA
  * Authentication/Authorization
-
-## FIN
