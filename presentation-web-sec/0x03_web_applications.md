@@ -192,7 +192,7 @@ Zugriff von Javascript auf eine Resource wird nur erlaubt, wenn die Seite welche
 | https://snikt.net/a | https://snikt.net/b | ja | ja |
 | http://snikt.net | https://snikt.net | ja | nein |
 | https://a.snikt.net | https://b.snikt.net | ja | nein |
-| https://a.github.io | https://b.github.io | ja | ja |
+| https://a.github.io | https://b.github.io | nein | nein |
 
 ## SPA: Let's build rich-clients ~ 2003
 
