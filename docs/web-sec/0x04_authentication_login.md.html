@@ -157,6 +157,42 @@
 </ul>
 </section></section>
 <section>
+<section id="nachtrag" class="title-slide slide level1">
+<h1>Nachtrag</h1>
+
+</section>
+<section id="seminararbeit" class="slide level2">
+<h2>Seminararbeit</h2>
+<ul>
+<li>Menschen für Menschen (Horst)</li>
+<li>Helbling Verlag</li>
+<li>Vorschläge?</li>
+</ul>
+</section>
+<section id="permission-to-attack" class="slide level2">
+<h2>Permission-to-Attack</h2>
+<ul>
+<li>in Moodle abgelegt</li>
+<li>bei Verwendung des Bug-Bounty Programs durch dieses gedeckt</li>
+</ul>
+</section>
+<section id="zeitplan-für-seminararbeit" class="slide level2">
+<h2>Zeitplan für Seminararbeit</h2>
+<ul>
+<li>wie vorgeschlagen</li>
+<li>Termine in Moodle zur Abgabe definiert</li>
+<li>Auswahl des Review-Partners?</li>
+</ul>
+</section>
+<section id="microsoftgoogle-login-user-enumeration" class="slide level2">
+<h2>Microsoft/Google Login: User Enumeration?</h2>
+<ul>
+<li>laut Web: ja</li>
+<li>Vermutung: brute-force wird sauber durch MFA abgefangen</li>
+<li>Somit: zwar Schwachstelle, aber akzeptiert</li>
+</ul>
+</section></section>
+<section>
 <section id="passwörter" class="title-slide slide level1">
 <h1>Passwörter</h1>
 
@@ -285,6 +321,60 @@
 <li>Passwort-Reset Funktion</li>
 <li>Passwort ändern Funktion</li>
 </ul></li>
+</ul>
+</section></section>
+<section>
+<section id="second-factor" class="title-slide slide level1">
+<h1>Second-Factor</h1>
+
+</section>
+<section id="totp" class="slide level2">
+<h2>TOTP</h2>
+<ul>
+<li>Time-based One-Time Passwords</li>
+<li>RFC 6238</li>
+<li>Zusammenspiel von Applikation und Authenticator (meist Mobiltelefon)</li>
+<li>Gemeinsames Secret wird vom Server zum Authenticator übertragen</li>
+</ul>
+</section>
+<section id="totp-einfacher-aufbau" class="slide level2">
+<h2>TOTP: Einfacher Aufbau</h2>
+<img data-src="0x04_totp.png" title="fig:" class="stretch" alt="Image" />
+</section>
+<section id="fido2webauthn" class="slide level2">
+<h2>FIDO2/WebAuthn</h2>
+<ul>
+<li>Grundsätzliche Funktion
+<ul>
+<li>Authenticator wird als Gerät des Benutzers registriert</li>
+<li>public/secret key pair wird “quasi” ausgetauscht</li>
+<li>verpflichtend biometrisch oder mittels physischer Interaktion gesichert</li>
+</ul></li>
+<li>bei dem Authentication-Vorgang wird Public-Key Encryption verwendet</li>
+</ul>
+</section>
+<section id="fido2-genereller-aufbau" class="slide level2">
+<h2>FIDO2: Genereller Aufbau</h2>
+<img data-src="0x04_fido2.png" title="fig:" class="stretch" alt="Picture" />
+</section>
+<section id="fido2-registration" class="slide level2">
+<h2>FIDO2: Registration</h2>
+<p>JS: Authenticator.authenticatorMakeCredential()</p>
+<img data-src="0x04_webauthn_registration.png" title="fig:" class="stretch" alt="Image" />
+</section>
+<section id="fido2-login" class="slide level2">
+<h2>FIDO2: Login</h2>
+<img data-src="0x04_webauthn_login.png" title="fig:" class="stretch" alt="Image" />
+</section>
+<section id="vergleich-fido2totp" class="slide level2">
+<h2>Vergleich FIDO2/TOTP</h2>
+<ul>
+<li>Use-Cases</li>
+<li>FIDO2: Hardware zwingend erforderlich</li>
+<li>FIDO2: Netzwerkkommunikation notwendig</li>
+<li>FIDO2: Hardware-Binding möglich</li>
+<li>TOTP: genaue Systemzeit notwendig</li>
+<li>TOTP: kein Hardware-Binding möglich</li>
 </ul>
 </section></section>
 <section id="fin" class="title-slide slide level1">

@@ -105,11 +105,11 @@ title: Web Security
 
 ## Zeitplan für Seminararbeit
 
-- wie vorsgeschlagen
+- wie vorgeschlagen
 - Termine in Moodle zur Abgabe definiert
 - Auswahl des Review-Partners?
 
-## Microsoft/Google Login: User Enumeration
+## Microsoft/Google Login: User Enumeration?
 
 - laut Web: ja
 - Vermutung: brute-force wird sauber durch MFA abgefangen
