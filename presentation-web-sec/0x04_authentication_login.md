@@ -90,6 +90,31 @@ title: Web Security
 * User sollte sich ausloggen können
 * User sollte die Möglichkeit besitzen, alle Sessions zu beenden
 
+# Nachtrag
+
+## Seminararbeit
+
+- Menschen für Menschen (Horst)
+- Helbling Verlag
+- Vorschläge?
+
+## Permission-to-Attack
+
+- in Moodle abgelegt
+- bei Verwendung des Bug-Bounty Programs durch dieses gedeckt
+
+## Zeitplan für Seminararbeit
+
+- wie vorsgeschlagen
+- Termine in Moodle zur Abgabe definiert
+- Auswahl des Review-Partners?
+
+## Microsoft/Google Login: User Enumeration
+
+- laut Web: ja
+- Vermutung: brute-force wird sauber durch MFA abgefangen
+- Somit: zwar Schwachstelle, aber akzeptiert
+
 # Passwörter
 
 ## SSO? Social Login?
@@ -184,5 +209,49 @@ Benutzer will sein Passwort ändern
   * Key-Derivation Function oder SSO verwenden
   * Passwort-Reset Funktion
   * Passwort ändern Funktion
+
+# Second-Factor
+
+## TOTP
+
+* Time-based One-Time Passwords
+* RFC 6238
+* Zusammenspiel von Applikation und Authenticator (meist Mobiltelefon)
+* Gemeinsames Secret wird vom Server zum Authenticator übertragen
+
+## TOTP: Einfacher Aufbau
+
+![Image](0x04_totp.png){.stretch}
+
+## FIDO2/WebAuthn
+
+* Grundsätzliche Funktion
+  * Authenticator wird als Gerät des Benutzers registriert
+  * public/secret key pair wird “quasi” ausgetauscht
+  * verpflichtend biometrisch oder mittels physischer Interaktion gesichert
+* bei dem Authentication-Vorgang wird Public-Key Encryption verwendet
+
+## FIDO2: Genereller Aufbau
+
+![Picture](0x04_fido2.png){.stretch}
+
+## FIDO2: Registration
+
+JS: Authenticator.authenticatorMakeCredential()
+
+![Image](0x04_webauthn_registration.png){.stretch}
+
+## FIDO2: Login
+
+![Image](0x04_webauthn_login.png){.stretch}
+
+## Vergleich FIDO2/TOTP
+
+* Use-Cases
+* FIDO2: Hardware zwingend erforderlich
+* FIDO2: Netzwerkkommunikation notwendig
+* FIDO2: Hardware-Binding möglich
+* TOTP: genaue Systemzeit notwendig
+* TOTP: kein Hardware-Binding möglich
 
 # FIN

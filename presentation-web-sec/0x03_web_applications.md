@@ -3,20 +3,6 @@ author: Andreas Happe
 title: Web Security
 --- 
 
-# Nachtrag
-
-## Auswahl der Testhomepage
-
-- User-Registration/-Login wäre vorteilhaft
-- Testen mit zwei Testusern
-  - z.B. Zugriffsberechtigungen, etc.
-
-## Weitere Kandidaten
-
-- Teilnahme beim bug-bounty Programm der Stadt Wien ist möglich
-- Hort Rysavy fragt Kunden
-- Same here
-
 # Webapplikation?
 
 ## Definition?
