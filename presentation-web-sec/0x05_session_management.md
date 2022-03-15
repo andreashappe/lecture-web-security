@@ -79,7 +79,7 @@ Set-Cookie: sessionid5=0xbadc0ffee;Domain=snikt.net
 * Client-Seitig: 
   * ViewState muss integritätsgeschützt werden
   * ViewState sollte verschlüsselt werden
-  + Wenn StateModel: erschwert Angriffe
++ Wenn StateModel: erschwert Angriffe
 
 # Probleme
 

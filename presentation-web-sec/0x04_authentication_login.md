@@ -90,31 +90,6 @@ title: Web Security
 * User sollte sich ausloggen können
 * User sollte die Möglichkeit besitzen, alle Sessions zu beenden
 
-# Nachtrag
-
-## Seminararbeit
-
-- Menschen für Menschen (Horst)
-- Helbling Verlag
-- Vorschläge?
-
-## Permission-to-Attack
-
-- in Moodle abgelegt
-- bei Verwendung des Bug-Bounty Programs durch dieses gedeckt
-
-## Zeitplan für Seminararbeit
-
-- wie vorgeschlagen
-- Termine in Moodle zur Abgabe definiert
-- Auswahl des Review-Partners?
-
-## Microsoft/Google Login: User Enumeration?
-
-- laut Web: ja
-- Vermutung: brute-force wird sauber durch MFA abgefangen
-- Somit: zwar Schwachstelle, aber akzeptiert
-
 # Passwörter
 
 ## SSO? Social Login?
