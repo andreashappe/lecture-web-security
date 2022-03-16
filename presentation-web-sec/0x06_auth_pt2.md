@@ -19,12 +19,7 @@ title: Web Security
 ## Authentication / Authorization
 
 * Fehlende Authentication ist problematischer als fehlende Authorization.
-
-## Zusätzliche Probleme bei fehlender Authentication
-
 * kein Auditing / Log-Trail
-* kein Login-Zwang
-* große Gefährdung durch Crawler, etc.
 * Verhalten im Angriffsfall?
 
 # Problem: Fehlende serverseitige Überprüfung
@@ -53,31 +48,6 @@ title: Web Security
 * Aktuelles Bespiel: [Corona Schnelltests](https://www.heise.de/news/Corona-Selbsttests-bei-Aldi-Negativ-Zertifikate-von-Aesku-faktisch-wertlos-5987246.html)
 
 Also immer Authentication und Authorization testen!
-
-## Scoping von Daten
-
-Innerhalb der Applikation läuft die Applikationslogik immer im Auftrag eines Benutzers
-
-Die bearbeitenden Daten sollten so früh wie möglich auf den aktuellen Benutzer gebunden werden
-
-## Scoping von Daten
-
-```
-GET /invoices/42
-```
-
-Negativ:
-``` ruby
-Invoices.all.find(id)
-# select * from invoices where id = :id;
-```
-
-Positiv:
-
-``` ruby
-current_user.invoices.find(id)
-# select * from invoices where user_id = :current_user.id and id = :id
-```
 
 ## Gegenbeispiel: Usability
 

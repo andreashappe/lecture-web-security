@@ -118,14 +118,7 @@
 <h2>Authentication / Authorization</h2>
 <ul>
 <li>Fehlende Authentication ist problematischer als fehlende Authorization.</li>
-</ul>
-</section>
-<section id="zusätzliche-probleme-bei-fehlender-authentication" class="slide level2">
-<h2>Zusätzliche Probleme bei fehlender Authentication</h2>
-<ul>
 <li>kein Auditing / Log-Trail</li>
-<li>kein Login-Zwang</li>
-<li>große Gefährdung durch Crawler, etc.</li>
 <li>Verhalten im Angriffsfall?</li>
 </ul>
 </section></section>
@@ -164,21 +157,6 @@
 <li>Aktuelles Bespiel: <a href="https://www.heise.de/news/Corona-Selbsttests-bei-Aldi-Negativ-Zertifikate-von-Aesku-faktisch-wertlos-5987246.html">Corona Schnelltests</a></li>
 </ul>
 <p>Also immer Authentication und Authorization testen!</p>
-</section>
-<section id="scoping-von-daten" class="slide level2">
-<h2>Scoping von Daten</h2>
-<p>Innerhalb der Applikation läuft die Applikationslogik immer im Auftrag eines Benutzers</p>
-<p>Die bearbeitenden Daten sollten so früh wie möglich auf den aktuellen Benutzer gebunden werden</p>
-</section>
-<section id="scoping-von-daten-1" class="slide level2">
-<h2>Scoping von Daten</h2>
-<pre><code>GET /invoices/42</code></pre>
-<p>Negativ:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="dt">Invoices</span><span class="at">.all.find</span>(id)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># select * from invoices where id = :id;</span></span></code></pre></div>
-<p>Positiv:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>current_user<span class="at">.invoices.find</span>(id)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co"># select * from invoices where user_id = :current_user.id and id = :id</span></span></code></pre></div>
 </section>
 <section id="gegenbeispiel-usability" class="slide level2">
 <h2>Gegenbeispiel: Usability</h2>
@@ -254,8 +232,8 @@
 
 user[name]=happe&amp;user[email]=ah@mybloodtypeis.coffee</code></pre>
 <p>Source Code:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ot">@user</span> <span class="kw">=</span> <span class="dt">User</span><span class="at">.find</span>(params<span class="kw">[</span><span class="wa">:id</span><span class="kw">]</span>)</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ot">@user</span><span class="at">.update</span>(params<span class="kw">[</span><span class="wa">:user</span><span class="kw">]</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ot">@user</span> <span class="kw">=</span> <span class="dt">User</span><span class="at">.find</span>(params<span class="kw">[</span><span class="wa">:id</span><span class="kw">]</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ot">@user</span><span class="at">.update</span>(params<span class="kw">[</span><span class="wa">:user</span><span class="kw">]</span>)</span></code></pre></div>
 </section>
 <section id="probleme-bei-mass-assignments" class="slide level2">
 <h2>Probleme bei Mass Assignments</h2>
@@ -265,11 +243,11 @@ user[name]=happe&amp;user[email]=ah@mybloodtypeis.coffee</code></pre>
 <section id="mass-assignments-lösung" class="slide level2">
 <h2>Mass Assignments: Lösung</h2>
 <p>Lösung: dezidiert zum Update erlaubte Felder definieren</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ot">@user</span><span class="at">.update</span>(user_params)</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="cf">def</span> user_params</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  params<span class="at">.require</span>(<span class="wa">:user</span>)<span class="at">.permit</span>(<span class="wa">:name</span>)</span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ot">@user</span><span class="at">.update</span>(user_params)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="cf">def</span> user_params</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  params<span class="at">.require</span>(<span class="wa">:user</span>)<span class="at">.permit</span>(<span class="wa">:name</span>)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span></span></code></pre></div>
 </section></section>
 <section>
 <section id="problem-csrf-angriffe" class="title-slide slide level1">
