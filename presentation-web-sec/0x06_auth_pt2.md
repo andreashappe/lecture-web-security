@@ -55,7 +55,6 @@ Also immer Authentication und Authorization testen!
 * Download des Tickets ohne Authentication
 * Ticket-Id/Download-Id ist zufällig gewählt
 
-
 # Problem: Fehlende Konsistenz
 
 ## Nicht-homogene Applikationen
@@ -104,7 +103,6 @@ POST /user/42/update HTTP 1/1
 * HTTP GET oder PATCH statt POST?
 * Zusätzliches Feld “admin”: “1” im Datensatz?
 
-
 # Problem: Mass Assignments
 
 ## Mass-Assignment als Automatisierung
@@ -145,6 +143,18 @@ def user_params
   params.require(:user).permit(:name)
 end
 ```
+
+# Nachtrag
+
+## Seminararbeit
+
+- Bitte alle die bis jetzt keine Seite haben und als bug-bounty die Stadt Wien testen wollen bis Montag einen hackerone-Account anlegen und mir mitteilen
+
+## Story so far
+
+- Login
+- Session
+- Authentication / Authorization
 
 # Problem: CSRF-Angriffe
 
@@ -192,22 +202,37 @@ Die Zugriffsrechte müssen zwischen diesen gesamten Schnittstellen abgeglichen w
 
 Beispiel:
 
-* eine Webseite
+* eine Webseite inkl. REST-API
 * als WebServices für mobile Clients
-* eine REST-API
 * WebSocket-Schnittstelle
+
+## WebSockets
+
+- bidirektionale Kommunikationskanäle
+- analog zu einem TCP-Socket
+- werden durch den Browser geöffnet
+- Bedienung über JavaScript
 
 ## Authentication bei WebSockets
 
 * Immer das wss Protokoll verwenden
 * Nicht Websockets zum Tunneln verwenden, sondern Message-Based Protokoll darüber aufspannen
-* Implicit Authentication (Cookie oder HTTP BASIC) beim Öffnen des Socket
 * Authorization und Authentication pro Nachricht kontrollieren
+* Implicit Authentication (Cookie oder HTTP BASIC) beim Öffnen des Socket
 
-## Problem: Was ist, wenn der Login erst später passiert?
+## Problem: Session?
 
-* Duplicate Authentication
-* quasi: duplizierte Session-Struktur
-* Logout beachten
+- HTTP Header während Erstellung sind bekannt
+- Logout?
+- verzögertes Login?
+- Rechte ändern sich nach Login?
+
+## aktuelle Session-ID übertragen
+
+- duplizierte Session-Datenbank am Server
+- pro Nachricht?
+- wo wird die Session-Id gespeichert (Cookies?)
+
+## Am Besten an Frameworks auslagern
 
 # FIN

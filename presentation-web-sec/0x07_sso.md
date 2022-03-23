@@ -63,11 +63,25 @@ title: Web Security
 
 ![Picture](0x07_oauth2.png){.stretch}
 
-## OpenID-Connect
+## OpenID-Connect (OIDC)
 
 * Implementierung einer Authentication auf Basis von OAUTH2
-* Verschiedene Flows
-* Typischerweise sind zwei Endpunkte definiert (Token, User-Daten)
+* Authentication-nach-Authorization
+
+## OIDC: Scopes
+
+- openid, offline_access
+- profile
+- email, phone, address
+
+## OIDC: Endpoints
+
+- /token
+  - input: access_code
+  - output: tokens (auth, identity, refresh)
+- /userinfo
+  - input: access-token
+  - output: user-info
 
 # JSON Web Tokens
 
