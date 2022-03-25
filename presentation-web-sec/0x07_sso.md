@@ -78,7 +78,7 @@ title: Web Security
 
 - /token
   - input: access_code
-  - output: tokens (auth, identity, refresh)
+  - output: tokens (access-token, identity-token, refresh-token)
 - /userinfo
   - input: access-token
   - output: user-info
@@ -166,7 +166,7 @@ Immer Algorithmus am Server prüfen und fixieren
 
 # SAML2
 
-## Security Markup Language
+## Security Assertion Markup Language
 
 * Austausch von Authentication und Authorization Informationen zwischen mehreren Parteien
 * Beteiligte Parteien
@@ -178,11 +178,11 @@ Immer Algorithmus am Server prüfen und fixieren
   * jeweils IdP und SP triggered
 * multiple protocol bindings
 
-## SAML2 Security Assumptions
+## SAML2 Security Assertions
 
 * issuer
 * subject
-* conditions: wann ist die assumption gültig
+* conditions: wann ist die assertion gültig
 * attributes: weitere Informationen, z. B. Rollen
 * signiert
 * [Beispiel](https://en.wikipedia.org/wiki/SAML_2.0)
