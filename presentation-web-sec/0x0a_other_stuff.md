@@ -92,6 +92,11 @@ Set-Cookie: cookie=wert; Path=/app; Secure; HttpOnly; SameSite=Lax;
 * Eher Privacy Impact
 * "rssi", "txPower"
 
+## Gegenmaßnahme: Permissions-Policy
+
+* zumindest teilweise
+* [Permissions/Feature Policy](https://scotthelme.co.uk/goodbye-feature-policy-and-hello-permissions-policy/)
+
 # HTTPS/TLS
 
 ## HTTPS/TLS: Guidelines
@@ -117,14 +122,13 @@ Set-Cookie: cookie=wert; Path=/app; Secure; HttpOnly; SameSite=Lax;
 * user is prevented from accessing the site over HTTP
 
 ```
-Strict-Transport-Security: max-age=31536000, includeSubdomain, preload
+Strict-Transport-Security: max-age=31536000, includeSubdomains, preload
 ```
 
 ## HTTP/TLS: Howto test
 
 * [testssl.sh](https://testssl.sh/)
 * [Qualys SSL Test](https://www.ssllabs.com/ssltest/)
-* [bettercrypto.org](https://bettercrypto.org/)
 
 # Misconfiguration / Minimalprinzip
 
