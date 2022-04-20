@@ -8,8 +8,8 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
-  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/reset.css">
-  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/reveal.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@3.9.2//css/reset.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@3.9.2//css/reveal.css">
   <style>
     code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
@@ -20,7 +20,6 @@
     pre > code.sourceCode { white-space: pre; position: relative; }
     pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
     pre > code.sourceCode > span:empty { height: 1.2em; }
-    .sourceCode { overflow: visible; }
     code.sourceCode > span { color: inherit; text-decoration: inherit; }
     div.sourceCode { margin: 1em 0; }
     pre.sourceCode { margin: 0; }
@@ -80,10 +79,20 @@
     code span.va { color: #19177c; } /* Variable */
     code span.vs { color: #4070a0; } /* VerbatimString */
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
-  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/theme/solarized.css" id="theme">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@3.9.2//css/theme/solarized.css" id="theme">
   <link rel="stylesheet" href="custom.css"/>
+  <!-- Printing and PDF exports -->
+  <script>
+    var link = document.createElement( 'link' );
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = window.location.search.match( /print-pdf/gi ) ? 'https://unpkg.com/reveal.js@3.9.2//css/print/pdf.css' : 'https://unpkg.com/reveal.js@3.9.2//css/print/paper.css';
+    document.getElementsByTagName( 'head' )[0].appendChild( link );
+  </script>
+  <!--[if lt IE 9]>
+  <script src="https://unpkg.com/reveal.js@3.9.2//lib/js/html5shiv.js"></script>
+  <![endif]-->
 </head>
 <body>
   <div class="reveal">
@@ -142,7 +151,7 @@
 <h2>Stored/Persistent XSS</h2>
 <p>Javascript wird am Server gespeichert</p>
 <p>Z.b. folgendes als Chat-Nachricht:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;script&gt;</span><span class="fu">alert</span>(<span class="dv">1</span>)<span class="op">;</span><span class="kw">&lt;/script&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="kw">&lt;script&gt;</span><span class="fu">alert</span>(<span class="dv">1</span>)<span class="op">;</span><span class="kw">&lt;/script&gt;</span></span></code></pre></div>
 </section>
 <section id="dom-based-xss" class="slide level2">
 <h2>DOM-based XSS</h2>
@@ -155,10 +164,10 @@
 <section id="beispiel" class="slide level2">
 <h2>Beispiel</h2>
 <p>http://www.some.site/page.html?default=French</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;select&gt;&lt;script&gt;</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="bu">document</span><span class="op">.</span><span class="fu">write</span>(<span class="st">&quot;&lt;OPTION value=1&gt;&quot;</span><span class="op">+</span><span class="bu">document</span><span class="op">.</span><span class="at">location</span><span class="op">.</span><span class="at">href</span><span class="op">.</span><span class="fu">substring</span>(<span class="bu">document</span><span class="op">.</span><span class="at">location</span><span class="op">.</span><span class="at">href</span><span class="op">.</span><span class="fu">indexOf</span>(<span class="st">&quot;default=&quot;</span>)<span class="op">+</span><span class="dv">8</span>)<span class="op">+</span><span class="st">&quot;&lt;/OPTION&gt;&quot;</span>)<span class="op">;</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="bu">document</span><span class="op">.</span><span class="fu">write</span>(<span class="st">&quot;&lt;OPTION value=2&gt;English&lt;/OPTION&gt;&quot;</span>)<span class="op">;</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;/script&gt;&lt;/select&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="kw">&lt;select&gt;&lt;script&gt;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a><span class="bu">document</span><span class="op">.</span><span class="fu">write</span>(<span class="st">&quot;&lt;OPTION value=1&gt;&quot;</span><span class="op">+</span><span class="bu">document</span><span class="op">.</span><span class="at">location</span><span class="op">.</span><span class="at">href</span><span class="op">.</span><span class="fu">substring</span>(<span class="bu">document</span><span class="op">.</span><span class="at">location</span><span class="op">.</span><span class="at">href</span><span class="op">.</span><span class="fu">indexOf</span>(<span class="st">&quot;default=&quot;</span>)<span class="op">+</span><span class="dv">8</span>)<span class="op">+</span><span class="st">&quot;&lt;/OPTION&gt;&quot;</span>)<span class="op">;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a><span class="bu">document</span><span class="op">.</span><span class="fu">write</span>(<span class="st">&quot;&lt;OPTION value=2&gt;English&lt;/OPTION&gt;&quot;</span>)<span class="op">;</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true"></a><span class="kw">&lt;/script&gt;&lt;/select&gt;</span></span></code></pre></div>
 <pre class="url"><code>http://www.some.site/page.html?default=&lt;script&gt;alert(document.cookie)&lt;/script&gt;</code></pre>
 </section>
 <section id="dom-based-warum-interessant" class="slide level2">
@@ -181,19 +190,19 @@
 </section>
 <section id="xss-kann-an-vielen-stellen-auftreten" class="slide level2">
 <h2>XSS kann an vielen Stellen auftreten</h2>
-<div class="sourceCode" id="cb4"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;script&gt;</span><span class="fu">alert</span>(<span class="dv">1</span>)<span class="op">;</span><span class="kw">&lt;/script&gt;</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;SCRIPT</span> <span class="er">SRC</span><span class="ot">=</span><span class="st">http://xss.rocks/xss.js</span><span class="kw">&gt;&lt;/SCRIPT&gt;</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;IMG</span> <span class="er">SRC</span><span class="ot">=</span><span class="st">JaVaScRiPt:alert(</span><span class="er">&#39;XSS&#39;)</span><span class="kw">&gt;</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;IMG</span> <span class="er">SRC</span><span class="ot">=</span><span class="st">`javascript:alert(</span><span class="er">&quot;RSnake</span> <span class="er">says,</span> <span class="er">&#39;XSS&#39;&quot;)`</span><span class="kw">&gt;</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;IMG</span> <span class="er">SRC</span><span class="ot">=</span><span class="st">javascript:alert(String.fromCharCode(88,83,83))</span><span class="kw">&gt;</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;IMG</span> <span class="er">SRC</span><span class="ot">=</span> <span class="st">onmouseover=</span><span class="er">&quot;alert(&#39;xxs&#39;)&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;IMG</span> <span class="er">SRC</span><span class="ot">=</span><span class="st">&quot;non-existant&quot;</span> <span class="er">onerror</span><span class="ot">=</span><span class="st">&quot;alert(&#39;xxs&#39;)&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;IMG</span> <span class="er">SRC</span><span class="ot">=</span><span class="st">&quot;jav    ascript:alert(&#39;XSS&#39;);&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;BGSOUND</span> <span class="er">SRC</span><span class="ot">=</span><span class="st">&quot;javascript:alert(&#39;XSS&#39;);&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;IMG</span> <span class="er">STYLE</span><span class="ot">=</span><span class="st">&quot;xss:expr/*XSS*/ession(alert(&#39;XSS&#39;))&quot;</span><span class="kw">&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="kw">&lt;script&gt;</span><span class="fu">alert</span>(<span class="dv">1</span>)<span class="op">;</span><span class="kw">&lt;/script&gt;</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true"></a><span class="kw">&lt;SCRIPT</span><span class="ot"> SRC=</span><span class="st">http://xss.rocks/xss.js</span><span class="kw">&gt;&lt;/SCRIPT&gt;</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true"></a><span class="kw">&lt;IMG</span><span class="ot"> SRC=</span><span class="st">JaVaScRiPt:alert(</span><span class="er">&#39;XSS&#39;)</span><span class="kw">&gt;</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true"></a><span class="kw">&lt;IMG</span><span class="ot"> SRC=</span><span class="st">`javascript:alert(</span><span class="er">&quot;RSnake</span><span class="ot"> says</span><span class="er">,</span> <span class="er">&#39;XSS&#39;&quot;)`</span><span class="kw">&gt;</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true"></a><span class="kw">&lt;IMG</span><span class="ot"> SRC=</span><span class="st">javascript:alert(String.fromCharCode(88,83,83))</span><span class="kw">&gt;</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true"></a><span class="kw">&lt;IMG</span><span class="ot"> SRC=</span> <span class="st">onmouseover=</span><span class="er">&quot;alert(&#39;xxs&#39;)&quot;</span><span class="kw">&gt;</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true"></a><span class="kw">&lt;IMG</span><span class="ot"> SRC=</span><span class="st">&quot;non-existant&quot;</span><span class="ot"> onerror=</span><span class="st">&quot;alert(&#39;xxs&#39;)&quot;</span><span class="kw">&gt;</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true"></a><span class="kw">&lt;IMG</span><span class="ot"> SRC=</span><span class="st">&quot;jav    ascript:alert(&#39;XSS&#39;);&quot;</span><span class="kw">&gt;</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true"></a><span class="kw">&lt;BGSOUND</span><span class="ot"> SRC=</span><span class="st">&quot;javascript:alert(&#39;XSS&#39;);&quot;</span><span class="kw">&gt;</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true"></a><span class="kw">&lt;IMG</span><span class="ot"> STYLE=</span><span class="st">&quot;xss:expr/*XSS*/ession(alert(&#39;XSS&#39;))&quot;</span><span class="kw">&gt;</span></span></code></pre></div>
 </section>
 <section id="payloads" class="slide level2">
 <h2>Payloads</h2>
@@ -227,12 +236,12 @@
 <li>Context ist wichtig, folgendes Code-Fragment am Server</li>
 <li>taintedVar muss sowohl js- als auch html-encoded sein</li>
 </ul>
-<div class="sourceCode" id="cb5"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;script&gt;</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a> <span class="kw">var</span> x <span class="op">=</span> <span class="st">&#39;&lt;%= taintedVar %&gt;&#39;</span><span class="op">;</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a> <span class="kw">var</span> d <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">createElement</span>(<span class="st">&#39;div&#39;</span>)<span class="op">;</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>   d<span class="op">.</span><span class="at">innerHTML</span> <span class="op">=</span> x<span class="op">;</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>   <span class="bu">document</span><span class="op">.</span><span class="at">body</span><span class="op">.</span><span class="fu">appendChild</span>(d)<span class="op">;</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;/script&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a><span class="kw">&lt;script&gt;</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true"></a> <span class="kw">var</span> x <span class="op">=</span> <span class="st">&#39;&lt;%= taintedVar %&gt;&#39;</span><span class="op">;</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true"></a> <span class="kw">var</span> d <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">createElement</span>(<span class="st">&#39;div&#39;</span>)<span class="op">;</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true"></a>   d<span class="op">.</span><span class="at">innerHTML</span> <span class="op">=</span> x<span class="op">;</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true"></a>   <span class="bu">document</span><span class="op">.</span><span class="at">body</span><span class="op">.</span><span class="fu">appendChild</span>(d)<span class="op">;</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true"></a><span class="kw">&lt;/script&gt;</span></span></code></pre></div>
 </section>
 <section id="gegenmassnahme-quoting" class="slide level2">
 <h2>Gegenmassnahme Quoting</h2>
@@ -286,24 +295,24 @@
 </section>
 <section id="aufmachende-seite" class="slide level2">
 <h2>Aufmachende Seite</h2>
-<div class="sourceCode" id="cb6"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;html&gt;</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a> <span class="kw">&lt;body&gt;</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>   <span class="kw">&lt;li&gt;&lt;a</span> <span class="er">href</span><span class="ot">=</span><span class="st">&quot;bad-website.com&quot;</span> <span class="er">target</span><span class="ot">=</span><span class="st">&quot;_blank&quot;</span><span class="kw">&gt;</span>Vulnerable target using html link to open the new page<span class="kw">&lt;/a&gt;&lt;/li&gt;</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>     <span class="kw">&lt;button</span> <span class="er">onclick</span><span class="ot">=</span><span class="st">&quot;window.open(&#39;https://bad-website.com&#39;)&quot;</span><span class="kw">&gt;</span>Vulnerable target using javascript to open the new page<span class="kw">&lt;/button&gt;</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">&lt;/body&gt;</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;/html&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a><span class="kw">&lt;html&gt;</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true"></a> <span class="kw">&lt;body&gt;</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true"></a>   <span class="kw">&lt;li&gt;&lt;a</span><span class="ot"> href=</span><span class="st">&quot;bad-website.com&quot;</span><span class="ot"> target=</span><span class="st">&quot;_blank&quot;</span><span class="kw">&gt;</span>Vulnerable target using html link to open the new page<span class="kw">&lt;/a&gt;&lt;/li&gt;</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true"></a>     <span class="kw">&lt;button</span><span class="ot"> onclick=</span><span class="st">&quot;window.open(&#39;https://bad-website.com&#39;)&quot;</span><span class="kw">&gt;</span>Vulnerable target using javascript to open the new page<span class="kw">&lt;/button&gt;</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true"></a>  <span class="kw">&lt;/body&gt;</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true"></a><span class="kw">&lt;/html&gt;</span></span></code></pre></div>
 </section>
 <section id="angriff-aufgemachte-seite" class="slide level2">
 <h2>Angriff: aufgemachte Seite</h2>
-<div class="sourceCode" id="cb7"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;html&gt;</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a> <span class="kw">&lt;body&gt;</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>   <span class="kw">&lt;script&gt;</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (<span class="bu">window</span><span class="op">.</span><span class="at">opener</span>) {</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>            <span class="bu">window</span><span class="op">.</span><span class="at">opener</span><span class="op">.</span><span class="at">location</span> <span class="op">=</span> <span class="st">&#39;https://phish.example.com&#39;</span><span class="op">;</span></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>      }</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>   <span class="kw">&lt;/script&gt;</span></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a> <span class="kw">&lt;/body&gt;</span></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;/html&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true"></a><span class="kw">&lt;html&gt;</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true"></a> <span class="kw">&lt;body&gt;</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true"></a>   <span class="kw">&lt;script&gt;</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true"></a>      <span class="cf">if</span> (<span class="bu">window</span><span class="op">.</span><span class="at">opener</span>) {</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true"></a>            <span class="bu">window</span><span class="op">.</span><span class="at">opener</span><span class="op">.</span><span class="at">location</span> <span class="op">=</span> <span class="st">&#39;https://phish.example.com&#39;</span><span class="op">;</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true"></a>      }</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true"></a>   <span class="kw">&lt;/script&gt;</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true"></a> <span class="kw">&lt;/body&gt;</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true"></a><span class="kw">&lt;/html&gt;</span></span></code></pre></div>
 </section>
 <section id="gegenmaßnahmen" class="slide level2">
 <h2>Gegenmaßnahmen</h2>
@@ -311,8 +320,8 @@
 <li>keine externen Webseiten verlinken</li>
 <li>rel=”noopener noreferrer” bei Link verwenden</li>
 </ul>
-<div class="sourceCode" id="cb8"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;a</span> <span class="er">href</span><span class="ot">=</span><span class="st">&quot;bad-website.com&quot;</span> <span class="er">rel</span><span class="ot">=</span><span class="st">&quot;noopener noreferrer&quot;</span> <span class="er">target</span><span class="ot">=</span><span class="st">&quot;_blank&quot;</span><span class="kw">&gt;</span>Vulnerable target using html link to open the new page<span class="kw">&lt;/a&gt;</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;/html&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true"></a><span class="kw">&lt;a</span><span class="ot"> href=</span><span class="st">&quot;bad-website.com&quot;</span><span class="ot"> rel=</span><span class="st">&quot;noopener noreferrer&quot;</span><span class="ot"> target=</span><span class="st">&quot;_blank&quot;</span><span class="kw">&gt;</span>Vulnerable target using html link to open the new page<span class="kw">&lt;/a&gt;</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true"></a><span class="kw">&lt;/html&gt;</span></span></code></pre></div>
 <ul>
 <li>Referrer-Policy setzen (no-referrer)</li>
 </ul>
@@ -511,28 +520,28 @@ Content-Security-Policy: font-src https://google-fonts.com; img-src &#39;self&#3
 <pre><code># limit javascript to scripts from scripts.snikt.net
 Content-Security-Policy: script-src https://scripts.snikt.net;</code></pre>
 <p>Auch wenn der Angreifer im HTML-Code Javascript hinterlegen kann, wird es nicht ausgeführt:</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;html&gt;</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">&lt;body&gt;</span></span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">&lt;script&gt;</span><span class="fu">alert</span>(<span class="dv">1</span>)<span class="op">;</span><span class="kw">&lt;/script&gt;</span></span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">&lt;/body&gt;</span></span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;/html&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true"></a><span class="kw">&lt;html&gt;</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true"></a>  <span class="kw">&lt;body&gt;</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true"></a>    <span class="kw">&lt;script&gt;</span><span class="fu">alert</span>(<span class="dv">1</span>)<span class="op">;</span><span class="kw">&lt;/script&gt;</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true"></a>    <span class="kw">&lt;/body&gt;</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true"></a><span class="kw">&lt;/html&gt;</span></span></code></pre></div>
 </section>
 <section id="verwendung-von-javascript" class="slide level2">
 <h2>Verwendung von Javascript</h2>
 <p>Funktioniert nicht mehr:</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;button</span> <span class="er">id</span><span class="ot">=</span><span class="st">&#39;my-javascript-button&#39;</span> <span class="er">onclick</span><span class="ot">=</span><span class="st">&quot;alert(&#39;hello&#39;);&quot;</span><span class="kw">&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true"></a><span class="kw">&lt;button</span><span class="ot"> id=</span><span class="st">&#39;my-javascript-button&#39;</span><span class="ot"> onclick=</span><span class="st">&quot;alert(&#39;hello&#39;);&quot;</span><span class="kw">&gt;</span></span></code></pre></div>
 </section>
 <section id="verwendung-von-javascript-1" class="slide level2">
 <h2>Verwendung von Javascript</h2>
 <p>Stattdessen: in eigenem Javascript-File:</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;button</span> <span class="er">id</span><span class="ot">=</span><span class="st">&#39;my-javascript-button&#39;</span><span class="kw">&gt;</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;script</span> <span class="er">src</span><span class="ot">=</span><span class="st">&quot;https://script.snikt.net/somescript.js&quot;</span><span class="kw">&gt;&lt;/script&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true"></a><span class="kw">&lt;button</span><span class="ot"> id=</span><span class="st">&#39;my-javascript-button&#39;</span><span class="kw">&gt;</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true"></a><span class="kw">&lt;script</span><span class="ot"> src=</span><span class="st">&quot;https://script.snikt.net/somescript.js&quot;</span><span class="kw">&gt;&lt;/script&gt;</span></span></code></pre></div>
 <p>somescript.js:</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">$</span>(<span class="bu">document</span>)<span class="op">.</span><span class="fu">ready</span>(<span class="kw">function</span> () {</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">$</span>(<span class="st">&#39;#my-javascript-button&#39;</span>)<span class="op">.</span><span class="fu">on</span>(<span class="st">&#39;click&#39;</span><span class="op">,</span> <span class="kw">function</span>() {</span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>        <span class="fu">alert</span>(<span class="st">&#39;hello&#39;</span>)<span class="op">;</span></span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    })<span class="op">;</span></span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true"></a><span class="fu">$</span>(<span class="bu">document</span>)<span class="op">.</span><span class="fu">ready</span>(<span class="kw">function</span> () {</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true"></a>  <span class="fu">$</span>(<span class="st">&#39;#my-javascript-button&#39;</span>)<span class="op">.</span><span class="fu">on</span>(<span class="st">&#39;click&#39;</span><span class="op">,</span> <span class="kw">function</span>() {</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true"></a>        <span class="fu">alert</span>(<span class="st">&#39;hello&#39;</span>)<span class="op">;</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true"></a>    })<span class="op">;</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true"></a>})<span class="op">;</span></span></code></pre></div>
 </section>
 <section id="problem-user-sollte-nicht-js-file-hochladen-können" class="slide level2">
 <h2>Problem: User sollte nicht JS-File hochladen können</h2>
@@ -553,38 +562,38 @@ Content-Security-Policy: script-src https://scripts.snikt.net;</code></pre>
 <section id="reporting-12" class="slide level2">
 <h2>Reporting 1/2</h2>
 <pre class="http"><code>Content-Security-Policy-Report-Only: default-src &#39;none&#39;; style-src cdn.example.com; report-uri: /csp-reports</code></pre>
-<div class="sourceCode" id="cb22"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;!DOCTYPE </span>html<span class="dt">&gt;</span></span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;html&gt;</span></span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">&lt;head&gt;</span></span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>        <span class="kw">&lt;title&gt;</span>Sign Up<span class="kw">&lt;/title&gt;</span></span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>        <span class="kw">&lt;link</span> <span class="er">rel</span><span class="ot">=</span><span class="st">&quot;stylesheet&quot;</span> <span class="er">href</span><span class="ot">=</span><span class="st">&quot;css/style.css&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">&lt;/head&gt;</span></span>
-<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">&lt;body&gt;</span></span>
-<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>        ... Content ...</span>
-<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>    <span class="kw">&lt;/body&gt;</span></span>
-<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;/html&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true"></a><span class="dt">&lt;!DOCTYPE </span>html<span class="dt">&gt;</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true"></a><span class="kw">&lt;html&gt;</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true"></a>    <span class="kw">&lt;head&gt;</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true"></a>        <span class="kw">&lt;title&gt;</span>Sign Up<span class="kw">&lt;/title&gt;</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true"></a>        <span class="kw">&lt;link</span><span class="ot"> rel=</span><span class="st">&quot;stylesheet&quot;</span><span class="ot"> href=</span><span class="st">&quot;css/style.css&quot;</span><span class="kw">&gt;</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true"></a>    <span class="kw">&lt;/head&gt;</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true"></a>    <span class="kw">&lt;body&gt;</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true"></a>        ... Content ...</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true"></a>    <span class="kw">&lt;/body&gt;</span></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true"></a><span class="kw">&lt;/html&gt;</span></span></code></pre></div>
 </section>
 <section id="reporting-22" class="slide level2">
 <h2>Reporting 2/2</h2>
-<div class="sourceCode" id="cb23"><pre class="sourceCode json"><code class="sourceCode json"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;csp-report&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;document-uri&quot;</span><span class="fu">:</span> <span class="st">&quot;http://example.com/signup.html&quot;</span><span class="fu">,</span></span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>            <span class="dt">&quot;referrer&quot;</span><span class="fu">:</span> <span class="st">&quot;&quot;</span><span class="fu">,</span></span>
-<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>            <span class="dt">&quot;blocked-uri&quot;</span><span class="fu">:</span> <span class="st">&quot;http://example.com/css/style.css&quot;</span><span class="fu">,</span></span>
-<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>            <span class="dt">&quot;violated-directive&quot;</span><span class="fu">:</span> <span class="st">&quot;style-src cdn.example.com&quot;</span><span class="fu">,</span></span>
-<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>            <span class="dt">&quot;original-policy&quot;</span><span class="fu">:</span> <span class="st">&quot;default-src &#39;none&#39;; style-src cdn.example.com; report-uri /_/csp-reports&quot;</span><span class="fu">,</span></span>
-<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>            <span class="dt">&quot;disposition&quot;</span><span class="fu">:</span> <span class="st">&quot;report&quot;</span></span>
-<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span></span>
-<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode json"><code class="sourceCode json"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true"></a><span class="fu">{</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true"></a>  <span class="dt">&quot;csp-report&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true"></a>        <span class="dt">&quot;document-uri&quot;</span><span class="fu">:</span> <span class="st">&quot;http://example.com/signup.html&quot;</span><span class="fu">,</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true"></a>            <span class="dt">&quot;referrer&quot;</span><span class="fu">:</span> <span class="st">&quot;&quot;</span><span class="fu">,</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true"></a>            <span class="dt">&quot;blocked-uri&quot;</span><span class="fu">:</span> <span class="st">&quot;http://example.com/css/style.css&quot;</span><span class="fu">,</span></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true"></a>            <span class="dt">&quot;violated-directive&quot;</span><span class="fu">:</span> <span class="st">&quot;style-src cdn.example.com&quot;</span><span class="fu">,</span></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true"></a>            <span class="dt">&quot;original-policy&quot;</span><span class="fu">:</span> <span class="st">&quot;default-src &#39;none&#39;; style-src cdn.example.com; report-uri /_/csp-reports&quot;</span><span class="fu">,</span></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true"></a>            <span class="dt">&quot;disposition&quot;</span><span class="fu">:</span> <span class="st">&quot;report&quot;</span></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true"></a>    <span class="fu">}</span></span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true"></a><span class="fu">}</span></span></code></pre></div>
 </section>
 <section id="csp-with-google-nonces-since-2015" class="slide level2">
 <h2><a href="https://csp.withgoogle.com">CSP with Google</a>: Nonces (since 2015)</h2>
 <p>Nonce: zufälliger nicht-erratenbarer Wert, wird per CSP definiert</p>
 <pre class="http"><code>Content-Security-Policy: script-src &#39;nonce-r@nd0m&#39;;</code></pre>
 <p>Script-Tags werden ausgeführt, wenn sie den korrekten Nonce verwenden:</p>
-<div class="sourceCode" id="cb25"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;script</span> <span class="er">nonce</span><span class="ot">=</span><span class="st">&quot;r@nd0m&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">doWhatever</span>()<span class="op">;</span></span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;/script&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true"></a><span class="kw">&lt;script</span><span class="ot"> nonce=</span><span class="st">&quot;r@nd0m&quot;</span><span class="kw">&gt;</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true"></a>    <span class="fu">doWhatever</span>()<span class="op">;</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true"></a><span class="kw">&lt;/script&gt;</span></span></code></pre></div>
 </section>
 <section id="csp-with-google" class="slide level2">
 <h2>CSP-with-Google</h2>
@@ -620,163 +629,21 @@ Content-Security-Policy: script-src https://scripts.snikt.net;</code></pre>
     </div>
   </div>
 
-  <script src="https://unpkg.com/reveal.js@^4//dist/reveal.js"></script>
-
-  <!-- reveal.js plugins -->
-  <script src="https://unpkg.com/reveal.js@^4//plugin/notes/notes.js"></script>
-  <script src="https://unpkg.com/reveal.js@^4//plugin/search/search.js"></script>
-  <script src="https://unpkg.com/reveal.js@^4//plugin/zoom/zoom.js"></script>
+  <script src="https://unpkg.com/reveal.js@3.9.2//js/reveal.js"></script>
 
   <script>
 
       // Full list of configuration options available at:
-      // https://revealjs.com/config/
+      // https://github.com/hakimel/reveal.js#configuration
       Reveal.initialize({
-        // Display controls in the bottom right corner
-        controls: true,
-
-        // Help the user learn the controls by providing hints, for example by
-        // bouncing the down arrow when they first encounter a vertical slide
-        controlsTutorial: true,
-
-        // Determines where controls appear, "edges" or "bottom-right"
-        controlsLayout: 'bottom-right',
-
-        // Visibility rule for backwards navigation arrows; "faded", "hidden"
-        // or "visible"
-        controlsBackArrows: 'faded',
-
-        // Display a presentation progress bar
-        progress: true,
-
-        // Display the page number of the current slide
-        slideNumber: false,
-
-        // 'all', 'print', or 'speaker'
-        showSlideNumber: 'all',
-
-        // Add the current slide number to the URL hash so that reloading the
-        // page/copying the URL will return you to the same slide
-        hash: false,
-
-        // Start with 1 for the hash rather than 0
-        hashOneBasedIndex: false,
-
-        // Flags if we should monitor the hash and change slides accordingly
-        respondToHashChanges: true,
-
         // Push each slide change to the browser history
-        history: false,
+        history: true,
 
-        // Enable keyboard shortcuts for navigation
-        keyboard: true,
-
-        // Enable the slide overview mode
-        overview: true,
-
-        // Disables the default reveal.js slide layout (scaling and centering)
-        // so that you can use custom CSS layout
-        disableLayout: false,
-
-        // Vertical centering of slides
-        center: true,
-
-        // Enables touch navigation on devices with touch input
-        touch: true,
-
-        // Loop the presentation
-        loop: false,
-
-        // Change the presentation direction to be RTL
-        rtl: false,
-
-        // see https://revealjs.com/vertical-slides/#navigation-mode
-        navigationMode: 'default',
-
-        // Randomizes the order of slides each time the presentation loads
-        shuffle: false,
-
-        // Turns fragments on and off globally
-        fragments: true,
-
-        // Flags whether to include the current fragment in the URL,
-        // so that reloading brings you to the same fragment position
-        fragmentInURL: true,
-
-        // Flags if the presentation is running in an embedded mode,
-        // i.e. contained within a limited portion of the screen
-        embedded: false,
-
-        // Flags if we should show a help overlay when the questionmark
-        // key is pressed
-        help: true,
-
-        // Flags if it should be possible to pause the presentation (blackout)
-        pause: true,
-
-        // Flags if speaker notes should be visible to all viewers
-        showNotes: false,
-
-        // Global override for autoplaying embedded media (null/true/false)
-        autoPlayMedia: null,
-
-        // Global override for preloading lazy-loaded iframes (null/true/false)
-        preloadIframes: null,
-
-        // Number of milliseconds between automatically proceeding to the
-        // next slide, disabled when set to 0, this value can be overwritten
-        // by using a data-autoslide attribute on your slides
-        autoSlide: 0,
-
-        // Stop auto-sliding after user input
-        autoSlideStoppable: true,
-
-        // Use this method for navigation when auto-sliding
-        autoSlideMethod: null,
-
-        // Specify the average time in seconds that you think you will spend
-        // presenting each slide. This is used to show a pacing timer in the
-        // speaker view
-        defaultTiming: null,
-
-        // Enable slide navigation via mouse wheel
-        mouseWheel: false,
-
-        // The display mode that will be used to show slides
-        display: 'block',
-
-        // Hide cursor if inactive
-        hideInactiveCursor: true,
-
-        // Time before the cursor is hidden (in ms)
-        hideCursorTime: 5000,
-
-        // Opens links in an iframe preview overlay
-        previewLinks: false,
-
-        // Transition style (none/fade/slide/convex/concave/zoom)
-        transition: 'slide',
-
-        // Transition speed (default/fast/slow)
-        transitionSpeed: 'default',
-
-        // Transition style for full page slide backgrounds
-        // (none/fade/slide/convex/concave/zoom)
-        backgroundTransition: 'fade',
-
-        // Number of slides away from the current that are visible
-        viewDistance: 3,
-
-        // Number of slides away from the current that are visible on mobile
-        // devices. It is advisable to set this to a lower number than
-        // viewDistance in order to save resources.
-        mobileViewDistance: 2,
-
-        // reveal.js plugins
-        plugins: [
-          RevealNotes,
-          RevealSearch,
-          RevealZoom
+        // Optional reveal.js plugins
+        dependencies: [
+          { src: 'https://unpkg.com/reveal.js@3.9.2//lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'https://unpkg.com/reveal.js@3.9.2//plugin/zoom-js/zoom.js', async: true },
+          { src: 'https://unpkg.com/reveal.js@3.9.2//plugin/notes/notes.js', async: true }
         ]
       });
     </script>

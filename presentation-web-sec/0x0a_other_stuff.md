@@ -3,6 +3,18 @@ author: Andreas Happe
 title: Web Security
 --- 
 
+# Seminararbeit
+
+## Beispielspartner
+
+- mlm.at
+- helbing.at: feedback Freitag, 1-3 studenten
+
+## bug-bounty
+
+- bis Freitag bitte Accounts überprüfen
+- Hinweis: terms of attack druchlesen, HTTP-Header?
+
 # Other Stuff..
 
 # Redux: Cookie Header
@@ -50,7 +62,6 @@ Set-Cookie: cookie=wert; Path=/app; Secure; HttpOnly; SameSite=Lax;
 * dynamische Inhalte wie Google Fonts
 * keine "gratis" Updates von Libraries
 
-
 # HTML5 Stuff
 
 ## WebStorage
@@ -62,6 +73,61 @@ Set-Cookie: cookie=wert; Path=/app; Secure; HttpOnly; SameSite=Lax;
   * man kann es nicht auf sub-Pfade limitieren
 * niemals sensitive Informationen speichern
 
+## WebStorage: example
+
+```html
+<script>
+	// window.localStorage
+	localStorage.setItem('myCat', 'Tom');
+	const cat = localStorage.getItem('myCat');
+	localStorage.removeItem('myCat')
+	localStorage.clear()
+</script>
+```
+
+## HTML5 PostMessage
+
+* sending messages between parties in the Browser
+
+``` html
+<script>
+	var popup = window.open(/* something */);
+	popup.postMessage("this is a message", "http://origin-of-receiver");
+	popup.postMessage("don't do this", "*");
+
+	window.addEventListener("message", (event) => {
+		if (event.origin !== "http://origin-of-sender") {
+			// do something
+		} else {
+			// this was a hacker?
+		}
+	}, false);
+</script>
+```
+
+## WebWorkers / ServiceWorkers
+
+* Background Tasks
+* single service worker, multiple web workers
+* WebWorkers are tied to Page
+* Service Workers are Proxies
+  * think cache
+  * scope, same-origin
+
+## WebWorker
+
+```html
+<script>
+var myWorker = new Worker("worker.js");
+
+myWorker.onmessage = function(e) {
+	console.log("Message received from worker " + e.data);
+}
+
+myWorker.postMessage(["some", "message"]);
+</script>
+```
+
 ## WebWorkers
 
 * Achtung wenn User-Eingaben verwendet werden
@@ -69,6 +135,12 @@ Set-Cookie: cookie=wert; Path=/app; Secure; HttpOnly; SameSite=Lax;
 * CPU DoS!
 
 ## WebAsm
+
+* high-performance apps in Websites
+* binary instruction format
+* no interaction with DOM
+
+## WebAsm: Use-Cases for Security
 
 * Potential für Bitcoin-Miners
 * Potential für Obfuscation
@@ -124,11 +196,6 @@ Set-Cookie: cookie=wert; Path=/app; Secure; HttpOnly; SameSite=Lax;
 ```
 Strict-Transport-Security: max-age=31536000, includeSubdomains, preload
 ```
-
-## HTTP/TLS: Howto test
-
-* [testssl.sh](https://testssl.sh/)
-* [Qualys SSL Test](https://www.ssllabs.com/ssltest/)
 
 # Misconfiguration / Minimalprinzip
 
