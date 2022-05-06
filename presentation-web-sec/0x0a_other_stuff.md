@@ -10,6 +10,14 @@ title: Web Security
 - mlm.at
 - helbing.at: feedback Freitag, 1-3 studenten
 
+## Menschen für Menschen
+
+- Echtsystem, aber mit Backups/Snapshots
+- PtA wird noch von mir organisiert, bitte nicht starten
+- Umfang
+  - Website (Gutscheincode?)
+  - Analytics, Nextcloud, etc.
+
 ## bug-bounty
 
 - bis Freitag bitte Accounts überprüfen
