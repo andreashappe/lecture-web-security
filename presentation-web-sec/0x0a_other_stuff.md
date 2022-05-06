@@ -3,6 +3,15 @@ author: Andreas Happe
 title: Web Security
 --- 
 
+# Nachtrag
+
+## Pen-Test setup
+
+- Menschen für Menschen: warte auf Rückruf
+- Helbling: sollte sich bis Freitag melden, 2-3 Studenten
+- hackerone: bitte überprüfen, ob Einladung angenommen
+- hackerone: Teilnahmebedingungen durchlesen und HTTP-Header setzen
+
 # Other Stuff..
 
 # Redux: Cookie Header
@@ -124,11 +133,6 @@ Set-Cookie: cookie=wert; Path=/app; Secure; HttpOnly; SameSite=Lax;
 ```
 Strict-Transport-Security: max-age=31536000, includeSubdomains, preload
 ```
-
-## HTTP/TLS: Howto test
-
-* [testssl.sh](https://testssl.sh/)
-* [Qualys SSL Test](https://www.ssllabs.com/ssltest/)
 
 # Misconfiguration / Minimalprinzip
 
