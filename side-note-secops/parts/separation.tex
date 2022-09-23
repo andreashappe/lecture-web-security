@@ -1,0 +1,396 @@
+\part{Isolation auf verschiedenen Ebenen}
+
+In diesem Bereich werden verschiedene Aspekte eines Computersystems auf die Isolation bzw. Abgrenzung verschiedener Elemente hin diskutiert.
+
+\section{Warum Isolation?}
+
+Warum wurde dieser Ansatz gewählt? Die Grundlage aller Sicherheitsfragen ist die Frage nach dem schützenswerten Gut --- also welche Operationen bzw. Daten vor Angreifern zu schützen sind. Die klassische Antwort auf diese Frage ist die CIA-Triade:
+
+\begin{description}
+	\item[C--Confidenciality]: nur berechtigte Personen dürfen auf Daten zugreifen.
+	\item[I--Integrity]: nur berechtige Personen dürfen Daten modifizieren.
+	\item[A--Availability]: das System muss ``zugreifbar'' sein, ansonsten kann es nicht verwendet werden.
+\end{description}
+
+Sofern nur ein einziger Anwender ein Programm zu einem Zeitpunkt alleine auf einem Computer ausführen kann, und dabei keine Daten mit anderen Programmen oder Anwendern geteilt werden können (keine Dateisysteme, Netzwerkfreigaben, Side-Channels, etc.), ist die Integrität und Vertraulichkeit der Daten gewährleistet. Problematisch ist es, wenn mehrere Benutzer Programme auf einem Computer ausführen können bzw. Daten/Operationen geteilt werden. Hierbei muss sicher gestellt werden, dass die Zugriffe der Benutzer untereinander auf Integrität und Confidenciality hin überprüft werden. Confidenciality und Integrity sind daher stark von der Separierung und Isolation der Benutzer abhängig (Analog, Isolation von VMs, Containern, Prozessen, etc.).
+
+Availability ist stark von der Verfügbarkeit geteilter Ressourcen (wie z. B. CPU-Zeit, Arbeitsspeicher, Storage, Netzwerkbandbreite) abhängig. Hier muss der Zugriff einer Partei so eingegrenzt werden, dass diese nicht negativ andere Parteien beeinträchtigen kann. Die involvierten Parteien müssen also voneinander Isoliert werden.
+
+\section{Betrachtete Ebenen}
+
+Im Zuge dieser Vorlesung betrachten wir folgende Ebenen:
+
+\begin{itemize}
+	\item Hardware und Firmware: die Server/Desktop/Mobile-Hardware
+	\item Betriebssystem und Treiber: dies entspricht dem klassischen Linux-Kernel
+	\item Prozesse: Anwendungen die gerade als ein Benutzer ausgeführt werden.
+\end{itemize}
+
+Zusätzlich wurden verschiedenste Virtualisierungsebenen inkludiert:
+
+\begin{itemize}
+	\item Virtuelle Maschinen: mehrere Betriebssysteme können parallel auf der identen Hardware betrieben werden. Wir betrachten hier primär L1-Hypervisors wie Xen oder VMWare ESX die zwischen der Hardware und dem Betriebssystem liegen.
+	\item Container sind eine leicht-gewichte Virtualisierungslösung welche eine Gruppe von Prozessen isoliert. Sie wurden initial zum Verteilen von Anwendungen verwendet, bieten aber mittlerweile auch Sicherheitsfeatures.
+\end{itemize}
+
+\chapter{Hardware- und Firmware}
+
+Hardware ist die ``niedrigste'' von uns betrachtete Systemschicht. Wenn ein Angriff gegen diese erfolgreich ist, wird der Sicherheit der darüber liegenden Schichten das Fundament entzogen. Hardwareangriffe besitzen zumeist eine physikalische Komponente, ein Angreifer kann also nicht rein virtuell bzw. remote agieren.
+
+\section{Angriff: Tailored Access Operations}
+
+Während eines Tailored Access Angriffs wird eine Hardware-Backdoor direkt in/auf der Hardware platziert. Dies kann während der Produktion oder z. B. auch später während des Transports der Hardware zum Einsatzort/Kunden geschehen. Klassischerweise sind Motherboards oder Netzwerkequipment das Ziel dieser Art des Angriffs.
+
+Im Zuge der Snowden-Enthüllungen wurde bekannt, dass die NSA Tailored Access Angriffe mit Kosten von ca. \$500 pro Gerät bezifferte. 2019 konnten private Hacker für ca. \$200 CISCO-Firewalls mit einer Hardware-Backdoor versehen\footnote{\url{https://www.wired.com/story/plant-spy-chips-hardware-supermicro-cheap-proof-of-concept/}}.
+
+Da eine Untersuchung jeder gelieferten Hardwarekomponente unrealistisch ist, kann man als Administrator hier nur reaktiv agieren. Basierend auf einer Inventarisierung der verwendeten Hardware kann man bei Bekanntwerden von Tailored Access Operations möglichst zeitnahe die Hardware ersetzen.
+
+\section{Angriff: Management-Tools}
+
+Server befinden sich zumeist in physikalisch schwer erreichbaren Rechenzentren. Dies erschwert die Administrationstätigkeiten da einfache Aufgaben (wie z. B. das Betätigen des Reset-Schalters) mit einem hohen zeitlichen Aufwand verbunden sind. Aus diesem Grund werden hier meistens Remote-Management Möglichkeiten angeboten.
+
+Diese entsprechen einem separaten Computer innerhalb des eigentlichen Computers und werden BCM (Baseband Configuration Management), LOM (Lights Out Management) oder OOB management (Out-of-Bands Management) genannt. Typischerweise werden zumindest folgende Möglichkeiten angeboten:
+
+\begin{itemize}
+	\item Bildschirmweiterleitung
+	\item virtuelle Eingabe Devices (z. B. Tastatur und Maus)
+	\item virtuelle Medien (z. B. zum Booten und Setup eines neuen Betriebssystems)
+	\item Power-Management
+\end{itemize}
+
+Ein Angreifer mit Zugriff auf diese Management-Tools besitzt also die gleichen Möglichkeiten wie ein Angreifer mit Zugriff auf die Hardware. Ergo müssen diese Tools auch abgesichert werden:
+
+\begin{itemize}
+	\item Betrieb über ein eigenes, gesichertes, internes Management Netzwerk
+	\item Nur autorisierter Zugriff möglich (User-Accounts, keine Default-Accounts, gut gewählte Passwörter)
+	\item Software muss auf dem aktuellen Sicherheitsstand gehalten werden. Falls der Hardware-Hersteller keinen Support mehr bietet, gibt es teilweise Open-Source Lösungen wie z. B. OpenBMC.
+\end{itemize}
+
+Ähnliche Lösungen gibt es bei Hardware, die schwer ``greifbar'' ist wie z. B. Notebooks (Computrace, zum Glück nicht mehr) oder Mobilgeräte (Mobile Device Management).
+
+\section{Cold Boot Attacks}
+
+Daten im Arbeitsspeicher eines Computers gehen im Normalfall während eines Reboots verloren --- dies ist implizit dadurch begründet, dass RAM Zellen nicht mehr refreshed werden (periodisch mit Strom versorgt) und dadurch ihre Information verlieren.
+
+Bei einem Cold Boot Angriff friert ein Angreifer physikalisch Speicherstellen ein und rebootet das System z. B. über ein externen Medium. Durch das Kühlen der RAM-Chips behalten diese ihre Information und diese können durch das neu gestartete Betriebssystem ausgelesen werden.
+
+Als Gegenmaßnahme kann der Arbeitsspeicher mit einem temporären Schlüssel verschlüsselt werden. Dieser Schlüssel darf einen Reboot nicht überleben, auf diese Weise kann ein Angreifer den Arbeitsspeicherinhalt nach einem Reboot nicht mehr entschlüsseln. Eine Speicherung des Schlüssels im RAM verbietet sich daher selbst, es werden meistens TPMs oder Bereiche der CPU verwendet. Zusätzlich wird häufig versucht, sensible Daten in-memory nach deren Notwendigkeit zu überschreiben --- dadurch wird versucht, das verwundbare Zeitfenster (während dem ein Cold-Boot Attack funktionieren würde) zu minimieren.
+
+\section{Firmware}
+
+Firmware ist Software, welche benötigt wird damit Hardware ihre Funktion erfüllen kann. Im Gegensatz zu Betriebssystemtreibern wird Firmware direkt in der Hardware eingespielt und ausgeführt. Firmware ist daher autark gegenüber dem Betriebssystem. Beispiele für Komponenten, die häufig Firmware benötigen sind Netzwerkadapter, Modems, SSDs, etc.
+
+Firmware besteht meistens aus einem embedded Betriebssytem wie z. B. Linux oder Minix. Sie wird von Herstellern meist als Binärpaket bereitgestellt und kann daher nicht einfach analysiert werden.
+
+Da Firmware Software ist, beinhaltet sie Fehler. Dies impliziert, dass Administratoren aktiv Firmware-Updates installieren müssen. Firmware würde das Setup einer mächtigen und schwer detektierbaren Backdoor ermöglichen --- neue Firmware sollte daher nur von vertrauenswürdigen Quellen über sichere Transportwege bezogen werden.
+
+\section{DMA/Inception-Style Angriffe}
+
+Unter Direct-Memory-Access (DMA) versteht man eine Technik, bei der Geräte direkt auf den Hauptspeicher zugreifen können (ohne die Computer-CPU oder das Betriebssystem zu involvieren). Dies wird aus Latenz- und Performance-Gründen präferiert. Externe Schnittstellen die DMA erlauben sind z. B. IEEE1394/FireWire, Thunderbolt oder PCMCIA.
+
+Ein Angreifer kann dies verwenden um als vorgetäuschtes DMA-Device den Arbeitsspeicher des Computer auszulesen bzw. zu modifizieren. Letzteres kann z. B. verwendet werden um die Passwort-überprüfen-Funktion eines Computers kurzzuschließen (jedes Passwort zu akzeptieren).
+
+Neuere Betriebssysteme verhindern diese Angriffe indem sie diese Verwendung erst nach einer initialen Authentifizierung/Autorisierung des Hardware-Devices erlauben. Falls dies nicht möglich ist, kann die Hardwareschnittstelle digital oder physikalisch ``deaktiviert'' werden.
+
+\section{Polymorphe USB devices}
+
+Ein Angriffsvektor sind USB Geräte, die sich im Laufe der Zeit als unterschiedliche Geräte ausgeben. Bekannt sind hier z. B. die so genannten Rubber-Duckys. Diese erscheinen initial als USB-Sticks, wechseln aber nach mehreren Stunden ihren Betriebsmodus auf Keyboard. Über Shortcuts wird ein Textfile mit dem Windows-Editor angelegt, mit Kommandos gefüllt und schlussendlich ausgeführt. Alternativ kann der USB Stick eine USB Netzwerkkarte emulieren und auf diese Weise als Netzwerksniffer missbraucht werden.
+
+Als Gegenmaßnahme können wiederum USB ports per Software oder physikalisch deaktiviert werden. Unter Linux gibt es mit USB Guard die Möglichkeit, Policies für USB Geräte zu hinterlegen.
+
+\chapter{Betriebssystem und Treiber}
+
+Das Betriebssystem verwaltet die Systemressourcen eines Computers und stellt diese Anwendungsprogrammen kontrolliert zur Verfügung.
+
+Historisch gewachsen wurden initial Programme direkt auf der Hardware einprogrammiert und ausgeführt. Zu einem Zeitpunkt war genau ein Programm eines Anwenders auf einer Maschine laufend. Aus Effizienzgründen kam im Laufe der Zeit die Multi-Programm und Multi-User Funktionalität hinzu. Zum effizienten Teilen von Ressourcen und Informationen entstanden z. B. Dateisysteme und Bibliotheken.
+
+Während des Systemstart übernimmt initial das BIOS oder UEFI die Kontrolle über den Computer. Wenn diese ein Betriebssystem vorfinden (bzw. einen Bootloader), übergeben sie die Kontrolle an jenes. Das OS konfiguriert nun Kernel- und User-Space, initialisiert und konfiguriert die vorgefundene Hardware und bietet schlussendlich ein Interface zum Starten für Applikationsprogramme an. Diese können wiederum, falls benötigt, Funktionen des Betriebssystems aufrufen.
+
+Der Kernel befindet sich im Kernel-Space. Innerhalb dieses sind alle CPU-Befehle erlaubt, es kann auf beliebige Speicherbereiche zugegriffen werden. Für Anwendungsprogramme wird der Userspace verwendet. Hier ist nur ein eingeschränkter Befehlssatz erlaubt, ein Anwendungsprogramm besitzt nur Zugriff auf seinen eigenen Speicher. Der Userspace kann exportierte Kernel-Funktionen aufrufen, der Aufruf wird als Syscall bezeichnet. Bei jedem Wechsel zwischen User- und Kernel-Space müssen ``teure'' Wartungsarbeiten durchgeführt werden, daher sollten diese Wechsel aus Performancegründen minimiert werden.
+
+Im Kernel-Space befinden sich Treiber, Dateisysteme, Netzwerkstacks, etc. Da jeder Teil des Kernelspaces auf alle anderen Teile zugreifen kann, würde ein Sicherheitsfehler in einer unwichtigen Komponente trotzdem ein kompromittiertes Gesamtssytem zur Folge haben. Ein logischer Ansatz wäre es, Funktionen, die sich innerhalb des Kernel-Spaces befinden zu minimieren und statt dessen Treiber, Dateisysteme und ähnliches im User-Space zu betreiben. Die Bezeichnung für solche Systeme ist Microkernels, Vertreter sind z. b. Minix oder L4. L4 ist minimal und bietet nur sieben Operationen für Anwendungsprogramme an. Aufgrund der Größe von Microkernel kann deren Fehlerfreiheit teilweise formal bewiesen werden. Der große Kritikpunkt an Microkernel ist, dass sie durch die vielen User-/Kernel-Space Wechsel ineffizient sind. Real verwendete Systeme verwenden daher zumeist monolithische Kernel (also Treiber, Dateisysteme, etc. im Kernel-Space) oder Hybridsysteme (Microkernel bei denen allerdings viele Funktionen in den Kernelspace verschoben wurden).
+
+\section{UEFI Secure Boot}
+
+Secure Boot wird verwendet um den Bootvorgang des Betriebssystems abzusichern. Die UEFI Firmware besitzt einen öffentlichen Schlüssel, wird eine Komponente gestartet (z. B. der Bootloader oder Kernel) muss diese Komponente mit dem dazugehörenden privaten Schlüssel signiert worden sein. Dadurch weiß der Anwender, dass der Betriebssystemkernel von einer authentischen Quelle bezogen und nicht zwischenzeitlich verändert wurde.
+
+Wird Linux mittels Secure Boot verwendet gelten Einschränkungen:
+
+\begin{itemize}
+	\item nur signierte kernel module (Treiber) können geladen werden.
+	\item kexec kann nur mit signierten Kernel verwendet werden.
+	\item Hibernation und Resume sind deaktiviert.
+	\item User-Space Zugriff auf Speicher (user-space DMA) ist deaktiviert.
+\end{itemize}
+
+Ein Kritikpunkt an UEFI Secure Boot ist, dass die Person mit der Kontrolle über den private Schlüssel schlussendlich Kontrolle über die Software, die auf einem Computer ausgeführt wird, besitzt. Kommerzielle Hardware/Software-Herstellen wollten teilweise die Kontrolle über diese Schlüssel nicht an die Käufer der Hardware übertragen bzw. weigerten sich, Möglichkeiten für Kunden zu schaffen selbst Schlüssel zu hinterlegen.
+
+\section{Verifizieren von Dateisystemen (IMA/EVM und dm\_verity}
+
+Nehmen wir an, ein Kernel wurde mittels UEFI Secure Boot gestartet. Woher kann dieser nun erkennen, dass das Filesystem nicht offline verändert wurde? Hierfür kann IMA/EVM verwendet werden. Vereinfacht ausgedrückt, werden Hashsummen für Dateien generiert und die signierten Hashsummen als erweiterte Attribute mit den Dateien gespeichert. Der Kernel erlaubt den Zugriff auf Dateien nur wenn die Signaturen korrekt überprüfbar sind. Falls ein TPM Chip in das System integriert wurde, kann dieser verwendet werden um auch zur Laufzeit Dateien zu verändern (der TPM chip signiert die neuen Hashsummen ohne dass der private Schlüssel im Speicher vorrätig gehalten werden muss).
+
+dm\_verity erlaubt die transparente Überprüfung der Integrität eines Datenträgers. Für jeden Block des Datenträgers wird ein kryptographischer Hash generiert und gespeichert. Ein Block wird vom Kernel nur gelesen, wenn der Hash übereinstimmt. dm\_verity unterstützt nur read-only Operationen und wird z. B. für Systempartitionen (die immer als vollständiges Image eingespielt werden) verwendet.
+
+\section{Linux Security Modules}
+
+Um 2002 herum gab es Bestrebungen, das Linux Berechtigungskonzept um einen MAC-Modus (Mandatory Access Control) zu erweitern. Da es mehrere konkurrierende Implementierungen gab, wurde der Kernel um das LSM interface erweitert. Dieses erlaubt es, dynamisch ein security module (welches eine MAC implementiert) in den Kernel zu integrieren. Bekannte LSM-Implementierungen sind z. B. SELinux (RedHat-Umfeld) oder AppArmor (Debian-, Ubuntu- und SuSE-Umfeld).
+
+\section{Exkurs: Datenverschlüsselung}
+
+Eine Alternative zur klassischen Integritätssicherung ist das Verschlüsseln von Daten mit integritätssichernden Verfahren. Dadurch wird nicht nur deren Integrität, sondern auch deren Vertraulichkeit gewährleistet. Ein wichtiger Punkt hierbei ist, dass die Verschlüsselung immer nur für data-at-rest gilt. Innerhalb eines aktiven Systems hat ein Systembenutzer Zugriff auf die entschlüsselten Daten. Dieser Schutzmechanismus schützt also davor, über gestohlene Festplatten Daten zu verlieren, aber nicht vor einem Hacker, der in ein aktives System eingedrungen ist\footnote{Hint: die meisten Drucker verschlüsseln daher integrierte Festplatten, daher ist ein explizites Shreddern der Festplatten nicht notwendig.}.
+
+Problematisch ist die Verwaltung des Verschlüsselungskeys: da dieser nicht auf einem unverschlüsselten Laufwerk innerhalb des Systems vorliegen darf, muss er entweder vor der Entschlüsselung eingegeben werden oder z. B. in einem TPM vorliegen.
+
+Die Verschlüsselung erfolgt zumeist im Kernel-Space: dies hat Performance-Gründe, ist aber auch in der Sicherheit bedingt da Daten im User-Space angreifbarer sind. Prinzipiell kann man zwischen block- und Datei-basierter Verschlüsselungsmechanismen unterscheiden.
+
+\subsection{Block-based Encryption}
+
+Bei einer block-basierten Verschlüsselung werden alle Lese- und Schreibzugriffe auf eine Festplatte verschlüsselt. Im Normalfall wird im System eine virtuelle Festplatte dargestellt; alle Zugriffe werden verschlüsselt und schlussendlich nur in verschlüsselter Form auf einer physikalischen Festplatte persistiert. Da alle Zugriffe verschlüsselt werden, ist diese Methode für das verwendete Dateisystem vollkommen transparent, sie müssen also auch nicht zur Verwendung mit der Verschlüsselung angepasst werden. Dies bedeutet allerdings auch, dass das Filesystem nicht Zugriffe für die Verschlüsselung optimieren kann. Ein Vorteil ist, dass keine komplexe Policy für die verschlüsselten Dateien notwendig ist (da alle Dateien gleich behandelt werden). Ein Nachteil ist der potentiell auftretende Performance-Overhead da alle Dateien verschlüsselt werden, auch wenn nur eine kleine Teilmenge der Daten wirklich sensible und verschlüsselungs-würdig ist. Ein weiteres Problem kann die Reencryption bzw. der Wechsel des Schlüssels bei einer naiven Implementierung sein. Da das Blockdevice nicht weiß, welche Blöcke bereits Daten beinhalten, muss jeder Block gelesen, entschlüsselt, neu verschlüsselt und danach wieder geschrieben werden. Dies muss für jeden Block der Festplatte geschehen und nicht nur für die verwendeten Blöcke (da diese nicht dem Blockdevice bekannt sind).
+
+\subsection{File-based Encryption}
+
+Bei der Datei-basierten Verschlüsselung werden einzelne Dateien verschlüsselt. Dies führt zwar potentiell zu dem Problem, das komplexe und fehleranfällige Policies verwendet werden müssen, dafür kann dieser Ansatz zu einer höheren Performance führen da nur sensible Dateien verschlüsselt werden. Während diese Möglichkeit schon von frühen UNIX Systemen vorgesehen wurde (mittels der chattr-Operation) wurde diese nie implementiert. Aktuell (2019) gibt es Bestrebungen per-file Verschlüsselung in einzelne Dateisysteme zu implementieren: aktuell in ext4 und F2FS. Beides sind Dateisysteme die im Mobil-Umfeld verwendet werden --- die fein-granulare Verschlüsselung dürfte hier die Akku-Laufzeit positiv beeinträchtigen.
+
+\subsection{Hardware-assisted Encryption}
+
+Die Verschlüsselung kann auch in geeignete Hardware ausgelagert werden. Die Grundidee ist, dass der Anwender der Festplatte/SSD vor Verwendung ein Passwort mitteilt und alle Daten von dem Controller (innerhalb der SSD/Festplatte) mit diesem Passwort verschlüsselt werden. Dies erschwert natürlich das Booten von einer verschlüsselten SSD. Ein häufiger Standard in diesem Umfeld ist OPAL. Unter Linux hat sich OPAL nicht durchgesetzt; Bedenken gab es über die Datensicherheit, die Frage wie Softwareupdates in SSDs/Festplatte eingespielt werden können und der Umstand, dass CPU-based encryption immer effizienter wurde (und daher die CPU-Auslastung durch die Verschlüsselung immer überschaubarer).
+
+\chapter{Virtualisierung}
+
+Bei der Virtualisierung wird einem Gast-Betriebssystem (das in einer virtuellen Maschine, VM läuft) von einem Hypervisor/Hostsystem Hardware vorgetäuscht. Das Betriebssystem innerhalb der virtuellen Maschine besitzt Treiber für die bereitgestellte Hardware. Bei er so genannten Paravirtualisierung ist dem Gastsystem bekannt, dass es innerhalb einer VM betrieben wird, dadurch kann dieses Hardwarezugriffe optimieren. Alternativ kann das Gastsystem keine Kenntnisse über die Virtualisierung besitzen, in diesem Fall werden Treiber für konventionelle Hardware innerhalb der VM verwendet.
+
+Virtualisierung erlaubt das Betreiben mehrerer Betriebssysteme auf der identen Hardware. Dadurch, dass parallel mehrere virtualisierte Maschinen auf der identen Hardware betrieben werden wird eine höhere Kosten- und Energieeffizienz erlangt (da dadurch die Hardware höher ausgelastet wird bzw. Leerlaufzeiten vermieden werden können). Virtuelle Maschinen können einfach zwischen Host-Systemen verschoben werden (da sie die reale Hardware des Hosts von der virtualisierten Hardware welche von der VM erwartete werden kapseln) und vereinfachen so die Administration.
+
+\section{Security Impact}
+
+Aus Sicherheitssicht sollten virtuelle Maschinen voneinander getrennt agieren. Auf diese Weise können Applikationen ``sauber'' isoliert werden: ein Angreifer, der Zugriff auf eine Applikation in einer VM erlangt, besitzt keinen Zugriff auf eine Applikation in einer zweiten VM auf der identen Hardware. VMs besitzen relativ statisch zugeordnete Ressourcen (CPU, RAM, Festplattenplatz) und bieten auf diese Weise eine Schutzmöglichkeit gegenüber Denial-of-Service-Angriffen.
+
+Ein wichtiges Merkmal von virtuellen Maschinen ist, dass jede VM einen eigenständigen Kernel besitzt. Ruft eine Applikation in einer virtuellen Maschine eine Operation auf, wird ein syscall an den Kernel in der virtuellen Maschine gesendet. Dieser setzt einen hypercall an den Hypervisor/das Hostsytem ab. Dieses führt nun den Hardwarezugriff durch. Diese weitere Hierarchieebene führt zu Effizienzverlusten, erhöht aber auch die Sicherheit: ein Angreifer muss initial in eine VM einbrechen (Z. B. über einen Webserver der in der VM betrieben wird), dann eine Möglichkeit finden in der VM ``root''-Rechte zu erlangen und anschließend aus der VM in das Hostsystem auszubrechen. Erst dann kann er versuchen in eine weitere VM einzubrechen.
+
+Während dies die Komplexität eines Angriffs erhöht, gab es erfolgreiche VM-Escapes. Aus diesem Grund müssen Administratoren sich sowohl um Sicherheitsupdates der verwendeten VMs als auch um Sicherheitsupdates für das Hostsystem/den Hypervisor kümmern.
+
+Virtualisierungslösungen besitzen zumeist ein (web-basiertes) Managementsystem über welches mit den virtuellen Maschinen kommuniziert, administrative Tätigkeiten ausgeführt, und die Konfiguration der virtuellen Maschinen angepasst werden kann. Dieses Interface entspricht einem BMC-Management System und muss auch dementsprechend abgesichert werden.
+
+Ein weiteres Problem sind side-channel attacks: während VMs sich nicht direkt untereinander beeinflussen können, kann das Verhalten gemeinsam genutzter Ressourcen sensible Informationen liefern. Beispiele wären z. B. eine VM welche über ein geteiltes Netzwerkdateisystem auf eine andere VM indirekt Einfluss nehmen kann. Da zwei VMs auf der identen realen Hardware betrieben werden, sind hardware-basierte Timing Angriffe wie z. B. RowHammer möglich.
+
+\chapter{Container/Sandboxes}
+
+Container sind eine leicht gewichtige Virtualisierungslösung. Container separieren Betriebssystem-Ressourcen, so sind z. B. innerhalb eines Containers nur jene Prozesse sichtbar die ebenso innerhalb des Containers gestartet wurden bzw. besitzt z. B. ein Prozess in einem Container nur eine eingeschränkte Sicht auf jene Dateien, welche explizit einem Container zugeordnet wurden. Ein Container ist also ein Prozessverbund mit eingeschränkter Sicht/Zugriff auf Ressourcen innerhalb des Hostsystems. Im Gegensatz zu VMs besitzt ein Container keinen eigenen Kernel. Auf diese Weise entfällt die damit verbundene Ineffizienz, allerdings ist dies aus Sicherheitssicht suboptimal: wenn ein Angreifer innerhalb eines Containers einen Fehler im Kernel findet und ausnutzen kann, besitzt er bereits Vollzugriff auf das Hostsystem.
+
+Container werden gerne zum Verteilen von Software verwendet. Sie erlauben das Erstellen von leicht gewichtigen virtualisierten Maschinen welche z. B. mehrere konfigurierte Komponenten einer Applikation (z. B. App-Server, Datenbanken, Cache-Server, Web-Server) ``fertig'' konfiguriert beinhalten. Auf diese Weise werden komplexe Installationsprozeduren vermieden. Problematisch hierbei war, dass Container initial keine Sicherheitsmaßnahmen zur gründlichen Abschottung von Containern untereinander bzw. auch keine Absicherung des Hostsystems gegenüber dem Container besaßen. Diese wurden nach-und-nach implementiert, Administratoren müssen allerdings sicherstellen, dass diese Möglichkeiten auch konfiguriert und aktiviert sind.
+
+\section{Sandboxes}
+
+In der IT gibt es ein ähnliches Konzept: Sandboxen. Dies sind separate Teile eines Betriebssystems welche nur stark eingeschränkt auf den Rest des Systems zugreifen können. Diese werden verwendet um nicht-vertrauenswürdigen bzw. potentiell gefährlichen Code auszuführen ohne die Sicherheit des Restsystems zu gefährden. Es wird angenommen, dass Container und Sandboxen langfristig verschmelzen werden.
+
+\section{VM vs Container}
+
+Verglichen zu VMs sind Container Ressourcen-effizienter: da kein weiterer Kernel zwischen dem Container und dem Host zwischengeschalten wurde (wie bei einer VM), entstehen weniger Context-Switches. Ein Dateizugriff innerhalb des Containers geschieht direkt im Filesystem des Hosts --- bei einer VM würde hier innerhalb der VM sowohl ein virtuelles Dateisystem als auch eine virtuelle Festplatte zusätzlich zu der Festplatte des Hosts verwendet werden und dadurch den Zugriff verlangsamen. Ressourcen werden bei Containern dynamisch zugeteilt --- bei VMs wird Festplatten- und Arbeitsspeicher zumeist statisch einer VM zugeordnet und schützt daher gegenüber Overcommitment. Da beim Start eines Containers kein eigener Kernel gestartet werden muss, ergeben sich geringere Bootzeiten. Und nicht zuletzt besitzen Container-Lösungen wie z. B. Docker eine bessere Usability (für Administratoren) verglichen zu klassischen Virtualisierungslösungen.
+
+Die Schattenseiten von Containern ist die höhere Verwundbarkeit gegenüber Kernel-Sicherheitslücken als auch die schlechtere Absicherung gegenüber Denial-of-Service-Angriffen (aufgrund der fehlenden statischen Ressourcenverteilung).
+
+Container-Lösungen besitzen zumeist ein Management-System auf dem Container-Hostsystem. Dieses ist analog zu einem VM-Management-System oder zu einem BMC-System und muss dementsprechend abgesichert werden.
+
+\section{Virtualization-based Security and Desktops}
+
+Während Container initial verstärkt auf Servern vorgefunden wurden, werden sie mittlerweile auch stark von Desktop-Betriebssystemen (z. B. als flatpak) oder von mobilen Betriebssystemen wie Android oder iOS zur Isolation einzelner Desktop-Applikationen untereinander verwendet.
+
+Eine weitere neuere Entwicklung ist Virtualisation-based Security (diese ist allerdings zumeist VM- und nicht Container-basiert). Hier werden kritische Funktionen bzw. schützenswerte Daten in virtuelle Maschinen verschoben. Wenn der Host auf diese Daten bzw. Funktionen zugreifen will, muss er diese Operationen als Netzwerkoperation der virtuellen Maschine aufrufen. Auf diese Weise werden diese stärker vom Hostsystem gekapselt. Ein Angreifer der Zugriff auf das Hostsystem erlangt, erlangt nicht automatisch auch Zugriff auf die --- in der VM gekapselten --- Daten. Windows 10 verwendet dieses Konzept zur Speicherung von Netzwerk-Credentials, das Linux-basierte QubesOS verwendet eine virtuelle Maschine zur sicheren Kapselung von privaten GPG/PGP-Schlüsseln.
+
+\chapter{Dateien und Prozesse}
+
+Anwender arbeiten schlussendlich nicht mit Computern, VMs oder Containern, sondern verwenden Dateien und Prozesse innerhalb jener.
+
+\section{Datei-Basics}
+
+Dateien besitzen unter UNIX traditionell drei Berechtiungsebenen: Besitzer (user), Gruppe (group) und Other (Rest of World). Analog dazu besitzt jede Datei einen eindeutigen Besitzer und eine eindeutige Gruppe. Für jede dieser drei Berechtigungsebenen können Zugriffsrechte vergeben werden: r für Leserechte, w für Schreibrechte, x um das Recht eine Datei auszuführen (execute) anzuzeigen. Wird eine Datei ausgeführt wird mit dem in der Datei enthaltenen Code ein Prozess gestartet. Bei Verzeichnissen kann ebenso das execute (x)-Recht gesetzt werden, bei ihnen bedeutet dies, dass ein Benutzer den Inhalt des Verzeichnisses auflisten kann (also die Dateien innerhalb des Verzeichnisses listen kann).
+
+Hier ein Beispielslisting welches die Zugriffsrechte der Datei /etc/passwd ausgibt
+
+\begin{minted}{shell}
+# ls -ahl /etc/passwd                        
+-rw-r--r--. 1 root root 3.7K Sep 17 19:49 /etc/passwd
+\end{minted}
+
+Bei dem Listing sieht man, wie die Rechte der Datei \textit{/etc/passwd} mittels dem Kommando \textit{ls} ausgegeben werden. Der Datei ist der User \textit{root} und die Gruppe \textit{root} als Besitzer zugeordnet. Die Zugriffsrechte sind \textit{-rw-r--r--.}. Die erste Stelle kann aktuell noch ignoriert werden, diese wird von den Zugriffsrechten für den Besitzer (\textit{-rw}, Lese- und Schreib-Rechte) gefolgt. Sowohl die Gruppe als auch alle anderen Benutzer können nur lesend (\textit{r--}) auf die Datei zugreifen.
+
+Mit dem Kommando \textit{chown} kann der Besitzer einer Datei geändert werden, mit \textit{chgrp} die besitzende Gruppe. Mittels \textit{chmod} können die Zugriffsrechte modifiziert werden.
+
+Zusätzlich gibt es mehrere vordefinierte Attribute welche unter UNIX mittels \textit{lsattr} ausgelesen und mittels \textit{chattr} gesetzt werden können. Diese Attribute wurden initial definiert, wurden allerdings teilweise niemals implementiert. Beispiel für nicht implementierte Attribute wären E (Datei wird verschlüsselt), u (wenn die Datei gelöscht wird kann sie wieder hergestellt werden), s (Datei wird beim Löschen mit 0en überschrieben) oder c (Datei wird transparent komprimiert). Umgesetzt wurde z. B. die Möglichkeit eine Datei als immutable zu markieren (kann nicht beschrieben, umbenannt oder gelöscht werden) oder eine Datei ein den append-only Modus zu versetzen (Daten können nur am Ende angehängt werden, z. B. für Logdateien).
+
+Ein Beispiel der Verwendung:
+
+\begin{minted}{shell}
+# touch testfile                                    
+# lsattr testfile   
+--------------e----- testfile
+# sudo chattr +i testfile 
+# rm testfile                                                                                               
+rm: cannot remove 'testfile': Operation not permitted
+# mv testfile testfile.renamed                                                              
+mv: cannot move 'testfile' to 'testfile.renamed': Operation not permitted
+\end{minted}
+
+Zuerst wurde mit \textit{touch} eine neue leere Datei erstellt und anschließend mit \textit{lsattr} deren Attribute ausgegeben. Das gesetzte e-Attribut sagt aus, dass die Dateiinhalte als Extends gespeichert werden --- eine ext4-Eigenheit. Mit dem Kommando \textit{chattr} wird nun das immutable Attribut gesetzt. Anschließend kann die Datei weder gelöscht noch umbenannt werden.
+
+\section{Extend Attributes und ACLs}
+
+Applikationen benötigen teilweise die Möglichkeit Metadaten an Dateien anzuhängen, dies wurde unter Linux über den extended attributes (xattr oder attr genannt) Mechanismus implementiert. Extended Attribute können an Dateien angehängt werden und werden über einen eindeutigen Schlüssel identifiziert. Dieser ist hierarchisch und wird über . unterteilt, Attribute die von Benutzern zugeordnet werden sollten immer mit \textit{user.} beginnen. Ein extended Attribute kann ein Wert zugewiesen werden. Attribute werden mit \textit{setfattr} gesetzt und mittels \textit{getfattr} ausgelesen (das Attribut \textit{user.fubar} wird auf Wert \textit{somevalue} gesetzt):
+
+\begin{minted}{shell}
+# touch testfile2                             
+# setfattr -n user.fubar -v somevalue testfile2
+# getfattr testfile2  
+# file: testfile2
+user.fubar
+
+# getfattr -d testfile2
+# file: testfile2
+user.fubar="somevalue"
+\end{minted}
+
+Extended Attributes werden unter Linux zur Implementierung von ACLs verwendet. Diese erweitern das traditionelle UNIX Dateirechte-Konzept (\textit{rwx}). Die Limitierung, dass eine Datei nur einen Besitzer und eine Gruppe besitzt machte das Teilen von Daten auf traditionellen UNIX-Systemen komplexer. Dies führte häufig dazu, dass die Zugriffsrechte von Dateien sehr lax vergeben wurden um das Teilen zu vereinfachen. Dies hatte einen negativen Einfluss auf die Sicherheit. Ein weiteres Problem waren Linux-Netzwerkdateiserver welche Windows-Clients bedienten. Unter Windows können einer Datei Zugriffsrechte für beliebige Benutzer und Gruppen zugeordnet werden, dies war auf das Benutzer/Gruppen-Konzept von Linux nicht einfach konvertierbar.
+
+ACLs sind Access Control Lists und erlauben die Angabe von Zugriffsberechtigungen zusätzlich zu den traditionellen UNIX-Rechten. Die konfigurierten Zugriffsrechte werden über extended attributes den Dateien und Verzeichnissen zugeordnet. Die Zugriffsrechte können mit \textit{setfacl} gesetzt und mit \textit{getfacl} ausgelesen werden. Das Format der Recht ist \textit{u:<benutzername>:<rechte>} für Benutzerrechte bzw. \textit{g:<gruppenname>:<recht>} für Gruppen. Ein Beispiel:
+
+\begin{minted}{shell}
+# touch testfile3
+# setfacl -m g:wheel:w testfile3
+# ls -ahl testfile3  
+-rw-rw-r--+ 1 andy andy 0 Oct 23 20:54 testfile3
+# getfacl testfile3
+# file: testfile3
+# owner: andy
+# group: andy
+user::rw-
+group::rw-
+group:wheel:-w-
+mask::rw-
+other::r--
+
+\end{minted}
+
+Hier wurde bei der Datei \textit{textfile3} Schreibrechte der Gruppe \textit{wheel} gegeben. Diese werden zusätzlich zur eigentlichen Gruppe (\textit{andy}) gespeichert. Beim Listen der Datei fällt das \textit{+} am Ende der Zugriffsrechte auf: dies ist das Zeichen, dass zusätzliche Berechtigungsinformationen bei der Datei hinterlegt wurden. Diese werden schlussendlich mit  \textit{getfacl} angezeigt, dabei fällt auf das sowohl Zugriffsrechte für die eigentliche Gruppe \textit{andy} als auch für die Gruppe \textit{wheel} angezeigt werden.
+
+\section{Prozesse}
+
+Ein Prozess ist die Ausführung eines Programms zur Laufzeit. Das Programm wird zumeist aus einer Datei geladen (bei welcher das executable-Flag gesetzt war). Eine Datei wird unter UNIX immer einem User zugeordnet, ebenso wird ein Prozess auch immer einem User zugeordnet. Der User, als der ein Prozess ausgeführt ist, ist by default allerdings nicht der Besitzer der Datei sondern der aktuell eingeloggte Benutzer der die Datei ausführt. Dies wird auch \textit{effective user} genannt. Systemressourcen wie Speicherverbrauch, geöffnete Dateien, etc. werden unter UNIX immer einem offenen Prozess zugeordnet.
+
+Prozesse, die dem gleichen User zugeordnet sind, können sich untereinander beeinflussen (z. B. über Signale). Dies impliziert, dass aus Sicherheitsgründen Prozesse unterschiedlicher Funktionen (z. B. webserver und datenbankserver) mit unterschiedlichen Benutzern betrieben werden sollten. Auf diese Weise wird verhindert, dass ein kompromittierter Datenbankprozess ebenso den Webserverprozess beeinflussen kann.
+
+\section{The Problem with Root}
+
+Unter UNIX besitzt die Benutzer-ID (UID) 0 eine besondere Bedeutung. Benutzer, welche über diese UID besitzen, sind als Administratoren (traditionell \textit{root} genannt) markiert und besitzen weitgehende Systemrechte. Sie können Hardware modifizieren, Benutzerrechte verändern und im Normalfall auf alle Dateien innerhalb des Systems zugreifen. Root-User sind quasi ``Gott'' auf einem UNIX-System. Dies ist teilweise historisch gewachsen: UNIX kommt aus dem Großrechner-Umfeld wo viele Benutzer auf einem System erlaubt waren, aber nur wenige Benutzer die Systemverwaltung über hatten. Ein normaler Benutzer sollte niemals mit der Systemverwaltung betraut werden.
+
+Da ein Prozess, der als root ausgeführt wird, massive Zugriffsmöglichkeiten hat, sind diese ein lukratives Angriffsziel. Wird ein Fehler in einem root-Prozess gefunden und kann dieser ausgenutzt werden, besitzt ein Angreifer quasi uneingeschränkten Zugriff auf das System.
+
+\section{SUID and Capabilities}
+
+Unter UNIX können viele Funktionen nur mit root-Rechten ausgeführt werden. Ein Beispiel hierfür ist die Möglichkeit beliebige Netzwerkpakete zu generieren. Dies ist problematisch, da z. B. das \textit{ping}-Kommando diese Möglichkeit benötigt um die Erreichbarkeit externer Hosts zu überprüfen. Jedem User, der das \textit{ping}-Kommando benötigt das Administratoren-Passwort zu geben würde die Sicherheit vollkommen unterlaufen.
+
+Als Alternative kann das \textit{Sticky-Bit} bzw. \textit{SUID-Binaries} verwendet werden. Ist dieses bei einem ausführbaren File gesetzt, wird beim Starten des Files nicht der aktuell eingeloggte Benutzer als effektiver Benutzer verwendet, sondern der Besitzer des, dem Programm zugrunde liegenden, Files verwendet.
+
+Dies erlaubt es nun jedem Benutzer das ping-Kommando mit root-Rechten aufzurufen. Allerdings ist dies ein Sicherheitsproblem, da eine Datei mit einem gesetzten SUID-Bit und einem Programmfehler ausreicht, damit ein Angreifer mit root-Rechten auf das System zugreifen kann. Falls ein Programm mit SUID-Bit auf eine Datei zugreift, erfolgt dieser Zugriff ebenso mit den Rechten des Besitzers des ausführbaren Programms. Ein SUID-Programm mit root-Rechten kann also auf alle Dateien des Systems zugreifen.
+
+Ein guter Administrator wird regelmäßig eine Liste der Dateien mit SUID-Rechten am System erstellen und versuchen, diese Liste minimal zu halten.
+
+Die binäre Unterteilung zwischen root/non-root wurde von Linux-Entwicklern früh als Sicherheitsproblem erkannt. Um diesen harten Split zu verbessern wurden \textit{Capabilities} eingeführt. Capabilities beschreiben eine Teilmenge der Administratoren-Operationen, so kann z. B. ein Prozess mit \textit{cap\_net\_raw} beliebige Netzwerkpakete generieren, auch wenn er keine root-Rechte besitzt. Capabilities werden intern ausführbaren Dateien über extended attributes zugeordnet:
+
+\begin{minted}{shell}
+# setcap cap_net_raw=ep /bin/ping
+\end{minted}
+
+Nun kann das Kommando \textit{ping} ohne Root-Rechte als normaler Benutzer gestartet werden.
+
+\section{SecComp}
+
+Um 2002 gab es vermehrt Bestrebungen, private Rechenkapazitäten als Grid wohltätigen Operationen wie z. B. folding@home oder seti@home zur Verfügung zu stellen. Dabei kam die Frage auf, woher Benutzer sich sicher sein konnten, dass der auf ihren Geräten ausgeführte Code nicht ihr System negativ beeinflussen würde. Als Lösung wurde seccomp geboren.
+
+Ein Prozess kann über einen syscall aus dem normalen Modus in den seccomp Modus wechseln. Ein Wechsel vom seccomp Modus in den normalen Modus ist anschließend nicht mehr möglich, dies ist a one-way street. Im seccomp Modus sind nur noch vier Syscalls für den Prozess erlaubt: \textit{read} und \textit{write} um auf bereits geöffnete Dateien und bereits offene Netzwerkverbindungen zuzugreifen, \textit{exit} um den Prozess zu beenden und \textit{sigreturn} um auf Signale zu reagieren. Dies stellte eine sehr restriktive Sandbox dar.
+
+Die Sandbox war leider zu restriktiv und wurde später durch \textit{seccomp-bpf} ersetzt. BPF steht für Berkely-Paket-Filter und beschreibt die Sprache einer minimalen VM welche die Kategorisierung und Filterung von Netzwerkpaketen bzw. von Aufrufen erlaubt. Bei \textit{seccomp-bpf} werden die Regeln für das kontrollierte Programm in BPF geschrieben und dem überwachten Programm zugeordnet. Dieser Ansatz war flexibler und wird z. B. von Android 8.0 verwendet um die Isolation von Apps zu erzwingen. Ähnlich wird dies von Docker verwendet um Container voneinander zu trennen oder z. B. von Chrome und Firefox um die Prozesse der jeweiligen Browser-Tabs vor einander abzusichern.
+
+\section{Side-Effects zwischen Prozessen}
+
+Es gibt unter UNIX noch weitere Möglichkeiten wie sich unterschiedliche Prozesse beeinflussen können.
+
+Alle Prozesse können z. B. auf das /tmp Dateisystem lesend und schreibend zugreifen. Dies wird teilweise von Programmen verwendet um temporäre Dateien zu speichern. Falls hierbei nicht-ausreichende Zugriffsrechte gewählt werden, können weitere Programme diese Informationen abgreifen.
+
+Die Verwendung der traditionellen graphischen Oberfläche X11 ist ebenso problematisch, da hier jedes Programm auf die Eingaben der anderen graphischen Programme zugreifen kann. Hier verschafft der Einsatz der neuen Wayland-Technologie Besserung.
+
+Generell wird auch im Desktop-Bereich stärker auf Container-Lösungen zur Isolation der jeweiligen Applikationen gesetzt. Ein Beispiel hierfür ist z. B. flatpak.
+
+\section{Mandatory Access Control}
+
+Linux implementiert als Basis ein discretionary access control Model (DAC). Dies bedeutet, dass ein Benutzer voller Diskretion über die Vergabe von Rechten für seine Daten an andere Benutzer besitzt. Insbesondere der root-User hat starke Kontrolle über sowohl seine, als auch für die Daten anderer Benutzer.
+
+Im Behördenumfeld bzw. bei Unternehmen mit starker Geheimhaltung ist dies nicht ausreichend. In diesem Fall will man auf Systemen Policies hinterlegen, welche Benutzerzugriffe auf Dateien ``hart'' limitieren. Auch der Root-Benutzer muss sich an diese Policies halten. Diese Policies sind also bindend und werden vom Betriebssystem exekutiert. Der Name für solche Systeme ist daher \textit{Mandatory Access Control (MAC)}. Unter Linux werden solche als LSM (Linux Security Module) abgebildet, die bekanntesten Beispiele sind SELinux und AppAmor.
+
+Ein Beispiel für ein AppArmor-Profile (welches Zugriffsrechte für \textit{tcpdump} einschränkt):
+
+\begin{minted}{text}
+#include <tunables/global>
+
+/usr/sbin/tcpdump {
+  #include <abstractions/base>
+  #include <abstractions/nameservice>
+  #include <abstractions/user-tmp>
+
+  capability net_raw,
+  capability setuid,
+  capability setgid,
+  capability dac_override,
+  network raw,
+  network packet,
+
+  # for -D
+  capability sys_module,
+  @{PROC}/bus/usb/ r,
+  @{PROC}/bus/usb/** r,
+
+  # for -F and -w
+  audit deny @{HOME}/.* mrwkl,
+  audit deny @{HOME}/.*/ rw,
+  audit deny @{HOME}/.*/** mrwkl,
+  audit deny @{HOME}/bin/ rw,
+  audit deny @{HOME}/bin/** mrwkl,
+  @{HOME}/ r,
+  @{HOME}/** rw,
+
+  /usr/sbin/tcpdump r,
+}
+\end{minted}
+
+\chapter{Interals}
+
+Wie werden die jeweiligen Konzepte unter Linux abgebildet?
+
+\section{Namespace}
+
+Namespaces erlauben es Partitionen über Systemressourcen einzuführen. Dadurch wird gemeint, dass ein Prozess in einem Namespace nicht mehr alle Systemressourcen sieht, sondern nur jene, die seinem Namespace zugeordnet wurden.
+
+Nach dem Systemstart besitzt Linux einen namespace: jeder Prozess sieht also alle Ressourcen. Es können nun weitere Namespaces angelegt werden; Prozesse können Namespaces joinen bzw. verlassen.
+
+Folgende Systemressourcen können über Namespaces kontrolliert werden:
+
+\begin{itemize}
+	\item mount: Verwaltung von Mount-Points
+	\item pid: Prozesse in einem Namespace sehen nur andere Prozesse in dem Namespace. Der Vater-Namespace sieht auch alle Prozesse des Kind-Namespaces.
+	\item net: dies entspricht einem virtualisierten Netzwerk-Stack. Eine Netzwerkkarte kann genau einem Namespace zugeordnet werden.
+	\item ipc: inter-prozess communication
+	\item user: erlaubt für virtuelle Benutzergruppen in namespaces. Ein Prozess der als root-User (uid: 0) in einem Namespace exekutiert wird, ist z. B. ein normaler User im user-namespace des Vater-Namespaces.
+	\item cgroup
+	\item UTS: namespace für hostnamen
+\end{itemize}
+
+\section{Control Groups (cgroups)}
+
+Unter Linux werden Ressourcen-Limits traditionell immer an Prozessen angehängt. In der Realität will man allerdings zumeist eine Gruppe von Prozessen mit Limits versehen: z. B. will ein Admin den Speicherverbrauch einer Applikation limitieren, die Applikation besteht dabei aus mehreren Webservern und einem Datenbankserver.
+
+Control Groups erlauben es, Prozesse in eine Control Group zu platzieren und Ressourcen-Limits auf diese Control Gruppe anzuwenden.
+
+\section{Wie verwendet der Kernel diese?}
+
+Der Linux Kernel besitzt kein \textit{Container}-Konzept. Für ihn sind Container einfach nur Gruppen von Prozessen, die vom Rest des Systems mittels namespaces abgeschottet werden und deren Ressourcen über eine gemeinsame Control Group kontrolliert werden. Der Zugriff untereinander und vom Container auf den Kernel wird zumeist über seccomp-bpf abgesichert.
+
+Container wurden auf diese Weise implementiert, damit der Kernel nicht seine Meinung gegenüber Containern erzwingt. Gleichzeitig sollte dadurch die dynamische Evolution von Containern beschleunigt werden.

@@ -1,0 +1,149 @@
+\documentclass[11pt,fleqn,openany]{book} % Default font size and left-justified equations
+
+\input{structure.tex} % Insert the commands.tex file which contains the majority of the structure behind the template
+
+\hypersetup{pdftitle={Secure Operating Systems},pdfauthor={Andreas Happe}} % Uncomment and fill out to include PDF metadata for the author and title of the book
+
+\usepackage{minted}
+\ifdefined\HCode
+	\setminted{
+		autogobble,
+		fontsize=\footnotesize,
+		frame=single
+	}%,bgcolor=bg}
+\else
+	\setminted{
+		autogobble,
+		breaklines,
+		breakanywhere,
+		fontsize=\footnotesize,
+		frame=single
+	}%,bgcolor=bg}
+\fi
+
+\usemintedstyle{tango}
+
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+
+%----------------------------------------------------------------------------------------
+%	TITLE PAGE
+%----------------------------------------------------------------------------------------
+
+\begingroup
+\thispagestyle{empty} % Suppress headers and footers on the title page
+\begin{tikzpicture}[remember picture,overlay]
+\node[inner sep=0pt] (background) at (current page.center) {\includegraphics[width=\paperwidth]{background.pdf}};
+\draw (current page.center) node [fill=ocre!30!white,fill opacity=0.6,text opacity=1,inner sep=1cm]{\Huge\centering\bfseries\sffamily\parbox[c][][t]{\paperwidth}{\centering Secure Operating Systems\\[15pt] % Book title
+{\Large Letting application developers shot themselves in the foot\ldots}\\[20pt] % Subtitle
+{\huge Andreas Happe}}}; % Author name
+\end{tikzpicture}
+\vfill
+\endgroup
+
+%----------------------------------------------------------------------------------------
+%	COPYRIGHT PAGE
+%----------------------------------------------------------------------------------------
+
+\newpage
+~\vfill
+\thispagestyle{empty}
+
+\noindent Copyright \copyright\ 2019 Andreas Happe\\ % Copyright notice
+
+\noindent \textsc{Published by Andreas Happe}\\ % Publisher
+
+\noindent \textsc{\url{https://snikt.net/secops/}}\\ % URL
+
+\noindent Licensed under the Creative Commons Attribution-NonCommercial 3.0 Unported License (the ``License''). You may not use this file except in compliance with the License. You may obtain a copy of the License at \url{http://creativecommons.org/licenses/by-nc/3.0}. Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \textsc{``as is'' basis, without warranties or conditions of any kind}, either express or implied. See the License for the specific language governing permissions and limitations under the License.\\ % License information, replace this with your own license (if any)
+
+\noindent \textit{First printing, October 2019} % Printing/edition date
+
+%----------------------------------------------------------------------------------------
+%	TABLE OF CONTENTS
+%----------------------------------------------------------------------------------------
+
+%\usechapterimagefalse % If you don't want to include a chapter image, use this to toggle images off - it can be enabled later with \usechapterimagetrue
+
+\chapterimage{chapter_head_1.pdf} % Table of contents heading image
+
+\pagestyle{empty} % Disable headers and footers for the following pages
+
+\tableofcontents % Print the table of contents itself
+
+%\cleardoublepage % Forces the first chapter to start on an odd page so it's on the right side of the book
+
+\pagestyle{fancy} % Enable headers and footers again
+
+\mainmatter
+
+Das Ziel der Vorlesung ist es, den Studenten Hints zur sicheren Administration von Sytemen zu geben. Überspitzt ausgedrückt hätte ich in Prä-DevOps-Zeiten ``\textit{wie kann ich als Admin sicherstellen, dass die Entwickler sich selbst in den Fuss schießen, ohne dass ich dafür verantwortlich gemacht werden kann?}'' gesagt.
+
+Somit ist der Scope der Vorlesung auch nur die direkte Infrastruktur: die Hardware und das Betriebssystem des Computers auf dem schlußendlich eine Applikation installiert wird. Wir betrachten Hardware im weiteren Sinn, deswegen inkludieren wir auch Virtualisierungs- und Containerlösungen in der Vorlesung.
+
+Out-of-scope sind alle weiteren Komponenten eines logischen Systems. Wir beschäftigen uns nicht mit Fehlern in der Applikation an sich oder in deren implementierten Geschäftsprozessen. Wir betrachten weder das Netzwerk (über welches unsere Geräte angesprochen werden) noch die organisatorischen Prozesse welche unsere Systeme tangieren.
+
+\textit{gl hf}
+
+\include{parts/separation}
+
+\include{parts/unix}
+
+\include{parts/container}
+
+\include{parts/mobile}
+
+\part{Abschließende Worte}
+
+Während meines Parts der Vorlesung versuchte ich sowohl auf klassische als auch auf aktuelle Sicherheitsthemen einzugehen. Der aktuelle Kauf von Docker Enterprise unterstreicht schön, wie schnelllebig unsere Branch ist --- und indirekt auch, wie kontrproduktiv es während der Ausbildung ist, nur konkrete Technologie ohne ein Gefühl für deren Entwicklung und für das Gesamtgefüge zu lehren.
+
+Gewisse Muster scheinen sich in der Geschichte der IT-Security zu wiederholen, leider werden in jeder Iteration fast alle Fehler alter Iterationen wieder begangen.
+
+Ein großes Thema der Vorlesung war die Isolation zwischen unterschiedlichen Komponenten. Auf der einen Seite, um ein komplexes System\footnote{Analog zum objekt-orientieren Ansatz in der Programmierung, hier ist Daten-kapselung und -hiding ebenso ein wichtiges Thema.} in kleine und getrennt analysierbare Teilbereiche zu zerlegen; auf der anderen Seite um den Impact im Zuge eines Security-Incidents zu minimieren. Ob es sich hierbei um Hardware, Virtuelle Maschinen, Container, Prozesse oder Benutzerrollen handelt ist eine Detailfrage, die grundsätzliche Frage bleibt ident.
+
+Ich kann ebenso keine Vorlesung halten ohne das Wort ``Minimalprinzip'' zu erwähnen.
+
+Ein weiteres wiederkehrendes Motiv ist Vertrauen bzw. wie dieses automatisiert überprüft werden kann. Wie kann ein System oder ein Administrator die Vertrauenswürdigkeit von Hardware, einer virtuellen Maschine, eines Container-Images, dem lokalen Festplatteninhalt oder von bezogenen Paketen überprüfen? Gerade in diesem Umfeld scheinen die identen Fehler mit einer Periode von mehreren Jahren immer wieder aufzutreten.
+
+Ein weiterer Aspekt ist Automatisierbarkeit, Nachvollziehbarkeit und Abdeckung. Woher kann ein Administrator wissen, dass Updates unternehmensweit auf allen Sytemen eingespielt, oder das eine wichtige Konfigurationsänderung auf allen betroffenen Systemen aktiviert, wurde? Essentielle Fragen deren Nichtbeantwortung meine Arbeit als Pen-Tester vereinfachen.
+
+Und schlußendlich ist Schulung und Awareness grundlegend. Ohen zu wissen, wogegen man sich schützen musss, ist schwer eine Verteidigung denkbar. Awareness sollte nicht belächelt werden.
+
+In dem Sinn hoffe ich, dass mein Vortragpart zum Nachdenken gebracht hat. Wenige der vorgekommenen Sicherheitsfehler habe ich übrigens nicht während meiner Zeit als Administrator selbst verbrochen, ich bin wieder Mal ein gutes schlechtes Beispiel. Macht es besser.
+
+\textit{gg}
+
+\chapter{Reflexionsfragen}
+
+Bevor wer auf dumme Ideen kommt, das ist erst ein erster Versuch und noch nicht die finale Liste:
+
+\begin{enumerate}
+	\item Was versteht man unter Tailored Access Operations and wie kann man sich dagegen wehren?
+	\item Erläutern Sie Angriffe gegen BCMs. Wie kann ein Angriff aussehen und erläutern Sie drei Gegenmaßnahmen.
+	\item Was sidn DMA-basierte Angriffe und welche Gegenmaßnahmen sind möglich? Warum sind sie besonders gefährlich für Computer mit Festplattenverschlüsselung?
+	\item Erläutern Sie den UEFI SecureBoot Vorgang.
+	\item Wie schützt die Kombination von UEFI Secure Boot und IMA/EVM die Datenintegrität eines Computers? Vor welchen Angriffen schützen diese Absicherungen?
+	\item Erläutern Sie die Vor- und Nachteile von Datei- bzw. Block-basierter Verschlüsselung.
+	\item Wie unterscheiden sich virtuelle Maschinen und Container aus Sicherheitssicht?
+	\item Erläutern Sie das klassiche UNIX/POSIX-Dateiberechtigungskonzept. Wie wurde dies durch ACLs erweitert?
+	\item Was sind Programme mit gesetzten SUID bit und wie können Linux-Capabilities helfen?
+	\item Was sind Linux Namespaces? Wie (von wem) werden sie verwendet und geben Sie drei Beispiele von Namespaces.
+	\item Welche Vorteile besitzt die Verwendung eines Linux-Package-Managers gegenüber dem Selbst-Compilieren von Source Code?
+	\item Welche Probleme können auftreten, wenn ein User eine eigene Laufzeitumgebung (z. B. Ruby samt Bibliotheken) in seinem Home-Directory aufsetzt?
+	\item Wie werden Container beim Software-Deployment verwendet und auf welche Aspekte sollte man beim Erstellen von Containern achten (nenne zumindest vier).
+	\item Was versteht man unter Infrastructure as Code?
+	\item Wie funktioneren datei-basierte IDS?
+	\item Welche Anforderungen sollte man als Administrator an ein (zentralisiertes) Logging-System stellen?
+	\item Welchen Zweck erfüllen Docker-Registries (wie DockerHub) und welche Sicherheitsprobleme können bei Verwendung von Images aus diesen Repositories entstehen?
+	\item Welche high-level Sicherheitsprobleme können bei Verwendung von Docker auftreten? Nennen sie mindestens drei.
+	\item Welche Kubernetes-Services sind für Angreifer interessant und wie sollte ein Administrator diese absichern?
+	\item Welches Sicherheitsproblem kann auftreten, wenn der Docker-Kontrolsocket in einen Container übergeben wird?
+	\item Wie werden Service-Meshes verwendet und was versteht man unter einem Sidecar-Proxy?
+	\item Nennen sie fünf Sicherheitsmaßnahmen die bei modernen mobilen Betriebssystemen standardmäßig eingesetzt werden, die auf klassichen Servern allerdings durch Administratoren manuell konfiguriert werdne müssen.
+	\item Wie können Administratoren die Systemkonfiguration mittels ansible, puppet oder chef automatisieren? Wie funktionieren diese Systeme?
+	\item Was sind Kubernetes Pods und wie werden diese eingesetzt?
+	\item Was versteht man unter Microservices, vergleiche eine Microservice-Architektur mit einer klassischen monolithischen Architektur.
+\end{enumerate}
+
+\end{document}

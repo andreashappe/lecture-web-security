@@ -1,0 +1,44 @@
+\part{Mobile Betriebssysteme}
+
+Während die Geschwindigkeit der Entwicklung sich bei Server- und Desktopsystemen leicht verlangsamt hatte, gab es eine Vielzahl an Innovationen im Umfeld mobiler Betriebssyteme seit der Einführung des Apple iPhone und des initialen Google Android Systems. Eventuell ist das Wort Innovation hier falsch verwendet, aber viele Konzepte die bereits in Nischen auf konventionellen Geräten umgesetzt wurden, wurden durch SmartPhones massentauglich bzw. wurden diese durch SmartPhones zum ersten Mal von der breiten Masse der Benutzer erkannt und für ``praktisch'' befunden.
+
+Im Zuge der Vorlesung betrachten wir zumeist moderne iOS (12 aufwärts) und Android (9.0 aufwärts) Geräte.
+
+Mobilgeräte bzw. mobile Betriebssysteme besitzen eine andere Ausgangslage als klassische Systeme. Der Hersteller des Geräts kann stärker auf die vorhandene Hardware Einfluss nehmen. Im Apple iPhones Fall kontrolliert der Hersteller die Hardware direkt, im Android-Fall sind Software-Features bzw. Android-Compliance mit Hardware-Requirements verbunden. Microsoft versuchte zwar ähnliches mit Windows, war damit allerdings vergleichsweise weniger erfolgreich.
+
+Ebenso werden Mobilgeräte von Anwendern nicht als die generischen Computer, die sie sind, gesehen. Die Hersteller können Benutzer weitaus stärker einschränken als diese es bei einem Desktop akzeptieren würden. Dies erlaubt es, einige Sicherheitsoptionen zu implementieren, die sie auf einem Desktop nicht erlauben würden. So sind z. B. die meisten Benutzer nicht Administratoren ihres Telefons und können auch nicht beliebige Software installieren --- Möglichkeiten, auf die sie bei einem Desktop tendenziell bestehen würden.
+
+Folgende Elemente sind bei Mobiltelefonen umgesetzt:
+
+\begin{description}
+	\item[Abgesicherter Bootvorgang]: der Hersteller behält im Normalfall eine hohe Kontrolle über die Hardware (das SmartPhone) und erlaubt nur das Einspielen von signierter Firmware-, Boot- und Systemimages. Dadurch kann zur Laufzeit die Boot-Kette bis zum Starten des Betriebssystems überprüft, und dadurch ein gesicherter Boot-Vorgang angenommen werden.
+	\item[Festplattenverschlüsselung]: mittlerweile wird bei den großen mobilen Betriebssystemfamilien per Default eine Festplattenverschlüsselung eingesetzt. Hier hatte Apple den Vorteil, dass sie ihre Hardware selbst bauten und daher immer von einer schnellen Hardware-unterstützten Verschlüsselung (AES-GCM) ausgehen konnte. Google hat zusätzlich für ältere CPUs (zumeist 32bit ARM CPUs) eine schnelle Software-basierte Verschlüsselung (ChaCha20-Poly1309) adaptiert.
+	\item[Zentrale App-Stores] erlauben den Bezug von Software aus einer Quelle. Google/Apple überprüfen hier serverseitig Applikationen auf Schadcode; sofern Applikationen nur aus diesen Quellen bezogen werden ist z. b. ein Virenscanner am Endpunkt wenig sinnvoll. Apple verbieten das Betreiben von Nicht-Apple App-Stores, unter Android gibt es mehrere Third-Party App-Stores, sowohl kommerziell (Amazon, Huawei) als auch open-source (Cydia).
+	\item[Containerisierte Applikationen]: jede Applikation wird in einem eigenen Container ausgeführt, dadurch wird der freie Zugriff auf Daten zwischen Applikationen eingeschränkt.
+	\item[Applikation-Capabilities] regeln, auf welche Daten bzw. SmartPhone-Funktionen eine Applikation zugreifen darf. Ähnliches wird nun am Linux-Desktop mittels Flatpak umgesetzt.
+	\item[Netzwerk-Security]: sowohl Android als auch iOS zwingen Appplikationen dazu, gesicherte Netzwerkverbindungen zu verwenden (HTTPS samt korrekter Zertifikatskette). Wenn eine Applikation auf ungesicherte Ressourcen zugreifen will, muss sie dafür eine explizite Ausnahme definieren. Diese Ausnahme muss bei Apple vor Aufnahme einer Applikation in den App-Store auch dokumentiert und quasi beantragt werden.
+	\item[Credential Storage]: Mobile Betriebssysteme besitzen Vorkehrungen zur Speicherung von sensiblen Daten wie Credentials. Im Gegensatz zu klassischen Desktops wird hier auch darauf Wert gelegt, dass Credentials beim Sperren eines Gerätes aus dem Arbeitsspeicher entfernt werden\footnote{Ein Mobilgerät wird gerne eingeschalten vergessen und besitzt aufgrund des eingebauten Akkus eine lange Lauf-/Standby-Zeit. Diese Kombination macht es zu einem guten Ziel für einen \textit{evil maid} bzw. \textit{DMA-basierten} Angriff.}.
+	\item[Strikte Trennung von Admin (root) und normalen Benutzern]. Auf Mobilgeräten ist es nicht per-default möglich, root-Benutzer zu werden.
+	\item [Spezialhardware] wie Fingerprintsensoren und TPM-Chips sind häufig vorgeschrieben und es gibt ein standardisiertes Interface über welches Applikationen mit dieser Spezialhardware kommunizieren kann.
+	\item [Zentrale Administration] bzw. zentrales Management der Device-Konfiguration bzw. der installierten Software ist über den Einsatz von Mobile-Device-Management Software möglich.
+\end{description}
+
+Allerdings kann der Administrator diese Punkte selten direkt beeinflussen. Wichtiger ist es, dass Entwickler diese Funktionen benutzen bzw. nicht aktiv die Schutzfunktionen aushebeln. Administratoren können hier primär die Softwareauswahl eines Konzerns beeinflussen. Zwei Punkte, die eher im Admin-Bereich liegen, sind Mobile-Device-Management (MDMs) bzw. Virenscanner-Apps.
+
+\chapter{Mobile Device Management}
+
+Mittels eines Mobile Device Managements können  zentral Mobilgeräte administriert werden. Typische Aufgaben sind das Konfiguration von Device-Policies (z. B. PIN-Eingabe, Passwort-Richtlinien, Konfiguration der Verschlüsselung), das automatisierte Enrollment von neuen Benutzern auf Geräten, das Remote-Locking und Wiping abhanden gekommener Geräte, als auch das automatisierte Bereitstellen von Applikationen.
+
+MDMs bieten häufig ``Containersierung'': darunter versteht man die Separierung von Applikationen und Daten in Business- und Privatdaten. Apple war bis jetzt kein Fan dieses Konzept, mit iOS 13 wurde allerdings ebenso eine Trennung zwischen Firmen- und Benutzerdaten eingezogen; Google bietet mittlerweile eine eigene Implementierung dieser Funktion als ``Android for Work'' an.
+
+Initial wurden MDMs als Third-Party-Software angeboten, so wurde z. B. auf Samsung-SmartPhones ein MDM zusammen mit Fort Knox kombiniert. Mittlerweile werden MDM-Lösungen sowohl von Apple als auch Google angeboten, klassiche Third-Party-MDM-Hersteller versuchen ihr Portfolio stärker Richtung Mobile-EDR (Endpoint Detection and Response) zu erweitern bzw. durch Technologie-übergreifende Lösungen (z. B. Clients für mobile, Desktop- und Serverbetriebssysteme) zu bestehen. Ein Vorteil von Third-Party Lösungen ist, dass diese auch on-premise betrieben werden können; sowohl Apple als auch Google erlauben nur den Betrieb innerhalb der jeweiligen Cloud --- in diesem Fall müssen Benutzerdaten, z .B. ein ActiveDirectory, in die betreffende Cloud synchronisiert werden\footnote{\url{https://support.google.com/cloudidentity/answer/106368}}. Ebenso sind Third-Party Lösungen mittlerweile zumeist preislich attraktiver.
+
+\chapter{Mobile Virenscanner}
+
+Für iOS und Android werden immer wieder Virenscanner angeboten. Laut aktuellen Untersuchungen erkennen der Großteil dieser Virenscanner bei Testdaten weniger als 30\% der kompromittierten Applikationen.
+
+Prinzipiell testen Apple als auch Google Applikationen im jeweiligen App-Store auf Schadcode, Google involviert in näherer Zukunft (Stand 2019) hier auch Hersteller von Antiviren-Software. Sofern bei der Auswahl der App-Quellen Sorgfalt gewaltet wurde, sollte ein separater Virenscanner unnötig sein (und theoretisch nur die Angriffsfläche vergrößern)\ldots und eine Darstellungsmöglichkeit für Werbung bieten. Normale Android-/iOS-Applikationen besitzen auch geringe Möglichkeiten auf andere Applikationen Einfluss zu nehmen (da sie in einer Sandbox betrieben werden).
+
+Einige Antiviren-Applikationen installieren sich als lokaler VPN-Server um die Kommunikation des SmartPhones zu monitoren. Sofern die überwachte Applikation rudimentäre Sicherheitsmaßnahmen wie Certificate-Pinning verwendet, funktioniert dies nicht mehr (da dies in impliziter Man-in-the-Middle Angriff wäre). DNS-Monitoring wird in Zukunft Probleme mit DoH (DNS-over-HTTPS) bekommen.
+
+In Summe klingen mobile Antivirus-Applikationen eher nach Snakeoil anstatt einer sinnvollen Investition.

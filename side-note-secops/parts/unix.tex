@@ -1,0 +1,466 @@
+\part{Linux-Stuff}
+
+Dieses Kapitel betrachtet einige Sicherheitsaspekte der Linux-Konfiguration. Da es sich um eine Security- und nicht um eine Administrationsvorlesung handelt, wird auf klassische Systemkonfiguration (z. B. Netzwerkkonfiguration) nicht direkt eingegangen.  
+\chapter{User Management}
+
+Unter UNIX gibt es traditionell eine strikte Trennung zwischen normalen Benutzern und Systemusern (root, UID: 0). Benutzer mit Systemrechten werden minimiert um die Angriffsfläche bzw. Fehlbenutzungen zu vermeiden.
+
+Die Shell dient zur Interaktion des Benutzers mit dem System. Hier wird zwischen Login- und Non-Login shells unterschieden. Ersteres ist der erste Prozess der für einen Benutzer nach einem erfolgreichem Login gestartet wird und konfiguriert zumeist das User-Environment (z. B. setzt konfigurierte Umgebungsvariablen).
+
+Um remote (über ein Netzwerk) auf ein System zuzugreifen sollte seit 1995 SSH verwendet werden. Ältere Alternativen wie z. B. rsh oder telnet bieten keinen Integritäts- oder Vertraulichkeitsschutz, ihr Einsatz verbietet sich daher selbst. Eine SSH-Benutzerauthentication kann über Benutzername/Passwort-Kombination oder über ein public-key-Verfahren erfolgen. Aus Sicherheitsgründen (z. B. um Brute-Force-Angriffe zu vermeiden) sollte letzteres gewählt werden. Aus diesem Grund deaktivieren viele Distributionen den remote root-Zugriff sofern Benutzername/Passwort als Authentifizierungsmethode gewählt wurde.
+
+\section{Speicherung der User Credentials}
+
+Traditionell werden in UNIX die Anmeldedaten auf mehrere Textdateien aufgeteilt. In \textit{/etc/passwd} sind Informationen wie login, Heimatverzeichnis, Login-Shell, UID gespeichert. In \textit{/etc/group} befindet sich die Zuordnung von Benutzern zu Gruppen. Initial beinhaltete die \textit{/etc/passwd} auch den Passwort-Hash jedes Benutzers. Da auf diese Datei von allen Benutzern lesend zugegriffen werden kann, ist dies ein Sicherheitsproblem (jeder eingeloggte Benutzer könnte die Passwort-Hashes aller anderen Benutzer auslesen). Um dieses Problem zu lösen werden Passwort-Hashes mittlerweile getrennt in der \textit{/etc/shadow} gespeichert. Ein Zugriff auf diese Datei ist dem root-Benutzer vorbehalten.
+
+Ein rein-statisches System zur Benutzerauthentication würde schnell an die Grenzen stoßen. Im Unternehmensumfeld will man gerne Benutzer gegen ein zentrales Verzeichnis authentifizieren (z. B. ActiveDirectory oder LDAP), bei kritischen Accounts würde sich die Verwendung einer Mehrfaktorenauthentifizierung anbieten. Linux ermöglicht diese Dynamik durch PAM --- dem Plugable Authentication Mechanism. In dem Verzeichnis \textit{/etc/pam.d} befindet sich eine Konfigurationsdatei pro Programm/Dienst, welches eine Benutzerauthentication benötigt. Die jeweilige Konfigurationsdatei konfiguriert, aus welchen Quellen Authentificationsdaten bezogen, und wie diese angewendet werden sollten. Auf diese Weise können Netzwerkanmeldungen, Multi-Faktoren-Authentication aber auch optionale Features wie Passwortrichtlinien modular konfiguriert werden.
+
+\section{su, runuser und sudo}
+
+Die saubere Trennung zwischen normalen Benutzern und Systemusern hat seinen Ursprung auf Großrechnern. Hier findet sich eine relativ stabile Systemkonfiguration vor, ein normaler User sollte nie Administrationstätigkeiten ausführen müssen. Dies ist auf einem privaten Desktop tendenziell nicht mehr der Fall. Falls ein Benutzer sich für Administrationstätigkeiten immer aus- und als Administrator einloggen müsste, würde dies wahrscheinlich zu sehr nerven, und dazu führen, dass a la longue alle Benutzer mit Administratorenrechten versehen wären. Da dies suboptimal aus Sicherheitssicht ist, wurden einfache Möglichkeiten zum Wechsel der Benutzeridentität während der Laufzeit geschaffen.
+
+Mittels des Kommandos \textit{su} (superuser) kann ein Benutzer seine Identität auf ``root'' hochstufen. Hierfür ist die Eingabe des root-Passworts notwendig. Analog dazu kann ein root-Benutzer mit dem Kommando \textit{runuser} die Identität eines anderen Benutzers annehmen --- hierfür ist kein Kennwort notwendig (da dieses Kommando von einem Systemuser ausgeführt wird). Mit ``su -l'' kann eine login-Shell gestartet werden.
+
+Problematisch hierbei ist, dass beim Übergang zum Superuser Umgebungsvariablen nicht sanitized, sondern Großteils aus der aufrufenden Shell übernommen werden. \textit{su} setzt die Variablen \textit{HOME} und \textit{SHELL} immer neu, \textit{USER} und \textit{LOGNAME} werden nur neu gesetzt, falls der neue Benutzername ungleich  \textit{root} ist. Dies ist problematisch da viele Programme diese Umgebungsvariablen auslesen und aufgrund dieser Aktionen ausführen. Wenn ein Angreifer eine Umgebungsvariable tainten kann, und danach \textit{su} ausgeführt wird, hat er effektiv eine Umgebungsvariable des root-Users vergiftet.
+
+Eine Alternative ist die Verwendung des Kommandos \textit{sudo}. Wird dieses Tool verwendet wird ein minimales Set an Umgebungsvariablen generiert, es werden by default aber keine Umgebungsvariablen aus der aufrufenden Shell übernommen. Zur Verwendung von \textit{sudo} muss das Passwort des aktuellen Benutzers (nicht des aufzurufenden Benutzers) eingegeben werden. Ein weiterer Vorteil von \textit{sudo} ist, dass über die Konfigurationsdatei \textit{/etc/sudoers} pro Benutzer die ausführbaren Kommandos auf bestimmte Kommandos beschränkt werden kann. Mit ``sudo -i'' kann eine Login-Shell gestartet werden.
+
+\section{Limits}
+
+Mittels \textit{ulimit} können Ressourcen-Limits an eine Login-Shell (und alle ihre Kinder) gebunden werden. Über diese können z. B. die maximal verbrauchbare CPU-Zeit, Speicherverbrauch oder die Handhabung von Core-Dumps konfiguriert werden. Mit ``ulimit -a'' können die aktuellen Limits ausgegeben werden:
+
+\begin{minted}{shell}
+# ulimit -a    
+-t: cpu time (seconds)              unlimited
+-f: file size (blocks)              unlimited
+-d: data seg size (kbytes)          unlimited
+-s: stack size (kbytes)             8192
+-c: core file size (blocks)         unlimited
+-m: resident set size (kbytes)      unlimited
+-u: processes                       62968
+-n: file descriptors                1024
+-l: locked-in-memory size (kbytes)  64
+-v: address space (kbytes)          unlimited
+-x: file locks                      unlimited
+-i: pending signals                 62968
+-q: bytes in POSIX msg queues       819200
+-e: max nice                        0
+-r: max rt priority                 0
+-N 15:                              unlimited
+\end{minted}
+
+Mit \textit{umask} können die Dateirechte neu angelegter Dateien und Verzeichnisse vorkonfiguriert werden.
+
+Quotas können pro Dateisystem verwendet werden um Benutzern oder Gruppen Limits bei dem maximal verbrauchten Speicherplatz vorzuschreiben.
+
+\chapter{Service Management}
+
+Systeme benötigen zumeist mehrere Hintergrunddienste. Auf Servern umfassen diese die bereitgestellten Services, auf Desktops müssen Hintergrundprozesse gestartet werden. Das Starten und Überwachen dieser Services ist Teil dieses Kapitels.
+
+Unter UNIX wird ein Dienst, ohne interaktiver Shell-Interaktionsmöglichkeit mit einem Benutzer, traditionell als \textit{daemon} bezeichnet.
+
+\section{Init}
+
+Service-Management ist stark mit dem Init-System verbunden. Das init-System wird als erster Prozess vom Kernel gestartet (per default ist dies \textit{/sbin/init}, dies kann über die Kernel-Bootoption \textit{boot=} konfiguriert werden). Das init-Sytem konfiguriert das System, startet daemons und bietet schlussendlich dem Benutzer die Möglichkeit sich einzuloggen.
+
+\subsection{SysV-Init}
+
+Im UNIX-SysV-Init werden verschiedene Shell-Scripts unter \textit{/etc} zur Konfiguration des Systems verwendet. Diese werden in einem wohl-definierten Verzeichnis (abhängig vom konfigurierten Runlevel) vorgefunden, Skripts werden in alphabetischer Reihenfolge nacheinander als Benutzer \textit{root} aufgerufen. Per Konvention können die meisten Skripts mittels eines Parameters gesteuert werden, zumeist werden \textit{start}, \textit{stop}, \textit{status} und \textit{restart} als Parameter akzeptiert. Jeder daemon benötigt ein eigenes Skript für dessen Konfiguration.
+
+Das Schreiben der Skripts ist nicht trivial, es sollten folgende Aspekte beachtet werden:
+
+\begin{itemize}
+	\item Startreihenfolge und Abhängigkeiten zwischen Skripts: wurden notwendige Prozesse bereits gestartet bzw. ist z. B. das Netzwerk bereits verfügbar?
+	\item Wechsel des effektiven Benutzers von \textit{root} auf einen nicht-root Benutzer
+	\item Setzen von Ressourcen-Limits
+	\item Behandlung von gestarteten Kind-Prozessen
+	\item Setup eines Monitoring-Tools welches abgestürzte Prozesse ggf. neu startet
+\end{itemize}
+
+Während das init-Grundsystem einfach und verständlich ist, artet das Schreiben von init-Skripts schnell in komplexen Skripts aus. Da jeder daemon ein Skript bereitstellen muss, ist dies mit Redundanzen verbunden. Im worst-case werden defekte init-Skripts als Basis für neue init-Skripts gewählt.
+
+\subsection{SystemD}
+
+2010 wurde von RedHat-Mitarbeitern SystemD als neues init-System vorgestellt. Im Gegensatz zu SysV --- einfaches Grundsystem, komplexe Skript-basierte Konfiguration --- besteht es aus einem komplexen Grundsystem, verwendet aber einfache Konfigurationsdateien.
+
+Grundeinheit von Systemd sind sog. Units welche jeweils einen Systemdienst kapseln. Eine Unit wird mittels eines Konfigurationsfiles beschrieben, Optionen regeln das genaue Verhalten des daemons. Beispiele für Optionen:
+
+\begin{itemize}
+	\item Kommandos für das Starten/Stoppen eines Dienstes
+	\item Abhängigkeiten zwischen Units (dynamische Startreihenfolge)
+	\item zu verwendende User und Gruppen
+	\item Ressourcen-Limits, Control Group Configuration
+	\item Verwendung von AppArmor, SELinux und Capabilities
+	\item Umgebungsvariablen
+	\item Verhalten im Fehlerfall, Neustarten von Diensten
+\end{itemize}
+
+Da dieses System einen Bruch mit 50 Jahren UNIX-Tradition darstellte wurde es kontrovers empfangen. Dabei half es nicht, dass immer mehr Features in SystemD integriert wurden (cron, logging, network management, etc.) und sowohl Feature-creep als auch eine neue Monokultur befürchtet wurde. Mittlerweile wird SystemD von allen größeren Linux-Distributionen verwendet.
+
+Aktuell (Stand November 2019) ist die SystemD-Diskussion in Debian wieder aufgeflammt\footnote{\url{https://lwn.net/Articles/804254/}}. Aktuell versucht Debian mehrere Init-Systeme zu unterstützen, dies zwingt Package-Maintainer dazu sowohl SystemD-Unit files (per Default) als auch weitere Init-Systeme zu supporten. Falls der Entwickler der Software nur SystemD-Unit-Files anbiete, ist dies mit einem Mehraufwand für Maintainer verbunden. Ebenso gibt es mittlerweile Packages, welche auf SystemD-Features dependen und es ist noch nicht klar, wie Debian mit dieser Situation umgehen wird. Potentiell wird durch die neue Abstimmung, der Rang von SystemD erhöht und damit das langsame Scheiden alternativer Init-Systeme in Debian begonnen. Aktuell verwenden über 99\% der Debian-Installationen SystemD als Init-System.
+
+SystemD bietet auch mehrere Sicherheitsoptionen:
+
+\begin{itemize}
+	\item mit der \textit{ProtectHome} Option kann Diensten der Zugriff auf das Home-Directory (\textit{/home}, \textit{/root}, \textit{/run/user}) untersagt, oder ein leeres Home-Directory vorgetäuscht werden.
+	\item \textit{ProtectSystem} erlaubt es, Systemverzeichnisse wie \textit{/user} oder \textit{/boot} für den jeweiligen Dienst schreibgeschützt erscheinen zu lassen. Dies kann auf \textit{/etc} bzw. auf das Gesamtsystem ausgedehnt werden.
+	\item \textit{PrivateTmp} täuscht jedem Dienst ein privates und leeres \textit{/tmp}-Verzeichnis vor.
+	\item Der Zugriff auf Netzwerke kann für den jeweiligen Dienst eingeschränkt werden.
+	\item Der Zugriff auf Hardware-Devices kann für den jeweiligen Dienst eingeschränkt werden.
+	\item Der Zugriff auf Kernel-Einstellungen (z. B. über die virtuellen \textit{/proc} und \textit{/sys} Dateisysteme) kann eingeschränkt werden.
+\end{itemize}
+
+\chapter{Network Security}
+
+Da es sich bei der Vorlesung um eine Security-, und nicht um eine Administrations-, Vorlesung handelt, werden einzelne Security-relevante Aspekte beleuchtet während grundlegende Konfiguration nicht erwähnt wird.
+
+\section{Minimierung der Angriffsfläche}
+
+Server müssen an einem Netzwerkport lauschen (engl. ``listen'') um Kontaktanfragen entgegen nehmen zu können. Wenn ein Service nicht an ein Netzwerkinterface gebunden (engl. ``bind'') ist, kann es über dieses Netzwerkinterface keine Anfragen entgegen nehmen und daher auf diese Weise auch nicht angegriffen werden.
+
+Um listen Sockets der Protokolle TCP und UDP samt Informationen für den Service, der diesen Socket geöffnet hat, anzuzeigen, kann das Kommando ``netstat -tulpn'' verwendet werden:
+
+\begin{minted}{shell}
+# sudo netstat -tulpn
+Active Internet connections (only servers)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name    
+tcp        0      0 127.0.0.1:631           0.0.0.0:*               LISTEN      949/cupsd           
+tcp        0      0 127.0.0.1:44321         0.0.0.0:*               LISTEN      1165/pmcd           
+tcp        0      0 127.0.0.1:4330          0.0.0.0:*               LISTEN      7154/pmlogger       
+tcp        0      0 127.0.0.1:43599         0.0.0.0:*               LISTEN      11537/vim           
+tcp        0      0 0.0.0.0:111             0.0.0.0:*               LISTEN      1/systemd           
+tcp6       0      0 ::1:631                 :::*                    LISTEN      949/cupsd           
+tcp6       0      0 ::1:44321               :::*                    LISTEN      1165/pmcd           
+tcp6       0      0 ::1:4330                :::*                    LISTEN      7154/pmlogger       
+tcp6       0      0 :::111                  :::*                    LISTEN      1/systemd           
+udp        0      0 0.0.0.0:5353            0.0.0.0:*                           846/avahi-daemon: r 
+udp        0      0 0.0.0.0:46351           0.0.0.0:*                           846/avahi-daemon: r 
+udp        0      0 192.168.8.101:68        0.0.0.0:*                           936/NetworkManager  
+udp        0      0 0.0.0.0:111             0.0.0.0:*                           1/systemd           
+udp        0      0 127.0.0.1:323           0.0.0.0:*                           869/chronyd         
+udp6       0      0 :::42800                :::*                                846/avahi-daemon: r 
+udp6       0      0 :::5353                 :::*                                846/avahi-daemon: r 
+udp6       0      0 :::111                  :::*                                1/systemd           
+udp6       0      0 ::1:323                 :::*                                869/chronyd   
+\end{minted}
+
+Eine neuere Möglichkeit diese Information anzuzeigen wäre  ``ss -pult'':
+
+\begin{minted}{shell}
+# sudo ss -pult                               
+Netid     State       Recv-Q      Send-Q                  Local Address:Port               Peer Address:Port                                                   
+udp       UNCONN      0           0                             0.0.0.0:mdns                    0.0.0.0:*         users:(("avahi-daemon",pid=846,fd=12)) 
+udp       UNCONN      0           0                             0.0.0.0:46351                   0.0.0.0:*         users:(("avahi-daemon",pid=846,fd=14))  
+udp       UNCONN      0           0                192.168.8.101%enp3s0:bootpc                  0.0.0.0:*         users:(("NetworkManager",pid=936,fd=19))  
+udp       UNCONN      0           0                             0.0.0.0:sunrpc                  0.0.0.0:*         users:(("systemd",pid=1,fd=42))  
+udp       UNCONN      0           0                           127.0.0.1:323                     0.0.0.0:*         users:(("chronyd",pid=869,fd=5))  
+udp       UNCONN      0           0                                [::]:42800                      [::]:*         users:(("avahi-daemon",pid=846,fd=15))  
+udp       UNCONN      0           0                                [::]:mdns                       [::]:*         users:(("avahi-daemon",pid=846,fd=13))  
+udp       UNCONN      0           0                                [::]:sunrpc                     [::]:*         users:(("systemd",pid=1,fd=44))  
+udp       UNCONN      0           0                               [::1]:323                        [::]:*         users:(("chronyd",pid=869,fd=6))  
+tcp       LISTEN      0           5                           127.0.0.1:ipp                     0.0.0.0:*         users:(("cupsd",pid=949,fd=7))  
+tcp       LISTEN      0           5                           127.0.0.1:44321                   0.0.0.0:*         users:(("pmcd",pid=1165,fd=0))  
+tcp       LISTEN      0           5                           127.0.0.1:dey-sapi                0.0.0.0:*         users:(("pmlogger",pid=7154,fd=7))  
+tcp       LISTEN      0           5                           127.0.0.1:43599                   0.0.0.0:*         users:(("vim",pid=11537,fd=3))  
+tcp       LISTEN      0           128                           0.0.0.0:sunrpc                  0.0.0.0:*         users:(("systemd",pid=1,fd=41))
+tcp       LISTEN      0           5                               [::1]:ipp                        [::]:*         users:(("cupsd",pid=949,fd=6))  
+tcp       LISTEN      0           5                               [::1]:44321                      [::]:*         users:(("pmcd",pid=1165,fd=3))  
+tcp       LISTEN      0           5                               [::1]:dey-sapi                   [::]:*         users:(("pmlogger",pid=7154,fd=8))  
+tcp       LISTEN      0           128                              [::]:sunrpc                     [::]:*         users:(("systemd",pid=1,fd=43))
+\end{minted}
+
+Das konkrete Beispiel zeigt meinen Desktop. Programme die auf localhost (127.0.0.1 bzw. :::1) hören, können nur ausgehend von der lokalen Maschine angesprochen werden und stellen daher ein kleineres Sicherheitsrisiko dar. Prozesse die auf 0.0.0.0 hören, sind über alle konfigurierten Netzwerke der Maschine erreichbar.
+
+Aus Sicherheitssicht ist es empfehlenswert die Anzahl der (öffentlichen) Services zu minimieren. Dies vermindert die Angriffsfläche --- ein Service, mit dem ein Angreifer nicht kommunizieren kann, ist ein Service das nicht direkt angegriffen werden kann.
+
+\section{Linux-Firewall}
+
+Linux besass im Laufe der Zeit mehrere Kernel-Level Firewalls (ipfw, ipfwadm, ipchains, iptables, nftables). Aktuell (Stand 2019) wird iptables von nftables ersetzt. Diese implementiert eine minimal BPF-VM im Kernel welche zur Beschreibung von Firewall-Regeln verwendet wird. Diese VM wird nun verwendet um Pakete zu klassifizieren und potentiell schlussendlich Regeln auf Netzwerkpakete anzuwenden.
+
+In dieser Vorlesung betrachten wir nur Firewall-Aspekte welche eine Kommunikation zum Host betreffen und nicht Netzwerk-Monitoring Funktionen.
+
+Falls Services mit listening Ports minimiert wurden, sollten eigentlich keine Firewall-Regeln für eingehende Verbindungen benötigt werden. Als zusätzliche Absicherung kann die Firewall unterrichtet werden, nur Traffic auf diesen listening Ports entgegen zunehmen und allen weiteren Traffic abzulehnen:
+
+\begin{minted}{shell}
+# Set default chain policies
+iptables -P INPUT REJECT
+
+# Accept on localhost
+iptables -A INPUT -i lo -j ACCEPT
+
+# accept traffic for SSH
+iptables -I INPUT -p tcp --dport 22 -j ACCEPT
+
+# accept traffic for web server (https)
+iptables -I INPUT -p tcp --dport 443 -j ACCEPT
+\end{minted}
+
+Mit diesen Regeln werden per default alle eingehenden Verbindungen unterbunden (REJECT). Danach wird explizit Kommunikation zu sich selbst (localhost) erlaubt bzw. die Ports 22 und 443 freigeschalten.
+
+Bei einem Server stellt sich die Frage, ob dieser überhaupt Verbindungen nach extern initiieren muss. Normalerweise antwortet ein Server nur auf eingehende Anfragen und kontaktiert wenige externe Server wie Software-Update-Server und NTP-Server um die Systemzeit zu synchronisieren. Hierfür könnte folgendes Regelwerk zusätzlich verwendet werden:
+
+\begin{minted}{shell}
+# Set default chain policies
+iptables -P OUTPUT REJECT
+
+# Accept on localhost
+iptables -A OUTPUT -o lo -j ACCEPT
+
+# allow softwareupdates
+iptables -A OUTPUT -p tcp --dport 443 -d update.server.fake -j ACCEPT
+
+# allow NTP for system time synchronisation
+iptables -A OUTPUT -p udp --dport 123 -d ntp.server.fake -j ACCEPT
+
+# Allow established sessions to receive traffic
+iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+\end{minted}
+
+Hier wird zuerst der Default auf das Sperren ausgehenden Traffics gestellt. Danach werden initiale Verbindungen für localhost, für den update-server (nur HTTPS) und für den Time-Server (nur NTP) freigeschalten. Schlussendlich werden Pakete, welche als Antwortpakete für etablierte eingehende Verbindungen (hier hatten wir SSH und HTTPS initial freigeschalten) zugelassen.
+
+An diesem Beispiel kann man auch ein Problem von IP-Tables erkennen: es wird für den Update-Server Port 443 (HTTPS) freigeschalten, es gibt allerdings keine Möglichkeit zu kontrollieren, welche Daten über diese verschlüsselte Verbindung ausgetauscht werden. Bei einer funktionierenden end-to-end encryption sollte dies auch technisch nicht möglich sein. Um dies dennoch zu ermöglichen, muss man auf ISO/OSI-Level 7 (application layer) filtern. Dies kann mittels eines lokalen HTTP/S-Proxy geschehen. Dieser wird von Applikationen, welche auf externe HTTP/S-Ressourcen zugreifen wollen, verwendet und besitzt Regeln, welche Zugriffe erlaubt und welche unterbunden werden müssen (der Proxy besitzt Vollzugriff auf die ausgehenden HTTP Requests bzw. auf die eingehenden Antwort-Dokumente). In diesem Fall würden alle ausgehenden HTTPS Verbindungen zusätzlich per Firewall-Regel unterbunden und nur die ausgehende Kommunikation vom HTTP Proxy erlaubt werden.
+
+\chapter{Software Management}
+
+Ein aufgesetztes System ist zumeist nicht ausreichend zum Betrieb einer Applikation. Zumeist müssen Supportprogramme, Bibliotheken und auch Applikationen auf dem System hinzugefügt werden. Im Betrieb muss das System periodisch (bzw. in Ausnahmefällen auch außerplanmäßig) auf den aktuellen Sicherheitsstand gehoben werden.
+
+Fragen, die während des Software-Managements häufig auftauchen:
+
+\begin{itemize}
+	\item wie kann die Integrität einer Software überprüft werden?
+	\item welche Dateien wurden durch eine Installation hinzugefügt bzw. modifiziert?
+	\item wie kann ein Update bzw. eine Installation wieder rückgängig gemacht werden?
+\end{itemize}
+
+In diesem Kapitel wird die historische Entwicklung betrachtet. Generell wird als Empfehlung ausgesprochen, Software und Updates immer nur von vertrauenswürdigen Quellen automatisiert zu beziehen.
+
+\section{Selbst-Compilieren von Software}
+
+Open-Source Software wird unter Linux häufig in Quelltextform zugestellt. Hierbei werden häufig während der Konfiguration und Installation folgende Schritte durchlaufen:
+
+\begin{enumerate}
+	\item Konfigurieren der Software (z. B. mittels \textit{GNU autotools}). Hier wird überprüft, ob benötigte Komponenten (Compiler und Bibliotheken) auf dem Build-Host vorhanden sind.
+	\item Kompilieren, z. B. mittels \textit{gcc}
+	\item Installieren, z. B. mittels \textit{make install}
+	\item Deinstallieren, potentiell mittels \textit{make uninstall}
+\end{enumerate}
+
+Bei diesem Vorgang können mehrere Probleme auftreten: der Anwender muss selbst die Integrität der heruntergeladenen Sourcen überprüfen. In einer perfekten Welt würde er auch die Korrektheit des Source Codes analysieren (z. B. überprüfen, ob keine backdoor im Source Code versteckt wurde).
+
+Während des Konfigurierens werden wahrscheinlich Bibliotheken als fehlend erkannt. hier muss der Anwender manuell diese dependencies auflösen und installieren. Falls während des Kompilierens Fehler aufgrund der Benutzerkonfiguration auftreten, muss der Anwender diese selbst bereinigen. Nach fertiger Kompilation sollte der Anwender die erzeugten Pakete auf Korrektheit hin überprüfen. Es gibt nach der Installation keine Möglichkeit zu erkennen, welche Dateien installiert wurden. Eine automatisierte Deinstallation ist nicht möglich. Ein Update besteht aus Herunterladen, Konfigurieren, Kompilieren und Installation einer neuen Version --- das Löschen alter Versionen ist nicht vorgesehen. Alle diese Schritte sind zusätzlich zeitaufwendig, dies kann bei einem kritischen Systemupdate problematisch sein.
+
+Bei kommerzieller Software, welche als Archiv ausgeliefert wird, entfallen das Konfigurieren und Kompilieren der Software, ansonsten sind die Probleme ident.
+
+\section{Linux Package Management}
+
+Die Situation mit selbst-kompilierten Programmen ist für größere Deployments problematisch. Hier kommen nun Distributionen ins Spiel, diese bieten automatisiert Paket-Updates über zentralisierte Server an.
+
+Die zwei großen Paketfamilien unter Linux sind \textit{DEB} und \textit{RPM}.  Ersteres wird von Debian-basierten Distributionen wie z. B. Ubuntu verwendet, letzteres von RedHat-basierten Distributionen wie z. b. Fedora. Beide Formate bieten Features wie Versionskontrolle, Dependency- und Konfliktmanagement, Integritätsüberprüfung als auch Uninstallation.
+
+Die Bedienung auf der Kommandozeile ist relativ ähnlich: \textit{apt update \&\& apt install postfix} (Ubuntu) vs \textit{dnf install postfix} (Fedora). Die Paketnamen sind zumeist auch sehr ähnlich.
+
+Beide Systeme arbeiten mit zentralisierten Repositories samt Trust-Management. Die Integrität der Softwarepakete wird sowohl auf Paketebene (Signaturen) als auch auf Transportebene sichergestellt. Wird TLS verwendet, ist auch die Vertraulichkeit auf der Transportebene gewährleistet. Achtung: werden neue Repositories manuell hinzugefügt, muss der Administrator die Integrität jener überprüfen und erst danach hinzufügen.
+
+Nach mehreren Zwischenfällen mit Packetservern besitzen nun einige Distributionen eine Zero-Trust Architektur: durch einen kompromittierten Softwarepaketserver können keine Pakete mit Schadcode erstellt und zugestellt werden. Ähnliche Setups werden aktuell von der Autoindustrie für Software-Updates analysiert\footnote{Quelle: lwn, \url{https://lwn.net/Articles/794391/}}.
+
+Eine aktuelle Entwicklung sind reproducible builds\footnote{\url{https://lwn.net/Articles/757118/}}: durch sie wird der Link zwischen Source Code und den generierten Binaries gewährleistet. Aktuell sind Distributionen dabei, dies umzusetzen. Distributionen führen zusätzlich eine Qualitätskontrolle der generierten Pakete durch und backporten Sicherheitspatches für die Softwareversionen, welche durch die Distribution bereitgestellt wird (da diese teilweise älter als aktuelle Softwareversionen sind, bekommen sie nicht automatisch Sicherheitsupdates durch den Softwarehersteller).
+
+Durch den Einsatz von Distributionspackages wird die Sicherheit durch vertrauenswürdige, geprüfte und automatisierte Updates erhöht. Ein Inventar der installierten Dateien und Pakete wird durch die Distribution geführt.
+
+Der Großteil dieser Vorteile geht verloren, wenn Administratoren Software am Package-Management ``vorbei'' installieren.
+
+\section{Addon-Software}
+
+Wird Software am Package-Management vorbei installiert, gehen der Großteil der Security-Benefits verloren. Die installierte Software muss wieder vom Administrator selbst gewartet werden. Warum kann diese Situation auftreten?
+
+\begin{itemize}
+	\item die zu installierende Software ist nicht in einem Package-Repository vorhanden (z. B. aus Lizenzgründen)
+	\item die zu installierende Software benötigt spezielle Laufzeitumgebungsversionen )Ruby, JavaScript, Python, etc.) oder Bibliotheken, die in den Paketquellen nicht vorhanden sind.
+\end{itemize}
+
+Zusätzlich gibt es das Problem, das verschiedene Applikationen potentiell zueinander-inkompatible Laufzeitversionen benötigen. Da mittels des Paket-Management ursprünglich nur genau eine Version einer Software installiert werden konnte, verhinderte dies das Deployment von zwei Applikationen am gleichen Host, wenn diese zueinander inkompatible Laufzeitversionen benötigten.
+
+Die ``Lösung'' für diese Probleme war eigentlich ein Rückschritt: am Applikationsserver wird die benötigte Software samt der Laufzeitumgebung und benötigten Libraries direkt im Benutzerverzeichnis eines Benutzers installiert. Zur Laufzeit wird die Applikation mit diesen lokalen Environments gestartet. Diese Lösung inkludiert eine vollkommen separate Laufzeitverwaltung (z. b. \textit{rbenv-build} zum Kompilieren von Ruby-Versionen) als auch eine separate Bibliotheksverwaltung (z. B. \textit{bundler} für Ruby oder \textit{venv/virtualenv} für Python). In Extremfällen wurde von diesen Tools das gesamte Applikationsdeployment auf Produktivsystemen durchgeführt. Natürlich werden hier keine automatisierten System- oder Sicherheitsupdates durchgeführt, die Vertrauenswürdigkeit der Package-Server wurde auch durch mehrere Supply-Chain Attacks negativ beeinflusst.
+
+Benötigt Software weitere Server-Daemons müssen auch diese installiert, konfiguriert und gewartet werden. Dies führte zu langen Installationsanweisungen. eine positive Charaktereigenschaft von ITlern ist unsere Faulheit, a.k.a. nicht gleiche Tätigkeiten wiederholen zu müssen falls diese automatisierbar sind. Dies führte zu Shell-Scripts, welche automatisiert ein System konfigurieren. Problematisch dabei ist, dass die meisten Administratoren diese Skripts nicht kontrollieren bevor sie diese als root-Benutzer aufrufen. Dies ist ein recipe for destruction bzw. für Sicherheitsprobleme. Der Höhepunkte dieser Tendenz waren Installationsanweisungen a la:
+
+\begin{minted}{shell}
+# curl http://somehost/somescript | bash
+\end{minted}
+
+Also das Herunterladen eines Setup-Skripts von einem unbekannten Host über ungesicherte HTTP-Verbindungen und anschließende Ausführen des heruntergeladenen Skripts als root-Benutzer. What could go wrong?
+
+\section{Container-based Applikations-Setups}
+
+Container-basierte Setups boten einen einfachen Ausweg aus dieser Situation. Der Anwendungsentwickler packaged seine Anwendung und deren Abhängigkeiten (Bibliotheken, Daemons) in einem oder mehreren Containern und stellt diese den Systemverwaltern zu Verfügung.
+
+Dies ist zumindest besser als das blinde Ausführen von ungeprüften Installationsskripts mit Administrator-Rechten.
+
+Allerdings gibt es auch hier Probleme bzw. Reibungspunkte:
+
+\begin{itemize}
+	\item Die Container werden zumeist über zentrale Stellen wie DockerHub bereitgestellt. Die identen Sicherheitsprobleme wie bei zentralen Paketservern treten hierbei auf. Aufgrund des jungen Alters von Container-Repositories sind hier noch nicht soviele Sicherheitsmaßnahmen in-place (Signaturen, reproductive builds, etc.).
+	\item Der Inhalt eines Containers kann auch Schadcode beinhalten. Der Autor eines Containers muss ebenso vertrauenswürdig wie der Autor der Software sein. Initiale Containersysteme (wie z. B. Docker) besaßen nicht wirklich Sicherheitsabsicherungen. Eine Applikation in einem Container konnte auch auf das Hostsystem zugreifen. Diese Situation wird mit neueren Containermanagement-Versionen besser.
+	\item Container müssen regelmäßig mit Sicherheitsupdates versorgt werden und neue Containerversionen müssen vom Administrator auch eingespielt werden. Auch wenn es sich hier meist um ein zentralisiertes System handelt, wird wieder eine Parallelhierarchie zur klassischen Paketverwaltung aufgebaut.
+\end{itemize}
+
+\section{Container-based Distributionen}
+
+Mobile Betriebssysteme vermieden diese falsche Dichotomie von Applikationen (Containern) und System-Bestandteilen (klassisches Unix-/Linux-Paketmanagement) indem sie Endbenutzern nur die Installation von Applikationen (in Containern) erlaubten und den Zugriff auf das Betriebssystem selbst verhinderten (ausgenommen gerootete bzw. gejailbreakte Telefone). Einige Linux-Distributionen gehen einen ähnlichen Weg, z. B. ChromeOS oder Fedora Silverblue.
+
+Am Beispiel Fedora Silverblue:
+
+\begin{itemize}
+	\item Das Basissystem wird nicht über Pakete erstellt, sondern über ``versionierte Dateisystemimages''. Fedora Silverblue verwendet hierfür \textit{ostree} --- dieses bezeichnet sich selbst als ``git for filesystems''. Wird ein Systemupdate durchgeführt wird, analog zu einem Docker Image Update, wird in einer atomaren Operation das gesamte Dateisystem geupdatet (also auch mehrere Applikationen auf einmal). Diese vesionierten Dateisysteme erlauben es, diese atomaren Systemupdates auch wieder rückgängig zu machen. Da sie im Normalfall read-only gemounted werden, erhöhen sie auch die Resistenz gegenüber Angreifern und erlauben den Einsatz von Integritätstechnologien wie \textit{dm\_verity}.
+	\item Applikationen werden als Container von einem zentralen Repository bezogen. Updates werden ebenso über diesen zur Verfügung gestellt. Eine klassische Paketverwaltung mittels apt/dnf/rpm/dpkg wird nicht bereitgestellt. Als Containertechnologie verwendet Fedora Silverblue flatpaks, diese bieten auch eine Sicherheits-relevante Abschottung der Container untereinander.
+\end{itemize}
+
+Es ist noch nicht absehbar (2019), ob diese Experimente den Linux-Desktop nachträglich beeinflussen werden, oder ob es sich nur um kurzlebige Experimente handelt.
+
+\section{Going Beyond Single Systems}
+
+Bis jetzt haben wir nur die Administration einzelner Systeme betrachtet --- innerhalb eines Unternehmens müssen allerdings zeitweise hunderte Systeme verwaltete werden. Im Linux-Umfeld betrifft dies zumeist Server (mobile Systeme werden später getrennt betrachtet).
+
+Administratoren diese Tätigkeit manuell ausführen zu lassen ist fehleranfällig. Ein weiterer Kritikpunkt an manuellen Tätigkeiten ist die fehlende Dokumentation, insbesondere wenn kurzfristig ad-hoc Änderungen an der Konfiguration durchgeführt werden (z. B. im Zuge von Debugging). In Summe führt dies zu einer fehlenden Reproduzierbarkeit und zu einem Sicherheitsrisiko: was passiert, wenn ein Systemadministrator kompromittiert wird bzw. ausfällt?
+
+Ein weiteres Problem ist die fehlende Parallelisierbarkeit manueller Tätigkeiten. Im Falle eines kritischen Sicherheitsupdates müssen Dutzende bis Tausende Server in kürzester Zeit aktualisiert werden.
+
+Eine Lösung für dieses Problem versprechen Tools wie ansible, chef oder puppet. Bei diesen wird meistens eine zentrale Datenbank mit Konfigurations- und Installationsanweisungen mit einem Inventarssystem für Systeme kombiniert. Ein Administrator kann nun die hinterlegten Konfigurationsanweisungen an Systeme zugeordnet werden. Diese Anweisungen werden dann automatisiert parallel ausgeführt, die Ergebnisse dieser Operationen werden durch die Tools auch dokumentiert. Die hinterlegten Konfigurationsanweisungen sollten in einem Versionierungssystem abgelegt werden. Dadurch werden Daten generiert, die im Zuge des Change-Managements verwendet werden können. Aus Admin-Tätigkeiten werden quasi Konfigurationsdaten.
+
+Während der durchgängige Einsatz eines solchen Systems viele Vorteile bringt, ist er mit einem erhöhten initialen Aufwand verbunden und benötigt Konsequenz der Administratoren. Es ist möglich, solche Tools auch nur für Teilaspekte der Konfiguration/Wartung zu verwenden, z. B. zum Unternehmens-weiten Ausrollen von kritischen Sicherheitsupdates.
+
+\subsection{Infrastructure as Code}
+
+Ein Grundsatz Agiler Methoden heißt \textit{Working Software over Comprehensive Documentation}.
+
+Der Fokus auf \textit{Working Software} anstatt auf Dokumentation schlägt sich auch bei dem Deployment (dem Installieren der Software) nieder: dies wird zumeist automatisiert als Skript durchgeführt und nicht als Dokumentation ausgeliefert (und entspricht dadurch bereits dem DevOps-Gedanken).
+
+Da im Zuge von Agilen Methoden versucht wird möglichst früh und möglichst häufig lauffähigen Code beim Kunden bereitzustellen (bzw. als Testservice dem Kunden zur Verfügung zu stellen) passieren Installationsvorgänge regelmäßig. Um hier nun Redundanzen zu vermeiden (bzw. um Konfigurationsfehler zu verhindern) wurden hier (historisch betrachtet) Installationsanweisungen immer stärker durch automatisierte Skripts ersetzt. Danach wurden dezidierte Deploymentstools (wie z. B. \textit{capistrano}) für das Setup der Applikation konfiguriert und verwendet. Im Laufe der Zeit wurden diese Tools nicht nur für die Applikation selbst, sondern auch für Datenbanken, Systemservices, etc. angewandt; die historische Evolution sind mittlerweile dezidierte Frameworks die zum Setup der Systeme dienen (wie z. B. Puppet, Chef oder Ansible).
+
+Ein weiterer Vorteil dieses Ansatz ist, dass die verwendete Konfiguration innerhalb der (hoffentlich) verwendeten Source Code Versionierung automatisch versioniert und Veränderungen dokumentiert werden. Dies erlaubt das einfachere Debuggen von Regressionen.
+
+
+\section{Exkurs: Kernel Live-Updates}
+
+Linux-Systemadministratoren sind stolz auf Systeme mit jahrelangen uptimes (durchgängige Laufzeiten). Allerdings ist z. B. ein Restart nach einem Sicherheitsupdate des Kernels zwingend notwendig. Wird dieser nicht durchgeführt, wurde zwar ein neuer Linux-Kernel installiert, das System verwendet allerdings bis zum nächsten Reboot noch die verwundbare alte Version des Kernels. Der Reboot führt zu Downtimes, diese sollten offensichtlich minimiert werden.
+
+Ein erster Schritt war der Einsatz von \textit{kexec}: damit wird noch immer ein restart des Systems durchgeführt, allerdings kann dadurch die benötigte Reboot-Zeit verkürzt werden.
+
+Eine neuere Lösung ist kernel live-patching. Hierbei wird zur Laufzeit der gerade exekutierende Kernel in-memory so modifiziert, dass Sicherheitsupdates ohne Reboot eingespielt werden. Unter Linux gab es mehrere, konkurrierende, Distributions-spezifische Ansätze (\textit{ksplice}, \textit{kgraft}, \textit{kpatch}), mittlerweile ist das Kernel-seitige Interface großteils vereinheitlicht. Dieses Feature bzw. das Bereitstellen von live-updates wird von Distributionen zumeist als Premium-Feature verkauft.
+
+\chapter{Backup}
+
+Backups sind ein wesentlicher Bestandteil des Business Continuity Management bzw. dessen Teilbereich Desaster Recovery. Auch wenn dieser Vorgang nicht direkt sicherheitsrelevant ist, sollte folgendes erwähnt werden:
+
+\begin{itemize}
+	\item ``There are two kind of people: those that do Backups and those that wish they had backups.''
+	\item Nach dem Erstellen eines Backups sollte dieses auch verifiziert werden.
+	\item Das Wiederherstellen eines Backups sollte vor dem Ernstfall auch getestet werden.
+\end{itemize}
+
+Leider gibt es mittlerweile kein Linux Standard-Backup-Tool. Die Namen einiger Kommandozeilentools leiten sich von ``alten'' Bandbackups her, so steht \textit{tar} z. B. für \textit{tape archive}.
+
+Aus Sicherheitssicht muss die Integrität und Vertraulichkeit von Backups wie jene der Originaldaten behandelt werden. Es macht keinen Sinn, einen Server zu verschlüsseln, wenn Backups unverschlüsselt gespeichert werden. Eine gute Verschlüsselung von Backups samt Integritätsschutz erklärt sich von selbst. Dies betrifft insbesondere Backuplösungen welche Cloud-Storage zur Ablage verwenden.
+
+\chapter{Intrusion Detection, Auditing und Virenscanner}
+
+Intrusion Detection Systems (IDS) dienen zur Identifikation von Angriffsversuchen bzw. zur Identifikation von Angreifern die bereits am System sind. Es wird zumeist zwischen Netzwerk- und Host-basierten IDS unterschieden, passend zum Thema der Vorlesung betrachten wir nur Host-basierte IDS.
+
+Ein häufiges Unterscheidungsmerkmal der Methoden ist der Zeitpunkt der Anwendung. Es gibt Methoden, die permanent während der Laufzeit des Systems mitlaufen (``online'') und es gibt Tools die periodisch gestartet werden, diese können auch auf Kopien eines Datenträgers angewendet werden (``offline'').
+
+Analyse-Tools benötigen einen tiefen Einblick in das aktuelle System und werden daher zumeist mit erhöhten Privilegien (z. B. als root-User) betrieben. Dies bedeutet auch, dass Angreifer versuchen, diese Tools anzugreifen, da diese quasi jede Datei am System berühren und gleichzeitig mit erhöhten Privilegien betrieben werden --- quasi das perfekte Angriffsziel.
+
+\section{Datei-basierte IDS}
+
+Bekannte Vertreter dieser Kategorie sind \textit{tripwire} und \textit{samhain}. Diese Tools bauen aufgrund eines bekannten ``guten'' Systemzustands eine Datenbank mit File-Hashes auf und können diese zu einem späteren Zeitpunkt mit den Hashes der aktuellen Dateien vergleichen. Falls ein Angreifer eine Datei zwischenzeitliche verändert hat, hat sich dadurch dessen Dateihash ebenso verändert und dies wird durch das Tool detektiert. Dies ist eine periodische Operation, die offline passiert. Ein Problem sind Dateien, die durch einen Benutzer im Normalbetrieb generiert oder verändert werden, da für diese kein Hash bzw. ein inkorrekter Hash in der Datenbank hinterlegt sind.
+
+\section{Prozess-basierte IDS}
+
+Bekannte Vertreter sind \textit{wazuh} und \textit{samhain}. Hier wird zumeist ein Agent im System installiert welcher Telemetriedaten (wie z. B. Prozesse, deren Zugriffe oder aktive Netzwerkverbindungen) erfasst und auswertet. Dies ist daher ein online-System. Falls ein verdächtiges Verhalten identifiziert wird, wird zumeist ein zentrales System notifiziert. Neumodisch verwenden diese Verfahren auch behavioral analysis oder machine-learning Ansätze zur Pattern Recognition.
+
+\section{Rootkit Detection}
+
+Bekannte Vertreter: \textit{rkhunter} und \textit{chkrootkit}. Diese Tools analysieren ein Filesystem bzw. Memory auf das Vorhandensein von Backdoor-/Rootkit-Spuren anhand von Signaturen oder Heuristiken. Tools die Dateisysteme analysieren gehören in die offline-Kategorie, Tools die Arbeitsspeicher analysieren in die Online-Kategorie.
+
+\section{Virenscanner}
+
+Virenscanner haben unter Linux traditionell nicht den identen Stellenwert wie in der Windows-Welt. Wahrscheinlich liegt dies darin begründet, das Linux ursprünglich kein lohnendes Angriffsziel war. Eine weitere Eigenart ist, dass Linux initial stark als Server verwendet wurde: Virenscanner überprüfen zumeist übertragene Dateien nicht auf Schadmuster gegenüber dem Linux-Host selbst, sondern auf Windows-Schadmuster um potentielle Windows-Clients zu schützen.
+
+Im OSS-Bereich wird gerne \textit{clamav} als Virenscanner verwendet. Dieser wird gerne über \textit{amavisd} innerhalb von Mailsystem zur Überprüfung transferierter Emails (bzw. deren Anhänge) verwendet.
+
+Lange waren unter Linux Virenscanner klassische Offline-Scanner welche periodisch liefen. Mit dem Linux-Kernel 3.8 wurde das \textit{fanotify}-Interface erweitert, welches deine Online-Virenüberprüfung ermöglicht (jeder Dateizugriff wird automatisch auf Virenmuster hin überprüft). \textit{clamav} unterstützt dies seit Version 0.99 (Dezember 2015).
+
+Virenscanner verwenden zumeist root-Rechte und müssen jede Datei analysieren. Daher sind sie, wie IDS im Allgemeinen, lohnende Angriffsziele. Sie verwenden daher Konzepte wie Sandboxing um sich selbst gegenüber Angriffen innerhalb der zu überprüfenden Dateien zu schützen.
+
+\section{Auditing}
+
+Unter Auditing-Software versteht man Software, welche am System Daten sammelt um Fehlerverhalten zu erkennen. Dies entspricht einem Superset der Beschreibung eines Prozess-orientierten IDS. Auditing-Software kommt eher stark aus dem System-Debug-Bereich, man kann allerdings erkennen, dass Auditing- und IDS- mittlerweile verschmelzen bzw. die identen Datenquellen zur Datensammlung verwenden.
+
+Unter Linux ist \textit{auditd} bekannt. Mittels dieses daemons können gezielt Systemcalls überwacht und dessen Aufrufe analysiert werden. \textit{auditd} wird zumeist als low-level Datenquelle für weitere Systeme wie \textit{SELinux} oder IDSes verwendet.
+
+\chapter{Logging}
+
+Logging ist ein wichtiger Teil der Administration: Log-Daten erlauben das nachträgliche Debuggen von Problemen, inklusive Security-Incidents.
+
+Folgende groben Anforderungen an das Log-System werden gestellt:
+
+\begin{itemize}
+	\item Es muss mit verteilten Applikationen umgehen können. Eine Webapplikation ist potentiell auf mehrere Computersysteme verteilt (Webserver, Applikationsserver, Datenbankserver). Die Logdaten der gesamten Systeme sollten an einer Stelle aggregiert werden.
+	\item Es muss die Integrität der Logdaten schützen: ein Angreifer sollte keine Möglichkeit besitzen, die geloggten Daten zu beeinflussen. Würden z. B. Logdaten direkt am Webserver gespeichert werden, könnte ein Angreifer der den Webserver gehackt hat, ebenso die Logdaten modifizieren. Dies impliziert, dass der Log-Server über eine genau definierte API erreichbar sein sollte.
+	\item Es muss die Vertraulichkeit der Daten schützen. Da der Logserver Detailinformationen über betriebliche Abläufe speichert, müssen diese Daten mindestens ebenso sicher wie die ursprünglichen Daten gespeichert werden.
+	\item Das Log-System muss Möglichkeiten zur nachträglichen Auswertung der gesammelten Daten bieten. Bonuspunkte, wenn man ein automatisiertes Monitoring mit dem Log-System betreiben kann.
+\end{itemize}
+
+Die jeweiligen loggenden Systeme sollten alle sicherheitsrelevanten Events (z. B. Input Validation Fehler, Authentication Fehler, Authorization Fehler, Applikations-Fehler) an das zentrale Log-System schicken. Diese Daten sollen um Business Process Events angereichtert werden. Diese dienen dazu, relevante geschäfts-relevante Prozesse und Ereignisse mit den Sicherheits-Events zu korrelieren. Weitere Datenquellen sind z. B. Anti-Automatisierungssysteme, welche Brute-Force Angriffe erkennen, Datenverarbeitungssysteme (können auch Batch-Systeme sein, die z. B. einen Daten-Export oder Backups ausführen) und alle direkt und indirekt involvierten Services, wie z. B. Mailserver, Datenbankserver, Backupdienste. Falls vorhanden, sollten die Loginformationen sicherheitsrelevanter Komponenten (HIDS, NIDS, WAFs) auf jeden Fall inkludiert werden.
+
+Bei dem Loggen sollte darauf geachtet werden, dass, wenn möglich, standardisierte Log-Formate wie CEF oder LEEF verwendet werden. Dadurch wird das Konvertieren der jeweiligen Datenquellen auf ein gemeinsames Format vermieden.
+
+Welche Daten sollten pro Event erfasst werden?
+
+\begin{itemize}
+	\item Wann hat sich der Vorfall ereignet? Bei einer verteilten Applikation sollte hier darauf geachtet werden, dass Timestamps die Zeitzone beinhalten (und auch auf Zeitumstellungen achten). Grundlage für das temporale korrelieren von Events ist es, dass alle beteiligten Server eine idente Systemzeit besitzen (z. B. durch die Verwendung von ntp).
+	\item Wo ist das Event passiert? Hierfür können Systemnamen, Servicenamen, Containernamen oder Applikationsnamen verwendet werden.
+	\item Für welchen Benutzer ist das Event passiert? Hier können Systembenutzer (mit denen das Service läuft) oder feingranular der gerade eingeloggte Benutzer protokolliert werden.
+	\item Was ist passiert? Dies wird immer applikations- und event-spezifisch sein. Viele Systeme verwenden zumindest eine idente Klassifizierung der Wichtigkeit des Events.
+\end{itemize}
+
+Die Verwendung von personenbezogenen Daten kann das Logging verkomplizieren. Ein Unternehmen sollte klare Regeln erstellen, welche Daten geloggt werden und, falls notwendig, Anonymisierung oder Pseudonymisierung verwenden um sensible Daten zu maskieren. Ein ähnliches Problem tritt auf, wenn Log-Informationen zwischen Unternehmen geteilt werden sollte (z. B. im Zuge eines Informations-Lagebilds). Da diese Daten unter anderem personen-bezogene Informationen als auch Betriebsgeheimnisse inkludieren können, wird davon meistens abgesehen.
+
+Die erfassten Daten sollten im Zuge einer Auswertung verwendet werden. Hier werden häufig "normale" Texteditoren in Verbindung mit regulären Ausdrücken verwendet. Fortgeschrittenere Lösungen wären ELK-Stacks, Kibana und Logstash und z. B. Splunk.
+
+In einem ähnlichem Umfeld arbeiten SIEM-Systeme (Security Information and Event Management). Diese werden zumeist als weiterer Schritt nach Log-Management angesehen. Zusätzlich zum Log-Management wird zumeist auch Security Event Management (real-time monitoring), Security Information Management (long-term storage of security events) und Security Event Correlattion durchgeführt.
+
+Schlussendlich sollten die gesammelten Logdaten auch analysiert werden. In diesem Fall ist es hilfreich, wenn die gesammelten Daten eine Struktur besitzen und dadurch zielstrebiger durchforstet werden können.
+
+\section{syslog}
+
+Unter UNIX ist syslog als logging-Standard etabliert. Dieses System besteht aus zwei Komponenten: einer client-seitigen Bibliothek zur Bekanntgabe von Log-Informationen und einem Serverprozess, der diese Logininformationen entgegen nimmt und persistiert. Mehrere Softwareprodukte implementieren diesen Standard, am bekanntesten dürfte \textit{syslog-ng} sein.
+
+Über das Client-Interface können beim Logging mehrere Informationen übergeben werden:
+
+\begin{itemize}
+	\item facility: gibt den Systembereich/die Logquelle an, z. B. mail, news, etc.
+	\item severity: gibt den Schweregrad des Events an, z. B. INFO, WARNING, CRITICAL
+	\item Ein Zeitstempel gibt den Zeitpunkt des Auftretens an (ohne Zeitzone)
+	\item Die Logmeldung als String ohne vorgegebene interne Struktur
+\end{itemize}
+
+Diese Daten werden vom Logging-Daemon gesammelt und zumeist in Log-Dateien in Textform persistiert (ein Log-File pro facility). Es findet kein Integritätsschutz statt, Daten werden zumeist periodisch gelöscht. Auf Netzwerkebene wird hierfür der Standardport 514 per UDP verwendet, neuere Varianten verwenden TLS um auf Netzwerkebene Integrität und Vertraulichkeit zu gewährleisten.
+
+\section{journald}
+
+\textit{Journald} ist ein Teil von \textit{Systemd} und wurde initial verwendet, wenn kein weiterer Logging-Daemon am System konfiguriert wurde. Mittlerweile verwenden einige Distributionen nur noch \textit{journald}. Verglichen zu klassischen Logging-Daemons traf \textit{journald} eine eher kontroverse Designentscheidung: es verwendet ein Binärformat zur Persitierung. Dieses Format erlaubt es speziell nach mehreren Datenfeldern zu filtern (dies ist bei klassischen syslog in Textform nicht möglich, da eine Syslog-Zeile einfach nur eine Zeile in einem Textfile ist).
+
+Mit der so genannten \textit{sealing}-Operation können periodisch Integritätsinformationen gesichert werden, welche das Detektieren von unauthentifizierten Journaländerungen erlaubt. Durch das Binärformat können allerdings Standard-UNIX-Tools wie \textit{grep} nicht mehr direkt mit \textit{journald}-Logs verwendet werden. Dies führte zur erwähnten Kontroverse.
+
+\section{ELK-Stack}
+
+Im Web 2.0-Umfeld wird für Logging-Zwecke gerne der ELK-Stack verwendet, jeder Buchstabe steht hierbei für eine Komponente:
+
+\begin{itemize}
+	\item E: ElasticSearch als verteilte NoSQL Datenbank.
+	\item L: LogStash ist ein ETL (Extract, Transfer, Load) Tool welches zum Sammeln und Preprocessen von LogDaten aus verschiedenen Quellen dient. Schlußendlich werden die überarbeiteten Daten in ElasticSearch gespeichert.
+	\item K: Kibana als Webplattform zum Erstellen von Auswertungen und Dashboards
+\end{itemize}
+
+Im Kubernetes-Umfeld wird LogStash auch gerne mit \textit{fluentd} ersetzt.

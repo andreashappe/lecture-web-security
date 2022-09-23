@@ -1,0 +1,263 @@
+\part{Container}
+
+Container sind eine Technologie, welche die letzten Jahre geprägt hat. In diesem Kapitel werden einige Sicherheitsaspekte von Container beleuchtet. Das Produkt, dass Container am Markt den Durchbruch verschaffte, war Docker. Viele Docker-Features wurden mittlerweile standardisiert und dienen nun als Grundlage weiterer Container-Lösungen. Wir betrachten aus diesem Grund initial Docker und seine Container/Images. Mittlerweile bewegt sich die Entwicklung von einzelnen Containern auf das Steuern von mehreren Containern (Orchestration) hin. Hier sind docker-compose, docker-swarm und Kubernetes bekannte Lösungen von denen sich aktuell Kubernetes durchsetzt. Zusätzlich werden schlussendlich noch Services-Meshes und Cloud-Native Software erwähnt.
+
+\chapter{Docker}
+
+Docker ist der Name einer Containertechnologie welche stark zum Durchbruch von Containern beigetragen hat. Ein Container ist eine Form der Applikationsvirtualisierung bei der Zumeist eine Applikation (oder ein Verbund von Applikationen) vom Rest des Systems isoliert wird. Der Applikationsverbund wird Container oder Guest genannt, das System auf dem ein oder mehrere Gäste betrieben werden, wird Host genannt.
+
+Container isolieren zumeist die Dateisystem- und Prozessansicht. Dadurch wird innerhalb des Containers ein getrenntes Dateisystem angezeigt und es werden nur Prozesse angezeigt, die innerhalb des Containers sichtbar sind. Im Gegensatz zu virtuellen Maschinen verwenden der Host und die Container den identen Kernel --- dies bedingt auch die höhere Ressourcen-Effizienz die zumeist mittels Containern (verglichen zu virtuellen Maschinen) erreicht wird.
+
+Container haben die Herangehensweise der Softwareentwicklung und des Softwaredeployments verändert. Dadurch, dass sie schnell und effizient erzeugt werden können, kann die Softwareentwicklung und das -testen innerhalb eines Containers durchgeführt werden. Dies erlaubt es, ein virtuelles Betriebssystem samt benötigten Bibliotheken innerhalb des Containers bereitzustellen und erlaubt dadurch eine genaue Kontrolle der Laufzeitumgebung. Dadurch wird auch erlaubt, dass z. B. ein Host mehrere Container mit unterschiedlichen Laufzeitversionen und Bibliotheken problemlos verwenden kann. Durch das Aufsplitten der Funktionalität auf mehrere Container (z. B. Applikationsserver-Container und Datenbank-Container) wird die Feingranularität des Softwareverbunds erhöht. Wird ein erstellter Container auch zur Auslieferung der Software an den Kunden verwendet, kann der Entwickler davon ausgehen, dass die identen Bibliotheksversionen vom Kunden verwendet werden.
+
+Initial konnte Docker nicht als Security-Sandbox verwendet werden da Docker wenige Sicherheitskonzepte umsetzte. Initial war es einfach ausgehend von einem Container andere Container zu beeinflussen bzw. das Hostsystem zu modifizieren. Mittlerweile (2019) wurde die Sicherheitssituation verbessert, bzw. gibt es Möglichkeiten die Container voneinander (und vom Host) abzuschotten.
+
+Mittlerweile ist das Beschreibungsformat eines Container-Images (des gespeicherten virtuellen Dateisystems) durch die Open Container Initiative (OCI) standardisiert worden. Dadurch hat sich der Marktkampf von der verwendeten Technologie eines einzelnen Containers hin zu mehreren konkurrierenden Systemen zur Steuerung mehrerer Container verschoben.
+
+\section{Dockerfiles}
+
+Docker-Images werden meistens mit Hilfe von Dockerfiles gebaut. Diese Files beinhalten eine Anleitung die beschreibt, wie das resultierende Image erzeugt bzw. welche Kommandos beim Instanzieren des Containers gestartet werden sollen.
+
+Dies entspricht dem bevorzugten deklarativen (beschreibenden) Ansatz von DevOps bzw. auch dem \textit{Working Code over Comprehensive Documentation} Ansatz Agiler Methoden.
+
+Ein Beispiel:
+
+\begin{minted}{text}
+FROM ubuntu
+ADD . /code
+WORKDIR /code
+RUN pip install -r requirements.txt
+EXPOSE 4000
+CMD ["python", "app.py"]
+\end{minted}
+
+Anhand dieses Konfigurationsfiles wird folgendes ausgeführt:
+
+\begin{itemize}
+	\item FROM wird verwendet um ein Base-Image zu definieren. In diesem Fall wird eine aktuelle Ubuntu Distribution als Basis für alle weiteren Schritte verwendet. Das Image wird zumeist von einer Docker Registry bezogen und kann auch versioniert sein (es kann also eine spezifische Version einer Linux-Distribution verwendet werden).
+	\item mittels ADD wird ein lokales Verzeichnis in den Container kopiert, mittels WORKDIR wird innerhalb des Containers das Arbeitsverzeichnis auf das kopierte Verzeichnis gesetzt.
+	\item RUN führt ein Kommando innerhalb des Containers aus. In diesem Fall werden Python-Dependencies installiert.
+	\item Mit EXPOSE wird dem Container mitgeteilt, dass Port 4000 extern erreichbar sein sollte. Dies wird für alle Services, die verfügbar sein müssen, konfiguriert werden. In dem Fall wird davon ausgegangen, dass die installierte Applikation (\textit{app.py}) auf den Netzwerkport 4000 hört.
+	\item CMD wird nicht während des Setups des Images ausgeführt, sondern wenn ein Container instanziert (gestartet) wird. In dem Fall wird mitgeteilt dass \textit{python app.py} gestartet werden soll.
+\end{itemize}
+
+\section{Docker Registries}
+
+Analog zu Source Code Repositories werden auch gebaute Docker Images gerne zentral gespeichert und verwaltet. Für diesen Zweck werden Docker Registries verwendet. Diese bieten zumeist Möglichkeiten zur Überprüfung der Integrität der hochgeladenen Docker-Images als auch die Möglichkeit der Versionierung der Images an.
+
+Docker Registries können grob in private und öffentliche Registries eingeteilt werden. Private Registries befinden sich innerhalb des Firmennetzwerkes und nur authentifiziert Benutzer können Images hochladen bzw. beziehen. Ein Beispiel hierfür wäre eine private Gitlab-Instanz samt Docker-Registry.
+
+Es gibt auch öffentliche Docker Registries bei denen mehrere Benutzer Images hochladen- und andere Benutzer diese Container beziehen können. Häufig werden diese Registries verwendet, um Standard-Images mit verschiedenen Linux-Distributionen oder Standard-Software wie z. B. Webserver oder Datenbankserver zu beziehen.
+
+Werden öffentliche Images verwendet, sollte man diese immer auf das Vorhandensein von Sicherheitsschwachstellen prüfen. Untersuchungen haben gezeigt, dass der Großteil der Images veraltete Systemkomponenten mit bekannten Sicherheitslücken beinhalten. Ein weiteres Problem ist es, wenn Images mit Schadcode absichtlich in einer öffentlichen Docker-Registry platziert und auf diese Weise ein Angriff durchgeführt wird.
+
+\section{Best Practises for Containers}
+
+Die Best-Practises in diesem Bereich sind primär für einzelne Container gedacht.
+
+Mittels der \textit{FROM}-Direktive wird ein bestehendes Image als Basis für ein neues Image gewählt. Dies ist zumeist einer der ersten Dockerfile-Befehle, anschließend wird das Image für die jeweilige Aufgabe mittels dem Dockerfile angepasst. Die Wahl des Base-Images sollte sorgfältig durchgeführt werden, dabei sollten nur vertrauenswürdige Quellen und aktuelle Images (mit allen aktuell bekannten Sicherheitspatches) verwendet werden. Wird ein Base-Image mit vielen Tools und Features gewählt, besitzt der Angreifer automatisch eine große Angriffsfläche und führt ebenso zu einem erhöhten Resourcenverbrauch (ein Debian Base-Image dürfte um die 250 Megabyte benötigen). Aus diesen Gründen wird bei Containern meist eine minimale Linux Distribution verwendet, als Beispiel dient hier das beliebte Alpine-Linux. Ein Alpine Base Image benötigt um die 4-5 Megabyte, ist also um ein Vielfaches kleiner als ein Standard-Linux-Image. Dies verringert die potentielle Angriffsfläche. Ebenso sind in Alpine alle Tools mit stack-smashing protections (helfen gegen Buffer-Overflows) compiliert bzw. wurde weiteres Hardening auf Systemebene durchgeführt.
+
+Eine Grundidee von Containern ist es, dass innerhalb des Containers kein State persistiert wird --- es sollen also keine Daten innerhalb eines Containers gespeichert werden. Daten werden zumeist in externen Datenbanken oder über gemountete Verzeichnisse (freigegeben über das Netzwerk oder direkt vom Host in den Gast freigegeben) gespeichert. Dies macht aus Gründen der Betriebsführung Sinn (bei einem Update kann ein neues Image mit den bestehenden Daten gestartet werden), besitzt aber auch einen positiven Effekt auf die Sicherheit. Wenn innerhalb des Images keine Daten gespeichert werden müssen, kann das gesamte Image schreibgeschützt verwendet werden. Dies erschwert es einem Angreifer Schwachstellen auszunutzen (aufgrund des fehlenden Schreibzugriffs). Ein \textit{read-only}-Image impliziert, dass Log-Dateien auch nicht innerhalb des Images, sondern zentral in einem Log-Server gespeichert werden müssen: auch dies ist aus Sicherheitssicht eine positive Entscheidung.
+
+Container sind Prozessverbunde; Administratoren können daher Linux-Subsysteme zur Resourcensteuerung für Prozesse (\textit{cgroups}) auch für Container verwenden. Durch diese kann z. B. der CPU- oder RAM-Verbrauch von Containern limitiert, und dadurch DoS-Angriffe vermieden werden.
+
+Eine interessante Einstellung ist \textit{pids-limit}. Dadurch wird die Anzahl der Prozesse innerhalb des Containers limitiert. Wenn z. B. nur ein einziger Applikationsserver innerhalb des Containers laufen soll, kann mit mit \textit{pids-limit:1} dies auch dem Linux-Kernel mitgeteilt werden, dieser verhindert dann das Starten weiterer Prozesse. Falls ein Angreifer nun eine Lücke findet, über die er Systembefehle exekutieren kann, kann er diese nicht ausnutzen da er hierfür einen weiteren Prozess starten hätte müssen. dies auch dem Linux-Kernel mitgeteilt werden, dieser verhindert dann das Starten weiterer Prozesse. Falls ein Angreifer nun eine Lücke findet, über die er Systembefehle exekutieren kann, kann er diese nicht ausnutzen da er hierfür einen weiteren Prozess starten hätte müssen.
+
+Container können als \textit{privilegierte} Container gestartet werden. In dem Fall besitzen diese weitreichenden Zugriff auf Features des Hostsystems. Aus diesem Grund sollten niemals privilegierte Container verwendet werden.
+
+Container verwenden auch das Linux-Capability Model. Dieses wurde eingeführt um den allmächtigen \textit{root} User einzuschränken bzw. um normalen Benutzern Zugriff auf spezielle sicherheitsrelevante Systemoperationen zu geben. Typische Capabilities sind z. B. die Fähigkeit Netzwerktraffic mitzusniffen, die Fähigkeit beliebige Netzwerkpakete zu erstellen (\textit{raw sockets}) oder auch die Fähigkeit Dateisystemrechte umgehen zu können. Bei Docker-Images sind per Default viele Capabilities aktiviert, diese sollten im Zuge des Hardening-Prozesses deaktiviert werden. Das neuere OCI-Imageformat setze hier einen richtigen Schritt und aktiviert per Default nur drei Capabilities, weitere Capabilities müssen manuell aktiv hinzugefügt werden.
+
+\section{Docker Security Problems}
+
+Die potentiellen Sicherheitsprobleme von Docker können grob in vier Bereiche eingeteilt werden:
+
+\begin{description}
+	\item[container breakouts]: es sollte niemals möglich sein, aus einem Container aus unautorisiert auf einen anderen Container oder auf das Host-System zuzugreifen.
+	\item[kernel exploits]: bei einer Container-Lösung verwenden alle beteiligten Container als auch der Host den identen Betriebssystem-Kernel. Dies ist der Grund für die hohe Ressourcen-Effizient von Containerlösung, bedingt leider auch, dass wenn ein Container einen Kernel-Exploit ausnutzen kann, dieser Container Vollzugriff auf alle Systeme mit diesem Kernel (inkl. dem Host-System) erhält.
+	\item[DoS attacks]: DoS Angriffe ausgehend von einem Container auf shared resourcen (wie z. B. verfügbare CPU, RAM, Festplattenspeicher oder Netzwerkbandbreite) treffen, sofern keine Absicherungen getroffen wurden, alle Container die auf dem gleichen Host laufen.
+	\item[poisoned images]: wenn nicht-überprüfte Images verwendet werden, hat dies einen negativen Security-Impact. Auf der einen Seite können diese Images \textit{nur} das Problem haben, dass hier fehlerhafte Software eingesetzt wurde (veraltete Versionen), auf der anderen Seite kann ein Angreifer versuchen dezidierte Schadsoftware in ein Image zu verpflanzen und ein Opfer dazu zu bringen, dieses Image als Container in Betrieb zu nehmen.
+\end{description}
+
+\subsection{Security Best Practises when running Docker}
+
+\textit{Docker-Engine} ist ein Service, welches auf jedem Docker-Node läuft. Zur Administration muss mit diesem Service kommuniziert werden, hierfür gibt es zwei Möglichkeiten: Kommunikation über TCP (Netzwerkprotokoll) oder die Kommunikation über einen Unix Domain Socket\footnote{Dies ist eine virtuelle Datei innerhalb des Dateisystems in welche Befehle geschrieben werden können.} (\textit{docker.socket}, dies kann auch über das Netzwerk über SSH geschehen. Aus Sicherheitssicht würde ich die Kommunikation mittels Unix Domain Socket bevorzugen: Unix-Systemadmins kennen SSH seit mehreren Jahrzehnten, die notwendigen Sicherheitsmaßnahmen sind daher gut bekannt. Falls TCP verwendet wird, sollte zumindest die Kommunikation mittels TLS abgesichert werden.
+
+Bei Verwendung von \textit{docker.socket} sollte dieser Socket niemals in einen Container inkludiert werden. Würde dies geschehen, könnte ein Prozess innerhalb des Containers diesen Socket verwenden um Docker zu steuern --- in dem Fall könnte z. B. ein beliebiger weiterer Container mit privilegierten Rechten bzw. erweiterten Capabilities gestartet werden. Leider ist dieses Setup durchaus häufig vorzufinden, gerade bei Continuous Integration Systemen. Bei diesen werden häufig die Builds und Tests selbst innerhalb eines Containers ausgeführt (um Probleme mit Dependencies zu vermeiden), man will aber gleichzeitig das fertige Softwareprodukt als Container bauen (um diesen dann dem Kunden zu übermitteln). In diesem Fall will man also innerhalb eines Containers einen neuen Container bauen und benötigt daher genau diese Funktionalität, die man eigentlich vermeiden will.
+
+Container sollten regelmäßige und automatisiert auf Schwachstellen hin geprüft werden, dies betrifft insbesondere Container, die von externen Quelle bezogen wurden. Tools die dabei verwendet werden können:
+
+\begin{itemize}
+	\item anchore: überprüft den Container auf bekannte Schwachstellen (und listet diese als CVEs)
+	\item clair
+	\item dagda: scannt den Inhalt eines Containers mittels eines Virenscanners.
+\end{itemize}
+
+Container sind zur Laufzeit normale Linux-Prozesse und können daher mit gewohnten Tools wie \textit{SELinux}, \textit{Apparmor} oder \textit{SecComp} limitiert werden.
+
+Alphabet geht mit \textit{gVisor} einen Schritt weiter. \textit{gVisor} ist ein virtueller Kernel, der als Linux-Prozess gestartet werden kann. Eingehende Anfragen an diesen Kernel werden an das zugrunde liegende Linux-System weitergeleitet. \textit{gVisor} wird nun verwendet, um einen Container zu starten. Falls dieser Container einen Kernel-Exploit ausnutzt, wird der virtuelle Kernel gehackt (und nicht der Host-Kernel). Verglichen zu einem traditionellen Container-System erhält der Angreifer durch den Kernel-Exploit nicht automatisch Vollzugriff auf das zugrunde liegende Hostsystem.
+
+Mittels des Tools \textit{docker-bench-security} kann eine Docker-Installation auf häufige Sicherheitsfehler bzw. fehlende Hardeningmassnahmen hin überprüft werden. Die Ausgabe des Tools ist eine ausgefüllt Checkliste, welche die weiteren Verbesserungsmaßnahmen auflistet.
+
+
+\chapter{Services and Orchestration}
+
+Aus Gründen der Sicherheit, Testbarkeit und Wartbarkeit werden Applikationen zumeist auf mehrere Container aufgeteilt. Dies führt allerdings dazu, dass zum Testen bzw. im Produktivbetrieb mehrere Container konfiguriert, gestartet und miteinander verbunden werden müssen. Da dies mit substantiven Administrationsaufwand verbunden ist, wurde dies natürlich im Sinne des DevOps-Spirits automatisiert.
+
+Diese Container-übergreifende Konfiguration wird Orchestration genannt, analog zu einem Dirigenten der ein Orchester aus vielen einzelnen Musikern zu einem Gesamtkunstwerk orchestriert. In diesem Umfeld werden zwei Lösungen häufig vorgefunden: \textit{docker-compose}/\textit{docker-swarm}, beides direkt vom Docker-Erfinder, als auch Kubernetes welches von Google unter einer Open-Source License veröffentlicht wurde. Am Markt wurde primär Kubernetes angenommen.
+
+Im November 2019 wurde Docker Enterprise, welches \textit{docker-swarm} vertrieb, vom Kubernetes-Spezialisten Mirantis übernommen. Während dieser weitere zwei Jahre Support für \textit{docker-swarm} versprach, ist damit die weitere Zukunft für \textit{docker-swarm} sehr fraglich\footnote{\url{https://techcrunch.com/2019/11/13/mirantis-acquires-docker-enterprise/}}.
+
+\textit{docker-compose} erlaubt das Setup eines Container-Verbundes, die Container werden allerdings nur auf einem einzelnen Computer gestartet --- eine gute Lösung für lokales Testen. \textit{Kubernetes} und \textit{docker-swarm} verteilten die konfigurierten Container zur Steigerung der Verfügbarkeit und Performance normalerweise auf mehrere Nodes.
+
+\section{Docker-Swarm Konfiguration}
+
+Docker-Swarm (wie auch Docker-Compose) verwendet eine deklarative Konfigurationssprache um das Deployment der jeweiligen Container zu konfigurieren. Ein einfaches Beispiel eines Webservers:
+
+\begin{minted}{yaml}
+version: "3"
+services:
+  web:
+    # replace username/repo:tag with your name and image details
+    image: username/repo:tag
+    deploy:
+      replicas: 5
+      resources:
+        limits:
+          cpus: "0.1"
+          memory: 50M
+        restart_policy:
+          condition: on-failure
+    ports:
+     - "4000:80"
+    networks:
+     - webnet
+  networks:
+    webnet:
+\end{minted}
+
+Im Subbaum \textit{Services} werden die unterschiedlichen Services konfiguriert. Ein Service besteht aus einem Image und mehreren Deployment-Optionen. In dem konkreten Fall wird das Image fünf mal gestartet, jeder dieser Container darf maximal 10\% CPU-Zeit eines Cores bzw. 50 Megabyte RAM verbrauchen (1.1). Im Falle eines Fehlers wird der Container neu gestartet. Zusätzlich wird der Container-Port 4000 als Port 80 veröffentlicht.
+
+Ein weiteres Beispiel zeigt, wie zwei Container konfiguriert werden können:
+
+\begin{minted}{yaml}
+version: '3'
+
+services:
+  web:
+    image: 127.0.0.1:5000/stackdemo
+    ports:
+     - "8000:8000"
+  redis:
+    image: redis:alpine
+\end{minted}
+
+Wird dieser Swarm gestartet wird sowohl ein Container (\textit{web}) von einer lokalen Registry geladen als auch ein Container (\textit{redis}) von einer (vermutlich öffentlichen) Registry geladen und gestartet.
+
+Innerhalb des Docker-Swarms kann ein Container einen anderen Container über den Service-Namen ansprechen. So kann z. B. \textit{web} auf den Redis-Cache über den hostnamen \textit{redis} zugreifen.
+
+\section{Docker-Secret}
+
+Ähnlich wie bei Source-Code Repositories sind in Container/Images gespeicherte Credentials oder private/secret keys problematisch. Gerade wenn ein Image in einer externen (oder sogar öffentlichen) Registry gespeichert wird, kann ein Angreifer potentiell Zugriff auf das Image erhalten und dadurch diese Secrets extrahieren.
+
+Zusätzlich kommt zumeist noch ein weiteres Problem hinzu. Da mittels Docker-Compose/Swarm meistens mehrere Container verwaltet werden, muss eine Secret-Änderung auch parallel an mehreren Containern durchgeführt werden.
+
+Ein Beispiel zur manuellen Konfiguration von Secrets mittels \textit{Docker-Secret}. Initial muss ein Secret mit einem Schlüssel (\textit{my\_secret\_data}) und einem Wert (\textit{This is a secret}) konfiguriert werden:
+
+\begin{minted}{bash}
+$ printf "This is a secret" | docker secret create my_secret_data -
+\end{minted}
+
+Dieses Secret kann nun in einen Container weitergeleitet werden (im Normalfall würde man dies über ein Docker-Compose File konfigurieren):
+
+\begin{minted}{bash}
+$ docker service  create --name redis --secret my_secret_data redis:alpine
+\end{minted}
+
+Innerhalb des Containers kann nun auf eine virtuelle Datei unter \url{/run/secrets/my\_secret\_data} zugreifen.
+
+Secrets können auch im Betrieb gelöscht und entfernt werden:
+
+\begin{minted}{bash}
+$ docker service update --secret-rm my_secret_data redis
+\end{minted}
+
+\section{Kubernetes}
+
+Kubernetes ist eine Open-Source Container-Orchestration Software die ursprünglich von Google bereit gestellt wurde, schlussendlich allerdings an die Cloud Native Computing Foundation gespendet wurde. Kubernetes selbst ist stark von Borg geprägt, dies ist Googles internes Cluster-Management System (der interne Codename für Kubernetes war initial ``Seven of Nine'', quasi die ``freundliche'' Version von Borg).
+
+\subsection{Architektur}
+
+Kubernetes verwendet eine Client-/Server-Architektur. Computer innerhalb des Clusters können in Nodes (diese betreiben/hosten die Container) und master (Konfigurations- und Management-Server) aufgeteilt werden.
+
+Auf master-Systemen laufen mehrere essentielle Services:
+
+\begin{itemize}
+	\item \textit{etcd} ist eine verteilte Konfigurationsdatenbank und ist intern als Key-/Value-Store ausgeführt. Einzelne Kubernetes-Services lauschen auf Änderungen der Datenbank und starten in Abhängigkeit jener Aktionen. Ein Angreifer mit Zugriff auf die Datenbank hat effektiv den Kubernetes-Cluster übernommen.
+	\item \textit{kube-apiserver} ist der admin-seitige Management-Daemon. Administratoren können mit diesen über ein HTTP REST interface kommunizieren. Im Normalfall wird dieser durch Konfigurationstools wie z. B. \textit{kubectl} durchgeführt.
+	\item Der \textit{kube-scheduler} ist der Service, welcher aktiv Container innerhalb des Clusters auf Nodes verteilt.
+\end{itemize}
+
+Auf jedem Node werden ebenso Management-Dienste ausgeführt:
+
+\begin{itemize}
+	\item \textit{kubelet}: ist die interne Gegenstelle zur Clusterverwaltung und startet/managed die auf dem node laufenden Container.
+	\item \textit{kube-proxy} ist ein Kommunikationsproxy und wird vor Container geschalten. Die gesamte ``externe'' Kommunikation mit Containern wird über diesen Proxy geschleust.
+\end{itemize}
+
+\subsection{Pods}
+
+Container werden in Kubernetes nicht direkt auf nodes verteilt, es wird eine Organistaionseinheit names ``pods'' verwendet. Ein Pod beinhaltet mehrere Container. Die Container eines Pods besitzen den gleichen Lifecycle (werden als ein Gesamtes gestartet und gestoppt), besitzen Zugriff auf gemeinsame Ressourcen wie Environment, Volumes (Dateien), sind in einem gemeinsamen geteilten Netzwerk und ein Pod wird immer als ein Gesamtes auf einem node deployed (alle Container eines Pods laufen immer auf dem gleichen Node).
+
+Die Idee hinter Pods ist der Fokus auf eine laufende logische Applikation anstatt einzelne Container zu fokussieren. Eine Applikation besteht zumeist aus mehreren Komponenten, z. B., Web-Server und Datenbank-Server. Da die Applikation nur funktioniert, wenn alle Einzelkomponenten gestartet wurden, macht hier der gemeinsame Lifecycle Sinn. Aus Performance-Gründen ist es sinnvoll, dass Container eines Pods (die vermutlich stark miteinander kommunizieren) relativ lokal zueinander betrieben werden um Netzwerklatenzzeiten zu reduzieren.
+
+\subsection{Kubernetes Security}
+
+Die Sicherheit eines Kubernetes-Deployment ist sowohl von der Sicherheit der Kubernetes-Infrastruktur, als auch von der Sicherheit der verwendeten Container abhängig.
+
+Die Infrastruktur ist stark von der Sicherheit der verwendeten Service-Daemons abhängig. Der Zugriff auf diese sollte nur einem eingeschränkten authentifizierten (und autorisierten) Benutzerkreis möglich sein. Besonders wichtig ist hier der Zugriff auf \textit{etcd}, da dieser die gesamte Cluster-Konfiguration beinhaltet. Real-World Security Incidents beinhalteten z. B. öffentlich verfügbare \textit{etcd} ohne Authentication von denen die Credentials der zugrunde liegenden Cloud-Plattform extrahiert werden konnten.
+
+Jegliche Form von Master-Interfaces müssen geschützt werden, dies betrifft insbesondere das HTTP REST \textit{kube-apiserver} interface. Werden credentials für dieses auf Containern verloren, kann auf diese Weise der gesamte Cluster übernommen werden.
+
+Auf nodes ist die \textit{kubelet}-Gegenstelle problematisch: per default ist der unauthentifizierte Zugriff auf diese Schnittstelle möglich. Ein Angreifer mit Zugriff auf das lokale Netzwerk (z. B., ausgehend von einem Container) kann so neue pods definieren und starten.
+
+Prinzipiell wird Kubernetes häufig selbst in der Cloud deployed. Die Zugangsdaten für die Cloud-Infrastruktur sind in mehreren Kubernetes-Services enthalten und sind ein beliebtes Angriffsziel.
+
+Container innerhalb eines Pods besitzen ein geteiltes Vertrauensverhältnis, dies sollte bei der Verwendung von Containern aus externen Quellen beachtet werden. Ein Angreifer, der Zugriff auf einen Container erhält, besitzt höchstwahrscheinlich früher oder später Zugriff auf die weiteren Container eines Pods. Eine häufige Angriffsart ist der Einbruch in einen Container und danach das Starten eines neuen privilegierten Containers über ein ungeschütztes internes Management-Interface. Der neue Container kann nun auf das Host-System mit erweiterten Rechten zugreifen.
+
+Es gibt die Möglichkeit, sowohl für die Netzwerkkommunikation als auch für Pods Policies zu definieren (\textit{PodSecurityPolicy} und \textit{NetworkPolicy}), dies ist empfehlenswert. Kubernetes besitzt ein Konzept namens ``daemon sets'': dies sind Dienste, die automatisch auf allen Ndoes installiert werden (z. B. Monitoring oder IDS). Diese Funktion ist natürlich auch für Angreifer interessant.
+
+\chapter{Cloud-Native Applications}
+
+Cloud-Native Applications sind Applikationen, welche von Grund auf für den Betrieb in der Cloud ausgelegt wurden. Sie bestehen aus Services, die per Container verpackt, auf elastischer Infrastruktur, mittels DevOps-Prozessen ausgerollt werden. Sie verwenden Orchestration-Software um eine Isolierung von der zugrunde liegenden Hardware bzw. den verwendeten Cloud-Providern sicherzustellen. Architektonisch werden Funktionen häufig als Micro-Services ausgeführt, es gibt eine klare Separierung zwischen state-full und state-less services.
+
+\section{DevOps}
+
+Webapplikationen werden zumeist von Entwickler erstellt und dann einem Administratoren-Team zur Installation übergeben. Teilweise wird die Applikation auch von den Entwicklern installiert und dann von den Administratoren langfristig gewartet. In größeren Unternehmen wird die Installation und Wartung teilweise auf zwei unterschiedliche Administratorenteams aufgeteilt.
+
+Dies führt zu getrennten Teams mit getrennten Wissensstand und kann im worst-case auch zu Bunkerdenken --- us vs them --- führen. Diese Trennung behindert den Informationsfluss und verhindert, und führt künstliche Schranken im Verantwortlichkeitsgefühl ein ("die Admins sind dafür verantwortlich"). Im Fehlerfall führt dieses Bunkerdenken auch zum Herumschieben der Verantwortung zwischen Parteien.
+
+DevOps versucht nun, wie der Name schon sagt, die Trennung von Entwicklung ("Development") und Administration ("Operations") zu beenden. Prinzipiell ist DevOps mehr eine Philosophie/gelebte Firmenkultur die stark von der Kultur der kontinuierlichen schritt-weisen Verbesserung (z. B. Kanban in Japan) geprägt ist. Bei der Umsetzung bindet es stärker Entwickler in klassische Operations-Bereiche wie Deployment ein.
+
+\section{Microservices}
+
+Bei Microservices wird eine Applikation auf viele einzelne Services aufgeteilt. Jeder Service sollte nur genau eine Aufgabe lösen und dies über ein wohldefiniertes technologie-neutrales Netzwerkinterface, wie z. B. einem HTTP REST Interface, anbieten. Dadurch wird (theoretisch) die Produktentwicklung entkoppelt, einzelne Services können getrennt voneinander entwickelt und gewartet werden. Da ein neutrales Kommunikationsformat verwendet wird, können einzelne Microservices in getrennten Programmiersprachen und Frameworks implementiert werden.
+
+Aus Sicherheitssicht ist die verbesserte Isolation von Geschäftsfunktionen (eine Funktion pro Service) und die bessere Testbarkeit vorteilhaft. Durch den Fokus auf einen minimalen Funktionsumfang pro Service werden hier auch verstärkt Lösungen wie zentralisiertes Logging oder SSO verwendet.
+
+\section{Service-Meshes}
+
+Laut Heise sollte 2019 das Jahr der Service Meshes werden\ldots
+
+Service Meshes sind eine Technologie die häufig mit Microservices kombiniert werden. Ein Microservice sollte genau eine Geschäftsfunktion implementieren und sich sonst mit wenig anderem beschäftigen. Bei einem klassischen Service würde dies durch Verwendung eines Frameworks geschehen --- dies widerspricht allerdings dem technologie-agnostischen Ansatz von Microservices. Die Alternative ist es, diese Funktionen quasi aus dem Service zu ziehen und durch die Cloud-Umgebung bereitzustellen. Dies kann z. B. durch einen vorgelagerten Proxy geschehen, der die gesamte Kommunikation zum Microservice durchschleust, dabei aber Funktionen wie Tracing, Verschlüsselung, Logging und Authentication durchführt.
+
+Historisch kann \textit{kube-proxy} (Bestandteil von Kubernetes) als erste verbreitete Service Mesh Lösung gesehen werden, mittlerweile gibt es mit \textit{istio} und \textit{linkerd} weitere Implementierungen. Um Service-Mesh Proxies besser von klassischen Proxies abzugrenzen, werden diese zumeist \textit{Sidecar Proxies} genannt. Durch das Service Mesh kommunizieren Microservices nicht mehr direkt miteinander, sondern die Proxies kommunizieren in Vertretung der Microservices.
+
+Welche Aufgaben können durch die Service Meshes umgesetzt:
+
+\begin{itemize}
+	\item Verbindungssicherheit
+	\item Authentication/Authorization
+	\item Logging und Tracing
+	\item Metriken
+	\item Load-Balancing, Circuit-Breaking, \ldots
+\end{itemize}
