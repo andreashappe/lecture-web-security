@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="Andreas Happe">
+  <meta name="dcterms.date" content="2020-11-11">
+  <title>Web Application Security</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@3.9.2//css/reset.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@3.9.2//css/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@3.9.2//css/theme/beige.css" id="theme">
+  <link rel="stylesheet" href="custom.css"/>
+  <!-- Printing and PDF exports -->
+  <script>
+    var link = document.createElement( 'link' );
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = window.location.search.match( /print-pdf/gi ) ? 'https://unpkg.com/reveal.js@3.9.2//css/print/pdf.css' : 'https://unpkg.com/reveal.js@3.9.2//css/print/paper.css';
+    document.getElementsByTagName( 'head' )[0].appendChild( link );
+  </script>
+  <!--[if lt IE 9]>
+  <script src="https://unpkg.com/reveal.js@3.9.2//lib/js/html5shiv.js"></script>
+  <![endif]-->
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide">
+  <h1 class="title">Web Application Security</h1>
+  <p class="author">Andreas Happe</p>
+  <p class="date">November 11, 2020</p>
+</section>
+
+<section>
+<section id="introduction" class="title-slide slide level1">
+<h1>Introduction</h1>
+
+</section>
+<section id="welcome-back" class="slide level2">
+<h2>Welcome Back!</h2>
+<ul>
+<li>Wieder mal eine neue Vorlesung..</li>
+<li>Modus anders verglichen zum letzten Jahr</li>
+<li>closing the circle: attack -&gt; build -&gt; teach</li>
+</ul>
+</section>
+<section id="some-terminology" class="slide level2">
+<h2>Some Terminology</h2>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/List_of_military_slang_terms#FUBAR">FUBAR</a> : fscked up beyond all repair</li>
+<li><a href="https://en.wikipedia.org/wiki/List_of_military_slang_terms#SNAFU">SNAFU</a>: situation normal: all fscked up</li>
+</ul>
+</section>
+<section id="course-three-parts" class="slide level2">
+<h2>Course: Three Parts</h2>
+<ul>
+<li>Hacking (you are here)
+<ul>
+<li>Hilfe zur Selbsthilfe</li>
+<li>Black-Box Pen-Testing</li>
+<li>White-Box Pen-Testing</li>
+</ul></li>
+<li>Secure Coding</li>
+<li>CTF</li>
+</ul>
+</section>
+<section id="homework-seminar-thesis" class="slide level2">
+<h2>Homework / Seminar Thesis</h2>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Description</th>
+<th style="text-align: left;">Staring After</th>
+<th style="text-align: left;">Expected. Time</th>
+<th style="text-align: left;">Impact</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Hacking</td>
+<td style="text-align: left;">Testing Pen-Test Sites</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">2-3h</td>
+<td style="text-align: left;">12%</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Sec. Coding</td>
+<td style="text-align: left;">How’s your framework doing?</td>
+<td style="text-align: left;">3</td>
+<td style="text-align: left;">2-3h</td>
+<td style="text-align: left;">13%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Sec. Coding 2</td>
+<td style="text-align: left;">Describe Vulnerability Remediation</td>
+<td style="text-align: left;">4</td>
+<td style="text-align: left;">1-2PT</td>
+<td style="text-align: left;">75 %</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="homework-seminar-thesis-1" class="slide level2">
+<h2>Homework / Seminar Thesis</h2>
+<ul>
+<li>Suited for Devs and Non-Devs</li>
+<li>Please use different targets (Homework.xslx)</li>
+</ul>
+</section>
+<section id="questions-and-feedback" class="slide level2">
+<h2>Questions and Feedback?</h2>
+</section></section>
+<section>
+<section id="hilfe-zur-selbsthilfe" class="title-slide slide level1">
+<h1>Hilfe zur Selbsthilfe</h1>
+
+</section>
+<section id="idea" class="slide level2">
+<h2>Idea</h2>
+<ul>
+<li>Hacking kann nicht theoretisch gelehrt werden, sondern nur ausprobiert</li>
+<li>Es gibt viele Seiten die so ein Testbett anbieten</li>
+</ul>
+</section>
+<section id="online-anbieter" class="slide level2">
+<h2>Online Anbieter</h2>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">free</th>
+<th style="text-align: left;">commercial</th>
+<th style="text-align: left;">online</th>
+<th style="text-align: left;">VPN</th>
+<th style="text-align: left;">VM</th>
+<th style="text-align: left;">Documentation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Web Security Academy</td>
+<td style="text-align: left;">x</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">x</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Description and Walkthrough</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Vulnhub</td>
+<td style="text-align: left;">x</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">x</td>
+<td style="text-align: left;">Walkthroughs</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Pentester Labs</td>
+<td style="text-align: left;">x</td>
+<td style="text-align: left;">x</td>
+<td style="text-align: left;">x</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">x</td>
+<td style="text-align: left;">Walkthroughs</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Hack the Box</td>
+<td style="text-align: left;">x</td>
+<td style="text-align: left;">x</td>
+<td style="text-align: left;">~</td>
+<td style="text-align: left;">x</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Walkthroughs (commercial)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">OffSec AWAE</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">x</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">x</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">More akin to certification</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="good-examples" class="slide level2">
+<h2>Good Examples</h2>
+<ul>
+<li><a href="https://portswigger.net/web-security">Web Security Academy</a>
+<ul>
+<li><a href="https://portswigger.net/web-security/cross-site-scripting/dom-based">DOM-based XSS</a></li>
+<li><a href="https://portswigger.net/web-security/xxe">XEE</a></li>
+</ul></li>
+<li><a href="https://www.vulnhub.com/">Vulnhub</a>: DC-9, HackingOS1</li>
+<li><a href="https://pentesterlab.com/exercises">Pentester Labs</a>: SQL-to-Shell 1-3</li>
+<li><a href="https://www.hackthebox.eu/">Hack-the-Box</a>
+<ul>
+<li>magic</li>
+<li>book</li>
+<li>cache</li>
+<li>forward-slash</li>
+</ul></li>
+</ul>
+</section>
+<section id="homework" class="slide level2">
+<h2>Homework</h2>
+<ul>
+<li>create an account or download a VM</li>
+<li>do excercises for 1-2 hours</li>
+<li>write a small report (2-3 pages)
+<ul>
+<li>how was the setup?</li>
+<li>how was the usability?</li>
+<li>what did you learn/what VMs did you try?</li>
+</ul></li>
+<li>submit until Monday, November 23rd 2020</li>
+</ul>
+</section>
+<section id="homework-1" class="slide level2">
+<h2>Homework</h2>
+<blockquote>
+<p>when action grows unprofitable, gather information;<br />
+when information grows unprofitable, sleep</p>
+</blockquote>
+<p>(Ursula K. Le Guin, The Left Hand of Darkness)</p>
+</section></section>
+<section>
+<section id="blackbox-penetration-test-examples" class="title-slide slide level1">
+<h1>Blackbox Penetration-Test Examples</h1>
+
+</section>
+<section id="blackbox-text-vulnhub-dc-9" class="slide level2">
+<h2>Blackbox Text: vulnhub DC-9</h2>
+<ul>
+<li><a href="https://www.programmersought.com/article/58664367669/">walkhtrough</a></li>
+</ul>
+</section>
+<section id="blackbox-test-htb-cache" class="slide level2">
+<h2>Blackbox Test: HTB cache</h2>
+<ol type="1">
+<li>nmap</li>
+<li>dirbuster</li>
+<li>jslogin</li>
+<li>hosts</li>
+<li><a href="https://www.open-emr.org/wiki/images/1/11/Openemr_insecurity.pdf">authenticate</a></li>
+<li>auth/sqli</li>
+<li>john</li>
+<li>php shell upload</li>
+</ol>
+<p>Note: I do have a openEMR VM set up..</p>
+</section>
+<section id="blackbox-test-htb-forwardslash" class="slide level2">
+<h2>Blackbox Test: HTB forwardslash</h2>
+<ol type="1">
+<li>gobuster</li>
+<li>create user</li>
+<li>create profile</li>
+<li>LFI/RFI</li>
+<li>gobuster</li>
+<li>SSH key finden</li>
+</ol>
+</section></section>
+<section>
+<section id="white-box-penetration-testing" class="title-slide slide level1">
+<h1>White-Box Penetration Testing</h1>
+
+</section>
+<section id="black--grey--white-box-pen-tests" class="slide level2">
+<h2>Black-, Grey-, White-Box Pen-Tests</h2>
+</section>
+<section id="unterschied-zu-black-box" class="slide level2">
+<h2>Unterschied zu Black-Box</h2>
+<ul>
+<li>source code kann gelesen werden</li>
+<li>weniger “Detektivarbeit”</li>
+<li>keine “Verdachtsmomente”</li>
+<li>Standards/Normen wie z. B. ÖNORM A77.00</li>
+<li>Zeitaufwand weitaus höher</li>
+</ul>
+</section>
+<section id="typische-tools-old-school" class="slide level2">
+<h2>Typische Tools: Old-School</h2>
+<ul>
+<li>grep</li>
+<li>vim (or other editor)</li>
+<li>increase logging in virtual machine</li>
+</ul>
+</section>
+<section id="typische-tools-next-generation" class="slide level2">
+<h2>Typische Tools Next-Generation</h2>
+<ul>
+<li><a href="https://semgrep.dev">semgrep</a></li>
+<li>Visual Studio Code (for debugging)</li>
+<li>Automated Scanning / SAST (corporate)</li>
+</ul>
+</section>
+<section id="example" class="slide level2">
+<h2>Example</h2>
+<ul>
+<li><a href="https://www.erpnext.com">ERPnext</a></li>
+<li><a href="https://github.com/frappe/erpnext">Open Source ERP</a></li>
+<li>based upon <a href="https://github.com/frappe/frappe">Frappe Framework</a></li>
+<li>uses <a href="https://github.com/frappe/bench">bench for orchestration</a></li>
+</ul>
+</section>
+<section id="grund-setup" class="slide level2">
+<h2>Grund-Setup</h2>
+<ul>
+<li>VM mit Source Code</li>
+<li>quasi eine Kopie der Software</li>
+<li>nicht mit Echtdaten (aber korrektem Schema)</li>
+<li>db logging ist aktiviert (<code>/etc/mysql/my.cnf</code>)</li>
+</ul>
+</section>
+<section id="mvc" class="slide level2">
+<h2>MVC</h2>
+<figure>
+<img data-src="mvc.jpg" alt="" /><figcaption>Model-View-Controller</figcaption>
+</figure>
+</section>
+<section id="metadata-based-programming" class="slide level2">
+<h2>Metadata-based Programming</h2>
+</section>
+<section id="quick-look-through-the-application-structure" class="slide level2">
+<h2>Quick Look through the Application Structure</h2>
+</section>
+<section id="first-read-through-the-code" class="slide level2">
+<h2>First read through the code</h2>
+<ul>
+<li>search for MVC-Patterns</li>
+<li>how is authorization handled?</li>
+</ul>
+</section>
+<section id="find-vulnerable-operations" class="slide level2">
+<h2>Find vulnerable Operations</h2>
+<ul>
+<li>what would make for a vulnerable function?</li>
+</ul>
+</section>
+<section id="deja-vu-union-based-select" class="slide level2">
+<h2>Deja-Vu: UNION Based Select</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="kw">select</span> name, email <span class="kw">from</span> users</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a><span class="kw">union</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a><span class="kw">select</span> <span class="dv">1</span>, <span class="kw">password</span> <span class="kw">from</span> othertable;</span></code></pre></div>
+<ul>
+<li>Kommentar in MySQL: #</li>
+<li>Version in Mysql: @<span class="citation" data-cites="version">@version</span></li>
+</ul>
+</section>
+<section id="got-sqli-what-now" class="slide level2">
+<h2>Got SQLi, what now?</h2>
+<ul>
+<li>what can I do with what I found?</li>
+<li>collation</li>
+</ul>
+</section>
+<section id="got-sqli-hashes-seem-to-be-secure" class="slide level2">
+<h2>Got SQLi, Hashes seem to be secure</h2>
+<p>find another way..</p>
+</section>
+<section id="what-now" class="slide level2">
+<h2>What now?</h2>
+<ul>
+<li>template injection to RCE..</li>
+<li>what are templates?</li>
+<li>what do I want to execute?</li>
+</ul>
+</section>
+<section id="jinja2-templates" class="slide level2">
+<h2>Jinja2 Templates?</h2>
+<div class="sourceCode" id="cb2"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a>{% for item in navigation %}</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a>    <span class="kw">&lt;li&gt;&lt;a</span><span class="ot"> href=</span><span class="st">&quot;{{ item.href }}&quot;</span><span class="kw">&gt;</span>{{ item.caption }}<span class="kw">&lt;/a&gt;&lt;/li&gt;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a>{% endfor %}</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true"></a>{# title(striptags(name)) #}</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true"></a>{{ name|striptags|title }}</span></code></pre></div>
+<ul>
+<li><a href="https://jinja.palletsprojects.com/en/2.11.x/templates/">More Information for Template Language</a></li>
+</ul>
+</section>
+<section id="python-inheritance" class="slide level2">
+<h2>Python: Inheritance</h2>
+<figure>
+<img data-src="python_classes_2.jpeg" alt="" /><figcaption>Python Class Hierarchy</figcaption>
+</figure>
+</section>
+<section id="python-inheritance-1" class="slide level2">
+<h2>Python: Inheritance</h2>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="co">&quot;fubar&quot;</span>.__class__.mro()[<span class="dv">1</span>].__subclasses__()[<span class="dv">40</span>](<span class="st">&quot;abc&quot;</span>).some_method()</span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Method/Attribute</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>__class__</code></td>
+<td style="text-align: left;">instance object’s class</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>mro()</code></td>
+<td style="text-align: left;">All parent classes of a class</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>__subclasses__</code></td>
+<td style="text-align: left;">All currently known subclasses of a class</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>class("abc")</code></td>
+<td style="text-align: left;">Create instance of class with Parameter abc</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="python-illegal-template" class="slide level2">
+<h2>Python: Illegal Template?</h2>
+<p><a href="https://www.onsecurity.io/blog/server-side-template-injection-with-jinja2/">List of bypasses</a></p>
+</section>
+<section id="exploit" class="slide level2">
+<h2>Exploit</h2>
+</section>
+<section id="comparision-to-black-box-testing-imho" class="slide level2">
+<h2>Comparision to Black-Box Testing (IMHO)?</h2>
+<ul>
+<li>zielgerichteter, weniger raten.</li>
+<li>tooling: OSS lacking, expensive</li>
+<li>more expensive?</li>
+</ul>
+</section>
+<section id="feedback-and-questions" class="slide level2">
+<h2>Feedback and Questions?</h2>
+</section></section>
+<section>
+<section id="secure-coding" class="title-slide slide level1">
+<h1>Secure Coding</h1>
+
+</section>
+<section id="why-a-coding-session" class="slide level2">
+<h2>Why a coding session?</h2>
+<ul>
+<li>Defensive counter-part to offensive attacking (WebSec)</li>
+<li>Show that secure coding is not more expensive</li>
+<li>A security student should have seen JavaScript..</li>
+</ul>
+</section>
+<section id="the-app-simple-todo-web-site" class="slide level2">
+<h2>The App: Simple TODO Web-Site</h2>
+<ul>
+<li>Features:
+<ul>
+<li>create a todo</li>
+<li>list all todos</li>
+<li>show a single todo</li>
+<li>delete a single todo</li>
+</ul></li>
+<li>initially: single-user, in-memory</li>
+<li>later: multi-user, SQL-Database (still in memory)</li>
+<li>bonus: OAuth2, XML/XEE?</li>
+</ul>
+</section>
+<section id="what-are-we-gonna-use" class="slide level2">
+<h2>What are we gonna use?</h2>
+<ul>
+<li>server-side JavaScript through <a href="https://en.wikipedia.org/wiki/Node.js">node.js</a></li>
+<li>dependency management with <a href="https://en.wikipedia.org/wiki/Npm_(software)">npm</a></li>
+<li>web framework: <a href="https://en.wikipedia.org/wiki/Express.js">express.js</a></li>
+</ul>
+</section></section>
+<section>
+<section id="javascript" class="title-slide slide level1">
+<h1>JavaScript</h1>
+
+</section>
+<section id="a-bit-of-history" class="slide level2">
+<h2>A bit of History</h2>
+<ul>
+<li>JavaScript ursprünglich für NetScape</li>
+<li>Hat mit Java nichts zu tun..</li>
+<li>Initial ein hack</li>
+<li>Became a “real” programming language (ECMAScript)</li>
+</ul>
+</section>
+<section id="milestones" class="slide level2">
+<h2>Milestones:</h2>
+<ul>
+<li>Klassen (2015)</li>
+<li>Async/Await (2017)</li>
+<li>Modules with “import” (2020)</li>
+</ul>
+<p>Future: more static typing, e.g., <a href="https://en.wikipedia.org/wiki/TypeScript">TypeScript</a> or <a href="https://flow.org/">flow</a></p>
+</section>
+<section id="basic-features" class="slide level2">
+<h2>Basic Features</h2>
+<ul>
+<li>variables</li>
+<li>functions, functions as parameters</li>
+<li>Arrays, Maps, control structures and loops</li>
+<li>classes</li>
+</ul>
+</section>
+<section id="the-event-loop" class="slide level2">
+<h2>The Event-Loop</h2>
+<ul>
+<li>single event loop</li>
+<li>blocking kills</li>
+<li>howto write performant code?</li>
+</ul>
+</section>
+<section id="the-event-loop-1" class="slide level2">
+<h2>The Event-Loop</h2>
+<figure>
+<img data-src="event_loop.png" alt="" /><figcaption>The Event Loop</figcaption>
+</figure>
+</section>
+<section id="how-would-that-look-within-code" class="slide level2">
+<h2>How would that look within code?</h2>
+<ul>
+<li><a href="http://callbackhell.com/">callback hell</a></li>
+<li>async/await and promises</li>
+</ul>
+</section></section>
+<section>
+<section id="coding.." class="title-slide slide level1">
+<h1>Coding..</h1>
+
+</section>
+<section id="section" class="slide level2">
+<h2></h2>
+<blockquote>
+<p>Below the surface of the machine, the program moves. Without effort, it expands and contracts. In great harmony, electrons scatter and regroup. The forms on the monitor are but ripples on the water. The essence stays invisibly below. — Master Yuan-Ma, The Book of Programming</p>
+</blockquote>
+</section>
+<section id="basic-steps" class="slide level2">
+<h2>Basic Steps</h2>
+<ul>
+<li>node.js</li>
+<li>npm and express.js</li>
+<li>simple version</li>
+<li>something about MVC</li>
+<li>add some testing</li>
+<li>switch to sql database</li>
+<li>http header</li>
+</ul>
+</section>
+<section id="what-owasp-top-10s-have-handled-so-far" class="slide level2">
+<h2>What OWASP Top 10s have handled so far?</h2>
+<ul>
+<li>Components with known vulnerabilities</li>
+<li>XSS</li>
+<li>Injection Attacks (SQL)</li>
+<li>Insecure Configuration (forgotten files, HTTP-Header)</li>
+<li>(Insecure Data Exposure)</li>
+</ul>
+</section>
+<section id="next-steps" class="slide level2">
+<h2>Next Steps</h2>
+<ul>
+<li>Session Handling</li>
+<li>Authentication and Authorization</li>
+<li>Configuration Management, Logs, Rate-Limits</li>
+<li>Serialization (separate app)</li>
+<li>Using JWTs (OAuth2)</li>
+<li>Run through Web-Scanner</li>
+<li>Review OWASP Top 10</li>
+</ul>
+</section>
+<section id="review-and-test-with-netsparker.." class="slide level2">
+<h2>Review and Test with Netsparker..</h2>
+<p><a href="https://owasp.org/www-project-top-ten/">OWASP Top 10</a></p>
+</section></section>
+<section>
+<section id="the-final-session" class="title-slide slide level1">
+<h1>The final Session</h1>
+<blockquote>
+<p>Exploits are the closest thing to “magic spells” we experience in the real world: Construct the right incantation, gain remote control over device. <span class="citation" data-cites="halvarflake">@halvarflake</span></p>
+</blockquote>
+</section>
+<section id="mvc-mvp-mvvc-wheres-the-difference" class="slide level2">
+<h2>MVC, MVP, MVVC: where’s the difference</h2>
+</section>
+<section id="typescript" class="slide level2">
+<h2>TypeScript</h2>
+<ul>
+<li><a href="https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes.html">JavaScript + Typesystem</a>, compiles into JavaScript</li>
+<li><a href="https://orf.at/corona/daten/oesterreich">TypeScript Handbook</a></li>
+</ul>
+</section>
+<section id="typescript-1" class="slide level2">
+<h2>TypeScript</h2>
+<ul>
+<li>Generics</li>
+<li>Type-Information</li>
+<li>Interfaces and Classes</li>
+<li>more compile-time checks</li>
+</ul>
+</section>
+<section id="typescript-example" class="slide level2">
+<h2>TypeScript: Example</h2>
+<div class="sourceCode" id="cb4"><pre class="sourceCode typescript"><code class="sourceCode typescript"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a>interface Person {</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true"></a>  title<span class="op">:</span> <span class="dt">string</span><span class="op">;</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true"></a>  name<span class="op">:</span> <span class="dt">string</span><span class="op">;</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true"></a>}</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true"></a><span class="kw">function</span> <span class="fu">greeting</span>(salutation<span class="op">:</span> <span class="dt">string</span><span class="op">,</span> person<span class="op">:</span> Person) {</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true"></a>  <span class="fu">return</span> <span class="vs">`</span><span class="sc">${</span>salutation<span class="sc">}</span><span class="vs">, </span><span class="sc">${</span>person<span class="op">.</span><span class="at">title</span><span class="sc">}</span><span class="vs"> </span><span class="sc">${</span>person<span class="op">.</span><span class="at">name</span><span class="sc">}</span><span class="vs">`</span><span class="op">;</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true"></a>}</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true"></a></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true"></a>let user <span class="op">=</span> { title<span class="op">:</span> <span class="st">&quot;Dr.&quot;</span><span class="op">,</span> name<span class="op">:</span> <span class="st">&quot;Jane User&quot;</span> }<span class="op">;</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true"></a></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true"></a><span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="fu">greeting</span>(<span class="st">&quot;Hi&quot;</span><span class="op">,</span> user))<span class="op">;</span></span></code></pre></div>
+</section>
+<section id="finale-seminarbeit-teaching" class="slide level2">
+<h2>Finale Seminarbeit: Teaching</h2>
+<ul>
+<li>Beschreibung von zwei Gegenmassnahmen</li>
+<li>Vorschlag im <a href="https://github.com/bkimminich/juice-shop">OWASP Juice Shop</a>
+<ul>
+<li>Alternativ auch andere Software-Projekte</li>
+</ul></li>
+<li>Zwischenabgabe:
+<ul>
+<li>check ob Umfang passt (1-3 Gegenmassnahmen)</li>
+</ul></li>
+</ul>
+</section>
+<section id="dokuemtationstemplate-markdown" class="slide level2">
+<h2>Dokuemtationstemplate (Markdown)</h2>
+<div class="sourceCode" id="cb5"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a><span class="fu"># challenge: Name of Challenge</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true"></a>2-3 sentences describing the challenge</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true"></a><span class="fu">## The Vulnerability</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true"></a>What is the vulnerability?</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true"></a></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true"></a><span class="fu">## Where to find in the Code?</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true"></a></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true"></a>File:line</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true"></a></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true"></a><span class="fu"># Fixing the Vulnerability</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true"></a></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true"></a><span class="fu">## Potential fixes</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true"></a></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true"></a>Describe how this could be fixed, i.e., if different solutions exist, how to chose a potential fix</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true"></a></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true"></a><span class="fu">## The chosen Fix</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true"></a></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true"></a>Show in the source code how this was fixed.</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true"></a></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true"></a><span class="fu">## How to verify that the fix worked?</span></span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true"></a></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true"></a>Example how do test for the vulnerability and check that it is not there anymore.</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true"></a></span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true"></a><span class="fu">## How to spot vulnerabilities like this?</span></span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true"></a></span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true"></a>grep-patterns, how to find similar vulnerabilities?</span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true"></a></span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true"></a><span class="fu"># Related Work/Links</span></span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true"></a></span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true"></a><span class="ss">- </span>links to web-pages, articles, etc. that you used while writing this</span></code></pre></div>
+</section>
+<section id="hints-for-juiceshop" class="slide level2">
+<h2>Hints for JuiceShop</h2>
+<ul>
+<li><a href="https://pwning.owasp-juice.shop/part3/codebase.html">Codebase 101</a></li>
+<li>Frontend: Angular + Typescript</li>
+<li>Backend: node.js, express.js und sequel</li>
+<li>(components -&gt; servcies) -&gt; (routes -&gt; sequel)</li>
+</ul>
+</section>
+<section id="alternativen-für-1-2-gegenmassnahmen" class="slide level2">
+<h2>Alternativen für 1-2 Gegenmassnahmen</h2>
+<ul>
+<li><a href="https://pwning.owasp-juice.shop/part3/tutorials.html">Write new Hacking Scripts</a></li>
+<li>Add another Hacking Challenge
+<ul>
+<li>DOM-based XSS</li>
+<li>Type-Juggling</li>
+<li>eventuell SSTI</li>
+</ul></li>
+</ul>
+</section>
+<section id="google-cloud-platform-credits" class="slide level2">
+<h2>Google Cloud Platform Credits</h2>
+<ul>
+<li><a href="https://google.secure.force.com/GCPEDU?cid=WpZBdhYZRdCMx9eAJqr%2Flyz7xpRqgucc9lSTOpJlYN0t9DeSUp9CpSyZfW30u20x">$50 Credits</a></li>
+</ul>
+</section></section>
+<section>
+<section id="ctf" class="title-slide slide level1">
+<h1>CTF</h1>
+
+</section>
+<section id="setup" class="slide level2">
+<h2>Setup</h2>
+<ul>
+<li>Zweier-Teams sind erlaubt</li>
+<li><a href="http://35.246.229.182:8888">Game-Server</a>: Teams, Chat, Hints, Leaderboard</li>
+<li><a href="http://35.233.12.181/balancer">WebApp-Server</a>: Container mit verwundbarer Web-App</li>
+</ul>
+</section>
+<section id="gl-hf" class="slide level2">
+<h2>gl hf</h2>
+<p><img data-src="image.png" /></p>
+</section></section>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/reveal.js@3.9.2//js/reveal.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        // Push each slide change to the browser history
+        history: true,
+
+        // Optional reveal.js plugins
+        dependencies: [
+          { src: 'https://unpkg.com/reveal.js@3.9.2//lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'https://unpkg.com/reveal.js@3.9.2//plugin/zoom-js/zoom.js', async: true },
+          { src: 'https://unpkg.com/reveal.js@3.9.2//plugin/notes/notes.js', async: true }
+        ]
+      });
+    </script>
+    </body>
+</html>
